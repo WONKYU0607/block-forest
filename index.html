@@ -342,6 +342,18 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 .bigscore { background: var(--wood); }
 .bigscore .label { color: #fff3c4; }
 .gap { background: var(--mush); }
+/* versus: the clock in the top chip (red for the last 30 s), the board hidden while paused, the result card */
+#btn-pause.hurry { background: var(--mush); }
+#stage.vs-hide #cv { visibility: hidden; }
+.vs-rows { display: flex; flex-direction: column; gap: 10px; }
+.vs-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 14px 9px; background: #fffaf0;
+  border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 4px 0 var(--ol); }
+.vs-row .vs-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Black Han Sans', sans-serif; font-size: 18px; color: var(--bark); }
+.vs-row .num { flex: none; font-size: 30px; line-height: 1.1; color: #fff; -webkit-text-stroke: 7px var(--ol); paint-order: stroke fill; }
+.vs-row.win { background: var(--wood); }
+.vs-row.win .vs-name { color: #fff3c4; }
+.vs-row.win .num { font-size: 38px; color: #ffe14d; }
+#btn-vs-lobby { background: #fffaf0; }
 @media (max-height: 680px) { .card { padding-top: 52px; } }
 
 /* ===== Splash and lobby: full-screen pages over the game, built on the title art ===== */
@@ -492,6 +504,19 @@ html.tall-art .scr-box .ext { display: none; }
         <button class="btn ghost" id="btn-menu" type="button" data-t="toLobby">로비로</button>
       </div>
     </section>
+
+    <section id="vsover" class="overlay" hidden aria-label="대결 결과" data-ta="vsResult">
+      <div class="card">
+        <div class="ribbon"><h2 id="vs-title">승리!</h2></div>
+        <p id="vs-reason" class="reason"></p>
+        <div class="vs-rows">
+          <div class="vs-row" id="vs-me"><span class="vs-name" data-t="vsMe">나</span><span id="vs-me-score" class="num">0</span></div>
+          <div class="vs-row" id="vs-opp"><span class="vs-name" id="vs-opp-name"></span><span id="vs-opp-score" class="num">0</span></div>
+        </div>
+        <button class="btn primary" id="btn-vs-again" type="button" data-t="vsAgain">다시 대결</button>
+        <button class="btn ghost" id="btn-vs-lobby" type="button" data-t="toLobby">로비로</button>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -511,7 +536,7 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="opt" id="opt-16" type="button" aria-pressed="false"><i class="mini m16"><i></i></i><div><b>16칸</b><span data-t="sizeBig">큰 큐브 · 좁은 판</span></div></button>
     </div>
     <div class="opts lb-size lb-modes">
-      <button class="opt" id="opt-versus" type="button"><svg class="vs-ic" viewBox="0 0 34 34" aria-hidden="true"><path d="M3.5 9A5.5 5.5 0 0 1 9 3.5h16A5.5 5.5 0 0 1 30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9A5.5 5.5 0 0 1 3.5 25z" fill="#4fa3ff"/><path d="M30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9.5L24.5 3.5H25A5.5 5.5 0 0 1 30.5 9z" fill="#e9483b"/><path d="M3.5 9A5.5 5.5 0 0 1 9 3.5h16A5.5 5.5 0 0 1 30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9A5.5 5.5 0 0 1 3.5 25z" fill="none" stroke="#2b1a0e" stroke-width="2.5"/><text x="17" y="22.6" text-anchor="middle" font-family="Gasoek One, Black Han Sans, sans-serif" font-size="14" fill="#fff" stroke="#2b1a0e" stroke-width="3.6" paint-order="stroke" stroke-linejoin="round">VS</text></svg><div><b data-t="versus">대결</b><span data-t="soon">준비 중</span></div></button>
+      <button class="opt" id="opt-versus" type="button"><svg class="vs-ic" viewBox="0 0 34 34" aria-hidden="true"><path d="M3.5 9A5.5 5.5 0 0 1 9 3.5h16A5.5 5.5 0 0 1 30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9A5.5 5.5 0 0 1 3.5 25z" fill="#4fa3ff"/><path d="M30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9.5L24.5 3.5H25A5.5 5.5 0 0 1 30.5 9z" fill="#e9483b"/><path d="M3.5 9A5.5 5.5 0 0 1 9 3.5h16A5.5 5.5 0 0 1 30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9A5.5 5.5 0 0 1 3.5 25z" fill="none" stroke="#2b1a0e" stroke-width="2.5"/><text x="17" y="22.6" text-anchor="middle" font-family="Gasoek One, Black Han Sans, sans-serif" font-size="14" fill="#fff" stroke="#2b1a0e" stroke-width="3.6" paint-order="stroke" stroke-linejoin="round">VS</text></svg><div><b data-t="versus">대결</b><span data-t="vsSub">5분 점수 대결</span></div></button>
       <button class="opt empty" id="opt-blank" type="button" aria-label="빈 칸" data-ta="blank"></button>
     </div>
     <button class="btn primary lb-start" id="btn-new" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13.5" fill="#fff" stroke="#2b1a0e" stroke-width="3"/><path d="M13 10.2v11.6l9.4-5.8z" fill="#4fb83f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg><span data-t="start">게임 시작</span></button>
@@ -572,7 +597,9 @@ const STR = {
     fireBomb: '폭탄!', fireBolt: '번개!', fireDrill: '드릴!', fireBell: '골든벨!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
     paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '로비로',
     over: '게임 오버', overTop: '꼭대기를 넘었어요', overNoFit: '더 놓을 곳이 없어요', newBest: '새 최고 기록!', cont: n => `아래 ${n}줄 지우고 이어하기`, again: '다시 하기',
-    versus: '대결', soon: '준비 중', versusSoon: '대결 모드는 곧 열려요', blank: '빈 칸',
+    versus: '대결', vsSub: '5분 점수 대결', blank: '빈 칸',
+    vsStart: '대결 시작!', vsOpp: n => `상대 ${n}`, vsWin: '승리!', vsLose: '패배', vsDraw: '무승부', vsTimeUp: '시간 종료!', vsQuit: '대결에서 나갔어요',
+    vsMe: '나', vsAgain: '다시 대결', vsNoItems: '대결에서는 아이템을 쓸 수 없어요', vsResult: '대결 결과',
     lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bell: '골든벨', bestOf: n => `최고 점수 · ${n}칸`, start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요',
     splash: '시작 화면', touch: '화면을 터치하세요',
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
@@ -591,7 +618,9 @@ const STR = {
     fireBomb: 'BOMB!', fireBolt: 'ZAP!', fireDrill: 'DRILL!', fireBell: 'GOLDEN BELL!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
     paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Lobby',
     over: 'Game Over', overTop: 'The blocks reached the top', overNoFit: 'No room left', newBest: 'New Best!', cont: n => `Continue (-${n} Rows)`, again: 'Play Again',
-    versus: 'Versus', soon: 'Coming soon', versusSoon: 'Versus mode is coming soon', blank: 'Empty slot',
+    versus: 'Versus', vsSub: '5-min duel', blank: 'Empty slot',
+    vsStart: 'Versus!', vsOpp: n => `vs ${n}`, vsWin: 'You Win!', vsLose: 'You Lose', vsDraw: 'Draw', vsTimeUp: "Time's up!", vsQuit: 'You left the match',
+    vsMe: 'You', vsAgain: 'Play again', vsNoItems: "Items can't be used in versus", vsResult: 'Versus result',
     lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bell: 'Golden Bell', bestOf: n => `Best · ${n} Wide`, start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon',
     splash: 'Title screen', touch: 'Touch to Start',
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
@@ -604,7 +633,8 @@ const tr = (k, ...a) => { const v = (STR[LANG] && k in STR[LANG] ? STR[LANG] : S
 // Pick a block from the tray at the bottom with your thumb, slide it to a column and let go:
 // it drops in from the top and lands in one piece, keeping its shape.
 // A full row breaks, and 20 (16-wide board: 10) or more same-colored cubes touching each other burst.
-// Cubes left floating over the gaps then fall straight down, which can set off another break (a chain).
+// Cubes left floating over the gaps then fall straight down, which can set off another break (a chain);
+// a lump left hanging with nothing around it falls too, in one piece.
 // Rows of mixed-color cubes keep rising from the bottom.
 // two board sizes: 32 x 40 small cubes, or 16 x 20 cubes twice as big
 const SIZES = {
@@ -631,7 +661,7 @@ const WILD = 5;                     // rainbow cube: counts as every colour when
 const STONE = 6, STONE_CHANCE = 0.08;   // grey stone in the rising rows: never groups, breaks when a group bursts beside it or its row breaks
 const SP_BOMB = 1, SP_BOLT = 2;     // bomb / lightning, kept in bits 6-7 of a cell (bits 4-5 are the grain)
 const specialOf = v => (v >> 6) & 3;
-const withGrain = (color) => color | (rand(4) << 4);
+const withGrain = (color) => color | (Math.floor(Math.random() * 4) << 4);   // grain is only a look
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ANIM = REDUCE ? 0.05 : 1;
 
@@ -661,11 +691,26 @@ const SHAPE_BY_NAME = Object.fromEntries(SHAPES.map(s => [s.name, s]));
 const TOTAL_W = SHAPES.reduce((a, s) => a + s.w, 0);
 const shapeOf = p => SHAPE_BY_NAME[p.s];
 
-const rand = n => Math.floor(Math.random() * n);
+// Game randomness. A normal game draws from Math.random. A versus game is played on a seed: the start board, block k,
+// rising row k and mission k each draw from their own stream made from (seed, k), so both players get the same board,
+// the same blocks in the same order and the same missions however differently they play. (A rising row still fits its
+// gaps and colours to the bottom row it comes up under, so where two boards differ it can differ there.)
+// Looks (grain, sparks, flying cubes) always use Math.random.
+let gR = Math.random;   // the stream game logic draws from right now
+const rand = n => Math.floor(gR() * n);
+const RNG_BOARD = 0, RNG_PIECE = 1, RNG_ROW = 2, RNG_MISSION = 3;
+function mulberry(a) { return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function withSeed(tag, k, fn) {
+  if (!G.vs) return fn();
+  let h = Math.imul(G.vs.seed ^ 0x9E3779B9, 0x85EBCA6B) ^ Math.imul(tag + 1, 0xC2B2AE35) ^ Math.imul(k + 1, 0x27D4EB2F);
+  h = Math.imul(h ^ h >>> 16, 0x7FEB352D); h = Math.imul(h ^ h >>> 15, 0x846CA68B); h ^= h >>> 16;
+  const keep = gR; gR = mulberry(h);
+  try { return fn(); } finally { gR = keep; }
+}
 // the big shapes (5 cubes and more) come more often on the higher levels
 function pickShape() {
   const big = rule().big, w = sh => sh.w * (sh.cells.length >= 5 ? big : 1);
-  let x = Math.random() * SHAPES.reduce((a, sh) => a + w(sh), 0);
+  let x = gR() * SHAPES.reduce((a, sh) => a + w(sh), 0);
   for (const sh of SHAPES) { x -= w(sh); if (x <= 0) return sh; }
   return SHAPES[0];
 }
@@ -785,6 +830,39 @@ function compact(grid, cols) {
   }
   return moves;
 }
+// After a break, a lump of cubes left hanging with nothing around it (joined, sideways or from below, to nothing that
+// reaches the floor) falls as one piece, keeping its shape, until it lands on something. Cubes that still touch the
+// stack at the side stay where they are. moves: the ones compact gave; returns them with these falls added.
+function dropIslands(grid, moves) {
+  const N = ROWS * COLS, from = new Map();   // current cell -> the row it started from
+  for (const m of moves) from.set(m.r * COLS + m.c, m.r0);
+  const near = k => { const r = (k / COLS) | 0, c = k % COLS, o = []; if (r > 0) o.push(k - COLS); if (r < ROWS - 1) o.push(k + COLS); if (c > 0) o.push(k - 1); if (c < COLS - 1) o.push(k + 1); return o; };
+  for (let pass = 0; pass < ROWS; pass++) {
+    const held = new Uint8Array(N), st = [];
+    for (let c = 0; c < COLS; c++) { const k = (ROWS - 1) * COLS + c; if (grid[ROWS - 1][c]) { held[k] = 1; st.push(k); } }
+    while (st.length) for (const k2 of near(st.pop())) if (!held[k2] && grid[(k2 / COLS) | 0][k2 % COLS]) { held[k2] = 1; st.push(k2); }
+    const seen = new Uint8Array(N), parts = [];
+    for (let k = 0; k < N; k++) {
+      if (held[k] || seen[k] || !grid[(k / COLS) | 0][k % COLS]) continue;
+      const cells = [k], s2 = [k]; seen[k] = 1;
+      while (s2.length) for (const k2 of near(s2.pop())) if (!seen[k2] && grid[(k2 / COLS) | 0][k2 % COLS]) { seen[k2] = 1; cells.push(k2); s2.push(k2); }
+      parts.push({ cells, low: Math.max(...cells.map(x => (x / COLS) | 0)) });
+    }
+    if (!parts.length) break;
+    parts.sort((a, b) => b.low - a.low);   // the lowest lump first, so one above can land on it
+    for (const p of parts) {
+      const own = new Set(p.cells);
+      let d = 0;
+      while (p.cells.every(k => { const r = ((k / COLS) | 0) + d + 1, c = k % COLS; return r < ROWS && (!grid[r][c] || own.has(r * COLS + c)); })) d++;
+      if (!d) continue;
+      const lift = p.cells.map(k => { const r = (k / COLS) | 0, c = k % COLS, v = grid[r][c], r0 = from.has(k) ? from.get(k) : r; grid[r][c] = 0; from.delete(k); return { r, c, v, r0 }; });
+      for (const e of lift) { grid[e.r + d][e.c] = e.v; from.set((e.r + d) * COLS + e.c, e.r0); }
+    }
+  }
+  const out = [];
+  from.forEach((r0, k) => { const r = (k / COLS) | 0; if (r !== r0) out.push({ r, c: k % COLS, r0 }); });
+  return out;
+}
 
 // The packed board: rows of cubes with a narrow channel, 1-2 cubes wide, that winds as it goes down.
 // When the channel steps sideways the row covers both columns, so the channel never breaks.
@@ -792,11 +870,11 @@ function compact(grid, cols) {
 function terrainMask() {
   const ch = G.chan || (G.chan = { col: rand(COLS - 1), w: 1 });
   let from = ch.col, to = ch.col + ch.w - 1;
-  if (Math.random() < 0.3) {
-    const step = Math.random() < 0.5 ? -1 : 1;
+  if (gR() < 0.3) {
+    const step = gR() < 0.5 ? -1 : 1;
     ch.col = Math.max(0, Math.min(COLS - ch.w, ch.col + step));
     from = Math.min(from, ch.col); to = Math.max(to, ch.col + ch.w - 1);
-  } else if (Math.random() < 0.12) {
+  } else if (gR() < 0.12) {
     ch.w = ch.w === 1 ? 2 : 1;
     ch.col = Math.max(0, Math.min(COLS - ch.w, ch.col));
     from = Math.min(from, ch.col); to = Math.max(to, ch.col + ch.w - 1);
@@ -815,7 +893,7 @@ function riseMask(above) {
     // the wandering channel ran under cubes: take the open cell nearest to it, and its open neighbour when the channel is 2 wide
     const ch = G.chan;
     let best = open[0], bd = Infinity;
-    for (const c of open) { const d = Math.abs(c - ch.col) + Math.random() * 0.5; if (d < bd) { bd = d; best = c; } }
+    for (const c of open) { const d = Math.abs(c - ch.col) + gR() * 0.5; if (d < bd) { bd = d; best = c; } }
     gaps = [best];
     if (ch.w === 2) { const nb = [best - 1, best + 1].filter(c => open.includes(c)); if (nb.length) gaps.push(nb[rand(nb.length)]); }
   }
@@ -859,7 +937,7 @@ function paintCell(g, r, c) {
 }
 // pressure ramps with the number of drops / risen rows
 const RISE_EVERY = 1;   // a row rises after every drop
-const moveIv = () => RISE_EVERY;
+const moveIv = () => (G.vs ? VS_RISE_EVERY : RISE_EVERY);
 
 function loadBest() { try { return Number(localStorage.getItem(`rise7-best-${G.size}`)) || 0; } catch (e) { return 0; } }
 function saveBest(v) { try { localStorage.setItem(`rise7-best-${G.size}`, String(v)); } catch (e) { /* storage unavailable */ } }
@@ -901,7 +979,73 @@ function levelRule(n) {
   const L = LEVELS[Math.min(n, LEVELS.length) - 1], extra = Math.max(0, n - LEVELS.length);
   return extra ? { ...L, stone: Math.min(25, Math.round(L.stone * 100) + extra) / 100, two: extra === 1 ? 4 : 3 } : L;
 }
-const rule = () => levelRule(G.level || 1);
+const rule = () => { const L = levelRule(G.level || 1); return G.vs ? { ...L, help: 0 } : L; };   // versus: no blocks picked for the board
+
+/* ---------- versus: both players play the same seed for 5 minutes, the higher score wins. No items, no continue,
+   no blocks picked to fit the board, a row rises every VS_RISE_EVERY drops, and the level goes up with the drops (every VS_LEVEL_DROPS), not the score,
+   so both get the same blocks and rows at the same point whatever they score. ---------- */
+const VS_MS = 5 * 60 * 1000, VS_LEVEL_DROPS = 20, VS_HURRY = 30000;   // the last 30 seconds: the clock turns red
+// Without the blocks picked to fit the board a row rising after every drop ends most games in under a minute
+// (greedy bot: about 40 drops on 16 wide), so in versus a row rises every 2nd drop (bot: about 110-200 drops).
+const VS_RISE_EVERY = 2;
+const clockText = ms => { const s = Math.ceil(Math.max(0, ms) / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+// The opponents to start with, before records come from other players: 5-minute versus games a bot played on these seeds
+// (thinking 1.8 - 4.2 s a block). They hold only for these rules: change the scoring, levels or rising rows and play them again.
+const VS_BOTS = {
+  16: [
+    { seed: 11000, name: '말랑콩떡', score: 130620 }, { seed: 11001, name: '버섯돌이', score: 90750 }, { seed: 11002, name: 'jun_99', score: 50500 }, { seed: 11003, name: '노을빛', score: 123770 },
+    { seed: 11010, name: 'Sora', score: 71710 }, { seed: 11011, name: '감자칩', score: 85610 }, { seed: 11012, name: '퍼즐고수', score: 34290 }, { seed: 11013, name: 'Luna', score: 59410 },
+    { seed: 11020, name: '토끼발', score: 55430 }, { seed: 11021, name: '숲속요정', score: 52430 }, { seed: 11022, name: 'mint_choco', score: 73820 }, { seed: 11023, name: '도토리왕', score: 24620 },
+    { seed: 11030, name: '나무늘보', score: 24150 }, { seed: 11031, name: '하늘다람쥐', score: 32050 }, { seed: 11032, name: '새벽세시', score: 30910 }, { seed: 11033, name: 'blue_berry', score: 29270 },
+  ],
+  32: [
+    { seed: 32000, name: '젤리곰', score: 181180 }, { seed: 32001, name: '솔방울', score: 103410 }, { seed: 32002, name: '초코칩쿠키', score: 105220 }, { seed: 32003, name: '밤하늘', score: 136190 },
+    { seed: 32010, name: 'kiwi', score: 92370 }, { seed: 32011, name: '곰돌이푸딩', score: 164640 }, { seed: 32012, name: '코코넛', score: 152620 }, { seed: 32013, name: 'dodo', score: 153760 },
+    { seed: 32020, name: '다람쥐대장', score: 68330 }, { seed: 32021, name: 'yuna_v', score: 68030 }, { seed: 32022, name: 'haru', score: 108530 }, { seed: 32023, name: '참깨빵', score: 66630 },
+    { seed: 32030, name: '별빛', score: 37560 }, { seed: 32031, name: 'pine_cone', score: 35030 }, { seed: 32032, name: '블록장인', score: 36650 }, { seed: 32033, name: '바람소리', score: 43570 },
+  ],
+};
+let vsLast = null;
+function pickOpponent(size) {
+  const list = VS_BOTS[size] || VS_BOTS[16];
+  let o;
+  do o = list[Math.floor(Math.random() * list.length)]; while (list.length > 1 && o === vsLast);
+  vsLast = o;
+  return o;
+}
+function startVersus(size, o = pickOpponent(size)) {
+  newGame('moves', size, { seed: o.seed, opp: { name: o.name, score: o.score } });
+  $('#stage').classList.remove('vs-hide');
+  showOnly(null); leaveLobby(); musicStart(true);
+  banner(tr('vsStart'), tr('vsOpp', o.name), CHAIN_LOOK, 2200);
+  fx.banners.unshift(fx.banners.pop());   // above the first mission's sign
+}
+// the clock runs while the game is played (not while paused or in the background); at 0 the board settles, then the result
+function vsTick(ms) {
+  const v = G.vs;
+  if (v.left > 0) v.left = Math.max(0, v.left - ms);
+  const txt = clockText(v.left);
+  if (txt !== v.shown) { v.shown = txt; $('#mode-label').textContent = txt; $('#btn-pause').classList.toggle('hurry', v.left <= VS_HURRY); }
+  if (v.left <= 0 && G.phase === 'idle' && !anim) { banner(tr('vsTimeUp'), '', CHAIN_LOOK, 1400); die('time'); }
+}
+// left from the pause menu: the match ends with the score so far
+function vsQuit() { G.reason = 'quit'; finish(); }
+// the result: only now is the other player's score shown
+function vsResult() {
+  const v = G.vs, me = G.score, op = v.opp.score, res = me > op ? 'win' : me < op ? 'lose' : 'draw';
+  v.result = res;
+  $('#stage').classList.remove('vs-hide');
+  $('#vs-title').textContent = tr(res === 'win' ? 'vsWin' : res === 'lose' ? 'vsLose' : 'vsDraw');
+  $('#vs-reason').textContent = G.reason === 'time' ? tr('vsTimeUp') : G.reason === 'quit' ? tr('vsQuit') : G.reason === 'top' ? tr('overTop') : tr('overNoFit');
+  $('#vs-me-score').textContent = me.toLocaleString();
+  $('#vs-opp-name').textContent = v.opp.name;
+  $('#vs-opp-score').textContent = op.toLocaleString();
+  $('#vs-me').classList.toggle('win', res === 'win');
+  $('#vs-opp').classList.toggle('win', res === 'lose');
+  $('#vsover').dataset.res = res;
+  hud();
+  showOnly('vsover');
+}
 
 // Many new blocks are ones that can finish a row somewhere, so something breaks often (fewer as the level climbs).
 function completesRow(shape, c) {
@@ -916,7 +1060,7 @@ function completesRow(shape, c) {
   return false;
 }
 function basePiece() {
-  if (Math.random() < rule().help) {
+  if (gR() < rule().help) {
     const good = SHAPES.filter(sh => { for (let c = 0; c + sh.wd <= COLS; c++) if (completesRow(sh, c)) return true; return false; });
     if (good.length) return { s: good[rand(good.length)].name, color: 1 + rand(COLORS.length) };
   }
@@ -929,12 +1073,16 @@ const SPECIAL_CHANCE = 0.02, SPECIAL_KINDS = ['rainbow'];
 // the block shown in the 'next' box: it fills the next pocket that empties
 function takeNext() { const p = G.next || dealPiece(); G.next = dealPiece(); return p; }
 function dealPiece() {
-  const p = basePiece();
-  if ((G.specialDue || 0) > 0 || Math.random() < rule().wild) {
-    if (G.specialDue > 0) G.specialDue--;
-    p.sp = { i: rand(shapeOf(p).cells.length), k: SPECIAL_KINDS[rand(SPECIAL_KINDS.length)] };
-  }
-  return p;
+  G.dealt = (G.dealt || 0) + 1;
+  return withSeed(RNG_PIECE, G.dealt, () => {
+    const p = basePiece();
+    const roll = gR(), at = gR(), kind = gR();   // always drawn, so an earned rainbow does not shift the blocks after it
+    if ((G.specialDue || 0) > 0 || roll < rule().wild) {
+      if (G.specialDue > 0) G.specialDue--;
+      p.sp = { i: Math.floor(at * shapeOf(p).cells.length), k: SPECIAL_KINDS[Math.floor(kind * SPECIAL_KINDS.length)] };
+    }
+    return p;
+  });
 }
 // value of cube j of a block (grain 0 when only drawn)
 function pieceCell(p, j, grain = 0) {
@@ -962,11 +1110,14 @@ function specialMarks(grid, cells) {
   return { extra, fired, bolts };
 }
 
-function newGame(mode, size) {
+// vs: a versus game ({ seed, opp: { name, score } }), or nothing for a normal one
+function newGame(mode, size, vs) {
   G.mode = mode; G.size = size || G.size || 32;
+  G.vs = vs ? { seed: vs.seed >>> 0, opp: vs.opp, left: VS_MS, shown: '' } : null;
+  G.dealt = 0; G.missionN = 0; G.level = 1; G.drops = 0;
   setSize(G.size);
   layout();
-  G.grid = startBoard();
+  G.grid = withSeed(RNG_BOARD, 0, startBoard);
   G.specialDue = 0;
   G.tray = [dealPiece(), dealPiece(), dealPiece()];
   G.next = dealPiece();
@@ -988,23 +1139,24 @@ function newGame(mode, size) {
 
 function addScore(n) {
   G.score += n;
-  const lv = levelAt(G.score);
-  if (lv > (G.level || 1)) {
-    G.level = lv;
-    banner(tr('levelUp'), tr('lv', lv), CHAIN_LOOK, 1600);
-    sfx('stage');
-    const ch = $('#mode-label'); ch.classList.remove('bump'); void ch.offsetWidth; ch.classList.add('bump');
-  }
+  if (!G.vs) { const lv = levelAt(G.score); if (lv > (G.level || 1)) levelUp(lv); }   // versus: by drops, in endSettle
   hud();
+}
+function levelUp(lv) {
+  G.level = lv;
+  banner(tr('levelUp'), tr('lv', lv), CHAIN_LOOK, 1600);
+  sfx('stage');
+  const ch = $('#mode-label'); ch.classList.remove('bump'); void ch.offsetWidth; ch.classList.add('bump');
 }
 
 function dropPiece(i, c) {
   const p = G.tray[i];
   if (!p || G.state !== 'play' || G.phase !== 'idle') return false;
+  if (G.vs && G.vs.left <= 0) return false;   // time is up: the board settles, then the result
   const s = shapeOf(p);
   const cells = landing(G.grid, s, c);
   if (!cells) return false;
-  cells.forEach((e, j) => { G.grid[e.r][e.c] = pieceCell(p, j, rand(4)); });
+  cells.forEach((e, j) => { G.grid[e.r][e.c] = pieceCell(p, j, Math.floor(Math.random() * 4)); });
   G.tray[i] = null;
   lastDrop = cells.map(e => ({ r: e.r, c: e.c }));
   G.drops++;
@@ -1045,7 +1197,7 @@ function stepDone(a) {
     a.marks.forEach((v, k) => { if (!a.spawned.has(k)) peel(a, k, v); });
     const cols = new Set();
     a.marks.forEach((v, k) => { G.grid[(k / COLS) | 0][k % COLS] = 0; cols.add(k % COLS); });
-    const moves = compact(G.grid, cols);
+    const moves = dropIslands(G.grid, compact(G.grid, cols));
     touchGrid();
     if (moves.length) startFall('fall', moves, 50, 32);
     else stepDone({ type: 'fall' });
@@ -1138,6 +1290,7 @@ function endSettle() {
   G.phase = 'idle';
   // using an item is not a move: no row comes up and the mission keeps its moves
   const itemMove = G.itemMove; G.itemMove = false;
+  if (G.vs) { const lv = 1 + Math.floor(G.drops / VS_LEVEL_DROPS); if (lv > (G.level || 1)) levelUp(lv); }   // before this drop's row and block
   if (!itemMove) missionTick();
   if (!feverOn() && (G.fever || 0) >= feverGoal()) startFever();   // the gauge filled during this drop: fever from the next one
   feverUI();
@@ -1185,7 +1338,7 @@ function loadItems() {
 }
 function saveItems() { try { localStorage.setItem('rise-items', JSON.stringify(ITEMS)); } catch (e) { /* storage unavailable */ } }
 function addItem(k, n = 1) { ITEMS[k] = (ITEMS[k] || 0) + n; saveItems(); fx.itemBump = { k, t0: performance.now() }; }
-const hasItems = () => ITEM_KINDS.some(k => (ITEMS[k] || 0) > 0);
+const hasItems = () => !G.vs && ITEM_KINDS.some(k => (ITEMS[k] || 0) > 0);   // none in versus
 // what an item breaks.
 // The drill falls down column col and takes every cube of it (hit: the row of its first cube, ROWS when it is empty).
 // The bomb goes off on any cell (row, col), on top of the stack or inside it: the 5x5 square around that cell,
@@ -1208,7 +1361,7 @@ function itemTargets(kind, col, row) {
   return { marks, hit, r0, r1: r0 + 4, c0, c1: c0 + 4, rc, cc: col };
 }
 function useItem(k, col, row) {
-  if (G.state !== 'play' || (ITEMS[k] || 0) <= 0) return false;
+  if (G.vs || G.state !== 'play' || (ITEMS[k] || 0) <= 0) return false;
   if (G.phase !== 'idle' || anim) { pendingItem = { k, col, row }; return true; }   // goes as soon as the board has settled
   const tg = itemTargets(k, col, row);
   if (!tg.marks.size) { sfx('back'); return false; }   // nothing to break there: the item is kept
@@ -1239,12 +1392,14 @@ function useItem(k, col, row) {
 
 function rise(quiet) {
   if (G.grid[0].some(v => v)) { die('top'); return false; }
-  const m = riseMask(G.grid[ROWS - 1]);
-  G.grid.shift();
-  G.grid.push(Array(COLS).fill(0));
-  for (let c = 0; c < COLS; c++) if (m[c]) paintCell(G.grid, ROWS - 1, c);
-  const stone = rule().stone;
-  for (let c = 0; c < COLS; c++) if (m[c] && Math.random() < stone) G.grid[ROWS - 1][c] = STONE | (rand(4) << 4);
+  withSeed(RNG_ROW, G.rises, () => {
+    const m = riseMask(G.grid[ROWS - 1]);
+    G.grid.shift();
+    G.grid.push(Array(COLS).fill(0));
+    for (let c = 0; c < COLS; c++) if (m[c]) paintCell(G.grid, ROWS - 1, c);
+    const stone = rule().stone;
+    for (let c = 0; c < COLS; c++) if (m[c] && gR() < stone) G.grid[ROWS - 1][c] = withGrain(STONE);
+  });
   G.rises++;
   fx.shift = { t0: performance.now(), dur: 150 * ANIM };
   touchGrid();
@@ -1347,6 +1502,10 @@ const MISSION_PTS = 1000;   // per 16 columns: the 32-wide board scores about tw
 const missionPts = m => m.pts || MISSION_PTS * (COLS / 16);   // a mission saved before this change pays the same
 const rewardText = m => tr('pts', missionPts(m).toLocaleString());
 function newMission() {
+  G.missionN = (G.missionN || 0) + 1;
+  return withSeed(RNG_MISSION, G.missionN, makeMission);
+}
+function makeMission() {
   const f = COLS / 16, types = ['color', 'rows', 'combo', 'big'];
   const m = { type: types[rand(types.length)], have: 0, drop: 0, reward: 'score', pts: MISSION_PTS * f, state: 'on', until: 0 };
   // no move limit, so the goals are big; the 32-wide board asks twice as much of everything
@@ -1452,7 +1611,7 @@ function die(reason) {
 const continueRows = () => (COLS >= 32 ? 10 : 5);
 function showRewardedAd(done) { done(); }   // the rewarded ad goes here later; for now the reward comes straight away
 function continueGame() {
-  if (G.state !== 'over' || G.continues >= 1) return;
+  if (G.vs || G.state !== 'over' || G.continues >= 1) return;
   showRewardedAd(() => {
     const n = continueRows();
     G.continues++;
@@ -1470,6 +1629,7 @@ function continueGame() {
 function finish() {
   G.state = 'over';
   shownScore = G.score;
+  if (G.vs) { vsResult(); return; }
   const prev = G.best, isBest = G.score > prev;
   if (isBest) { G.best = G.score; saveBest(G.score); }
   $('#over-reason').textContent = G.reason === 'top' ? tr('overTop') : tr('overNoFit');
@@ -1740,9 +1900,10 @@ const cv = $('#cv');
 const ctx = cv.getContext('2d');
 
 function hud() {
-  $('#mode-label').textContent = tr('lv', G.level || 1);   // the level (the board size shows itself)
+  $('#mode-label').textContent = G.vs ? clockText(G.vs.left) : tr('lv', G.level || 1);   // the level; in versus the time left
+  $('#btn-pause').classList.toggle('hurry', !!G.vs && G.vs.left <= VS_HURRY);
   $('#score').textContent = Math.round(shownScore).toLocaleString(); fitNum($('#score'));
-  $('#best').textContent = Math.max(G.best, G.score).toLocaleString(); fitNum($('#best'));
+  $('#best').textContent = (G.vs ? G.best : Math.max(G.best, G.score)).toLocaleString(); fitNum($('#best'));   // a versus score is not a best
 }
 // a long score shrinks to fit beside its label instead of running under the size chip (checked again when the digits, language or width change)
 const numFit = new Map();
@@ -1758,7 +1919,7 @@ function fitNum(el) {
   if (room > 0 && w > room) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * room / w * 0.97).toFixed(1) + 'px';
 }
 function showOnly(id) {
-  for (const k of ['menu', 'over']) $('#' + k).hidden = k !== id;
+  for (const k of ['menu', 'over', 'vsover']) $('#' + k).hidden = k !== id;
   if (id) { const b = $('#' + id).querySelector('.btn.primary:not([hidden])'); if (b) b.focus({ preventScroll: true }); }
 }
 function setMenu(mode, size) {
@@ -1769,6 +1930,8 @@ function setMenu(mode, size) {
 // the pause menu
 function openMenu() {
   if (G.state === 'play') G.state = 'menu';
+  $('#btn-restart').hidden = !!G.vs;   // a versus game cannot be started over
+  $('#stage').classList.toggle('vs-hide', !!G.vs);   // the clock stops, so the board is hidden: no thinking on a paused game
   musicStop();
   drag = null;
   showOnly('menu');
@@ -1778,6 +1941,7 @@ function resumeGame() {
   const now = performance.now();
   if (anim) anim.t0 += now - (G.pausedAt || now);
   G.state = 'play'; last = now; showOnly(null);
+  $('#stage').classList.remove('vs-hide');
   musicStart(false);
 }
 
@@ -1855,7 +2019,7 @@ function lobbyInfo() {
 }
 // leaving a game ends it: the score so far is the final one (a new best is kept)
 function quitGame() {
-  if (G.started && G.score > G.best) { G.best = G.score; saveBest(G.score); }
+  if (G.started && !G.vs && G.score > G.best) { G.best = G.score; saveBest(G.score); }   // a versus score is not a best
   G.started = false; G.state = 'menu';
   shownScore = G.score;
 }
@@ -1912,14 +2076,16 @@ $('#opt-ko').addEventListener('click', () => { setLang('ko'); sfx('pick'); });
 $('#opt-en').addEventListener('click', () => { setLang('en'); sfx('pick'); });
 $('#btn-new').addEventListener('click', () => { newGame(menuMode, menuSize); showOnly(null); leaveLobby(); musicStart(true); });
 $('#btn-shop').addEventListener('click', () => { sfx('pick'); toast(tr('shopSoon')); });
-$('#opt-versus').addEventListener('click', () => { sfx('pick'); toast(tr('versusSoon')); });   // the mode itself comes later
+$('#opt-versus').addEventListener('click', () => { sfx('pick'); startVersus(menuSize); });
+$('#btn-vs-again').addEventListener('click', () => { sfx('pick'); startVersus(G.size); });
+$('#btn-vs-lobby').addEventListener('click', () => openLobby());
 $('#btn-settings').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
 $('#btn-settings-close').addEventListener('click', () => { sfx('pick'); closeSettings(); });
 $('#btn-pause').addEventListener('click', () => { if (G.state === 'play' || G.state === 'menu') { if (G.state === 'play') G.pausedAt = performance.now(); openMenu(); } });
 $('#btn-unpause').addEventListener('click', resumeGame);
 $('#btn-restart').addEventListener('click', () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); });
 $('#btn-psettings').addEventListener('click', () => { sfx('pick'); openSettings('menu'); });
-$('#btn-plobby').addEventListener('click', () => openLobby());
+$('#btn-plobby').addEventListener('click', () => { if (G.vs && G.started) vsQuit(); else openLobby(); });   // leaving a duel ends it with that score
 $('#btn-continue').addEventListener('click', () => continueGame());
 $('#btn-again').addEventListener('click', () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); });
 $('#btn-menu').addEventListener('click', () => { G.started = false; G.state = 'menu'; openLobby(); });
@@ -2414,7 +2580,7 @@ function peel(a, k, v) {
     vx: dir * (2 + Math.random() * 6) * u, vy: -(13 + Math.random() * 9) * u,
     a: 0, va: dir * (4 + Math.random() * 7), t0: performance.now(), life: 900 + Math.random() * 300 });
   if (fx.cubes.length > 1600) fx.cubes.splice(0, fx.cubes.length - 1600);
-  const col = colorOf(v) === WILD ? 1 + rand(COLORS.length) : colorOf(v), glow = col === STONE ? 'rgb(205,200,210)' : rgb(lighten(baseColor(col), 0.5));
+  const col = colorOf(v) === WILD ? 1 + Math.floor(Math.random() * COLORS.length) : colorOf(v), glow = col === STONE ? 'rgb(205,200,210)' : rgb(lighten(baseColor(col), 0.5));
   const n = Math.random() < 0.45 ? 2 : 1, now = performance.now();
   for (let j = 0; j < n; j++) {
     fx.sparks.push({ x: bx + (c + 0.5) * cu, y: by + (r + 0.5) * cu, vx: (Math.random() - 0.5) * u * 34, vy: -(u * 6 + Math.random() * u * 26),
@@ -2872,7 +3038,7 @@ function draw(t) {
     const box = itemBox(), cp = 0.5 + 0.5 * Math.sin(t / 140);
     toon(ctx, box.x, box.y, box.w, box.h, 14, woodFill(ctx, box.y, box.y + box.h)); woodGrain(ctx, box.x + 3, box.y + 3, box.w - 6, box.h - 6, 11);
     for (let i = 0; i < ITEM_SLOTS; i++) {
-      const b = itemSlot(i), k = ITEM_KINDS[i], n = k ? ITEMS[k] || 0 : 0;
+      const b = itemSlot(i), k = ITEM_KINDS[i], n = k && !G.vs ? ITEMS[k] || 0 : 0;   // versus: shown dim, no count
       const held = k && idrag && idrag.k === k, out = held && !idrag.home, call = k && G.stuck && n > 0 && G.state === 'play';
       if (call) { ctx.strokeStyle = `rgba(255,120,60,${0.35 + 0.45 * cp})`; ctx.lineWidth = 6; rr(ctx, b.x - 2, b.y - 2, b.w + 4, b.h + 4, 10); ctx.stroke(); }
       if (k) toon(ctx, b.x, b.y, b.w, b.h, 9, held ? '#fff6c2' : call ? '#ffe2cf' : TOON.sky, 2.5, 0);
@@ -2890,6 +3056,7 @@ function draw(t) {
       ctx.globalAlpha = n <= 0 ? 0.3 : out ? 0.35 : 1;
       ctx.drawImage(itemIcon(k, is), b.x + (b.w - is) / 2, b.y + (b.h - is) / 2 - hop * b.h * 0.12, is, is);
       ctx.globalAlpha = 1;
+      if (G.vs) continue;
       // how many: a small badge in the lower right corner
       const br = Math.max(8.5, b.w * 0.22), bxc = b.x + b.w - br * 0.55, byc = b.y + b.h - br * 0.55;
       ctx.fillStyle = OL; ctx.beginPath(); ctx.arc(bxc, byc, br, 0, Math.PI * 2); ctx.fill();
@@ -3108,6 +3275,7 @@ cv.addEventListener('pointerdown', e => {
   const ik = itemAt(x, y);
   if (ik) {
     if (!SND.playing) musicStart(false);
+    if (G.vs) { sfx('back'); toast(tr('vsNoItems')); e.preventDefault(); return; }
     if ((ITEMS[ik] || 0) <= 0) { sfx('back'); e.preventDefault(); return; }   // none left (later: this opens the shop)
     idrag = { k: ik, x, y, x0: x, y0: y, id: e.pointerId, col: null, row: null, home: true, hist: null, rhist: null, trail: null };
     try { cv.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
@@ -3170,13 +3338,14 @@ cv.addEventListener('contextmenu', e => e.preventDefault());
 /* ---------- loop ---------- */
 let last = performance.now();
 function frame(t) {
-  const dt = Math.min(0.1, Math.max(0, (t - last) / 1000));
+  const raw = Math.max(0, t - last), dt = Math.min(0.1, raw / 1000);
   last = t;
   if (G.state === 'play') {
     if (anim && t - anim.t0 >= anim.dur) { const a = anim; anim = null; stepDone(a); }
     if (G.feverLeft > 0) { G.feverLeft -= dt * 1000; if (G.feverLeft <= 0) endFever(); }
     feverUI();
     missionClock(t);
+    if (G.vs) vsTick(Math.min(raw, 1000));
   }
   if (shownScore < G.score && t >= (fx.scoreGate || 0)) {
     shownScore = Math.min(G.score, shownScore + Math.max(1, Math.ceil((G.score - shownScore) * Math.min(1, dt * 6))));
@@ -3232,7 +3401,7 @@ window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude
 // read-only hooks for automated checks
 window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY, itemH }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending || !!pendingItem, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
-                  items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
+                  items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), startVersus, VS_BOTS, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, scoreFor, wireAudio, BGM_LOOP } };
 })();
 </script>
