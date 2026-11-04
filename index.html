@@ -242,6 +242,8 @@ body {
 .num { font-family: var(--num); font-size: 23px; color: #fff; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; text-shadow: none; white-space: nowrap; letter-spacing: 0.02em; }
 .num.sm { font-size: 17px; color: #fff; }
 #score.bump { animation: bumpToon 0.38s cubic-bezier(.3, 1.6, .5, 1); }
+#mode-label { display: inline-block; }
+#mode-label.bump { animation: bumpToon 0.5s cubic-bezier(.3, 1.6, .5, 1); }
 @keyframes bumpToon { 0% { transform: scale(1); } 45% { transform: scale(1.3); color: #ffe14d; } 100% { transform: scale(1); } }
 .chip { background: #ffe14d; border: 3px solid var(--ol); border-radius: 12px; box-shadow: 0 3px 0 var(--ol); color: var(--ol); font-family: var(--num); font-size: 14px; padding: 4px 10px; white-space: nowrap; }
 .chip:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
@@ -462,7 +464,7 @@ html.tall-art .scr-box .ext { display: none; }
   <div class="subbar">
     <div id="mission" class="mission idle" aria-live="polite"><i class="m-dot" id="m-dot"></i><span class="m-text" id="m-text">곧 새 미션이 나와요</span></div>
     <div id="rotbox" class="rotbox" aria-label="남은 돌리기 횟수, 세 칸 합계" data-ta="rotLeft"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12a7 7 0 1 1-2.05-4.95" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M20.5 3.5v5.2h-5.2z" fill="currentColor"/></svg><b id="rot-n">10</b></div>
-    <div id="fever" class="fever" role="button" aria-label="피버 게이지"><span class="f-label" id="f-label">피버</span><div class="f-track"><div class="f-fill" id="f-fill"></div></div></div>
+    <div id="fever" class="fever" aria-label="피버 게이지"><span class="f-label" id="f-label">피버</span><div class="f-track"><div class="f-fill" id="f-fill"></div></div></div>
   </div>
   <div id="stage">
     <canvas id="cv" aria-label="게임 판" data-ta="board"></canvas>
@@ -557,9 +559,9 @@ try { const l = localStorage.getItem('rise-lang'); LANG = l === 'ko' || l === 'e
 const STR = {
   ko: {
     title: '블록 포레스트', score: '점수', best: '최고', pause: '멈추고 메뉴 열기', board: '게임 판', rotLeft: '남은 돌리기 횟수, 세 칸 합계',
-    feverGauge: '피버 게이지', feverUse: '피버 쓰기', feverReady: '피버!', feverOn: s => `피버! ${s}초`, feverCount: (n, g) => `피버 ${n}/${g}`,
+    feverGauge: '피버 게이지', feverOn: s => `피버! ${s}초`, feverCount: (n, g) => `피버 ${n}/${g}`,
     feverBanner: '피버 타임!', feverSub: s => `${s}초 동안 점수 2배`,
-    size: n => `${n}칸`, sizeSmall: '작은 큐브 · 넓은 판', sizeBig: '큰 큐브 · 좁은 판', boardSize: '판 크기',
+    size: n => `${n}칸`, lv: n => `Lv ${n}`, levelUp: '레벨 업!', sizeSmall: '작은 큐브 · 넓은 판', sizeBig: '큰 큐브 · 좁은 판', boardSize: '판 크기',
     missionNext: '곧 새 미션이 나와요', missionDone: r => `성공! ${r}`, missionFail: '미션 실패',
     missionWin: '미션 성공!', missionNew: '새 미션', pts: n => `+${n}점`,
     colors: ['빨강', '초록', '파랑', '보라'],
@@ -576,9 +578,9 @@ const STR = {
   },
   en: {
     title: 'Block Forest', score: 'Score', best: 'Best', pause: 'Pause and open the menu', board: 'Game board', rotLeft: 'Turns left, all three slots',
-    feverGauge: 'Fever gauge', feverUse: 'Use fever', feverReady: 'FEVER!', feverOn: s => `Fever! ${s}s`, feverCount: (n, g) => `Fever ${Math.floor(n * 100 / g)}%`,
+    feverGauge: 'Fever gauge', feverOn: s => `Fever! ${s}s`, feverCount: (n, g) => `Fever ${Math.floor(n * 100 / g)}%`,
     feverBanner: 'FEVER TIME!', feverSub: s => `Double points for ${s}s`,
-    size: n => `${n} Wide`, sizeSmall: 'Small cubes', sizeBig: 'Big cubes', boardSize: 'Board size',
+    size: n => `${n} Wide`, lv: n => `Lv ${n}`, levelUp: 'LEVEL UP!', sizeSmall: 'Small cubes', sizeBig: 'Big cubes', boardSize: 'Board size',
     missionNext: 'Next mission soon', missionDone: r => `Done! ${r}`, missionFail: 'Mission failed',
     missionWin: 'MISSION CLEAR!', missionNew: 'NEW MISSION', pts: n => `+${n} pts`,
     colors: ['Red', 'Green', 'Blue', 'Purple'],
@@ -659,9 +661,11 @@ const TOTAL_W = SHAPES.reduce((a, s) => a + s.w, 0);
 const shapeOf = p => SHAPE_BY_NAME[p.s];
 
 const rand = n => Math.floor(Math.random() * n);
+// the big shapes (5 cubes and more) come more often on the higher levels
 function pickShape() {
-  let x = Math.random() * TOTAL_W;
-  for (const s of SHAPES) { x -= s.w; if (x <= 0) return s; }
+  const big = rule().big, w = sh => sh.w * (sh.cells.length >= 5 ? big : 1);
+  let x = Math.random() * SHAPES.reduce((a, sh) => a + w(sh), 0);
+  for (const sh of SHAPES) { x -= w(sh); if (x <= 0) return sh; }
   return SHAPES[0];
 }
 const makePiece = () => ({ s: pickShape().name, color: 1 + rand(COLORS.length) });
@@ -877,8 +881,28 @@ function startBoard() {
   return g;
 }
 
-// Most new blocks are ones that can finish a row somewhere, so something breaks often.
-const HELP = 0.4;
+/* ---------- difficulty: one level every 50,000 points (the 32-wide board: every 100,000) ----------
+   help: share of the blocks dealt that can finish a row right away; stone: chance of a grey stone per cube of a rising row;
+   two: every that many drops two rows rise instead of one (0: never); big: weight of the big shapes (5 cubes and more);
+   wild: chance of a rainbow cube in a block. After level 6: +1% stones a level (up to 25%), two rows every 4 drops at
+   level 7 and every 3 from level 8. A level, once reached, stays for the rest of the game. */
+const LEVEL_STEP = 50000;   // 16 wide; the 32-wide board doubles it
+const LEVELS = [
+  { help: 0.40, stone: 0.08, two: 0, big: 1,   wild: 0.02 },
+  { help: 0.35, stone: 0.10, two: 0, big: 1,   wild: 0.02 },
+  { help: 0.30, stone: 0.12, two: 0, big: 1.3, wild: 0.02 },
+  { help: 0.25, stone: 0.14, two: 6, big: 1.3, wild: 0.02 },
+  { help: 0.20, stone: 0.16, two: 5, big: 1.5, wild: 0.01 },
+  { help: 0.15, stone: 0.18, two: 4, big: 1.5, wild: 0.01 },
+];
+const levelAt = score => 1 + Math.floor(Math.max(0, score) / (LEVEL_STEP * (COLS >= 32 ? 2 : 1)));
+function levelRule(n) {
+  const L = LEVELS[Math.min(n, LEVELS.length) - 1], extra = Math.max(0, n - LEVELS.length);
+  return extra ? { ...L, stone: Math.min(25, Math.round(L.stone * 100) + extra) / 100, two: extra === 1 ? 4 : 3 } : L;
+}
+const rule = () => levelRule(G.level || 1);
+
+// Many new blocks are ones that can finish a row somewhere, so something breaks often (fewer as the level climbs).
 function completesRow(shape, c) {
   const cells = landing(G.grid, shape, c);
   if (!cells) return false;
@@ -891,7 +915,7 @@ function completesRow(shape, c) {
   return false;
 }
 function basePiece() {
-  if (Math.random() < HELP) {
+  if (Math.random() < rule().help) {
     const good = SHAPES.filter(sh => { for (let c = 0; c + sh.wd <= COLS; c++) if (completesRow(sh, c)) return true; return false; });
     if (good.length) return { s: good[rand(good.length)].name, color: 1 + rand(COLORS.length) };
   }
@@ -905,7 +929,7 @@ const SPECIAL_CHANCE = 0.02, SPECIAL_KINDS = ['rainbow'];
 function takeNext() { const p = G.next || dealPiece(); G.next = dealPiece(); return p; }
 function dealPiece() {
   const p = basePiece();
-  if ((G.specialDue || 0) > 0 || Math.random() < SPECIAL_CHANCE) {
+  if ((G.specialDue || 0) > 0 || Math.random() < rule().wild) {
     if (G.specialDue > 0) G.specialDue--;
     p.sp = { i: rand(shapeOf(p).cells.length), k: SPECIAL_KINDS[rand(SPECIAL_KINDS.length)] };
   }
@@ -946,7 +970,7 @@ function newGame(mode, size) {
   G.tray = [dealPiece(), dealPiece(), dealPiece()];
   G.next = dealPiece();
   shownScore = 0;
-  G.score = 0; G.combo = 0; G.riseAcc = 0; G.timeAcc = 0; G.rises = 0; G.drops = 0; G.lines = 0;
+  G.score = 0; G.combo = 0; G.riseAcc = 0; G.timeAcc = 0; G.rises = 0; G.drops = 0; G.lines = 0; G.level = 1;
   G.reason = null; G.phase = 'idle'; G.specialDue = 0; G.continues = 0; G.rotLeft = ROT_PER_GAME;
   G.fever = 0; G.feverLeft = 0; G.feverDrop = false; G.mission = null; G.stage = 0;
   G.best = loadBest();
@@ -961,7 +985,17 @@ function newGame(mode, size) {
   nextMission(true);   // the first mission is there from the first move
 }
 
-function addScore(n) { G.score += n; hud(); }
+function addScore(n) {
+  G.score += n;
+  const lv = levelAt(G.score);
+  if (lv > (G.level || 1)) {
+    G.level = lv;
+    banner(tr('levelUp'), tr('lv', lv), CHAIN_LOOK, 1600);
+    sfx('stage');
+    const ch = $('#mode-label'); ch.classList.remove('bump'); void ch.offsetWidth; ch.classList.add('bump');
+  }
+  hud();
+}
 
 function dropPiece(i, c) {
   const p = G.tray[i];
@@ -1044,7 +1078,7 @@ function breakNow(b, fired, spx, item) {
     if (chain >= 2) shake(u * 0.3 * Math.min(3, chain - 1), 260);
     missionProgress(b.marks, b.rows);
     // every cube that breaks outside fever counts toward the next one
-    if (!G.feverDrop && !feverOn()) G.fever = Math.min(FEVER_GOAL, (G.fever || 0) + b.marks.size);
+    if (!G.feverDrop && !feverOn()) G.fever = Math.min(feverGoal(), (G.fever || 0) + b.marks.size);
     feverUI();
     if (item) {
       // the bomb blows outward from the middle of its square; the drill eats down its column from the top
@@ -1097,10 +1131,16 @@ function endSettle() {
   // using an item is not a move: no row comes up and the mission keeps its moves
   const itemMove = G.itemMove; G.itemMove = false;
   if (!itemMove) missionTick();
-  feverUI();   // a full gauge waits for the fever button
+  if (!feverOn() && (G.fever || 0) >= feverGoal()) startFever();   // the gauge filled during this drop: fever from the next one
+  feverUI();
   if (G.mode === 'moves' && !itemMove) {
     G.riseAcc++;
-    if (G.riseAcc >= moveIv()) { G.riseAcc = 0; if (!rise()) return; }
+    if (G.riseAcc >= moveIv()) {
+      G.riseAcc = 0;
+      if (!rise()) return;
+      const two = rule().two;   // higher levels: now and then a second row comes up with it
+      if (two && G.drops % two === 0) { if (!rise(true)) return; fx.shift = { t0: performance.now(), dur: 190 * ANIM, rows: 2 }; }
+    }
   }
   for (let k = 0; k < 3; k++) if (!G.tray[k]) G.tray[k] = takeNext();
   checkNoFit();
@@ -1175,7 +1215,8 @@ function rise(quiet) {
   G.grid.shift();
   G.grid.push(Array(COLS).fill(0));
   for (let c = 0; c < COLS; c++) if (m[c]) paintCell(G.grid, ROWS - 1, c);
-  for (let c = 0; c < COLS; c++) if (m[c] && Math.random() < STONE_CHANCE) G.grid[ROWS - 1][c] = STONE | (rand(4) << 4);
+  const stone = rule().stone;
+  for (let c = 0; c < COLS; c++) if (m[c] && Math.random() < stone) G.grid[ROWS - 1][c] = STONE | (rand(4) << 4);
   G.rises++;
   fx.shift = { t0: performance.now(), dur: 150 * ANIM };
   touchGrid();
@@ -1242,17 +1283,11 @@ function rotBtn(i) {
 // the column right of the pockets shows the next block
 function nextBox() { return { x: sideX + 2, y: trayY + 2, w: sideW - 6, h: trayH - 10 }; }
 
-/* ---------- fever: every broken cube fills the gauge; 300 cubes charge it, and the player sets it off
-   with the full gauge at the top (it turns into the fever button) for 30 seconds of double points ---------- */
+/* ---------- fever: every broken cube fills the gauge; 300 cubes (the 32-wide board: 600) set it off by itself
+   when the drop that filled it has settled: 30 seconds of double points ---------- */
 const FEVER_MS = 30000, FEVER_GOAL = 300, FEVER_RATE = 1.15;
+const feverGoal = () => FEVER_GOAL * (COLS / 16);
 const feverOn = () => (G.feverLeft || 0) > 0;
-const feverReady = () => !feverOn() && (G.fever || 0) >= FEVER_GOAL;
-function useFever() {
-  if (G.state !== 'play' || !feverReady()) return false;
-  if (G.phase !== 'idle') G.feverDrop = true;   // pressed while the board is still breaking: the rest of this drop doubles too
-  startFever();
-  return true;
-}
 // the same group size bursts in and out of fever (fever only doubles the points)
 function burstNeed() { return BURST; }
 function startFever() {
@@ -1266,15 +1301,15 @@ function endFever() { G.feverLeft = 0; sfx('feverEnd'); feverUI(); }
 let feverShown = '';
 function feverUI() {
   const on = feverOn();
-  const key = on + '|' + Math.ceil((G.feverLeft || 0) / 1000) + '|' + Math.round(on ? (G.feverLeft / FEVER_MS) * 200 : G.fever || 0);
+  const key = on + '|' + Math.ceil((G.feverLeft || 0) / 1000) + '|' + Math.round(on ? (G.feverLeft / FEVER_MS) * 200 : G.fever || 0) + '|' + feverGoal();   // the goal differs by board size
   if (key === feverShown) return;
   feverShown = key;
   const el = $('#fever');
   el.classList.toggle('on', on);
-  el.classList.toggle('full', feverReady());
-  el.setAttribute('aria-label', feverReady() ? tr('feverUse') : tr('feverGauge'));
-  $('#f-fill').style.width = (on ? (G.feverLeft / FEVER_MS) * 100 : ((G.fever || 0) / FEVER_GOAL) * 100) + '%';
-  $('#f-label').textContent = on ? tr('feverOn', Math.ceil(G.feverLeft / 1000)) : feverReady() ? tr('feverReady') : tr('feverCount', G.fever || 0, FEVER_GOAL);
+  el.classList.remove('full');
+  el.setAttribute('aria-label', tr('feverGauge'));
+  $('#f-fill').style.width = (on ? (G.feverLeft / FEVER_MS) * 100 : ((G.fever || 0) / feverGoal()) * 100) + '%';
+  $('#f-label').textContent = on ? tr('feverOn', Math.ceil(G.feverLeft / 1000)) : tr('feverCount', G.fever || 0, feverGoal());
 }
 
 /* ---------- missions: a short goal at the top, a few drops to do it, bonus points when done
@@ -1286,10 +1321,10 @@ const rewardText = m => tr('pts', missionPts(m).toLocaleString());
 function newMission() {
   const f = COLS / 16, types = ['color', 'rows', 'combo', 'big'];
   const m = { type: types[rand(types.length)], have: 0, drop: 0, reward: 'score', pts: MISSION_PTS * f, state: 'on', until: 0 };
-  // no move limit, so the goals are bigger (the 32-wide board: twice the cubes)
+  // no move limit, so the goals are big; the 32-wide board asks twice as much of everything
   if (m.type === 'color') { m.col = 1 + rand(COLORS.length); m.need = Math.round(30 * f); }
-  else if (m.type === 'rows') m.need = 6;
-  else if (m.type === 'combo') m.need = 5;
+  else if (m.type === 'rows') m.need = Math.round(6 * f);
+  else if (m.type === 'combo') m.need = Math.round(5 * f);
   else m.need = Math.round(36 * f);
   return m;
 }
@@ -1670,7 +1705,7 @@ const cv = $('#cv');
 const ctx = cv.getContext('2d');
 
 function hud() {
-  $('#mode-label').textContent = tr('size', G.size);
+  $('#mode-label').textContent = tr('lv', G.level || 1);   // the level (the board size shows itself)
   $('#score').textContent = Math.round(shownScore).toLocaleString(); fitNum($('#score'));
   $('#best').textContent = Math.max(G.best, G.score).toLocaleString(); fitNum($('#best'));
 }
@@ -1845,7 +1880,7 @@ $('#btn-new').addEventListener('click', () => { newGame(menuMode, menuSize); sho
 $('#btn-shop').addEventListener('click', () => { sfx('pick'); toast(tr('shopSoon')); });
 $('#opt-versus').addEventListener('click', () => { sfx('pick'); toast(tr('versusSoon')); });   // the mode itself comes later
 $('#btn-settings').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
-$('#btn-settings-close').addEventListener('click', () => { sfx('back'); closeSettings(); });
+$('#btn-settings-close').addEventListener('click', () => { sfx('pick'); closeSettings(); });
 $('#btn-pause').addEventListener('click', () => { if (G.state === 'play' || G.state === 'menu') { if (G.state === 'play') G.pausedAt = performance.now(); openMenu(); } });
 $('#btn-unpause').addEventListener('click', resumeGame);
 $('#btn-restart').addEventListener('click', () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); });
@@ -1854,7 +1889,6 @@ $('#btn-plobby').addEventListener('click', () => openLobby());
 $('#btn-continue').addEventListener('click', () => continueGame());
 $('#btn-again').addEventListener('click', () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); });
 $('#btn-menu').addEventListener('click', () => { G.started = false; G.state = 'menu'; openLobby(); });
-$('#fever').addEventListener('click', () => { if (!SND.playing) musicStart(false); useFever(); });   // a full gauge is the fever button
 
 /* ---------- drawing ---------- */
 let W = 0, H = 0, dpr = 1, cu = 12, u = 12, bx = 0, by = 0, BW = 384, BH = 480;
@@ -3062,7 +3096,7 @@ window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude
 // read-only hooks for automated checks
 window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY, itemH }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending || !!pendingItem, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
-                  items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
+                  items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, scoreFor, wireAudio, BGM_LOOP } };
 })();
 </script>
