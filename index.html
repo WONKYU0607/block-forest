@@ -1850,8 +1850,7 @@ function lobbyInfo() {
   $('#lb-best').textContent = bestFor(menuSize).toLocaleString();
   for (const k of ITEM_KINDS) {
     $(`#lb-${k}`).textContent = ITEMS[k] || 0;
-    const im = $(`#lb-${k}-ic`);
-    if (!im.getAttribute('src')) im.src = itemIcon(k, 30).toDataURL();
+    $(`#lb-${k}-ic`).src = itemIcon(k, 30).toDataURL();
   }
 }
 // leaving a game ends it: the score so far is the final one (a new best is kept)
@@ -1950,6 +1949,23 @@ function itemAt(x, y) {
 }
 let C = {};
 const cache = new Map();
+// The item pictures (drawn art, square, transparent). Until they have loaded - or if they cannot - the icons drawn in code
+// below are used. ART_GEO: where things sit on each picture, as fractions of its side (measured on the art).
+const ITEM_ART = { bomb: 'item-bomb.webp', drill: 'item-drill.webp', bell: 'item-bell.webp' };
+const ART_GEO = { bomb: { cx: 0.4682, cy: 0.6281, d: 0.6941 }, drill: { tipx: 0.0217, tipy: 0.5405 }, bell: { ring: 0.115, mouth: 0.8 } };
+const itemArt = {};
+function loadItemArt() {
+  for (const k of Object.keys(ITEM_ART)) {
+    const im = new Image();
+    im.onload = () => {
+      itemArt[k] = im;
+      for (const key of [...cache.keys()]) if (key.startsWith('item|')) cache.delete(key);
+      const pill = document.getElementById('lb-' + k + '-ic');
+      if (pill) pill.src = itemIcon(k, 30).toDataURL();
+    };
+    im.src = ITEM_ART[k];
+  }
+}
 let planks = null, planksPrev = null;
 
 function readColors() {
@@ -2092,7 +2108,10 @@ function sprite(v, s, glow) {
   return sp;
 }
 // on the board the bomb's ball is one cube across (the ball is 0.64 of its picture, centred at 0.45, 0.59)
-const BOMB_CX = 0.45, BOMB_CY = 0.59, bombSize = () => cu / 0.64;
+// the bomb's ball on its picture (centre, diameter): it is drawn one cube across, on the aimed cell
+const bombGeo = () => (itemArt.bomb ? ART_GEO.bomb : { cx: 0.45, cy: 0.59, d: 0.64 }), bombSize = () => cu / bombGeo().d;
+// the drill's tip on the turned picture (pointing down)
+const drillTip = () => (itemArt.drill ? [ART_GEO.drill.tipy, 1 - ART_GEO.drill.tipx] : [0.5, 0.96]);
 // item pictures (drawn once per size): a round black bomb with a lit fuse, a steel drill bit pointing down
 function itemIcon(kind, s) {
   const sz = Math.round(s * 2) / 2, key = 'item|' + kind + '|' + sz;
@@ -2105,6 +2124,14 @@ function itemIcon(kind, s) {
   x.scale(px / sz, px / sz);
   s = sz;
   x.lineJoin = 'round'; x.lineCap = 'round';
+  const art = itemArt[kind === 'drillDown' ? 'drill' : kind];
+  if (art) {
+    if (kind === 'drillDown') { x.translate(0, s); x.rotate(-Math.PI / 2); }   // the drill on the board: tip pointing down
+    x.imageSmoothingQuality = 'high';
+    x.drawImage(art, 0, 0, s, s);
+    cache.set(key, c);
+    return c;
+  }
   if (kind === 'bomb') {
     const cx = s * 0.45, cy = s * 0.59, R = s * 0.32;
     x.fillStyle = 'rgba(0,0,0,0.35)'; x.beginPath(); x.ellipse(cx, s * 0.93, R * 0.85, s * 0.05, 0, 0, Math.PI * 2); x.fill();
@@ -2653,10 +2680,10 @@ function draw(t) {
     if (idrag.k === 'bell') drawBell(t, 0.05 * Math.sin(t / 260), 1);
     else if (bomb) {
       // the ball is one cube across, sitting right on the aimed cell (kept whole on the board)
-      const bs = bombSize(), gx = Math.max(bx, Math.min(bx + BW - bs, bx + (tg.cc + 0.5) * cu - bs * BOMB_CX)), gy = Math.max(by, Math.min(by + BH - bs, by + (tg.rc + 0.5) * cu - bs * BOMB_CY));
+      const bs = bombSize(), bg = bombGeo(), gx = Math.max(bx, Math.min(bx + BW - bs, bx + (tg.cc + 0.5) * cu - bs * bg.cx)), gy = Math.max(by, Math.min(by + BH - bs, by + (tg.rc + 0.5) * cu - bs * bg.cy));
       ctx.drawImage(itemIcon('bomb', bs), gx, gy, bs, bs);
     }
-    else ctx.drawImage(itemIcon(idrag.k, gs), bx + (idrag.col + 0.5) * cu - gs / 2, by + Math.min(tg.hit, ROWS) * cu - gs, gs, gs);
+    else { const [tx, ty] = drillTip(); ctx.drawImage(itemIcon('drillDown', gs), bx + (idrag.col + 0.5) * cu - gs * tx, by + Math.min(tg.hit, ROWS) * cu - gs * ty, gs, gs); }
     ctx.globalAlpha = 1;
   }
   // an item on its way: the bomb slams down onto its cell, the drill drops down its column
@@ -2666,11 +2693,12 @@ function draw(t) {
     if (anim.kind === 'bomb') {
       const sc = 1.7 - 0.7 * ease(p), sz = bombSize() * sc;
       ctx.globalAlpha = 0.55 + 0.45 * p;
-      ctx.drawImage(itemIcon('bomb', sz), bx + (anim.tg.cc + 0.5) * cu - sz * BOMB_CX, by + (anim.tg.rc + 0.5) * cu - sz * BOMB_CY, sz, sz);
+      ctx.drawImage(itemIcon('bomb', sz), bx + (anim.tg.cc + 0.5) * cu - sz * bombGeo().cx, by + (anim.tg.rc + 0.5) * cu - sz * bombGeo().cy, sz, sz);
       ctx.globalAlpha = 1;
     } else if (anim.kind === 'drill') {   // (the bell is drawn by fx.bell)
       const r = anim.from + (anim.land - anim.from) * p * p;
-      ctx.drawImage(itemIcon(anim.kind, itemSize), bx + (anim.col + 0.5) * cu - itemSize / 2, by + (r + 1) * cu - itemSize, itemSize, itemSize);
+      const [tx, ty] = drillTip();
+      ctx.drawImage(itemIcon('drillDown', itemSize), bx + (anim.col + 0.5) * cu - itemSize * tx, by + (r + 1) * cu - itemSize * ty, itemSize, itemSize);
     }
   }
   // the golden bell: swings and rings over the board, then floats up and fades while the board breaks
@@ -2698,7 +2726,8 @@ function draw(t) {
     if (r > d.r1 + 3 || G.state !== 'play') fx.drill = null;
     else {
       const jx = Math.sin(t / 16) * u * 0.14;
-      ctx.drawImage(itemIcon('drill', itemSize), bx + (d.col + 0.5) * cu - itemSize / 2 + jx, by + r * cu - itemSize * 0.96, itemSize, itemSize);
+      const [tx, ty] = drillTip();
+      ctx.drawImage(itemIcon('drillDown', itemSize), bx + (d.col + 0.5) * cu - itemSize * tx + jx, by + r * cu - itemSize * ty, itemSize, itemSize);
     }
   }
   ctx.restore();
@@ -2954,14 +2983,15 @@ function draw(t) {
   drawOrbs(t);
 }
 // the big golden bell over the middle of the top of the board (held, ringing, fading), swinging from its ring
-const bellSize = () => Math.min(BW * 0.34, BH * 0.24);
-function bellMouth() { const s = bellSize(); return [bx + BW / 2, by + BH * 0.035 + s * 0.8]; }
+const bellSize = () => (itemArt.bell ? Math.min(BW * 0.44, BH * 0.3) : Math.min(BW * 0.34, BH * 0.24));
+const bellGeo = () => (itemArt.bell ? ART_GEO.bell : { ring: 0.1, mouth: 0.9 });
+function bellMouth() { const s = bellSize(), g = bellGeo(); return [bx + BW / 2, by + BH * 0.035 + s * (g.mouth - g.ring)]; }
 function drawBell(t, swing, scale = 1, alpha = 1, dy = 0) {
   const s = bellSize() * scale, px = bx + BW / 2, py = by + BH * 0.035 + dy;   // the pivot: the ring on top
   ctx.save();
   ctx.globalAlpha *= alpha;
   ctx.translate(px, py); ctx.rotate(swing);
-  ctx.drawImage(itemIcon('bell', s), -s / 2, -s * 0.1, s, s);
+  ctx.drawImage(itemIcon('bell', s), -s / 2, -s * bellGeo().ring, s, s);
   ctx.restore();
 }
 // a frame round the board with a soft halo: wide faint strokes under the bright one (cheaper than a blur)
@@ -3168,6 +3198,7 @@ new ResizeObserver(() => layout()).observe(stage);
 function snapshot() { return { G: JSON.parse(JSON.stringify(G)), menuMode, menuSize }; }
 function start(data) {
   readColors();
+  loadItemArt();
   try { document.fonts.load(`40px ${FANCY}`); } catch (e) { /* the fallback font is used until it loads */ }
   layout();
   if (data && data.G && data.G.grid && data.G.size && data.G.phase !== undefined) {
