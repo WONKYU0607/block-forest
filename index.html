@@ -432,7 +432,7 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 /* pause menu and result: smaller plain buttons in a row */
 .btn.plain { background: #fffaf0; color: var(--ol); -webkit-text-stroke: 0; font-family: 'Black Han Sans', sans-serif; font-size: 17px; padding: 10px 12px; }
 .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.toast { position: fixed; left: 50%; top: 38%; z-index: 60; transform: translateX(-50%); padding: 10px 18px; max-width: calc(100% - 48px); box-sizing: border-box; text-align: center;
+.toast { position: fixed; left: 50%; top: 38%; z-index: 60; transform: translateX(-50%); padding: 10px 18px; width: max-content; max-width: calc(100vw - 48px); box-sizing: border-box; text-align: center;
   background: var(--ol); color: var(--cream); border: 3px solid var(--cream); border-radius: 14px; box-shadow: 0 4px 0 rgba(43, 26, 14, 0.5);
   font-family: 'Black Han Sans', sans-serif; font-size: 16px; pointer-events: none; animation: toastIn 0.3s cubic-bezier(.3, 1.5, .5, 1); }
 .toast[hidden] { display: none; }
@@ -532,7 +532,7 @@ html.tall-art .scr-box .ext { display: none; }
   <div class="lb-card">
     <div class="lb-best"><span class="label" id="lb-best-label">최고 점수</span><span id="lb-best" class="num">0</span></div>
     <div class="opts lb-size" role="group" aria-label="판 크기" data-ta="boardSize">
-      <button class="opt" id="opt-32" type="button" aria-pressed="true"><i class="mini m32"><i></i></i><div><b>32칸</b><span data-t="sizeSmall">작은 큐브 · 넓은 판</span></div></button>
+      <button class="opt" id="opt-32" type="button" aria-pressed="false"><i class="mini m32"><i></i></i><div><b>32칸</b><span data-t="sizeSmall">작은 큐브 · 넓은 판</span></div></button>
       <button class="opt" id="opt-16" type="button" aria-pressed="false"><i class="mini m16"><i></i></i><div><b>16칸</b><span data-t="sizeBig">큰 큐브 · 좁은 판</span></div></button>
     </div>
     <div class="opts lb-size lb-modes">
@@ -600,7 +600,7 @@ const STR = {
     versus: '대결', vsSub: '5분 점수 대결', blank: '빈 칸',
     vsStart: '대결 시작!', vsOpp: n => `상대 ${n}`, vsWin: '승리!', vsLose: '패배', vsDraw: '무승부', vsTimeUp: '시간 종료!', vsQuit: '대결에서 나갔어요',
     vsMe: '나', vsAgain: '다시 대결', vsNoItems: '대결에서는 아이템을 쓸 수 없어요', vsResult: '대결 결과',
-    lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bell: '골든벨', bestOf: n => `최고 점수 · ${n}칸`, start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요',
+    lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bell: '골든벨', bestOf: n => `최고 점수 · ${n}칸`, bestAll: '최고 점수', pickSize: '판 크기를 먼저 골라 주세요', start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요',
     splash: '시작 화면', touch: '화면을 터치하세요',
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
@@ -621,7 +621,7 @@ const STR = {
     versus: 'Versus', vsSub: '5-min duel', blank: 'Empty slot',
     vsStart: 'Versus!', vsOpp: n => `vs ${n}`, vsWin: 'You Win!', vsLose: 'You Lose', vsDraw: 'Draw', vsTimeUp: "Time's up!", vsQuit: 'You left the match',
     vsMe: 'You', vsAgain: 'Play again', vsNoItems: "Items can't be used in versus", vsResult: 'Versus result',
-    lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bell: 'Golden Bell', bestOf: n => `Best · ${n} Wide`, start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon',
+    lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bell: 'Golden Bell', bestOf: n => `Best · ${n} Wide`, bestAll: 'Best', pickSize: 'Pick a board size first', start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon',
     splash: 'Title screen', touch: 'Touch to Start',
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
@@ -722,7 +722,7 @@ const G = {
   score: 0, best: 0, combo: 0, riseAcc: 0, timeAcc: 0, rises: 0, drops: 0,
   mode: 'moves', size: 32, state: 'menu', reason: null, started: false, phase: 'idle',
 };
-let menuMode = 'moves', menuSize = 32;
+let menuMode = 'moves', menuSize = null;   // no board size is picked until the player taps one
 let drag = null;      // {i, x, y, x0, y0, t0, id, ghost}
 let pending = null;   // a drop released while the board was still settling
 let anim = null;      // current settling step: {type: 'drop'|'item'|'burst'|'fall', t0, dur, cells | marks}
@@ -984,45 +984,42 @@ const rule = () => { const L = levelRule(G.level || 1); return G.vs ? { ...L, he
 /* ---------- versus: both players play the same seed for 5 minutes, the higher score wins. No items, no continue,
    no blocks picked to fit the board, a row rises every VS_RISE_EVERY drops, and the level goes up with the drops (every VS_LEVEL_DROPS), not the score,
    so both get the same blocks and rows at the same point whatever they score. ---------- */
-const VS_MS = 5 * 60 * 1000, VS_LEVEL_DROPS = 20, VS_HURRY = 30000;   // the last 30 seconds: the clock turns red
+const VS_MS = 5 * 60 * 1000, VS_COUNT = 5000, VS_LEVEL_DROPS = 20, VS_HURRY = 30000;   // the last 30 seconds: the clock turns red
 // Without the blocks picked to fit the board a row rising after every drop ends most games in under a minute
 // (greedy bot: about 40 drops on 16 wide), so in versus a row rises every 2nd drop (bot: about 110-200 drops).
 const VS_RISE_EVERY = 2;
 const clockText = ms => { const s = Math.ceil(Math.max(0, ms) / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
-// The opponents to start with, before records come from other players: 5-minute versus games a bot played on these seeds
-// (thinking 1.8 - 4.2 s a block). They hold only for these rules: change the scoring, levels or rising rows and play them again.
-const VS_BOTS = {
-  16: [
-    { seed: 11000, name: '말랑콩떡', score: 130620 }, { seed: 11001, name: '버섯돌이', score: 90750 }, { seed: 11002, name: 'jun_99', score: 50500 }, { seed: 11003, name: '노을빛', score: 123770 },
-    { seed: 11010, name: 'Sora', score: 71710 }, { seed: 11011, name: '감자칩', score: 85610 }, { seed: 11012, name: '퍼즐고수', score: 34290 }, { seed: 11013, name: 'Luna', score: 59410 },
-    { seed: 11020, name: '토끼발', score: 55430 }, { seed: 11021, name: '숲속요정', score: 52430 }, { seed: 11022, name: 'mint_choco', score: 73820 }, { seed: 11023, name: '도토리왕', score: 24620 },
-    { seed: 11030, name: '나무늘보', score: 24150 }, { seed: 11031, name: '하늘다람쥐', score: 32050 }, { seed: 11032, name: '새벽세시', score: 30910 }, { seed: 11033, name: 'blue_berry', score: 29270 },
-  ],
-  32: [
-    { seed: 32000, name: '젤리곰', score: 181180 }, { seed: 32001, name: '솔방울', score: 103410 }, { seed: 32002, name: '초코칩쿠키', score: 105220 }, { seed: 32003, name: '밤하늘', score: 136190 },
-    { seed: 32010, name: 'kiwi', score: 92370 }, { seed: 32011, name: '곰돌이푸딩', score: 164640 }, { seed: 32012, name: '코코넛', score: 152620 }, { seed: 32013, name: 'dodo', score: 153760 },
-    { seed: 32020, name: '다람쥐대장', score: 68330 }, { seed: 32021, name: 'yuna_v', score: 68030 }, { seed: 32022, name: 'haru', score: 108530 }, { seed: 32023, name: '참깨빵', score: 66630 },
-    { seed: 32030, name: '별빛', score: 37560 }, { seed: 32031, name: 'pine_cone', score: 35030 }, { seed: 32032, name: '블록장인', score: 36650 }, { seed: 32033, name: '바람소리', score: 43570 },
-  ],
-};
+// The opponents to start with, before records come from other players: 5-minute versus games (16 wide) a bot played on
+// these seeds (thinking 1.8 - 4.2 s a block). They hold only for these rules: change the scoring, levels or rising rows and play them again.
+const VS_BOTS = [
+  { seed: 11000, name: '말랑콩떡', score: 130620 }, { seed: 11001, name: '버섯돌이', score: 90750 }, { seed: 11002, name: 'jun_99', score: 50500 }, { seed: 11003, name: '노을빛', score: 123770 },
+  { seed: 11010, name: 'Sora', score: 71710 }, { seed: 11011, name: '감자칩', score: 85610 }, { seed: 11012, name: '퍼즐고수', score: 34290 }, { seed: 11013, name: 'Luna', score: 59410 },
+  { seed: 11020, name: '토끼발', score: 55430 }, { seed: 11021, name: '숲속요정', score: 52430 }, { seed: 11022, name: 'mint_choco', score: 73820 }, { seed: 11023, name: '도토리왕', score: 24620 },
+  { seed: 11030, name: '나무늘보', score: 24150 }, { seed: 11031, name: '하늘다람쥐', score: 32050 }, { seed: 11032, name: '새벽세시', score: 30910 }, { seed: 11033, name: 'blue_berry', score: 29270 },
+];
 let vsLast = null;
-function pickOpponent(size) {
-  const list = VS_BOTS[size] || VS_BOTS[16];
+function pickOpponent() {
   let o;
-  do o = list[Math.floor(Math.random() * list.length)]; while (list.length > 1 && o === vsLast);
+  do o = VS_BOTS[Math.floor(Math.random() * VS_BOTS.length)]; while (VS_BOTS.length > 1 && o === vsLast);
   vsLast = o;
   return o;
 }
-function startVersus(size, o = pickOpponent(size)) {
-  newGame('moves', size, { seed: o.seed, opp: { name: o.name, score: o.score } });
+// versus is played on the 16-wide board only; it opens with a 5-second countdown (the board shows, nothing can be moved)
+function startVersus(o = pickOpponent()) {
+  newGame('moves', 16, { seed: o.seed, opp: { name: o.name, score: o.score } });
+  fx.banners = [];   // the first mission's sign comes when the countdown ends
   $('#stage').classList.remove('vs-hide');
   showOnly(null); leaveLobby(); musicStart(true);
-  banner(tr('vsStart'), tr('vsOpp', o.name), CHAIN_LOOK, 2200);
-  fx.banners.unshift(fx.banners.pop());   // above the first mission's sign
 }
-// the clock runs while the game is played (not while paused or in the background); at 0 the board settles, then the result
+function vsGo() {
+  banner(tr('vsStart'), tr('vsOpp', G.vs.opp.name), CHAIN_LOOK, 2200);
+  banner(tr('missionNew'), missionGoal(G.mission), MISSION_LOOK, 1700);
+}
+// the countdown, then the clock: both run while the game is played (not while paused or in the background);
+// at 0 the board settles, then the result
 function vsTick(ms) {
   const v = G.vs;
+  if (v.count > 0) { v.count = Math.max(0, v.count - ms); if (!v.count) vsGo(); return; }
   if (v.left > 0) v.left = Math.max(0, v.left - ms);
   const txt = clockText(v.left);
   if (txt !== v.shown) { v.shown = txt; $('#mode-label').textContent = txt; $('#btn-pause').classList.toggle('hurry', v.left <= VS_HURRY); }
@@ -1113,7 +1110,7 @@ function specialMarks(grid, cells) {
 // vs: a versus game ({ seed, opp: { name, score } }), or nothing for a normal one
 function newGame(mode, size, vs) {
   G.mode = mode; G.size = size || G.size || 32;
-  G.vs = vs ? { seed: vs.seed >>> 0, opp: vs.opp, left: VS_MS, shown: '' } : null;
+  G.vs = vs ? { seed: vs.seed >>> 0, opp: vs.opp, left: VS_MS, count: VS_COUNT, shown: '' } : null;
   G.dealt = 0; G.missionN = 0; G.level = 1; G.drops = 0;
   setSize(G.size);
   layout();
@@ -1152,7 +1149,7 @@ function levelUp(lv) {
 function dropPiece(i, c) {
   const p = G.tray[i];
   if (!p || G.state !== 'play' || G.phase !== 'idle') return false;
-  if (G.vs && G.vs.left <= 0) return false;   // time is up: the board settles, then the result
+  if (G.vs && (G.vs.count > 0 || G.vs.left <= 0)) return false;   // still counting down, or time is up (the board settles, then the result)
   const s = shapeOf(p);
   const cells = landing(G.grid, s, c);
   if (!cells) return false;
@@ -2010,8 +2007,8 @@ function openSplash() {
 }
 const bestFor = n => { try { return Number(localStorage.getItem(`rise7-best-${n}`)) || 0; } catch (e) { return 0; } };
 function lobbyInfo() {
-  $('#lb-best-label').textContent = tr('bestOf', menuSize);
-  $('#lb-best').textContent = bestFor(menuSize).toLocaleString();
+  $('#lb-best-label').textContent = menuSize ? tr('bestOf', menuSize) : tr('bestAll');   // nothing picked yet: the best of both
+  $('#lb-best').textContent = (menuSize ? bestFor(menuSize) : Math.max(bestFor(16), bestFor(32))).toLocaleString();
   for (const k of ITEM_KINDS) {
     $(`#lb-${k}`).textContent = ITEMS[k] || 0;
     $(`#lb-${k}-ic`).src = itemIcon(k, 30).toDataURL();
@@ -2074,10 +2071,13 @@ $('#opt-vib').addEventListener('click', () => { SND.vibOn = !SND.vibOn; saveSoun
 $('#opt-sfx').addEventListener('click', () => { SND.sfxOn = !SND.sfxOn; saveSound(); soundButtons(); if (SND.sfxOn) sfx('pick'); });
 $('#opt-ko').addEventListener('click', () => { setLang('ko'); sfx('pick'); });
 $('#opt-en').addEventListener('click', () => { setLang('en'); sfx('pick'); });
-$('#btn-new').addEventListener('click', () => { newGame(menuMode, menuSize); showOnly(null); leaveLobby(); musicStart(true); });
+$('#btn-new').addEventListener('click', () => {
+  if (!menuSize) { sfx('back'); toast(tr('pickSize')); return; }
+  newGame(menuMode, menuSize); showOnly(null); leaveLobby(); musicStart(true);
+});
 $('#btn-shop').addEventListener('click', () => { sfx('pick'); toast(tr('shopSoon')); });
-$('#opt-versus').addEventListener('click', () => { sfx('pick'); startVersus(menuSize); });
-$('#btn-vs-again').addEventListener('click', () => { sfx('pick'); startVersus(G.size); });
+$('#opt-versus').addEventListener('click', () => { sfx('pick'); startVersus(); });   // always the 16-wide board, whatever is picked above
+$('#btn-vs-again').addEventListener('click', () => { sfx('pick'); startVersus(); });
 $('#btn-vs-lobby').addEventListener('click', () => openLobby());
 $('#btn-settings').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
 $('#btn-settings-close').addEventListener('click', () => { sfx('pick'); closeSettings(); });
@@ -3147,6 +3147,16 @@ function draw(t) {
     ctx.restore();
     return true;
   });
+  // the versus countdown: 5 4 3 2 1, big over the upper middle of the board
+  if (G.vs && G.vs.count > 0) {
+    const n = Math.ceil(G.vs.count / 1000), e = n * 1000 - G.vs.count;   // ms into this number
+    ctx.save();
+    ctx.globalAlpha = e > 780 ? Math.max(0, 1 - (e - 780) / 220) : 1;
+    ctx.translate(bx + BW / 2, by + BH * 0.26);
+    const sc = popScale(e); ctx.scale(sc, sc);
+    fancyText(String(n), 0, 0, Math.round(BW * 0.3), GOLD_LOOK, t, 'center');
+    ctx.restore();
+  }
   drawOrbs(t);
 }
 // the big golden bell over the middle of the top of the board (held, ringing, fading), swinging from its ring
@@ -3259,7 +3269,7 @@ function drawOrbs(t) {
 /* ---------- input: one thumb, bottom of the screen ---------- */
 function pt(e) { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
 cv.addEventListener('pointerdown', e => {
-  if (G.state !== 'play' || drag || idrag) return;
+  if (G.state !== 'play' || drag || idrag || (G.vs && G.vs.count > 0)) return;   // nothing is picked up during the versus countdown
   const { x, y } = pt(e);
   for (let k = 0; k < 3; k++) {
     const b = rotBtn(k);
@@ -3376,7 +3386,7 @@ function start(data) {
     Object.assign(G, data.G);
     G.tray.length = 3;   // a game saved while there was a hold box drops it
     if (!G.next) G.next = dealPiece();
-    menuMode = data.menuMode || 'moves'; menuSize = data.menuSize || 32;
+    menuMode = data.menuMode || 'moves'; menuSize = data.menuSize || null;
     if (G.phase !== 'idle') G.phase = 'idle';
     G.itemMove = false; G.stuck = false;
     G.stage = 0; applyTheme(0, true);
