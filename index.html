@@ -438,6 +438,38 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 .toast[hidden] { display: none; }
 @keyframes toastIn { 0% { transform: translate(-50%, 10px) scale(0.9); opacity: 0; } 100% { transform: translate(-50%, 0); opacity: 1; } }
 #settings { z-index: 45; }
+/* online: sign-in and nickname over the title screen, the versus opponent list over the lobby (or the result) */
+#login, #nick { z-index: 50; }
+#login { place-items: end center; padding-bottom: max(14vh, 48px); }   /* under the title art's logo */
+#btn-google { font-size: 19px; white-space: nowrap; }
+#vspick { z-index: 36; }
+.acct-msg { margin: 0; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 16px; line-height: 1.45; color: var(--bark); text-wrap: balance; }
+.nick-in { width: 100%; box-sizing: border-box; padding: 11px 14px; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 20px; color: var(--ol);
+  background: #fffaf0; border: 3px solid var(--ol); border-radius: 14px; box-shadow: inset 0 3px 0 rgba(43, 26, 14, 0.1); outline: none; }
+.nick-in:focus { border-color: #3f9c34; box-shadow: inset 0 3px 0 rgba(43, 26, 14, 0.1), 0 0 0 3px rgba(108, 207, 79, 0.45); }
+.nick-err { margin: -2px 0 0; min-height: 1.4em; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 14px; color: var(--bark); }
+.nick-err.bad { color: var(--mush); }
+.btn[disabled] { opacity: 0.6; pointer-events: none; }
+.card.pick { width: min(100%, 380px); }
+.pick-tabs .opt { align-items: center; padding: 8px; }
+.pick-tabs .opt b { font-size: 16px; }
+.pick-list { display: flex; flex-direction: column; gap: 8px; max-height: min(52vh, 440px); overflow-y: auto; padding: 2px 2px 6px; margin: 0 -2px; }
+.pick-row { appearance: none; display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; padding: 8px 9px 8px 14px; text-align: left;
+  color: var(--ol); background: #fffaf0; border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); cursor: pointer; flex: none; }
+button.pick-row:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.pick-row .who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.pick-row .who b { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pick-row .who span { font-family: 'Black Han Sans', sans-serif; font-size: 13px; color: var(--bark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pick-row .go { flex: none; padding: 5px 12px 6px; border: 3px solid var(--ol); border-radius: 12px; background: linear-gradient(#7fdc5a, #4fb83f);
+  font-family: var(--num); font-size: 16px; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; }
+.pick-row.res .go { min-width: 22px; text-align: center; }
+.pick-row.win .go { background: linear-gradient(#ffe46b, #f2b630); }
+.pick-row.lose .go { background: #b7ad98; }
+.pick-row.draw .go { background: var(--wood); }
+.pick-note { margin: 14px 0; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 15px; color: var(--bark); }
+.acct-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+.acct-row b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 18px; }
+#btn-logout { flex: none; width: auto; padding: 8px 14px; font-size: 15px; }
 html[lang="en"] .opts.three .opt b { font-size: 15px; }
 /* English words are wider: the top bar puts 'Score' / 'Best' small above the number, so the number keeps the whole side */
 html[lang="en"] .stat { flex-direction: column; align-items: flex-start; gap: 0; }
@@ -568,7 +600,42 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="opt" id="opt-ko" type="button" aria-pressed="true"><b>한국어</b></button>
       <button class="opt" id="opt-en" type="button" aria-pressed="false"><b>English</b></button>
     </div>
+    <div id="acct" class="acct" hidden>
+      <p class="group-label" data-t="account">계정</p>
+      <div class="acct-row"><b id="acct-name"></b><button class="btn plain" id="btn-logout" type="button" data-t="logout">로그아웃</button></div>
+    </div>
     <button class="btn primary" id="btn-settings-close" type="button" data-t="close">닫기</button>
+  </div>
+</section>
+
+<section id="login" class="overlay" hidden aria-label="로그인" data-ta="login">
+  <div class="card">
+    <div class="ribbon"><h2 data-t="login">로그인</h2></div>
+    <p id="login-msg" class="acct-msg"></p>
+    <button class="btn primary" id="btn-google" type="button" data-t="google">Google 계정으로 시작</button>
+    <button class="btn plain" id="btn-retry" type="button" data-t="retry" hidden>다시 시도</button>
+  </div>
+</section>
+
+<section id="nick" class="overlay" hidden aria-label="닉네임" data-ta="nickTitle">
+  <div class="card">
+    <div class="ribbon"><h2 data-t="nickTitle">닉네임</h2></div>
+    <p class="acct-msg" data-t="nickAsk">대결에서 보일 이름을 정해 주세요</p>
+    <input id="nick-in" class="nick-in" type="text" maxlength="10" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-label="닉네임" data-ta="nickTitle">
+    <p id="nick-err" class="nick-err"></p>
+    <button class="btn primary" id="btn-nick" type="button" data-t="ok">확인</button>
+  </div>
+</section>
+
+<section id="vspick" class="overlay" hidden aria-label="대결" data-ta="versus">
+  <div class="card pick">
+    <div class="ribbon"><h2 data-t="versus">대결</h2></div>
+    <div class="opts pick-tabs">
+      <button class="opt" id="tab-opp" type="button" aria-pressed="true"><b data-t="pickOpp">상대 고르기</b></button>
+      <button class="opt" id="tab-inbox" type="button" aria-pressed="false"><b data-t="inbox">받은 도전</b></button>
+    </div>
+    <div id="pick-list" class="pick-list"></div>
+    <button class="btn plain" id="btn-pick-close" type="button" data-t="close">닫기</button>
   </div>
 </section>
 
@@ -602,6 +669,13 @@ const STR = {
     vsMe: '나', vsAgain: '다시 대결', vsNoItems: '대결에서는 아이템을 쓸 수 없어요', vsResult: '대결 결과',
     lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bell: '골든벨', bestOf: n => `최고 점수 · ${n}칸`, bestAll: '최고 점수', pickSize: '판 크기를 먼저 골라 주세요', start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요',
     splash: '시작 화면', touch: '화면을 터치하세요',
+    login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…', loginAsk: '대결 기록과 최고 점수를 계정에 저장해요',
+    loginErr: '연결할 수 없어요. 인터넷 연결을 확인해 주세요.', loginBlocked: '로그인 창이 막혔어요. 다시 눌러 주세요.',
+    nickTitle: '닉네임', nickAsk: '대결에서 보일 이름을 정해 주세요', nickRule: '2~10자 · 한글, 영문, 숫자, _', nickTaken: '이미 사용 중인 닉네임이에요',
+    nickBad: '2~10자, 한글·영문·숫자·_만 쓸 수 있어요', ok: '확인',
+    pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
+    inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
+    account: '계정', logout: '로그아웃',
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -623,6 +697,13 @@ const STR = {
     vsMe: 'You', vsAgain: 'Play again', vsNoItems: "Items can't be used in versus", vsResult: 'Versus result',
     lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bell: 'Golden Bell', bestOf: n => `Best · ${n} Wide`, bestAll: 'Best', pickSize: 'Pick a board size first', start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon',
     splash: 'Title screen', touch: 'Touch to Start',
+    login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…', loginAsk: 'Your versus records and bests are saved to your account',
+    loginErr: "Can't connect. Check your internet connection.", loginBlocked: 'The sign-in window was blocked. Tap again.',
+    nickTitle: 'Nickname', nickAsk: 'Pick the name others see in versus', nickRule: '2-10 letters, numbers or _', nickTaken: 'That nickname is taken',
+    nickBad: 'Use 2-10 letters, numbers or _', ok: 'OK',
+    pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
+    inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
+    account: 'Account', logout: 'Sign out',
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -940,7 +1021,7 @@ const RISE_EVERY = 1;   // a row rises after every drop
 const moveIv = () => (G.vs ? VS_RISE_EVERY : RISE_EVERY);
 
 function loadBest() { try { return Number(localStorage.getItem(`rise7-best-${G.size}`)) || 0; } catch (e) { return 0; } }
-function saveBest(v) { try { localStorage.setItem(`rise7-best-${G.size}`, String(v)); } catch (e) { /* storage unavailable */ } }
+function saveBest(v) { try { localStorage.setItem(`rise7-best-${G.size}`, String(v)); } catch (e) { /* storage unavailable */ } syncBest(); }
 
 function startBoard() {
   const g = emptyGrid();
@@ -991,11 +1072,12 @@ const VS_RISE_EVERY = 2;
 const clockText = ms => { const s = Math.ceil(Math.max(0, ms) / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 // The opponents to start with, before records come from other players: 5-minute versus games (16 wide) a bot played on
 // these seeds (thinking 1.8 - 4.2 s a block). They hold only for these rules: change the scoring, levels or rising rows and play them again.
+// best: the normal-game best shown beside the name in the opponent list (made up: 2.2 - 3 times the versus score).
 const VS_BOTS = [
-  { seed: 11000, name: '말랑콩떡', score: 130620 }, { seed: 11001, name: '버섯돌이', score: 90750 }, { seed: 11002, name: 'jun_99', score: 50500 }, { seed: 11003, name: '노을빛', score: 123770 },
-  { seed: 11010, name: 'Sora', score: 71710 }, { seed: 11011, name: '감자칩', score: 85610 }, { seed: 11012, name: '퍼즐고수', score: 34290 }, { seed: 11013, name: 'Luna', score: 59410 },
-  { seed: 11020, name: '토끼발', score: 55430 }, { seed: 11021, name: '숲속요정', score: 52430 }, { seed: 11022, name: 'mint_choco', score: 73820 }, { seed: 11023, name: '도토리왕', score: 24620 },
-  { seed: 11030, name: '나무늘보', score: 24150 }, { seed: 11031, name: '하늘다람쥐', score: 32050 }, { seed: 11032, name: '새벽세시', score: 30910 }, { seed: 11033, name: 'blue_berry', score: 29270 },
+  { seed: 11000, name: '말랑콩떡', score: 130620, best: 326430 }, { seed: 11001, name: '버섯돌이', score: 90750, best: 271660 }, { seed: 11002, name: 'jun_99', score: 50500, best: 135740 }, { seed: 11003, name: '노을빛', score: 123770, best: 294870 },
+  { seed: 11010, name: 'Sora', score: 71710, best: 189560 }, { seed: 11011, name: '감자칩', score: 85610, best: 200140 }, { seed: 11012, name: '퍼즐고수', score: 34290, best: 97120 }, { seed: 11013, name: 'Luna', score: 59410, best: 150110 },
+  { seed: 11020, name: '토끼발', score: 55430, best: 154520 }, { seed: 11021, name: '숲속요정', score: 52430, best: 130140 }, { seed: 11022, name: 'mint_choco', score: 73820, best: 219730 }, { seed: 11023, name: '도토리왕', score: 24620, best: 65760 },
+  { seed: 11030, name: '나무늘보', score: 24150, best: 70810 }, { seed: 11031, name: '하늘다람쥐', score: 32050, best: 84170 }, { seed: 11032, name: '새벽세시', score: 30910, best: 71740 }, { seed: 11033, name: 'blue_berry', score: 29270, best: 82400 },
 ];
 let vsLast = null;
 function pickOpponent() {
@@ -1006,7 +1088,7 @@ function pickOpponent() {
 }
 // versus is played on the 16-wide board only; it opens with a 5-second countdown (the board shows, nothing can be moved)
 function startVersus(o = pickOpponent()) {
-  newGame('moves', 16, { seed: o.seed, opp: { name: o.name, score: o.score } });
+  newGame('moves', 16, { seed: o.seed, opp: { name: o.name, score: o.score, recordId: o.recordId || null, uid: o.uid || null } });
   fx.banners = [];   // the first mission's sign comes when the countdown ends
   $('#stage').classList.remove('vs-hide');
   showOnly(null); leaveLobby(); musicStart(true);
@@ -1042,6 +1124,132 @@ function vsResult() {
   $('#vsover').dataset.res = res;
   hud();
   showOnly('vsover');
+  vsSave();
+}
+// the game becomes a record others can play (not when left early), and a player's record gets this result in their inbox
+function vsSave() {
+  const v = G.vs;
+  if (!ME || v.saved) return;
+  v.saved = true;
+  if (G.reason !== 'quit') send({ t: 'rec', uid: ME.uid, seed: v.seed, score: G.score, best16: bestFor(16) });
+  if (v.opp.recordId) send({ t: 'res', uid: ME.uid, owner: v.opp.uid, recordId: v.opp.recordId, ownerScore: v.opp.score, score: G.score });
+}
+
+/* ---------- online (net.js: Firebase). Google sign-in when the game opens, then a nickname nobody else has; the
+   versus records live there. Tests can put a stand-in in window.__fakeNet before the page loads. ---------- */
+let NET = null, ME = null, netP = null;   // ME: { uid, name, best16, best32 } once signed in with a nickname
+function loadNet() {
+  if (!netP) netP = (window.__fakeNet ? Promise.resolve({ default: window.__fakeNet }) : import('./net.js'))
+    .then(m => (NET = m.default)).catch(e => { netP = null; throw e; });
+  return netP;
+}
+function loginUI(st) {
+  $('#login').hidden = false;
+  $('#login-msg').textContent = tr(st === 'wait' ? 'loginWait' : st === 'error' ? 'loginErr' : st === 'blocked' ? 'loginBlocked' : 'loginAsk');
+  $('#btn-google').hidden = st === 'error';
+  $('#btn-google').disabled = st === 'wait';
+  $('#btn-retry').hidden = st !== 'error';
+}
+async function enter() {
+  loginUI('wait');
+  try { await loadNet(); signedIn(await NET.ready()); } catch (e) { loginUI('error'); }
+}
+// signed in or not, with a nickname or not: on to the next screen
+function signedIn(st) {
+  if (!st.uid) { loginUI('signin'); return; }
+  $('#login').hidden = true;
+  if (!st.profile) { openNick(); return; }
+  $('#nick').hidden = true;
+  setMe(st);
+  openLobby(false); hideScreen('splash');
+}
+function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); flushPending(); }
+function openNick() {
+  $('#nick').hidden = false;
+  const err = $('#nick-err'); err.textContent = tr('nickRule'); err.classList.remove('bad');
+  setTimeout(() => { try { $('#nick-in').focus(); } catch (e) { /* no keyboard here */ } }, 60);
+}
+async function submitNick() {
+  const name = $('#nick-in').value.trim().normalize('NFC'), err = $('#nick-err'), btn = $('#btn-nick');
+  const bad = k => { err.textContent = tr(k); err.classList.add('bad'); sfx('back'); };
+  if (btn.disabled) return;
+  if (!NET.NAME_RE.test(name)) return bad('nickBad');
+  if (VS_BOTS.some(b => b.name.toLowerCase() === name.toLowerCase())) return bad('nickTaken');   // the starting opponents' names are kept too
+  btn.disabled = true;
+  try { const prof = await NET.claimName(name, bestFor(16), bestFor(32)); sfx('pick'); signedIn({ uid: NET.me().uid, profile: prof }); }
+  catch (e) { bad(e.code === 'taken' ? 'nickTaken' : e.code === 'invalid' ? 'nickBad' : 'loginErr'); }
+  finally { btn.disabled = false; }
+}
+// the bests: the higher of this phone's and the account's, on both
+function syncBest() {
+  if (!ME || !NET) return;
+  for (const n of [16, 32]) if ((ME['best' + n] || 0) > bestFor(n)) { try { localStorage.setItem(`rise7-best-${n}`, String(ME['best' + n])); } catch (e) { /* storage unavailable */ } }
+  const b16 = bestFor(16), b32 = bestFor(32);
+  if (b16 > ME.best16 || b32 > ME.best32) NET.saveBest(b16, b32).then(() => { ME.best16 = Math.max(ME.best16, b16); ME.best32 = Math.max(ME.best32, b32); }).catch(() => {});
+}
+// writes that could not go out (offline) wait on the phone and go with the next sign-in
+const PEND = 'bf-pending';
+const runJob = j => (j.t === 'rec' ? NET.saveRecord(j.seed, j.score, j.best16) : NET.sendResult(j.owner, j.recordId, j.ownerScore, j.score));
+function pend(j) { try { const q = JSON.parse(localStorage.getItem(PEND) || '[]'); q.push(j); localStorage.setItem(PEND, JSON.stringify(q.slice(-20))); } catch (e) { /* storage unavailable */ } }
+function send(j) { if (!NET) { pend(j); return; } runJob(j).catch(e => { if (e.code === 'offline') pend(j); }); }
+async function flushPending() {
+  let q;
+  try { q = JSON.parse(localStorage.getItem(PEND) || '[]'); } catch (e) { return; }
+  if (!q.length || !ME) return;
+  try { localStorage.setItem(PEND, '[]'); } catch (e) { return; }
+  for (const j of q) {
+    if (j.uid !== ME.uid) { pend(j); continue; }   // someone else's, for when they sign in here again
+    try { await runJob(j); } catch (e) { if (e.code === 'offline') pend(j); }
+  }
+}
+// the opponent list: players' latest records and the starting opponents, the nearest to my best first.
+// Their score on that record stays hidden until the result.
+let pickTab = 'opp', pickN = 0;
+function openPicker() { $('#vspick').hidden = false; pickTab = 'opp'; fillPick(); }
+function pickRow(name, sub, tag, cls, onClick) {
+  const b = document.createElement(onClick ? 'button' : 'div');
+  b.className = 'pick-row' + (cls ? ' ' + cls : '');
+  if (onClick) { b.type = 'button'; b.addEventListener('click', onClick); }
+  const who = document.createElement('span'), n = document.createElement('b'), s = document.createElement('span'), g = document.createElement('span');
+  who.className = 'who'; n.textContent = name; s.textContent = sub; who.append(n, s);
+  g.className = 'go'; g.textContent = tag;
+  b.append(who, g);
+  return b;
+}
+function pickNote(text) { const p = document.createElement('p'); p.className = 'pick-note'; p.textContent = text; return p; }
+async function fillPick() {
+  const n = ++pickN, list = $('#pick-list'), tab = pickTab;
+  $('#tab-opp').setAttribute('aria-pressed', String(tab === 'opp'));
+  $('#tab-inbox').setAttribute('aria-pressed', String(tab === 'inbox'));
+  list.replaceChildren(pickNote(tr('loading')));
+  if (tab === 'inbox') {
+    let items = null;
+    try { items = await NET.listInbox(30); } catch (e) { /* shown below */ }
+    if (n !== pickN) return;
+    list.replaceChildren();
+    if (!items) { list.append(pickNote(tr('loginErr'))); return; }
+    if (!items.length) { list.append(pickNote(tr('inboxEmpty'))); return; }
+    for (const it of items) {
+      const res = it.ownerScore > it.score ? 'win' : it.ownerScore < it.score ? 'lose' : 'draw';   // as seen by me, the record's owner
+      list.append(pickRow(it.byName, tr('inboxLine', it.score.toLocaleString(), it.ownerScore.toLocaleString()), tr(res === 'win' ? 'tagWin' : res === 'lose' ? 'tagLose' : 'tagDraw'), 'res ' + res));
+    }
+    return;
+  }
+  let recs = [], off = false;
+  try { recs = await NET.listRecords(60); } catch (e) { off = true; }
+  if (n !== pickN) return;
+  const seen = new Set(), people = [];
+  for (const r of recs) {
+    if (r.uid === ME.uid || seen.has(r.uid)) continue;   // one record a player: their latest
+    seen.add(r.uid);
+    people.push({ seed: r.seed, name: r.name, score: r.score, best: r.best16, recordId: r.id, uid: r.uid });
+  }
+  const names = new Set(people.map(o => o.name.toLowerCase())), mine = bestFor(16);
+  const all = people.concat(VS_BOTS.filter(b => !names.has(b.name.toLowerCase())))
+    .sort((a, b) => Math.abs(a.best - mine) - Math.abs(b.best - mine)).slice(0, 12);
+  list.replaceChildren();
+  if (off) list.append(pickNote(tr('offlineList')));
+  for (const o of all) list.append(pickRow(o.name, tr('bestN', o.best.toLocaleString()), tr('challenge'), '', () => { sfx('pick'); $('#vspick').hidden = true; startVersus(o); }));
 }
 
 // Many new blocks are ones that can finish a row somewhere, so something breaks often (fewer as the level climbs).
@@ -2042,6 +2250,8 @@ function leaveLobby() { covered = false; hideScreen('lobby'); }
 let settingsFrom = null;
 function openSettings(from) {
   settingsFrom = from;
+  $('#acct').hidden = !(ME && from === 'lobby');   // signing out is done from the lobby, not in a game
+  if (ME) $('#acct-name').textContent = ME.name;
   soundButtons();
   if (from === 'menu') $('#menu').hidden = true;
   $('#settings').hidden = false;
@@ -2059,10 +2269,29 @@ function toast(msg, ms = 1600) {
 }
 
 $('#splash').addEventListener('click', e => {
-  if ($('#splash').classList.contains('out')) return;
+  if ($('#splash').classList.contains('out') || !$('#login').hidden || !$('#nick').hidden) return;
   sfx('pick');   // the first touch also wakes the audio
-  openLobby(false);
-  hideScreen('splash');
+  if (ME) { openLobby(false); hideScreen('splash'); } else enter();
+});
+$('#btn-google').addEventListener('click', async () => {
+  sfx('pick'); loginUI('wait');
+  try { await loadNet(); signedIn(await NET.signIn()); }
+  catch (e) { loginUI(e.code === 'closed' ? 'signin' : e.code === 'blocked' ? 'blocked' : 'error'); }
+});
+$('#btn-retry').addEventListener('click', () => { sfx('pick'); enter(); });
+$('#btn-nick').addEventListener('click', submitNick);
+$('#nick-in').addEventListener('keydown', e => { if (e.key === 'Enter') submitNick(); });
+$('#nick-in').addEventListener('input', () => { const err = $('#nick-err'); err.textContent = tr('nickRule'); err.classList.remove('bad'); });
+$('#tab-opp').addEventListener('click', () => { if (pickTab !== 'opp') { sfx('pick'); pickTab = 'opp'; fillPick(); } });
+$('#tab-inbox').addEventListener('click', () => { if (pickTab !== 'inbox') { sfx('pick'); pickTab = 'inbox'; fillPick(); } });
+$('#btn-pick-close').addEventListener('click', () => { sfx('pick'); $('#vspick').hidden = true; });
+$('#btn-logout').addEventListener('click', async () => {
+  sfx('pick');
+  try { if (NET) await NET.signOut(); } catch (e) { /* signed out here anyway */ }
+  ME = null;
+  closeSettings();
+  $('#lobby').hidden = true;
+  openSplash();
 });
 $('#opt-32').addEventListener('click', () => { setMenu(menuMode, 32); lobbyInfo(); sfx('pick'); });
 $('#opt-16').addEventListener('click', () => { setMenu(menuMode, 16); lobbyInfo(); sfx('pick'); });
@@ -2076,8 +2305,8 @@ $('#btn-new').addEventListener('click', () => {
   newGame(menuMode, menuSize); showOnly(null); leaveLobby(); musicStart(true);
 });
 $('#btn-shop').addEventListener('click', () => { sfx('pick'); toast(tr('shopSoon')); });
-$('#opt-versus').addEventListener('click', () => { sfx('pick'); startVersus(); });   // always the 16-wide board, whatever is picked above
-$('#btn-vs-again').addEventListener('click', () => { sfx('pick'); startVersus(); });
+$('#opt-versus').addEventListener('click', () => { sfx('pick'); openPicker(); });   // always the 16-wide board, whatever is picked above
+$('#btn-vs-again').addEventListener('click', () => { sfx('pick'); openPicker(); });
 $('#btn-vs-lobby').addEventListener('click', () => openLobby());
 $('#btn-settings').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
 $('#btn-settings-close').addEventListener('click', () => { sfx('pick'); closeSettings(); });
@@ -3400,6 +3629,7 @@ function start(data) {
     G.started = false;
     G.state = 'menu';
     openSplash();
+    loadNet().then(net => net.ready()).then(st => { if (st.uid && st.profile && !ME) setMe(st); }).catch(() => { /* the touch shows what went wrong */ });
   }
   setLang(LANG, false);
   last = performance.now();
