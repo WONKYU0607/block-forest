@@ -1,0 +1,3070 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>블록 포레스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gasoek+One&family=Do+Hyeon&family=Gowun+Dodum&display=swap">
+<style>
+/* Layout: one-screen wood workshop. Engraved score bar on top, a board of small wooden cubes over dark planks, the intake strip and tray below. Menus are wood panels floating over everything. */
+:root {
+  --frame: #2a1b10;
+  --bar: #24170d;
+  --bar-line: #6e4c2f;
+  --plank-a: #5e2c17;
+  --plank-b: #69341c;
+  --plank-c: #532614;
+  --plank-gap: #2a120a;
+  --panel: #3b2819;
+  --panel-2: #4b331f;
+  --panel-line: #7d5837;
+  --scrim: rgba(18, 10, 4, 0.62);
+  --ink: #f7ecd9;
+  --muted: #cbb08d;
+  --accent: #efcd94;
+  --accent-ink: #2a1b10;
+  --accent-edge: #a9783c;
+  --danger: #ff6b55;
+  --font-display: 'Do Hyeon', 'Gowun Dodum', system-ui, sans-serif;
+  --font-body: 'Gowun Dodum', system-ui, sans-serif;
+  color-scheme: dark;
+}
+html { height: 100%; box-sizing: border-box; background: var(--frame); }
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--frame);
+  color: var(--ink);
+  font-family: var(--font-body);
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  box-sizing: border-box;
+}
+#app { height: 100%; max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; }
+.hud {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 7px 12px;
+  background: linear-gradient(var(--bar), var(--frame));
+  border: 1px solid var(--bar-line);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 220, 170, 0.12), 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+.stat { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.stat.right { justify-content: flex-end; }
+.label { font-family: var(--font-display); font-size: 13px; color: var(--muted); letter-spacing: 0.06em; }
+.num { font-family: var(--font-display); font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6); }
+.num.sm { font-size: 18px; color: var(--muted); }
+.chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--bar-line);
+  background: var(--panel);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 14px;
+  cursor: pointer;
+}
+.pz { display: inline-flex; gap: 3px; }
+.pz::before, .pz::after { content: ""; width: 3px; height: 10px; border-radius: 1px; background: var(--muted); }
+.hud, body, html { transition: background-color 0.8s ease, border-color 0.8s ease; }
+#score { display: inline-block; transform-origin: 0 70%; }
+#score.bump { animation: bump 0.38s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes bump { 0% { transform: scale(1); } 45% { transform: scale(1.3); color: #fff2b0; text-shadow: 0 0 14px rgba(255, 200, 80, 0.9); } 100% { transform: scale(1); } }
+/* second bar: the mission on the left, the fever gauge on the right */
+.subbar { display: flex; gap: 6px; align-items: stretch; margin-top: 6px; }
+.mission {
+  flex: 1; min-width: 0; min-height: 30px; box-sizing: border-box;
+  display: flex; align-items: center; gap: 6px; padding: 0 9px;
+  border-radius: 8px; border: 1px solid var(--bar-line);
+  background: linear-gradient(var(--bar), var(--frame));
+  font-family: var(--font-display); font-size: 14px; color: var(--ink);
+  white-space: nowrap; overflow: hidden;
+  transition: border-color 0.3s, opacity 0.3s;
+}
+.mission .m-dot { width: 11px; height: 11px; border-radius: 3px; flex: none; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.3); }
+.mission .m-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.mission .m-left { flex: none; color: var(--muted); font-size: 13px; }
+.mission.idle { color: var(--muted); }
+.mission.idle .m-dot { display: none; }
+.mission.new { animation: missionIn 0.5s cubic-bezier(.3, 1.5, .5, 1); border-color: var(--accent); }
+.mission.done { border-color: #ffd84a; color: #fff3c4; animation: missionWin 0.7s ease; }
+.mission.fail { opacity: 0.55; }
+@keyframes missionIn { 0% { transform: translateY(-6px) scale(0.96); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes missionWin { 0%, 100% { box-shadow: 0 0 0 rgba(255, 200, 60, 0); } 40% { box-shadow: 0 0 16px rgba(255, 200, 60, 0.9); } }
+.rotbox {
+  flex: none; width: 56px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 4px;
+  border-radius: 8px; border: 1px solid var(--bar-line); background: linear-gradient(var(--bar), var(--frame));
+  color: var(--ink); font-family: var(--font-display); font-size: 17px; line-height: 1;
+}
+.rotbox svg { width: 17px; height: 17px; color: var(--accent); }
+.rotbox.zero { opacity: 0.45; }
+.rotbox.bump b { display: inline-block; animation: bump 0.38s cubic-bezier(.3, 1.6, .5, 1); }
+.fever {
+  width: 27%; flex: none; box-sizing: border-box; padding: 4px 8px 5px;
+  border-radius: 8px; border: 1px solid var(--bar-line); background: linear-gradient(var(--bar), var(--frame));
+  display: flex; flex-direction: column; justify-content: center; gap: 3px;
+}
+.fever .f-label { font-family: var(--font-display); font-size: 12px; line-height: 1; color: var(--muted); letter-spacing: 0.04em; }
+.fever .f-track { height: 9px; border-radius: 5px; background: rgba(0, 0, 0, 0.45); overflow: hidden; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6); }
+.fever .f-fill { height: 100%; width: 0; border-radius: 5px; background: linear-gradient(90deg, #ffb627, #ff5f6d); transition: width 0.3s ease; }
+.fever.full .f-fill { box-shadow: 0 0 10px rgba(255, 140, 80, 0.9); }
+/* a full gauge turns into the fever button: rainbow, sliding and blinking */
+.fever.full {
+  cursor: pointer; align-items: center; justify-content: center; border-color: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(90deg, #ff4fd8, #ffb627, #fff35c, #3ff5c6, #4fa3ff, #b45cff, #ff4fd8); background-size: 300% 100%;
+  animation: feverRain 1.4s linear infinite, feverBlink 0.42s ease-in-out infinite alternate;
+}
+.fever.full .f-track { display: none; }
+.fever.full .f-label { font-size: 18px; color: #fff; letter-spacing: 0.08em; text-shadow: 0 0 1.5px #2a0630, 0 0 1.5px #2a0630, 0 0 2px #2a0630, 0 0 2px #2a0630, 0 1px 3px rgba(42, 6, 48, 0.9); }
+.fever.full:active { transform: scale(0.96); }
+@keyframes feverRain { from { background-position: 0% 0; } to { background-position: 150% 0; } }
+@keyframes feverBlink { 0% { filter: brightness(0.72) saturate(0.85); box-shadow: 0 0 2px rgba(255, 255, 255, 0.2); } 100% { filter: brightness(1.18) saturate(1.25); box-shadow: 0 0 14px rgba(255, 140, 240, 0.95); } }
+.fever.on { border-color: #ff7be5; box-shadow: 0 0 12px rgba(255, 90, 220, 0.6); }
+.fever.on .f-label { color: #fff; animation: feverPulse 0.4s ease-in-out infinite alternate; }
+.fever.on .f-fill { transition: width 0.1s linear; background: linear-gradient(90deg, #ff4fd8, #ffb627, #3ff5c6, #4fa3ff, #ff4fd8); background-size: 200% 100%; animation: feverFlow 0.9s linear infinite; }
+@keyframes feverFlow { 0% { background-position: 0 0; } 100% { background-position: 200% 0; } }
+@keyframes feverPulse { 0% { opacity: 0.7; } 100% { opacity: 1; text-shadow: 0 0 8px rgba(255, 120, 230, 0.9); } }
+#fxc { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
+#stage { position: relative; flex: 1; min-height: 0; margin-top: 6px; }
+#cv { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; display: block; }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--scrim);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  z-index: 20;
+  box-sizing: border-box;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+}
+.overlay[hidden] { display: none; }
+.card {
+  width: min(100%, 350px);
+  box-sizing: border-box;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 220, 170, 0.035) 0 14px, rgba(0, 0, 0, 0.05) 14px 28px),
+    var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 14px;
+  padding: 20px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  box-shadow: inset 0 1px 0 rgba(255, 220, 170, 0.15), 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+.card h1, .card h2 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; line-height: 1.15; }
+.card h1 { font-size: 34px; }
+.card h2 { font-size: 28px; }
+.eyebrow { margin: 0; font-size: 12px; color: var(--muted); letter-spacing: 0.1em; }
+.rules { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
+.group-label { margin: 2px 0 0; font-family: var(--font-display); font-size: 13px; color: var(--muted); letter-spacing: 0.06em; }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.opt {
+  appearance: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 11px;
+  border-radius: 10px;
+  border: 2px solid var(--panel-line);
+  background: var(--frame);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-body);
+  min-width: 0;
+}
+.opt b { font-family: var(--font-display); font-weight: 400; font-size: 17px; }
+.opt span { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--panel-2); }
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  cursor: pointer;
+}
+.btn.primary { background: linear-gradient(#f5dcae, var(--accent)); color: var(--accent-ink); box-shadow: 0 4px 0 var(--accent-edge); margin-bottom: 4px; }
+.btn.primary:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--accent-edge); }
+.btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--panel-line); }
+.bigscore { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 10px; background: var(--frame); border: 1px solid var(--panel-line); }
+.bigscore .num { font-size: 40px; color: var(--accent); }
+.gap { margin: 0; font-family: var(--font-display); font-size: 18px; line-height: 1.3; color: var(--ink); }
+.opts.three { grid-template-columns: repeat(3, 1fr); }
+.gap.hot { color: var(--accent); }
+.reason { margin: -4px 0 0; font-size: 15px; color: var(--muted); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (max-height: 680px) {
+  .card { padding: 14px; gap: 8px; }
+  .card h1 { font-size: 28px; }
+  .rules { font-size: 13px; line-height: 1.5; }
+  .opt { padding: 8px 9px; }
+}
+
+/* ===== Cartoon look: thick dark outlines, flat bright colours, hard drop shadows (design 5) ===== */
+:root { --ol: #1b1238; --num: 'Gasoek One', 'Black Han Sans', sans-serif; --font-display: 'Black Han Sans', sans-serif; --font-body: 'Black Han Sans', sans-serif; color-scheme: light; }
+html { background: #1f78f0; }
+body {
+  color: var(--ol);
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.16) 1.6px, transparent 1.8px) 0 0 / 14px 14px,
+    repeating-conic-gradient(from 0deg at 50% -10%, rgba(255, 255, 255, 0.09) 0 8deg, transparent 8deg 16deg),
+    linear-gradient(#45c0ff, #1f78f0);
+  padding-left: max(8px, env(safe-area-inset-left, 0px));
+  padding-right: max(8px, env(safe-area-inset-right, 0px));
+}
+.hud { background: #6a4cff; border: 3px solid var(--ol); border-radius: 16px; box-shadow: 0 4px 0 var(--ol); padding: 6px 10px; }
+.stat { gap: 5px; }
+.label { font-family: 'Black Han Sans', sans-serif; font-size: 13px; letter-spacing: 0; color: #ffe14d; -webkit-text-stroke: 4px var(--ol); paint-order: stroke fill; white-space: nowrap; }
+.num { font-family: var(--num); font-size: 23px; color: #fff; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; text-shadow: none; white-space: nowrap; letter-spacing: 0.02em; }
+.num.sm { font-size: 17px; color: #fff; }
+#score.bump { animation: bumpToon 0.38s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes bumpToon { 0% { transform: scale(1); } 45% { transform: scale(1.3); color: #ffe14d; } 100% { transform: scale(1); } }
+.chip { background: #ffe14d; border: 3px solid var(--ol); border-radius: 12px; box-shadow: 0 3px 0 var(--ol); color: var(--ol); font-family: var(--num); font-size: 14px; padding: 4px 10px; white-space: nowrap; }
+.chip:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.pz::before, .pz::after { background: var(--ol); }
+.subbar { margin-top: 8px; }
+.mission { background: #fff; border: 3px solid var(--ol); border-radius: 12px; box-shadow: 0 4px 0 var(--ol); color: var(--ol); font-family: 'Black Han Sans', sans-serif; font-size: 14px; min-height: 34px; }
+.mission .m-dot { width: 13px; height: 13px; border: 2px solid var(--ol); box-shadow: none; }
+.mission .m-left { color: #6a5a9a; font-size: 12px; }
+.mission.idle { color: #6a5a9a; }
+.mission.new { border-color: var(--ol); }
+.mission.done { background: #ffe14d; border-color: var(--ol); color: var(--ol); }
+.mission.fail { opacity: 0.7; }
+@keyframes missionWin { 0%, 100% { transform: none; } 40% { transform: scale(1.04); } }
+.rotbox { background: #ff9a2e; border: 3px solid var(--ol); border-radius: 12px; box-shadow: 0 4px 0 var(--ol); color: #fff; font-family: var(--num); font-size: 19px; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; }
+.rotbox svg { color: #fff; filter: drop-shadow(1.5px 1.5px 0 var(--ol)); }
+.fever { background: #fff; border: 3px solid var(--ol); border-radius: 12px; box-shadow: 0 4px 0 var(--ol); padding: 4px 8px 5px; }
+.fever .f-label { font-family: 'Black Han Sans', sans-serif; font-size: 12px; color: var(--ol); letter-spacing: 0; white-space: nowrap; }
+.fever .f-track { height: 12px; border-radius: 6px; background: #ebe6ff; border: 2.5px solid var(--ol); box-shadow: none; }
+.fever .f-fill { border-radius: 0; background: repeating-linear-gradient(135deg, #ff6b3d 0 6px, #ff9a2e 6px 12px); }
+.fever.full .f-fill { box-shadow: none; }
+.fever.on { border-color: var(--ol); box-shadow: 0 4px 0 var(--ol); }
+.fever.on .f-label { color: var(--ol); text-shadow: none; animation: none; }
+/* a full gauge is the fever button: rainbow, sliding and blinking, still outlined like everything else */
+.fever.full { border-color: var(--ol); box-shadow: 0 4px 0 var(--ol); background: linear-gradient(90deg, #ff4fd8, #ffb627, #fff35c, #3ff5c6, #4fa3ff, #b45cff, #ff4fd8); background-size: 300% 100%; }
+.fever.full .f-label { font-family: var(--num); font-size: 18px; color: #fff; text-shadow: none; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; letter-spacing: 0.04em; }
+.fever.full:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--ol); }
+@keyframes feverBlink { 0% { filter: brightness(0.82) saturate(0.9); } 100% { filter: brightness(1.15) saturate(1.25); } }
+#stage { margin-top: 8px; }
+/* menus */
+.overlay { background: rgba(20, 14, 60, 0.55); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.card { background: #fff; border: 4px solid var(--ol); border-radius: 26px; box-shadow: 0 8px 0 var(--ol); padding: 56px 18px 20px; color: var(--ol); position: relative; margin-top: 30px; }
+.card .ribbon { position: absolute; left: 50%; top: -30px; width: max-content; transform: translateX(-50%) rotate(-3deg); padding: 9px 24px; background: #ff4d6d; border: 4px solid var(--ol); border-radius: 16px; box-shadow: 0 5px 0 var(--ol); white-space: nowrap; }
+.card .ribbon h1, .card .ribbon h2 { white-space: nowrap; font-family: var(--num); font-weight: 400; font-size: 29px; line-height: 1.15; color: #fff; -webkit-text-stroke: 8px var(--ol); paint-order: stroke fill; letter-spacing: 0.02em; }
+.group-label { font-family: 'Black Han Sans', sans-serif; color: #6a4cff; letter-spacing: 0; }
+.opt { border: 3px solid var(--ol); border-radius: 14px; background: #f3f0ff; color: var(--ol); box-shadow: 0 3px 0 var(--ol); font-family: 'Black Han Sans', sans-serif; }
+.opt b { font-family: var(--num); font-size: 18px; }
+.opt span { color: #6a5a9a; }
+.opt[aria-pressed="true"] { background: #ffe14d; border-color: var(--ol); }
+.opt:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.btn { border: 4px solid var(--ol); border-radius: 16px; box-shadow: 0 6px 0 var(--ol); font-family: var(--num); font-size: 21px; color: #fff; -webkit-text-stroke: 7px var(--ol); paint-order: stroke fill; letter-spacing: 0.02em; }
+.btn.primary { background: #5fdc3c; color: #fff; margin-bottom: 6px; }
+.btn.primary:active, .btn.ghost:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--ol); }
+.btn.ghost { background: #45c0ff; color: #fff; margin-bottom: 6px; }
+.btn:focus-visible, .opt:focus-visible { outline: none; }   /* the menus open with a button focused; on a phone the ring only looks like a stray border */
+#btn-menu { background: #fff; color: var(--ol); -webkit-text-stroke: 0; font-family: 'Black Han Sans', sans-serif; font-size: 17px; padding: 10px 16px; }
+.bigscore { flex-direction: column; align-items: center; gap: 2px; background: #6a4cff; border: 3px solid var(--ol); border-radius: 16px; box-shadow: 0 4px 0 var(--ol); padding: 10px 14px 12px; }
+.bigscore .num { font-size: 46px; color: #fff; -webkit-text-stroke: 9px var(--ol); line-height: 1.1; }
+.reason { color: #6a5a9a; font-family: 'Black Han Sans', sans-serif; text-align: center; margin: -6px 0 0; }
+.gap { align-self: center; font-family: var(--num); font-size: 16px; color: #fff; background: #ff4d6d; border: 3px solid var(--ol); border-radius: 12px; padding: 4px 14px; box-shadow: 0 3px 0 var(--ol); -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; transform: rotate(-3deg); }
+.gap[hidden] { display: none; }
+.gap.hot { color: #fff; }
+@media (max-height: 700px) {
+  .hud { padding: 3px 8px; margin-top: 6px; }
+  .num { font-size: 21px; } .num.sm { font-size: 16px; }
+  .subbar { margin-top: 6px; }
+  .mission { min-height: 31px; }
+  #stage { margin-top: 6px; }
+}
+@media (max-height: 680px) {
+  .card { padding: 48px 14px 14px; gap: 8px; }
+  .card .ribbon h1, .card .ribbon h2 { font-size: 25px; }
+}
+
+/* ===== Forest: the same cartoon rules (outlines, hard shadows, heavy lettering) in a forest - wood signs, leaves, mushrooms ===== */
+:root { --ol: #2b1a0e; --wood: repeating-linear-gradient(0deg, rgba(60, 30, 10, 0.1) 0 2px, transparent 2px 7px), linear-gradient(#e0a463, #b97540);
+  --cream: #fff6dc; --leaf: #6ccf4f; --mush: #e9483b; --bark: #8a6a44; }
+html { background: #5aa65a; }
+body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844' preserveAspectRatio='xMidYMax slice'%3E%3Cdefs%3E%3ClinearGradient id='sky' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23e9f7b8'/%3E%3Cstop offset='0.35' stop-color='%23b9e58f'/%3E%3Cstop offset='0.7' stop-color='%237cc46a'/%3E%3Cstop offset='1' stop-color='%233f8a44'/%3E%3C/linearGradient%3E%3CradialGradient id='sun' cx='0.15' cy='0.02' r='0.55'%3E%3Cstop offset='0' stop-color='%23fffbe0' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23fffbe0' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='fly' cx='0.5' cy='0.5' r='0.5'%3E%3Cstop offset='0' stop-color='%23fff9c4' stop-opacity='1'/%3E%3Cstop offset='0.4' stop-color='%23ffe066' stop-opacity='0.6'/%3E%3Cstop offset='1' stop-color='%23ffe066' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='390' height='844' fill='url(%23sky)'/%3E%3Crect width='390' height='844' fill='url(%23sun)'/%3E%3Cg fill='%23fffbe0' opacity='0.16'%3E%3Cpolygon points='20,0 70,0 230,844 150,844'/%3E%3Cpolygon points='110,0 140,0 330,844 280,844'/%3E%3Cpolygon points='200,0 215,0 390,700 390,780'/%3E%3C/g%3E%3Cg fill='%23a3d98c'%3E%3Ccircle cx='10' cy='560' r='46'/%3E%3Ccircle cx='70' cy='540' r='52'/%3E%3Ccircle cx='140' cy='565' r='44'/%3E%3Ccircle cx='200' cy='535' r='56'/%3E%3Ccircle cx='265' cy='560' r='46'/%3E%3Ccircle cx='330' cy='538' r='54'/%3E%3Ccircle cx='392' cy='560' r='44'/%3E%3Crect x='0' y='560' width='390' height='300'/%3E%3C/g%3E%3Cg fill='%2362b35f'%3E%3Cpath d='M-10 700 L30 600 L70 700 Z M0 650 L30 570 L60 650 Z'/%3E%3Cpath d='M60 720 L110 590 L160 720 Z M75 660 L110 560 L145 660 Z'/%3E%3Cpath d='M150 710 L195 610 L240 710 Z M162 660 L195 585 L228 660 Z'/%3E%3Cpath d='M230 725 L285 585 L340 725 Z M245 665 L285 555 L325 665 Z'/%3E%3Cpath d='M320 705 L365 600 L410 705 Z M332 655 L365 575 L398 655 Z'/%3E%3Crect x='0' y='700' width='390' height='160'/%3E%3C/g%3E%3Cg fill='%233f8f45'%3E%3Ccircle cx='20' cy='800' r='50'/%3E%3Ccircle cx='95' cy='790' r='44'/%3E%3Ccircle cx='170' cy='808' r='48'/%3E%3Ccircle cx='245' cy='792' r='46'/%3E%3Ccircle cx='320' cy='805' r='50'/%3E%3Ccircle cx='385' cy='795' r='42'/%3E%3Crect x='0' y='800' width='390' height='60'/%3E%3C/g%3E%3Cg fill='%232f7436'%3E%3Ccircle cx='55' cy='835' r='30'/%3E%3Ccircle cx='210' cy='840' r='34'/%3E%3Ccircle cx='350' cy='838' r='30'/%3E%3C/g%3E%3Cg fill='%233b8a3f'%3E%3Ccircle cx='-10' cy='-10' r='70'/%3E%3Ccircle cx='70' cy='-30' r='60'/%3E%3Ccircle cx='150' cy='-40' r='55'/%3E%3Ccircle cx='240' cy='-35' r='60'/%3E%3Ccircle cx='320' cy='-25' r='62'/%3E%3Ccircle cx='400' cy='-5' r='70'/%3E%3C/g%3E%3Cg fill='%234ea34f'%3E%3Ccircle cx='30' cy='-25' r='48'/%3E%3Ccircle cx='115' cy='-45' r='50'/%3E%3Ccircle cx='200' cy='-50' r='52'/%3E%3Ccircle cx='285' cy='-40' r='50'/%3E%3Ccircle cx='365' cy='-30' r='48'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='40' cy='420' r='7' fill='url(%23fly)'/%3E%3Ccircle cx='352' cy='380' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='18' cy='640' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='372' cy='610' r='8' fill='url(%23fly)'/%3E%3Ccircle cx='188' cy='760' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='300' cy='770' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='90' cy='110' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='330' cy='140' r='6' fill='url(%23fly)'/%3E%3C/g%3E%3C/svg%3E") center bottom / cover no-repeat, #7cc46a; }
+.hud { background: radial-gradient(circle at 11px 50%, #6b4426 0 2.5px, #f3cf9a 3px 4px, transparent 4.5px), radial-gradient(circle at calc(100% - 11px) 50%, #6b4426 0 2.5px, #f3cf9a 3px 4px, transparent 4.5px), var(--wood); padding-left: 20px; padding-right: 20px; }
+.label { color: #fff3c4; }
+.chip { background: var(--leaf); color: #fff; -webkit-text-stroke: 4px var(--ol); paint-order: stroke fill; }
+.pz::before, .pz::after { background: #fff; box-shadow: 0 0 0 1.5px var(--ol); }
+.mission { background: var(--cream); }
+.mission .m-left, .mission.idle { color: var(--bark); }
+.mission.done { background: #ffe98a; }
+.rotbox { background: radial-gradient(circle at 18% 30%, #fff 0 2.5px, transparent 3px), radial-gradient(circle at 80% 72%, #fff 0 2px, transparent 2.5px), radial-gradient(circle at 62% 20%, #fff 0 1.8px, transparent 2.2px), var(--mush); }
+.fever { background: var(--cream); }
+.fever .f-track { background: #efe2bf; }
+.fever { padding-left: 6px; padding-right: 6px; }
+.fever .f-label { letter-spacing: -0.02em; }   /* '피버 299/300' fits a 360px phone */
+.fever .f-fill { background: repeating-linear-gradient(135deg, #5cc94a 0 6px, #8fe36b 6px 12px); }
+.overlay { background: rgba(14, 36, 16, 0.55); }
+.card { background: var(--cream); padding-top: 62px; }
+.card .ribbon { top: -34px; padding: 10px 30px; transform: translateX(-50%) rotate(-2deg); border-radius: 14px;
+  background: radial-gradient(circle at 12px 50%, #6b4426 0 3px, #f3cf9a 3.5px 4.5px, transparent 5px), radial-gradient(circle at calc(100% - 12px) 50%, #6b4426 0 3px, #f3cf9a 3.5px 4.5px, transparent 5px), var(--wood); }
+.card .ribbon::before, .card .ribbon::after { content: ''; position: absolute; width: 40px; height: 40px; top: -22px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg stroke='%232b1a0e' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M30 32 C10 30 4 14 8 4 C22 6 32 18 30 32 Z' fill='%236ccf4f'/%3E%3Cpath d='M30 32 C34 14 48 6 58 10 C56 24 44 34 30 32 Z' fill='%2391e063'/%3E%3Cpath d='M30 32 C24 46 30 56 40 58 C46 46 40 36 30 32 Z' fill='%234fb043'/%3E%3C/g%3E%3Cg stroke='%23ffffff' stroke-opacity='.45' stroke-width='2' fill='none' stroke-linecap='round'%3E%3Cpath d='M12 8 C18 16 24 24 29 30'/%3E%3Cpath d='M54 13 C46 18 38 24 32 30'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat; }
+.card .ribbon::before { left: -14px; transform: rotate(-20deg); }
+.card .ribbon::after { right: -14px; transform: scaleX(-1) rotate(-20deg); }
+.group-label { color: #6b4426; }
+.opt { background: #fffaf0; }
+.opt span { color: var(--bark); }
+.opt[aria-pressed="true"] { background: #a8e47a; }
+.btn.primary { background: linear-gradient(#7fdc5a, #4fb83f); }
+.btn.ghost { background: var(--wood); }
+#btn-menu { background: #fffaf0; }
+.bigscore { background: var(--wood); }
+.bigscore .label { color: #fff3c4; }
+.gap { background: var(--mush); }
+@media (max-height: 680px) { .card { padding-top: 52px; } }
+
+/* ===== Splash and lobby: full-screen pages over the game, built on the title art ===== */
+.screen { position: fixed; inset: 0; z-index: 30; overflow: hidden; background: #6fbf5a; color: var(--ol); transition: opacity 0.32s ease; }
+.screen[hidden] { display: none; }
+.screen.out { opacity: 0; pointer-events: none; }
+#splash { z-index: 40; cursor: pointer; }
+.scr-bg { position: absolute; inset: -20px; background: #6fbf5a url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5Ojf/2wBDAQoKCg0MDRoPDxo3JR8lNzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzf/wAARCADIAJYDASIAAhEBAxEB/8QAGgAAAgMBAQAAAAAAAAAAAAAAAwQAAgUBBv/EACIQAAIDAAICAwEBAQAAAAAAAAABAgMRBCExYRITQVEUIv/EABoBAAIDAQEAAAAAAAAAAAAAAAMEAQIFAAb/xAAfEQADAQEAAwEBAQEAAAAAAAAAAQIDEQQSEyExFCL/2gAMAwEAAhEDEQA/APOwmN1WmZFsZq0ztM+goyNSFwaNpn1qQzXCQt8Ok0uD9VmjtMtwQorfRp8ap9Ef43QP6pDlEdw0aawHFq8GlVXiGsPCaZFapoqodE+Idx6K/E2c8P8Anghpf6UhEvKHQWuAX69RmeX4nRnDQxuXB4zB5tbbZ6zk0an0Y/L4u70YzwcMc708rbS9A/S/4bt3F78C74/oazTZRwZE6mhWyOG3bR14M/kU5o0syin9M2XkgWdfZCPQYWYrVVrH+Pxtzo7RR2ujV41SWHVXRupUoHTxN/B2rhehvj1Lo0qaUWhmdtRn08PPwfpoUfwaVSSKyaiPQ5SEqVMNVFLBmMkkZ6uSYSN3sKtoRKzpjrmcUkKu0it7Lf65R3+emaNTQ1DGjLru9jML1/QN+RNBYxcjVkE0I38dPehlXp/pyU1IUvOaYXrRi38Xz0I20Z+HoLYJoz+RV56LRgkWWhg3wS0zORFdm1y4Zpjcrpss2kGhdZn2RWkOWPsgFtDin8H66c/Bqv8A5L/Aq44Dzn2KeRXEN0W40anHtWIwq20x6m3Bn4mVVdZrytWCd92foKV/XkTvtbB2nKHMMVYf/R35GK7tMb7HozVaZu2tIenxpRqu3or93sSd3QKV/sV/0WE+EmtG/P0suVn6Y65Psn+j2Gx0psisZ4bceX35D18rf089G975Gab/AGa+feCWuBvxtUkUtWoSpv39Gfs1B3okjPuHLM/mVamYPMq8npOS00zH5cU9ErttjOFHn7a3pBu2HZAfszTT/DQT0t8NAVT0br7GcvwS8i+lFDDu/EM10As6HPokjO51kdgOX/RXewkFolvsjSwfogLgWisDOKKtIydKVDL3OSbwXskxh+ANkQSlEfcD82XjJsG49l612MZtSzvsGhoeEsBwXR1vB1eQucO90x6m3BpX9eTJhMN9jwsm6Et0hm6/ryZ19mlrZtis9YT5C+b/AEFN6yEaIUeZozX4SqXY9TMzamO1Mt7JGfrXR35dALGd+XQOb0lttFcv6Cb7LwmDkmRJiOs0zQXGg7s6BSsJ8WUlBi/yZCRb7CsplfgyfFkfNnepRstCRPrZZVsss6ZPqEU+jjmV+LIovS85V0hPgWvWxqEG0Cor7H6oLDRyXqhXauis6QE6jUlFYK2pBXoBh8EHAgaXkgPoytUZNM+x+l6Y1FnaNTjT8CltoWX6O50ccdLQeoJGOsPjXSyXAUatDR4+/gxTXo7XSmN/FUXWnDOXG9EfF9Gt9K/hHWir8clbGO+L6OPi+jXdaKSrRy8ZM5+Rwyv83on+f0aLgijig0+MkBryhB0ejipHXFFGkVvFIid3QKuKiG+aigUngGybFWEcth53exeyzQMpvSny07nAbTRaUiFNId7Ip1mLTW9NHjxaw7VQhuurBPSumsvFL1jMAUY4Fj0dlXGDvBoboH6vBm1Swepma+Oi4J3LGmugci6lqKSGvxgkmDbBykXkgbiR/AeiBtlWy7iUkQ7AerYOTByZaYNgLrqD5TxlZAJxDlZIRuuM05S4KSiDk8GLIil2oFVtgbkjmQUnNpkB/wDQHho1tDMMMyu0brtKVJ6HOkxvomglYdUtOn8CXmmg8ZDNVjFYR0aqgwi39TM1zSY5XPoKuwFcGMwiNZeYhO4K/HTjrGVAkodDX+iWhVy2xGccFrB+2ApZBgL8hBYyFJsDKWDFkGK2poC90wnz4VczsXoB7ozx46ynHbLKuFvq1CvIoePo2aqtiB5VSUWFWXC7XTzN1eMg1yYpSIW9ECcmfCYzXYZ9ctGYaBrNjePkoehYM1S0z690e46Ytf4aK1TRpceO4aFNQlxl4NOnwZuujTFNX0JCoPCs5ALEDO1Ji/r06oEcAiOsanyK4d8kKWVi06fRoyQOUAWnkst6cMqyj0J3UejcnWhW6pdkZ+Q2wdIwpU4w9EcYe6vGCTxm94lpr9Fa6mP1tKIrzJL4s7G3ELcqzUNaWl/A8JtGRypf9kK8juRBf6E/KjJpWj9NeifHXaNXjxXRuX4i4ZeVUmWqpHqKcw7TBDtUEef8zJya+Wj4EohmDlfQGEcDwPP7f0s66Hgw0WAiEiwUkoPGRfQKZdMZS/AiLMqzpxi+knNFZC9q6DsFZ4BS+MG0ZvIj5EZrGal0NErazU8fdyC+fWKueC189QxbHBK40Z19h3CJX9FbXrIUs8kCcHeZiVHTRp8eWYZdbwcpsPTz5MtHns8p6bNEh+pmRx5+DSol4MzzfSkaMZrg9BhogK2FUjx/kpe34VqOB4sJFiymFjMBElUMIsmBUyymMr8LphtONlFIrKYLT9ObOykCnIpZZgvO72UzwdsBdpBJtC1mFZ3ewFl6/poz4dJFZ2RS5Izr15Grbl/RG6zQ0S4/oLXyXP8ABWzyQ5N9kGVYm/M0MiNoxVd35MdXewtd+PyNqqQadOM9Jxrl12avHuWLs8pRyczs0uPy/HYn5GlND2W56eu5Z5C/aYlXK1eRiPI39MbSW2FrVNGorAsbDLjf7DQu9nTAv7/ppKwsrBCNpdWh5zCTQ/8AYDnd15FHd7AWX+yKzOqw91/sUsv9gLb/AGJ2X+xnxkpYjrTY1Pkexa3k+xW2/wBiV3I9mzNy0LdaHbOT7AO/f0zrOR35Bf6fYvrCf8J53+mp9iZDM/0+yCnoyfkjDU2XjYQhptEjFVzX6P0XvrshBbWUXls0ab3/AEbrvf8ASEM+5XQvsxmu5/0YrtIQGkjkw8bQn2EIEQWWUnaLW2kIDorTFLbfYnZd7IQJAFi1londaQg5mwbErbWAdz/pCDSXUciv3v8ApCEO9USf/9k=") center / cover no-repeat; }
+/* the art keeps its 3:4 shape: on a phone it is a little wider than the screen (the sides crop), on a wide screen it fits the height */
+.scr-box { position: absolute; left: 50%; width: min(75vh, 100vw); height: min(100vh, 133.34vw); width: min(75dvh, 100vw); height: min(100dvh, 133.34vw); transform: translateX(-50%); }
+#splash .scr-box { top: 50%; transform: translate(-50%, -50%); }
+#lobby .scr-box { top: 0; }
+.scr-box .ext { position: absolute; left: 0; right: 0; height: 100%; background: var(--art) center / 100% 100% no-repeat; transform: scaleY(-1); filter: blur(9px) brightness(0.96); opacity: 0; transition: opacity 0.45s ease; }
+.scr-box .ext.top { bottom: calc(100% - 24px); }
+.scr-box .ext.bot { top: calc(100% - 24px); }
+.scr-box.ready .ext { opacity: 1; }
+.scr-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.45s ease;
+  -webkit-mask-image: linear-gradient(transparent, #000 7%, #000 93%, transparent), linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(transparent, #000 7%, #000 93%, transparent), linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-composite: intersect; }
+.scr-box.ready .scr-art { opacity: 1; }
+#lobby .scr-art { -webkit-mask-image: linear-gradient(#000 93%, transparent), linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(#000 93%, transparent), linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+/* fireflies drifting over the art */
+.flies { position: absolute; inset: 0; pointer-events: none; }
+.flies i { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(#fffbe0 0 30%, rgba(255, 228, 102, 0.75) 45%, rgba(255, 228, 102, 0) 70%); opacity: 0; animation: fly 7s ease-in-out infinite; }
+@keyframes fly { 0% { opacity: 0; transform: translate(0, 0) scale(0.6); } 20% { opacity: 1; } 50% { transform: translate(14px, -40px) scale(1); } 80% { opacity: 0.9; } 100% { opacity: 0; transform: translate(-6px, -90px) scale(0.7); } }
+/* splash: 'touch the screen' */
+.touch { position: absolute; left: 0; right: 0; top: 60%; width: max-content; max-width: calc(100% - 32px); margin: 0 auto; text-align: center; pointer-events: none;
+  font-family: var(--num); font-size: clamp(17px, 4.8vw, 26px); letter-spacing: 0.04em; color: #fff; -webkit-text-stroke: 8px var(--ol); paint-order: stroke fill; text-shadow: 0 5px 0 var(--ol);
+  animation: touchPulse 1.1s ease-in-out infinite alternate; }
+@keyframes touchPulse { 0% { transform: scale(0.95); opacity: 0.62; } 100% { transform: scale(1.04); opacity: 1; } }
+/* lobby: items on the top left, the main card at the bottom where the thumb is */
+.lb-items { position: absolute; top: max(12px, env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); display: flex; gap: 2px; padding: 3px 10px 3px 4px;
+  background: var(--cream); border: 3px solid var(--ol); border-radius: 16px; box-shadow: 0 3px 0 var(--ol); }
+.lb-it { display: flex; align-items: center; gap: 1px; }
+.lb-it img { width: 30px; height: 30px; display: block; }
+.lb-it b { font-family: var(--num); font-weight: 400; font-size: 17px; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; min-width: 14px; }
+.lb-it + .lb-it { margin-left: 6px; }
+.lb-card { position: absolute; left: 50%; transform: translateX(-50%); bottom: max(14px, env(safe-area-inset-bottom, 0px)); width: min(calc(100% - 24px), 400px); box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 10px; padding: 40px 14px 14px; background: var(--cream); border: 4px solid var(--ol); border-radius: 26px; box-shadow: 0 8px 0 var(--ol);
+  animation: sheetIn 0.45s cubic-bezier(.25, 1.4, .5, 1) both; }
+@keyframes sheetIn { 0% { transform: translate(-50%, 60px); opacity: 0; } 100% { transform: translate(-50%, 0); opacity: 1; } }
+.lb-best { position: absolute; left: 50%; top: -30px; transform: translateX(-50%) rotate(-2deg); display: flex; flex-direction: column; align-items: center; min-width: 170px; box-sizing: border-box;
+  padding: 5px 30px 7px; background: radial-gradient(circle at 12px 50%, #6b4426 0 3px, #f3cf9a 3.5px 4.5px, transparent 5px), radial-gradient(circle at calc(100% - 12px) 50%, #6b4426 0 3px, #f3cf9a 3.5px 4.5px, transparent 5px), var(--wood);
+  border: 4px solid var(--ol); border-radius: 14px; box-shadow: 0 5px 0 var(--ol); white-space: nowrap; }
+.lb-best .label { font-size: 12px; -webkit-text-stroke: 3.5px var(--ol); }
+.lb-best .num { font-size: 27px; line-height: 1.05; -webkit-text-stroke: 7px var(--ol); }
+.lb-size .opt { flex-direction: row; align-items: center; gap: 8px; padding: 9px 8px 9px 9px; position: relative; }
+.lb-size .opt > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lb-size .opt span { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 370px) { .lb-size .opt span { font-size: 10.5px; } }
+.mini { flex: none; width: 32px; height: 32px; box-sizing: border-box; border: 2.5px solid var(--ol); border-radius: 7px; background-color: #2f6b3a;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px); }
+.mini.m32 { background-size: 4.1px 4.1px; }
+.mini.m16 { background-size: 8.2px 8.2px; }
+.mini i { display: block; width: 100%; height: 100%; background:
+  linear-gradient(#ffd23f, #ffd23f) 0 100% / 26% 26%, linear-gradient(#e9483b, #e9483b) 26% 100% / 26% 26%, linear-gradient(#4fa3ff, #4fa3ff) 26% 74% / 26% 26%, linear-gradient(#6ccf4f, #6ccf4f) 100% 100% / 26% 26%; background-repeat: no-repeat; }
+.mini.m32 i { background-size: 13% 13%; }
+.vs-ic { flex: none; width: 34px; height: 34px; margin: -1px; }
+.lb-modes .opt { min-height: 56px; box-sizing: border-box; }
+.lb-modes .opt.empty { background: rgba(255, 250, 240, 0.55); border-style: dashed; border-color: #b8925f; box-shadow: none; }
+.lb-modes .opt.empty:active { transform: none; }
+.lb-size .opt[aria-pressed="true"]::after { content: ''; position: absolute; top: -9px; right: -7px; width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--ol); box-sizing: border-box;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 6.8' fill='none' stroke='%232b1a0e' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 15px no-repeat; }
+.lb-start { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 16px; font-size: 27px; margin-bottom: 8px; }
+.lb-start svg { width: 30px; height: 30px; flex: none; filter: drop-shadow(0 2px 0 var(--ol)); }
+.lb-start::after { content: ''; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent); transform: skewX(-18deg); animation: shine 3.2s ease-in-out infinite; pointer-events: none; }
+@keyframes shine { 0%, 62% { left: -40%; } 100% { left: 120%; } }
+.lb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lb-sub { appearance: none; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 10px; border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 4px 0 var(--ol);
+  font-family: var(--num); font-size: 18px; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; cursor: pointer; margin-bottom: 4px; }
+.lb-sub svg { width: 24px; height: 24px; flex: none; }
+.lb-sub:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ol); }
+.lb-sub:focus-visible { outline: none; }
+#btn-shop { background: linear-gradient(#f2604f, #d63a2e); }
+#btn-settings { background: var(--wood); }
+/* pause menu and result: smaller plain buttons in a row */
+.btn.plain { background: #fffaf0; color: var(--ol); -webkit-text-stroke: 0; font-family: 'Black Han Sans', sans-serif; font-size: 17px; padding: 10px 12px; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.toast { position: fixed; left: 50%; top: 38%; z-index: 60; transform: translateX(-50%); padding: 10px 18px; max-width: calc(100% - 48px); box-sizing: border-box; text-align: center;
+  background: var(--ol); color: var(--cream); border: 3px solid var(--cream); border-radius: 14px; box-shadow: 0 4px 0 rgba(43, 26, 14, 0.5);
+  font-family: 'Black Han Sans', sans-serif; font-size: 16px; pointer-events: none; animation: toastIn 0.3s cubic-bezier(.3, 1.5, .5, 1); }
+.toast[hidden] { display: none; }
+@keyframes toastIn { 0% { transform: translate(-50%, 10px) scale(0.9); opacity: 0; } 100% { transform: translate(-50%, 0); opacity: 1; } }
+#settings { z-index: 45; }
+html[lang="en"] .opts.three .opt b { font-size: 15px; }
+/* English words are wider: the top bar puts 'Score' / 'Best' small above the number, so the number keeps the whole side */
+html[lang="en"] .stat { flex-direction: column; align-items: flex-start; gap: 0; }
+html[lang="en"] .stat.right { align-items: flex-end; }
+html[lang="en"] .stat .label { font-size: 10.5px; line-height: 1; -webkit-text-stroke: 3.5px var(--ol); }
+html[lang="en"] .stat .num { font-size: 21px; }
+html[lang="en"] .stat .num.sm { font-size: 17px; }
+@media (max-height: 680px) {
+  .lb-card { gap: 8px; padding: 36px 12px 12px; }
+  .lb-start { padding: 11px 16px; font-size: 24px; }
+  .lb-best .num { font-size: 24px; }
+}
+/* any upright screen (up to 3:4): the tall title art (841 x 1870, 9:20) fills it. The page rarely gets the whole phone screen
+   (browser bars, the app's own top bar), so this must not depend on the phone's full size. Only background edges go:
+   top and bottom on shorter screens (the splash cuts a little more from the bottom, the lobby from the top so the logo
+   stays above the card), a sliver of the sides on very long ones. No blurred bands. */
+html.tall-art #splash .scr-box, html.tall-art #lobby .scr-box { transform: translateX(-50%);
+  width: max(100vw, 44.973vh); height: max(222.35vw, 100vh); width: max(100vw, 44.973dvh); height: max(222.35vw, 100dvh); }
+html.tall-art #splash .scr-box { top: calc((100vh - max(222.35vw, 100vh)) * 0.4); top: calc((100dvh - max(222.35vw, 100dvh)) * 0.4); }
+html.tall-art #lobby .scr-box { top: calc((100vh - max(222.35vw, 100vh)) * 0.65); top: calc((100dvh - max(222.35vw, 100dvh)) * 0.65); }
+html.tall-art .scr-art, html.tall-art #lobby .scr-art { -webkit-mask-image: none; mask-image: none; }
+html.tall-art .scr-box .ext { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .touch, .flies i, .lb-start::after, .lb-card, .toast { animation: none; }
+  .flies i { opacity: 0.8; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="hud">
+    <div class="stat"><span class="label" data-t="score">점수</span><span id="score" class="num">0</span></div>
+    <button id="btn-pause" class="chip" type="button" aria-label="멈추고 메뉴 열기" data-ta="pause"><i class="pz" aria-hidden="true"></i><span id="mode-label">놓을 때마다</span></button>
+    <div class="stat right"><span class="label" data-t="best">최고</span><span id="best" class="num sm">0</span></div>
+  </header>
+  <div class="subbar">
+    <div id="mission" class="mission idle" aria-live="polite"><i class="m-dot" id="m-dot"></i><span class="m-text" id="m-text">곧 새 미션이 나와요</span></div>
+    <div id="rotbox" class="rotbox" aria-label="남은 돌리기 횟수, 세 칸 합계" data-ta="rotLeft"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12a7 7 0 1 1-2.05-4.95" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M20.5 3.5v5.2h-5.2z" fill="currentColor"/></svg><b id="rot-n">10</b></div>
+    <div id="fever" class="fever" role="button" aria-label="피버 게이지"><span class="f-label" id="f-label">피버</span><div class="f-track"><div class="f-fill" id="f-fill"></div></div></div>
+  </div>
+  <div id="stage">
+    <canvas id="cv" aria-label="게임 판" data-ta="board"></canvas>
+
+    <section id="menu" class="overlay" hidden>
+      <div class="card">
+        <div class="ribbon"><h1 data-t="paused">일시정지</h1></div>
+        <button class="btn primary" id="btn-unpause" type="button" data-t="resume">이어서 하기</button>
+        <button class="btn ghost" id="btn-restart" type="button" data-t="restart">다시 시작</button>
+        <div class="btn-row">
+          <button class="btn plain" id="btn-psettings" type="button" data-t="settings">설정</button>
+          <button class="btn plain" id="btn-plobby" type="button" data-t="toLobby">로비로</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="over" class="overlay" hidden>
+      <div class="card">
+        <div class="ribbon"><h2 data-t="over">게임 오버</h2></div>
+        <p id="over-reason" class="reason"></p>
+        <div class="bigscore"><span class="label" data-t="score">점수</span><span id="over-score" class="num">0</span></div>
+        <p id="over-best" class="gap"></p>
+        <button class="btn primary" id="btn-continue" type="button">아래 5줄 지우고 이어하기</button>
+        <button class="btn primary" id="btn-again" type="button" data-t="again">다시 하기</button>
+        <button class="btn ghost" id="btn-menu" type="button" data-t="toLobby">로비로</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section id="lobby" class="screen" hidden aria-label="로비" data-ta="lobby">
+  <div class="scr-bg" aria-hidden="true"></div>
+  <div class="scr-box" id="lobby-box"><img class="scr-art" id="lobby-art" alt="" decoding="async"></div>
+  <div class="flies" aria-hidden="true"><i style="left:12%;top:58%;animation-delay:-1s"></i><i style="left:84%;top:46%;animation-delay:-3.4s"></i><i style="left:30%;top:36%;animation-delay:-5.2s;animation-duration:8s"></i><i style="left:68%;top:30%;animation-delay:-2.2s;animation-duration:6.4s"></i><i style="left:50%;top:52%;animation-delay:-4.4s"></i><i style="left:6%;top:30%;animation-delay:-6s;animation-duration:7.6s"></i></div>
+  <div class="lb-items" aria-label="내 아이템" data-ta="myItems">
+    <span class="lb-it"><img id="lb-bomb-ic" alt="폭탄" data-talt="bomb"><b id="lb-bomb">0</b></span>
+    <span class="lb-it"><img id="lb-drill-ic" alt="드릴" data-talt="drill"><b id="lb-drill">0</b></span>
+  </div>
+  <div class="lb-card">
+    <div class="lb-best"><span class="label" id="lb-best-label">최고 점수</span><span id="lb-best" class="num">0</span></div>
+    <div class="opts lb-size" role="group" aria-label="판 크기" data-ta="boardSize">
+      <button class="opt" id="opt-32" type="button" aria-pressed="true"><i class="mini m32"><i></i></i><div><b>32칸</b><span data-t="sizeSmall">작은 큐브 · 넓은 판</span></div></button>
+      <button class="opt" id="opt-16" type="button" aria-pressed="false"><i class="mini m16"><i></i></i><div><b>16칸</b><span data-t="sizeBig">큰 큐브 · 좁은 판</span></div></button>
+    </div>
+    <div class="opts lb-size lb-modes">
+      <button class="opt" id="opt-versus" type="button"><svg class="vs-ic" viewBox="0 0 34 34" aria-hidden="true"><path d="M3.5 9A5.5 5.5 0 0 1 9 3.5h16A5.5 5.5 0 0 1 30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9A5.5 5.5 0 0 1 3.5 25z" fill="#4fa3ff"/><path d="M30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9.5L24.5 3.5H25A5.5 5.5 0 0 1 30.5 9z" fill="#e9483b"/><path d="M3.5 9A5.5 5.5 0 0 1 9 3.5h16A5.5 5.5 0 0 1 30.5 9v16a5.5 5.5 0 0 1-5.5 5.5H9A5.5 5.5 0 0 1 3.5 25z" fill="none" stroke="#2b1a0e" stroke-width="2.5"/><text x="17" y="22.6" text-anchor="middle" font-family="Gasoek One, Black Han Sans, sans-serif" font-size="14" fill="#fff" stroke="#2b1a0e" stroke-width="3.6" paint-order="stroke" stroke-linejoin="round">VS</text></svg><div><b data-t="versus">대결</b><span data-t="soon">준비 중</span></div></button>
+      <button class="opt empty" id="opt-blank" type="button" aria-label="빈 칸" data-ta="blank"></button>
+    </div>
+    <button class="btn primary lb-start" id="btn-new" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13.5" fill="#fff" stroke="#2b1a0e" stroke-width="3"/><path d="M13 10.2v11.6l9.4-5.8z" fill="#4fb83f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg><span data-t="start">게임 시작</span></button>
+    <div class="lb-row">
+      <button class="lb-sub" id="btn-shop" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 9h15l-1.6 10.2a2 2 0 0 1-2 1.8H8.1a2 2 0 0 1-2-1.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2.2" stroke-linejoin="round"/><path d="M8 9.5 11 3.5M16 9.5 13 3.5" stroke="#2b1a0e" stroke-width="2.2" stroke-linecap="round"/><path d="M3 9h18" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round"/><path d="M9.5 13v4.5M14.5 13v4.5" stroke="#c98f4f" stroke-width="2" stroke-linecap="round"/></svg><span data-t="shop">상점</span></button>
+      <button class="lb-sub" id="btn-settings" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg><span data-t="settings">설정</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="splash" class="screen" hidden aria-label="시작 화면" data-ta="splash">
+  <div class="scr-bg" aria-hidden="true"></div>
+  <div class="scr-box" id="splash-box"><i class="ext top"></i><i class="ext bot"></i><img class="scr-art" id="splash-art" alt="블록 포레스트" data-talt="title" decoding="async" fetchpriority="high"></div>
+  <div class="flies" aria-hidden="true"><i style="left:10%;top:62%;animation-delay:-1s"></i><i style="left:86%;top:50%;animation-delay:-3.4s"></i><i style="left:28%;top:44%;animation-delay:-5.2s;animation-duration:8s"></i><i style="left:72%;top:34%;animation-delay:-2.2s;animation-duration:6.4s"></i><i style="left:52%;top:70%;animation-delay:-4.4s"></i><i style="left:18%;top:24%;animation-delay:-6s;animation-duration:7.6s"></i><i style="left:90%;top:76%;animation-delay:-0.4s;animation-duration:6.8s"></i></div>
+  <p class="touch" id="splash-touch" data-t="touch">화면을 터치하세요</p>
+</section>
+
+<section id="settings" class="overlay" hidden>
+  <div class="card">
+    <div class="ribbon"><h2 data-t="settings">설정</h2></div>
+    <p class="group-label" data-t="sound">소리·진동</p>
+    <div class="opts three" role="group" aria-label="소리와 진동" data-ta="soundAria">
+      <button class="opt" id="opt-music" type="button" aria-pressed="true"><b data-t="music">배경음</b><span id="music-state">켜짐</span></button>
+      <button class="opt" id="opt-sfx" type="button" aria-pressed="true"><b data-t="sfx">효과음</b><span id="sfx-state">켜짐</span></button>
+      <button class="opt" id="opt-vib" type="button" aria-pressed="true"><b data-t="vib">진동</b><span id="vib-state">켜짐</span></button>
+    </div>
+    <p class="group-label" data-t="language">언어</p>
+    <div class="opts" role="group" aria-label="언어" data-ta="language">
+      <button class="opt" id="opt-ko" type="button" aria-pressed="true"><b>한국어</b></button>
+      <button class="opt" id="opt-en" type="button" aria-pressed="false"><b>English</b></button>
+    </div>
+    <button class="btn primary" id="btn-settings-close" type="button" data-t="close">닫기</button>
+  </div>
+</section>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<canvas id="fxc" aria-hidden="true"></canvas>
+<script>
+(() => {
+'use strict';
+
+/* ---------- words: the phone's language decides (Korean, otherwise English); settings can switch ---------- */
+let LANG = 'ko';
+try { const l = localStorage.getItem('rise-lang'); LANG = l === 'ko' || l === 'en' ? l : (/^ko/i.test(navigator.language || '') ? 'ko' : 'en'); } catch (e) { LANG = /^ko/i.test(navigator.language || '') ? 'ko' : 'en'; }
+const STR = {
+  ko: {
+    title: '블록 포레스트', score: '점수', best: '최고', pause: '멈추고 메뉴 열기', board: '게임 판', rotLeft: '남은 돌리기 횟수, 세 칸 합계',
+    feverGauge: '피버 게이지', feverUse: '피버 쓰기', feverReady: '피버!', feverOn: s => `피버! ${s}초`, feverCount: (n, g) => `피버 ${n}/${g}`,
+    feverBanner: '피버 타임!', feverSub: s => `${s}초 동안 점수 2배`,
+    size: n => `${n}칸`, sizeSmall: '작은 큐브 · 넓은 판', sizeBig: '큰 큐브 · 좁은 판', boardSize: '판 크기',
+    missionNext: '곧 새 미션이 나와요', missionDone: r => `성공! ${r}`, missionFail: '미션 실패',
+    missionWin: '미션 성공!', missionNew: '새 미션', pts: n => `+${n}점`,
+    colors: ['빨강', '초록', '파랑', '보라'],
+    goalColor: (c, n) => `${c} 큐브 ${n}개 터뜨리기`, goalRows: n => `줄 ${n}개 깨기`, goalCombo: n => `콤보 ${n} 만들기`, goalBig: n => `한 번에 큐브 ${n}개 터뜨리기`,
+    lineColor: (c, h, n) => `${c} 큐브 ${h}/${n}`, lineRows: (h, n) => `줄 깨기 ${h}/${n}`, lineCombo: (h, n) => `콤보 ${h}/${n}`, lineBig: (h, n) => `한 번에 ${h}/${n}개`,
+    stuck: '놓을 곳이 없어요', stuckSub: '아이템으로 자리를 만들어 보세요',
+    fireBomb: '폭탄!', fireBolt: '번개!', fireDrill: '드릴!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
+    paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '로비로',
+    over: '게임 오버', overTop: '꼭대기를 넘었어요', overNoFit: '더 놓을 곳이 없어요', newBest: '새 최고 기록!', cont: n => `아래 ${n}줄 지우고 이어하기`, again: '다시 하기',
+    versus: '대결', soon: '준비 중', versusSoon: '대결 모드는 곧 열려요', blank: '빈 칸',
+    lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bestOf: n => `최고 점수 · ${n}칸`, start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요',
+    splash: '시작 화면', touch: '화면을 터치하세요',
+    sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
+  },
+  en: {
+    title: 'Block Forest', score: 'Score', best: 'Best', pause: 'Pause and open the menu', board: 'Game board', rotLeft: 'Turns left, all three slots',
+    feverGauge: 'Fever gauge', feverUse: 'Use fever', feverReady: 'FEVER!', feverOn: s => `Fever! ${s}s`, feverCount: (n, g) => `Fever ${Math.floor(n * 100 / g)}%`,
+    feverBanner: 'FEVER TIME!', feverSub: s => `Double points for ${s}s`,
+    size: n => `${n} Wide`, sizeSmall: 'Small cubes', sizeBig: 'Big cubes', boardSize: 'Board size',
+    missionNext: 'Next mission soon', missionDone: r => `Done! ${r}`, missionFail: 'Mission failed',
+    missionWin: 'MISSION CLEAR!', missionNew: 'NEW MISSION', pts: n => `+${n} pts`,
+    colors: ['Red', 'Green', 'Blue', 'Purple'],
+    goalColor: (c, n) => `Pop ${n} ${c.toLowerCase()} cubes`, goalRows: n => `Clear ${n} lines`, goalCombo: n => `Reach a ${n} combo`, goalBig: n => `Pop ${n} cubes at once`,
+    lineColor: (c, h, n) => `${c} ${h}/${n}`, lineRows: (h, n) => `Lines ${h}/${n}`, lineCombo: (h, n) => `Combo ${h}/${n}`, lineBig: (h, n) => `At once ${h}/${n}`,
+    stuck: 'NO ROOM!', stuckSub: 'Use an item to make room',
+    fireBomb: 'BOMB!', fireBolt: 'ZAP!', fireDrill: 'DRILL!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
+    paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Lobby',
+    over: 'Game Over', overTop: 'The blocks reached the top', overNoFit: 'No room left', newBest: 'New Best!', cont: n => `Continue (-${n} Rows)`, again: 'Play Again',
+    versus: 'Versus', soon: 'Coming soon', versusSoon: 'Versus mode is coming soon', blank: 'Empty slot',
+    lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bestOf: n => `Best · ${n} Wide`, start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon',
+    splash: 'Title screen', touch: 'Touch to Start',
+    sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
+  },
+};
+const tr = (k, ...a) => { const v = (STR[LANG] && k in STR[LANG] ? STR[LANG] : STR.ko)[k]; return typeof v === 'function' ? v(...a) : v; };
+
+/* ---------- rules ---------- */
+// Board of 32 x 40 small cubes.
+// Pick a block from the tray at the bottom with your thumb, slide it to a column and let go:
+// it drops in from the top and lands in one piece, keeping its shape.
+// A full row breaks, and 20 (16-wide board: 10) or more same-colored cubes touching each other burst.
+// Cubes left floating over the gaps then fall straight down, which can set off another break (a chain).
+// Rows of mixed-color cubes keep rising from the bottom.
+// two board sizes: 32 x 40 small cubes, or 16 x 20 cubes twice as big
+const SIZES = {
+  32: { cols: 32, rows: 40, burst: 20, terrain: 18, funnel: 6 },
+  16: { cols: 16, rows: 20, burst: 10, terrain: 9, funnel: 3 },
+};
+let COLS = 32, ROWS = 40, BURST = 20;
+let START_TERRAIN = 18, START_FUNNEL = 6;   // the board starts packed with cookie cubes, a funnel on top
+function setSize(size) {
+  const z = SIZES[size] || SIZES[32];
+  COLS = z.cols; ROWS = z.rows; BURST = z.burst; START_TERRAIN = z.terrain; START_FUNNEL = z.funnel;
+}
+// One look for the whole game: the four cube colours (red, green, blue, purple) and the bar colours.
+// the board's look: plank colours, cube colours and bar colours (one look for the whole game)
+const THEMES = [
+  { name: '나무 공방', at: 0, paint: 'wood', planks: ['#5e2c17', '#69341c', '#532614'], gap: '#2a120a',
+    cubes: ['#ff4d6d', '#2ed47a', '#3d8bff', '#b45cff'],
+    css: { '--frame': '#2a1b10', '--bar': '#24170d', '--bar-line': '#6e4c2f', '--panel': '#3b2819', '--panel-2': '#4b331f', '--panel-line': '#7d5837' } },
+];
+let COLORS = THEMES[0].cubes;
+const TERRAIN_CAP = 4;   // cubes laid on the board (start and rising rows) join same-colored runs of at most this many
+const colorOf = v => v & 15;
+const WILD = 5;                     // rainbow cube: counts as every colour when cubes group up
+const STONE = 6, STONE_CHANCE = 0.08;   // grey stone in the rising rows: never groups, breaks when a group bursts beside it or its row breaks
+const SP_BOMB = 1, SP_BOLT = 2;     // bomb / lightning, kept in bits 6-7 of a cell (bits 4-5 are the grain)
+const specialOf = v => (v >> 6) & 3;
+const withGrain = (color) => color | (rand(4) << 4);
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ANIM = REDUCE ? 0.05 : 1;
+
+function S(name, rows, w) {
+  const cells = [];
+  rows.forEach((row, r) => [...row].forEach((ch, c) => { if (ch === '#') cells.push([r, c]); }));
+  return { name, cells, h: rows.length, wd: Math.max(...rows.map(x => x.length)), w };
+}
+const SHAPES = [
+  S('1', ['#'], 2),
+  S('2h', ['##'], 3), S('2v', ['#', '#'], 3),
+  S('3h', ['###'], 3), S('3v', ['#', '#', '#'], 3),
+  S('c3a', ['#.', '##'], 2), S('c3b', ['##', '#.'], 2), S('c3c', ['##', '.#'], 2), S('c3d', ['.#', '##'], 2),
+  S('4h', ['####'], 2), S('4v', ['#', '#', '#', '#'], 2),
+  S('o', ['##', '##'], 3),
+  S('t1', ['###', '.#.'], 1), S('t2', ['.#.', '###'], 1), S('t3', ['#.', '##', '#.'], 1), S('t4', ['.#', '##', '.#'], 1),
+  S('s1', ['.##', '##.'], 1), S('s2', ['#.', '##', '.#'], 1),
+  S('z1', ['##.', '.##'], 1), S('z2', ['.#', '##', '#.'], 1),
+  S('l1', ['#.', '#.', '##'], 1), S('l2', ['###', '#..'], 1), S('l3', ['##', '.#', '.#'], 1), S('l4', ['..#', '###'], 1),
+  S('j1', ['.#', '.#', '##'], 1), S('j2', ['#..', '###'], 1), S('j3', ['##', '#.', '#.'], 1), S('j4', ['###', '..#'], 1),
+  S('5h', ['#####'], 1.2), S('5v', ['#', '#', '#', '#', '#'], 1.2),
+  S('L5a', ['#..', '#..', '###'], 0.7), S('L5b', ['###', '#..', '#..'], 0.7), S('L5c', ['###', '..#', '..#'], 0.7), S('L5d', ['..#', '..#', '###'], 0.7),
+  S('r23', ['###', '###'], 0.9), S('r32', ['##', '##', '##'], 0.9),
+  S('sq3', ['###', '###', '###'], 0.8),
+];
+const SHAPE_BY_NAME = Object.fromEntries(SHAPES.map(s => [s.name, s]));
+const TOTAL_W = SHAPES.reduce((a, s) => a + s.w, 0);
+const shapeOf = p => SHAPE_BY_NAME[p.s];
+
+const rand = n => Math.floor(Math.random() * n);
+function pickShape() {
+  let x = Math.random() * TOTAL_W;
+  for (const s of SHAPES) { x -= s.w; if (x <= 0) return s; }
+  return SHAPES[0];
+}
+const makePiece = () => ({ s: pickShape().name, color: 1 + rand(COLORS.length) });
+
+/* ---------- state ---------- */
+const G = {
+  grid: [], tray: [null, null, null],
+  score: 0, best: 0, combo: 0, riseAcc: 0, timeAcc: 0, rises: 0, drops: 0,
+  mode: 'moves', size: 32, state: 'menu', reason: null, started: false, phase: 'idle',
+};
+let menuMode = 'moves', menuSize = 32;
+let drag = null;      // {i, x, y, x0, y0, t0, id, ghost}
+let pending = null;   // a drop released while the board was still settling
+let anim = null;      // current settling step: {type: 'drop'|'item'|'burst'|'fall', t0, dur, cells | marks}
+let idrag = null;     // an item held by the thumb: {k, x, y, x0, y0, id, col, home, hist, trail}
+let pendingItem = null;   // an item let go while the board was still settling
+let chain = 0, dropBurst = false;
+const fx = { shift: null, cubes: [], pops: [], combo: null, spin: null, sparks: [], orbs: [], banners: [], shake: null, flash: null, stageFade: null, scoreGate: 0 };
+let lastDrop = null, shownScore = 0;
+let gridVersion = 0;
+
+const emptyGrid = () => Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+function touchGrid() { gridVersion++; if (drag) drag.ghost = null; }
+
+function heights(grid) {
+  const h = Array(COLS).fill(0);
+  for (let c = 0; c < COLS; c++) { let r = 0; while (r < ROWS && !grid[r][c]) r++; h[c] = ROWS - r; }
+  return h;
+}
+function fits(grid, shape, r, c) {
+  for (const [dr, dc] of shape.cells) {
+    const rr = r + dr, cc = c + dc;
+    if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS || grid[rr][cc]) return false;
+  }
+  return true;
+}
+// where a block dropped into column c comes to rest: it falls as one piece until any cube touches something
+function landing(grid, shape, c) {
+  if (c < 0 || c + shape.wd > COLS || !fits(grid, shape, 0, c)) return null;
+  let r = 0;
+  while (fits(grid, shape, r + 1, c)) r++;
+  return shape.cells.map(([dr, dc]) => ({ r: r + dr, c: c + dc, r0: dr - shape.h }));
+}
+const dropCache = new Map();
+function canDropAnywhere(shape) {
+  const key = gridVersion + '|' + shape.name;
+  let v = dropCache.get(key);
+  if (v === undefined) {
+    v = false;
+    for (let c = 0; c + shape.wd <= COLS; c++) if (landing(G.grid, shape, c)) { v = true; break; }
+    if (dropCache.size > 64) dropCache.clear();
+    dropCache.set(key, v);
+  }
+  return v;
+}
+
+// what breaks now: full rows and same-colored groups of BURST or more
+function findBursts(grid) {
+  const need = burstNeed();
+  const marks = new Map();
+  const groups = [];
+  // one pass per colour; a rainbow cube joins the group of whichever colour touches it
+  for (let col = 1; col <= COLORS.length; col++) {
+    const seen = new Uint8Array(ROWS * COLS);
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const v = grid[r][c];
+      if (!v || colorOf(v) !== col || seen[r * COLS + c]) continue;
+      const stack = [r * COLS + c], grp = [];
+      seen[r * COLS + c] = 1;
+      while (stack.length) {
+        const k = stack.pop(); grp.push(k);
+        const rr = (k / COLS) | 0, cc = k % COLS;
+        for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const r2 = rr + a, c2 = cc + b;
+          if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) continue;
+          const k2 = r2 * COLS + c2, v2 = grid[r2][c2];
+          if (!seen[k2] && v2 && (colorOf(v2) === col || colorOf(v2) === WILD)) { seen[k2] = 1; stack.push(k2); }
+        }
+      }
+      if (grp.length >= need) { groups.push(grp); for (const k of grp) marks.set(k, grid[(k / COLS) | 0][k % COLS]); }
+    }
+  }
+  // stones touching a bursting group break with it
+  for (const grp of groups) for (const k of grp) {
+    const rr = (k / COLS) | 0, cc = k % COLS;
+    for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const r2 = rr + a, c2 = cc + b;
+      if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) continue;
+      const v2 = grid[r2][c2];
+      if (v2 && colorOf(v2) === STONE) marks.set(r2 * COLS + c2, v2);
+    }
+  }
+  let rows = 0;
+  for (let r = 0; r < ROWS; r++) {
+    if (!grid[r].every(v => v)) continue;
+    rows++;
+    for (let c = 0; c < COLS; c++) {
+      const k = r * COLS + c;
+      if (!marks.has(k)) marks.set(k, grid[r][c]);
+    }
+  }
+  return { marks, groups, rows };
+}
+// After a break, in every column where something broke, everything above falls straight down
+// until nothing floats over an empty cell. Returns the moves for the animation.
+function compact(grid, cols) {
+  const moves = [];
+  for (const c of cols) {
+    let w = ROWS - 1;
+    for (let r = ROWS - 1; r >= 0; r--) {
+      const v = grid[r][c];
+      if (!v) continue;
+      if (w !== r) { grid[w][c] = v; grid[r][c] = 0; moves.push({ r: w, c, r0: r }); }
+      w--;
+    }
+  }
+  return moves;
+}
+
+// The packed board: rows of cubes with a narrow channel, 1-2 cubes wide, that winds as it goes down.
+// When the channel steps sideways the row covers both columns, so the channel never breaks.
+// Returns which cells of the row are filled (1) or open (0); the colors are painted in place by paintCell.
+function terrainMask() {
+  const ch = G.chan || (G.chan = { col: rand(COLS - 1), w: 1 });
+  let from = ch.col, to = ch.col + ch.w - 1;
+  if (Math.random() < 0.3) {
+    const step = Math.random() < 0.5 ? -1 : 1;
+    ch.col = Math.max(0, Math.min(COLS - ch.w, ch.col + step));
+    from = Math.min(from, ch.col); to = Math.max(to, ch.col + ch.w - 1);
+  } else if (Math.random() < 0.12) {
+    ch.w = ch.w === 1 ? 2 : 1;
+    ch.col = Math.max(0, Math.min(COLS - ch.w, ch.col));
+    from = Math.min(from, ch.col); to = Math.max(to, ch.col + ch.w - 1);
+  }
+  return Array.from({ length: COLS }, (_, c) => (c >= from && c <= to ? 0 : 1));
+}
+// The row that rises under `above` (the current bottom row) may only leave gaps under cells that are open in `above`;
+// a gap under a cube would leave that cube floating. The channel still wanders as before, then is kept to open cells.
+function riseMask(above) {
+  const open = [];
+  for (let c = 0; c < COLS; c++) if (!above[c]) open.push(c);
+  const m = terrainMask();
+  if (!open.length) return m;   // cannot happen (a full bottom row has already broken), kept as a guard
+  let gaps = open.filter(c => !m[c]);
+  if (!gaps.length) {
+    // the wandering channel ran under cubes: take the open cell nearest to it, and its open neighbour when the channel is 2 wide
+    const ch = G.chan;
+    let best = open[0], bd = Infinity;
+    for (const c of open) { const d = Math.abs(c - ch.col) + Math.random() * 0.5; if (d < bd) { bd = d; best = c; } }
+    gaps = [best];
+    if (ch.w === 2) { const nb = [best - 1, best + 1].filter(c => open.includes(c)); if (nb.length) gaps.push(nb[rand(nb.length)]); }
+  }
+  gaps.sort((a, b) => a - b);
+  let n = 1;
+  while (n < gaps.length && gaps[n] === gaps[0] + n) n++;
+  gaps = gaps.slice(0, n);   // one channel, no split gaps
+  G.chan.col = gaps[0]; G.chan.w = Math.min(2, gaps.length);
+  return Array.from({ length: COLS }, (_, c) => (gaps.includes(c) ? 0 : 1));
+}
+// size of the same-colored group a cube of `color` at (r, c) would end up in, counting only cubes already there
+function joinedSize(g, r, c, color, limit) {
+  const seen = new Set([r * COLS + c]);
+  const stack = [r * COLS + c];
+  let n = 0;
+  while (stack.length) {
+    const k = stack.pop(); n++;
+    if (n > limit) return n;
+    const rr = (k / COLS) | 0, cc = k % COLS;
+    for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const r2 = rr + a, c2 = cc + b;
+      if (r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) continue;
+      const k2 = r2 * COLS + c2;
+      if (!seen.has(k2) && g[r2][c2] && colorOf(g[r2][c2]) === color) { seen.add(k2); stack.push(k2); }
+    }
+  }
+  return n;
+}
+// lay one cube at (r, c) in a random color that keeps its same-colored run at TERRAIN_CAP or less,
+// so nothing laid on the board is ever close to bursting by itself
+function paintCell(g, r, c) {
+  const order = [1, 2, 3, 4];
+  for (let i = 3; i > 0; i--) { const j = rand(i + 1); [order[i], order[j]] = [order[j], order[i]]; }
+  let pick = order[0], best = Infinity;
+  for (const color of order) {
+    const n = joinedSize(g, r, c, color, TERRAIN_CAP);
+    if (n <= TERRAIN_CAP) { pick = color; best = n; break; }
+    if (n < best) { best = n; pick = color; }
+  }
+  g[r][c] = withGrain(pick);
+}
+// pressure ramps with the number of drops / risen rows
+const RISE_EVERY = 1;   // a row rises after every drop
+const moveIv = () => RISE_EVERY;
+
+function loadBest() { try { return Number(localStorage.getItem(`rise7-best-${G.size}`)) || 0; } catch (e) { return 0; } }
+function saveBest(v) { try { localStorage.setItem(`rise7-best-${G.size}`, String(v)); } catch (e) { /* storage unavailable */ } }
+
+function startBoard() {
+  const g = emptyGrid();
+  const mask = emptyGrid();
+  // the channel starts under the funnel's opening, so a block dropped from the top can get into it
+  const wall0 = START_FUNNEL * 2;
+  G.chan = { col: wall0 + rand(COLS - 2 * wall0 - 1), w: 1 };
+  // packed rows from the top of the pile down, so the channel winds downward and keeps going in rising rows
+  for (let k = 0; k < START_TERRAIN; k++) mask[ROWS - START_TERRAIN + k] = terrainMask();
+  // a funnel above the pile: walls on both sides, thinner toward the top
+  for (let i = 0; i < START_FUNNEL; i++) {
+    const r = ROWS - START_TERRAIN - 1 - i, wall = (START_FUNNEL - i) * 2;
+    for (let c = 0; c < COLS; c++) if (c < wall || c >= COLS - wall) mask[r][c] = 1;
+  }
+  // then the colors, top to bottom
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (mask[r][c]) paintCell(g, r, c);
+  return g;
+}
+
+// Most new blocks are ones that can finish a row somewhere, so something breaks often.
+const HELP = 0.4;
+function completesRow(shape, c) {
+  const cells = landing(G.grid, shape, c);
+  if (!cells) return false;
+  const rows = new Set(cells.map(e => e.r));
+  for (const r of rows) {
+    let full = true;
+    for (let cc = 0; cc < COLS && full; cc++) if (!G.grid[r][cc] && !cells.some(e => e.r === r && e.c === cc)) full = false;
+    if (full) return true;
+  }
+  return false;
+}
+function basePiece() {
+  if (Math.random() < HELP) {
+    const good = SHAPES.filter(sh => { for (let c = 0; c + sh.wd <= COLS; c++) if (completesRow(sh, c)) return true; return false; });
+    if (good.length) return { s: good[rand(good.length)].name, color: 1 + rand(COLORS.length) };
+  }
+  return makePiece();
+}
+// Special cubes: now and then one cube of a new block is a rainbow, and every 5th combo earns one for sure.
+// (Bomb and lightning cubes are no longer dealt: the bomb and the drill are items now. A saved game that still
+// holds one keeps working.)
+const SPECIAL_CHANCE = 0.02, SPECIAL_KINDS = ['rainbow'];
+// the block shown in the 'next' box: it fills the next pocket that empties
+function takeNext() { const p = G.next || dealPiece(); G.next = dealPiece(); return p; }
+function dealPiece() {
+  const p = basePiece();
+  if ((G.specialDue || 0) > 0 || Math.random() < SPECIAL_CHANCE) {
+    if (G.specialDue > 0) G.specialDue--;
+    p.sp = { i: rand(shapeOf(p).cells.length), k: SPECIAL_KINDS[rand(SPECIAL_KINDS.length)] };
+  }
+  return p;
+}
+// value of cube j of a block (grain 0 when only drawn)
+function pieceCell(p, j, grain = 0) {
+  if (p.sp && p.sp.i === j) {
+    if (p.sp.k === 'rainbow') return WILD | (grain << 4);
+    return p.color | (grain << 4) | ((p.sp.k === 'bomb' ? SP_BOMB : SP_BOLT) << 6);
+  }
+  return p.color | (grain << 4);
+}
+// what a block's bomb / lightning cube breaks the moment the block lands
+function specialMarks(grid, cells) {
+  const extra = new Map(), fired = [], bolts = new Map();
+  const reach = COLS >= 32 ? 2 : 1;   // 3x3 on the big-cube board, 5x5 on the small-cube one: about the same area on screen
+  for (const e of cells) {
+    const v = grid[e.r][e.c], sp = specialOf(v);
+    if (sp === SP_BOMB) {
+      fired.push('bomb');
+      for (let r = e.r - reach; r <= e.r + reach; r++) for (let c = e.c - reach; c <= e.c + reach; c++)
+        if (r >= 0 && r < ROWS && c >= 0 && c < COLS && grid[r][c]) extra.set(r * COLS + c, grid[r][c]);
+    } else if (sp === SP_BOLT) {
+      fired.push('bolt'); bolts.set(e.r, e.c);
+      for (let c = 0; c < COLS; c++) if (grid[e.r][c]) extra.set(e.r * COLS + c, grid[e.r][c]);
+    }
+  }
+  return { extra, fired, bolts };
+}
+
+function newGame(mode, size) {
+  G.mode = mode; G.size = size || G.size || 32;
+  setSize(G.size);
+  layout();
+  G.grid = startBoard();
+  G.specialDue = 0;
+  G.tray = [dealPiece(), dealPiece(), dealPiece()];
+  G.next = dealPiece();
+  shownScore = 0;
+  G.score = 0; G.combo = 0; G.riseAcc = 0; G.timeAcc = 0; G.rises = 0; G.drops = 0; G.lines = 0;
+  G.reason = null; G.phase = 'idle'; G.specialDue = 0; G.continues = 0; G.rotLeft = ROT_PER_GAME;
+  G.fever = 0; G.feverLeft = 0; G.feverDrop = false; G.mission = null; G.stage = 0;
+  G.best = loadBest();
+  G.state = 'play'; G.started = true;
+  fx.shift = null; fx.cubes = []; fx.pops = []; fx.combo = null; fx.spin = null;
+  fx.sparks = []; fx.orbs = []; fx.banners = []; fx.shake = null; fx.flash = null; fx.stageFade = null; fx.drill = null;
+  drag = null; pending = null; anim = null; idrag = null; pendingItem = null;
+  G.stuck = false; G.itemMove = false;
+  applyTheme(0, true);
+  touchGrid();
+  hud(); feverUI(); rotUI();
+  nextMission(true);   // the first mission is there from the first move
+}
+
+function addScore(n) { G.score += n; hud(); }
+
+function dropPiece(i, c) {
+  const p = G.tray[i];
+  if (!p || G.state !== 'play' || G.phase !== 'idle') return false;
+  const s = shapeOf(p);
+  const cells = landing(G.grid, s, c);
+  if (!cells) return false;
+  cells.forEach((e, j) => { G.grid[e.r][e.c] = pieceCell(p, j, rand(4)); });
+  G.tray[i] = null;
+  lastDrop = cells.map(e => ({ r: e.r, c: e.c }));
+  G.drops++;
+  G.feverDrop = feverOn();   // the whole drop, chains included, scores with the fever state it started in
+  if (G.mission) G.mission.drop = 0;
+  chain = 0; dropBurst = false;
+  G.phase = 'settling';
+  touchGrid();
+  startFall('drop', cells, 70, 42);
+  return true;
+}
+function startFall(type, cells, base, per) {
+  let dur = 0;
+  for (const e of cells) { e.dur = (base + per * Math.sqrt(Math.max(0, e.r - e.r0))) * ANIM; dur = Math.max(dur, e.dur); }
+  anim = { type, t0: performance.now(), dur, cells, keys: new Set(cells.map(e => e.r * COLS + e.c)) };
+}
+
+// Score for one break: 10 a cube, times the chain step, times the combo (up to 10x), plus combo x 100 from combo 2 on.
+// Every break counts as one combo, the ones set off by falling cubes too; the chain step only adds points.
+const CUBE_PTS = 10, COMBO_CAP = 10, COMBO_BONUS = 100;
+function scoreFor(cubes, chainStep, combo) {
+  const base = cubes * CUBE_PTS * chainStep * Math.min(COMBO_CAP, Math.max(1, combo));
+  return base + (combo >= 2 ? combo * COMBO_BONUS : 0);
+}
+function stepDone(a) {
+  if (a.type === 'drop') sfx('land');
+  if (a.type === 'item') { breakNow({ marks: a.tg.marks, rows: 0 }, [a.kind], null, a); return; }   // the item reached its spot
+  if (a.type === 'drop' || a.type === 'fall') {
+    const b = findBursts(G.grid);
+    const spx = a.type === 'drop' ? specialMarks(G.grid, a.cells) : null;
+    if (spx) spx.extra.forEach((v, k) => b.marks.set(k, v));
+    const fired = spx ? [...new Set(spx.fired)] : [];
+    if (!b.marks.size) { endSettle(); return; }
+    breakNow(b, fired, spx, null);
+    return;
+  }
+  if (a.type === 'burst') {
+    a.marks.forEach((v, k) => { if (!a.spawned.has(k)) peel(a, k, v); });
+    const cols = new Set();
+    a.marks.forEach((v, k) => { G.grid[(k / COLS) | 0][k % COLS] = 0; cols.add(k % COLS); });
+    const moves = compact(G.grid, cols);
+    touchGrid();
+    if (moves.length) startFall('fall', moves, 50, 32);
+    else stepDone({ type: 'fall' });
+  }
+}
+const FIRE_KEY = { bomb: 'fireBomb', bolt: 'fireBolt', drill: 'fireDrill' };
+// One break: score, effects, missions and the fever gauge, then the cubes start popping off.
+// item: the bomb / drill being used (its own popping order), or null for a block's break.
+function breakNow(b, fired, spx, item) {
+    chain++;
+    dropBurst = true; G.combo++;   // each break is a combo, including the ones falling cubes and items set off
+    const pts = scoreFor(b.marks.size, chain, G.combo) * (G.feverDrop ? 2 : 1);
+    G.lines = (G.lines || 0) + b.rows;
+    addScore(pts);
+    const label = fired.length ? fired.map(k => tr(FIRE_KEY[k])).join(' ') : b.rows ? tr('rows', b.rows) : '';
+    popAt(b.marks, '+' + pts.toLocaleString(), label, chain >= 2 || fired.length > 0, pts);
+    if (G.combo >= 2) fx.combo = { n: G.combo, t0: performance.now() };
+    if (G.combo % 5 === 0) G.specialDue = (G.specialDue || 0) + 1;   // reward: a rainbow cube in the next block
+    if (fired.includes('bomb')) sfx('bomb');
+    if (fired.includes('bolt')) sfx('bolt');
+    if (fired.includes('drill')) sfx('drill');
+    if (b.rows) sfx('line', { rows: b.rows, chain }); else if (!fired.length) sfx('burst', { chain });
+    if (G.combo >= 2) sfx('combo', { combo: G.combo });
+    buzz(fired.includes('bomb') ? [60, 30, 40] : fired.includes('drill') ? [25, 20, 25, 20, 25, 20, 40] : G.combo >= 2 ? [25, 40, 35] : b.rows ? 30 : 18);
+    // screen kick for the big moments
+    if (fired.includes('bomb')) { shake(u * 0.75, 380); flash('255,226,170', 0.42); }
+    else if (fired.includes('bolt')) { shake(u * 0.45, 300); flash('255,250,190', 0.34); }
+    else if (fired.includes('drill')) { shake(u * 0.4, 460); flash('255,244,214', 0.2); }
+    if (b.rows >= 2) shake(u * (0.2 + 0.12 * Math.min(4, b.rows)), 300);
+    if (G.combo >= 3) shake(u * (0.18 + 0.06 * Math.min(8, G.combo)), 280);
+    if (chain >= 2) shake(u * 0.3 * Math.min(3, chain - 1), 260);
+    missionProgress(b.marks, b.rows);
+    // every cube that breaks outside fever counts toward the next one
+    if (!G.feverDrop && !feverOn()) G.fever = Math.min(FEVER_GOAL, (G.fever || 0) + b.marks.size);
+    feverUI();
+    if (item) {
+      // the bomb blows outward from the middle of its square; the drill eats down its column from the top
+      const delays = new Map(), dirs = new Map(), tg = item.tg;
+      let maxD = 0;
+      const step = (380 / ROWS) * ANIM, rc = tg.rc, cc = tg.cc;
+      b.marks.forEach((v, k) => {
+        const r = (k / COLS) | 0, c = k % COLS;
+        let d, dir;
+        if (item.kind === 'drill') { d = (r - tg.hit) * step; dir = r % 2 ? 1 : -1; }
+        else { d = Math.hypot(r - rc, c - cc) * 32 * ANIM; dir = Math.sign(c - cc) || (Math.random() < 0.5 ? -1 : 1); }
+        delays.set(k, d); dirs.set(k, dir); maxD = Math.max(maxD, d);
+      });
+      if (item.kind === 'drill') fx.drill = { col: item.col, t0: performance.now(), r0: tg.hit, r1: tg.r1, step };
+      anim = { type: 'burst', t0: performance.now(), dur: maxD + 200 * ANIM, marks: b.marks, delays, dirs, spawned: new Set() };
+      return;
+    }
+    const delays = new Map(), dirs = new Map();
+    const full = new Set();
+    for (let r = 0; r < ROWS; r++) if (G.grid[r].every(v => v)) full.add(r);
+    const rowStep = 440 / COLS, grpStep = 24;
+    let gr = 0, gc = 0, gn = 0;
+    const boltRows = spx ? spx.bolts : new Map();
+    b.marks.forEach((v, k) => { const r = (k / COLS) | 0; if (!full.has(r) && !boltRows.has(r)) { gr += r; gc += k % COLS; gn++; } });
+    if (gn) { gr /= gn; gc /= gn; }
+    let maxD = 0;
+    b.marks.forEach((v, k) => {
+      const r = (k / COLS) | 0, c = k % COLS;
+      let d, dir;
+      if (boltRows.has(r)) {
+        const o = boltRows.get(r);   // lightning runs out both ways from its cube
+        d = Math.abs(c - o) * rowStep * 0.6; dir = Math.sign(c - o) || (Math.random() < 0.5 ? -1 : 1);
+      } else if (full.has(r)) {
+        const mine = chain === 1 && lastDrop ? lastDrop.filter(e => e.r === r) : [];
+        const o = mine.length ? mine.reduce((x, e) => x + e.c, 0) / mine.length : (COLS - 1) / 2;
+        d = Math.abs(c - o) * rowStep; dir = Math.sign(c - o) || (Math.random() < 0.5 ? -1 : 1);
+      } else {
+        d = (Math.abs(r - gr) + Math.abs(c - gc)) * grpStep; dir = Math.sign(c - gc) || (Math.random() < 0.5 ? -1 : 1);
+      }
+      d *= ANIM;
+      delays.set(k, d); dirs.set(k, dir); maxD = Math.max(maxD, d);
+    });
+    anim = { type: 'burst', t0: performance.now(), dur: maxD + 200 * ANIM, marks: b.marks, delays, dirs, spawned: new Set() };
+}
+
+function endSettle() {
+  anim = null;
+  if (!dropBurst) G.combo = 0;
+  G.phase = 'idle';
+  // using an item is not a move: no row comes up and the mission keeps its moves
+  const itemMove = G.itemMove; G.itemMove = false;
+  if (!itemMove) missionTick();
+  feverUI();   // a full gauge waits for the fever button
+  if (G.mode === 'moves' && !itemMove) {
+    G.riseAcc++;
+    if (G.riseAcc >= moveIv()) { G.riseAcc = 0; if (!rise()) return; }
+  }
+  for (let k = 0; k < 3; k++) if (!G.tray[k]) G.tray[k] = takeNext();
+  checkNoFit();
+  if (pending && G.state === 'play') {
+    const q = pending; pending = null;
+    dropPiece(q.i, q.c);
+  } else if (pendingItem && G.state === 'play') {
+    const q = pendingItem; pendingItem = null;
+    useItem(q.k, q.col, q.row);
+  }
+}
+
+/* ---------- items: a bomb (5x5) and a drill (one whole column). They are kept between games and will be
+   bought in the shop (missions only pay points). Held and slid left / right like a block, the item falls down the column
+   under the thumb and goes off where it lands; before letting go the area it will break shows faintly. ---------- */
+const ITEM_KINDS = ['bomb', 'drill'];
+const ITEM_NAME = { bomb: '폭탄', drill: '드릴' };
+const ITEM_START = 3;   // the first game on a device starts with a few of each, to try them
+let ITEMS = loadItems();
+function loadItems() {
+  try {
+    const s = JSON.parse(localStorage.getItem('rise-items'));
+    if (s && typeof s === 'object') return { bomb: Math.max(0, s.bomb | 0), drill: Math.max(0, s.drill | 0) };
+  } catch (e) { /* storage unavailable */ }
+  return { bomb: ITEM_START, drill: ITEM_START };
+}
+function saveItems() { try { localStorage.setItem('rise-items', JSON.stringify(ITEMS)); } catch (e) { /* storage unavailable */ } }
+function addItem(k, n = 1) { ITEMS[k] = (ITEMS[k] || 0) + n; saveItems(); fx.itemBump = { k, t0: performance.now() }; }
+const hasItems = () => ITEM_KINDS.some(k => (ITEMS[k] || 0) > 0);
+// what an item breaks.
+// The drill falls down column col and takes every cube of it (hit: the row of its first cube, ROWS when it is empty).
+// The bomb goes off on any cell (row, col), on top of the stack or inside it: the 5x5 square around that cell,
+// moved in to stay on the board.
+function itemTargets(kind, col, row) {
+  const marks = new Map();
+  let hit = 0;
+  while (hit < ROWS && !G.grid[hit][col]) hit++;
+  if (kind === 'drill') {
+    for (let r = hit; r < ROWS; r++) if (G.grid[r][col]) marks.set(r * COLS + col, G.grid[r][col]);
+    return { marks, hit, r0: hit, r1: ROWS - 1, c0: col, c1: col, rc: hit, cc: col };
+  }
+  const rc = Math.max(0, Math.min(ROWS - 1, row == null ? hit : row));
+  const r0 = Math.max(0, Math.min(rc - 2, ROWS - 5)), c0 = Math.max(0, Math.min(col - 2, COLS - 5));
+  for (let r = r0; r < r0 + 5; r++) for (let c = c0; c < c0 + 5; c++) if (G.grid[r][c]) marks.set(r * COLS + c, G.grid[r][c]);
+  return { marks, hit, r0, r1: r0 + 4, c0, c1: c0 + 4, rc, cc: col };
+}
+function useItem(k, col, row) {
+  if (G.state !== 'play' || (ITEMS[k] || 0) <= 0) return false;
+  if (G.phase !== 'idle' || anim) { pendingItem = { k, col, row }; return true; }   // goes as soon as the board has settled
+  const tg = itemTargets(k, col, row);
+  if (!tg.marks.size) { sfx('back'); return false; }   // nothing to break there: the item is kept
+  ITEMS[k]--; saveItems();
+  G.stuck = false;
+  G.itemMove = true;
+  G.feverDrop = feverOn();
+  if (G.mission) G.mission.drop = 0;
+  chain = 0; dropBurst = false; lastDrop = null;
+  G.phase = 'settling';
+  if (k === 'bomb') anim = { type: 'item', kind: k, col, tg, t0: performance.now(), dur: 170 * ANIM };   // slammed down on its cell
+  else {
+    const land = Math.max(0, tg.hit - 1), from = -2;   // the drill drops down its column onto the first cube
+    anim = { type: 'item', kind: k, col, tg, from, land, t0: performance.now(), dur: (90 + 38 * Math.sqrt(land - from)) * ANIM };
+  }
+  sfx('pick');
+  touchGrid();
+  return true;
+}
+
+function rise(quiet) {
+  if (G.grid[0].some(v => v)) { die('top'); return false; }
+  const m = riseMask(G.grid[ROWS - 1]);
+  G.grid.shift();
+  G.grid.push(Array(COLS).fill(0));
+  for (let c = 0; c < COLS; c++) if (m[c]) paintCell(G.grid, ROWS - 1, c);
+  for (let c = 0; c < COLS; c++) if (m[c] && Math.random() < STONE_CHANCE) G.grid[ROWS - 1][c] = STONE | (rand(4) << 4);
+  G.rises++;
+  fx.shift = { t0: performance.now(), dur: 150 * ANIM };
+  touchGrid();
+  if (!quiet) sfx('rise');
+  return true;
+}
+
+function checkNoFit() {
+  if (G.state !== 'play') return;
+  // a block that only fits turned still counts while turns are left
+  const fitsSomehow = p => {
+    if (canDropAnywhere(shapeOf(p))) return true;
+    for (let k = 0, q = p; k < 3 && G.rotLeft > 0; k++) { q = turned(q); if (q && canDropAnywhere(shapeOf(q))) return true; }
+    return false;
+  };
+  if (G.tray.some(p => p && fitsSomehow(p))) { G.stuck = false; return; }
+  // no block fits, but an item can still make room: wait for it
+  if (hasItems()) {
+    if (!G.stuck) { G.stuck = true; banner(tr('stuck'), tr('stuckSub'), COMBO_LOOK[1], 2200); sfx('missionFail'); }
+    return;
+  }
+  G.stuck = false;
+  die('nofit');
+}
+
+/* ---------- turning a block: a button on each tray pocket, 10 turns a game ---------- */
+const ROT_PER_GAME = 10;
+const shapeKey = cells => cells.map(([r, c]) => r * 10 + c).sort((a, b) => a - b).join(',');
+const SHAPE_BY_KEY = new Map(SHAPES.map(x => [shapeKey(x.cells), x]));
+// the same block a quarter turn clockwise (every turned shape is in SHAPES under its own name); a special cube turns with it
+function turned(p) {
+  const s = shapeOf(p);
+  const cells = s.cells.map(([r, c]) => [c, s.h - 1 - r]);
+  const t = SHAPE_BY_KEY.get(shapeKey(cells));
+  if (!t) return null;
+  const q = { s: t.name, color: p.color };
+  if (p.sp) { const [r, c] = cells[p.sp.i]; q.sp = { i: t.cells.findIndex(([a, b]) => a === r && b === c), k: p.sp.k }; }
+  return q;
+}
+function rotateSlot(i) {
+  const p = G.tray[i];
+  if (!p || G.state !== 'play' || (G.rotLeft || 0) <= 0 || (pending && pending.i === i)) return false;
+  const q = turned(p);
+  if (!q || q.s === p.s) return false;   // a block that looks the same turned ('1', 2x2, 3x3) costs nothing
+  G.tray[i] = q; G.rotLeft--;
+  rotUI(true);
+  fx.spin = { i, t0: performance.now() };
+  sfx('rot');
+  touchGrid();
+  return true;
+}
+// the one turn counter (shared by all three pockets) in the bar under the score
+function rotUI(bump) {
+  const el = $('#rotbox'), n = G.rotLeft || 0;
+  $('#rot-n').textContent = String(n);
+  el.classList.toggle('zero', n <= 0);
+  if (bump) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+}
+// where the turn button of pocket i sits (top-left corner of the pocket)
+function rotBtn(i) {
+  const r = Math.max(H < 600 ? 13 : 15, u * 1.45);
+  return { x: bx + i * slotW + 4 + r + 6, y: trayY + 4 + r + 6, r };
+}
+// the column right of the pockets shows the next block
+function nextBox() { return { x: sideX + 2, y: trayY + 2, w: sideW - 6, h: trayH - 10 }; }
+
+/* ---------- fever: every broken cube fills the gauge; 300 cubes charge it, and the player sets it off
+   with the full gauge at the top (it turns into the fever button) for 30 seconds of double points ---------- */
+const FEVER_MS = 30000, FEVER_GOAL = 300, FEVER_RATE = 1.15;
+const feverOn = () => (G.feverLeft || 0) > 0;
+const feverReady = () => !feverOn() && (G.fever || 0) >= FEVER_GOAL;
+function useFever() {
+  if (G.state !== 'play' || !feverReady()) return false;
+  if (G.phase !== 'idle') G.feverDrop = true;   // pressed while the board is still breaking: the rest of this drop doubles too
+  startFever();
+  return true;
+}
+// the same group size bursts in and out of fever (fever only doubles the points)
+function burstNeed() { return BURST; }
+function startFever() {
+  G.feverLeft = FEVER_MS; G.fever = 0;
+  banner(tr('feverBanner'), tr('feverSub', FEVER_MS / 1000), RAINBOW_LOOK, 1700);
+  flash('255,255,255', 0.6, 320); shake(u * 0.8, 450);
+  sfx('fever'); buzz([40, 30, 40, 30, 90]);
+  feverUI();
+}
+function endFever() { G.feverLeft = 0; sfx('feverEnd'); feverUI(); }
+let feverShown = '';
+function feverUI() {
+  const on = feverOn();
+  const key = on + '|' + Math.ceil((G.feverLeft || 0) / 1000) + '|' + Math.round(on ? (G.feverLeft / FEVER_MS) * 200 : G.fever || 0);
+  if (key === feverShown) return;
+  feverShown = key;
+  const el = $('#fever');
+  el.classList.toggle('on', on);
+  el.classList.toggle('full', feverReady());
+  el.setAttribute('aria-label', feverReady() ? tr('feverUse') : tr('feverGauge'));
+  $('#f-fill').style.width = (on ? (G.feverLeft / FEVER_MS) * 100 : ((G.fever || 0) / FEVER_GOAL) * 100) + '%';
+  $('#f-label').textContent = on ? tr('feverOn', Math.ceil(G.feverLeft / 1000)) : feverReady() ? tr('feverReady') : tr('feverCount', G.fever || 0, FEVER_GOAL);
+}
+
+/* ---------- missions: a short goal at the top, a few drops to do it, bonus points when done
+   (items are bought in the shop, never won here) ---------- */
+const MISSION_SHOW = 1500;   // a finished mission stays on the bar this long, then the next one comes
+const MISSION_PTS = 1000;   // per 16 columns: the 32-wide board scores about twice as much a break, so its missions pay 2000
+const missionPts = m => m.pts || MISSION_PTS * (COLS / 16);   // a mission saved before this change pays the same
+const rewardText = m => tr('pts', missionPts(m).toLocaleString());
+function newMission() {
+  const f = COLS / 16, types = ['color', 'rows', 'combo', 'big'];
+  const m = { type: types[rand(types.length)], have: 0, drop: 0, reward: 'score', pts: MISSION_PTS * f, state: 'on', until: 0 };
+  // no move limit, so the goals are bigger (the 32-wide board: twice the cubes)
+  if (m.type === 'color') { m.col = 1 + rand(COLORS.length); m.need = Math.round(30 * f); }
+  else if (m.type === 'rows') m.need = 6;
+  else if (m.type === 'combo') m.need = 5;
+  else m.need = Math.round(36 * f);
+  return m;
+}
+function nextMission(quiet) {
+  G.mission = newMission();
+  missionUI('new');
+  banner(tr('missionNew'), missionGoal(G.mission), MISSION_LOOK, 1700);
+  if (!quiet) sfx('missionNew');
+}
+function missionGoal(m) {
+  if (m.type === 'color') return tr('goalColor', tr('colors')[m.col - 1], m.need);
+  if (m.type === 'rows') return tr('goalRows', m.need);
+  if (m.type === 'combo') return tr('goalCombo', m.need);
+  return tr('goalBig', m.need);
+}
+function missionLine(m) {
+  const h = Math.min(m.have, m.need);
+  if (m.type === 'color') return tr('lineColor', tr('colors')[m.col - 1], h, m.need);
+  if (m.type === 'rows') return tr('lineRows', h, m.need);
+  if (m.type === 'combo') return tr('lineCombo', h, m.need);
+  return tr('lineBig', h, m.need);
+}
+function missionUI(extra) {
+  const el = $('#mission'), m = G.mission;
+  el.className = 'mission ' + (!m ? 'idle' : m.state === 'on' ? '' : m.state) + (extra ? ' ' + extra : '');
+  $('#m-dot').style.background = m ? (m.type === 'color' ? COLORS[m.col - 1] : C.accent || '#efcd94') : 'transparent';
+  $('#m-text').textContent = !m ? tr('missionNext') : m.state === 'done' ? tr('missionDone', rewardText(m)) : m.state === 'fail' ? tr('missionFail') : missionLine(m);
+}
+function missionProgress(marks, rows) {
+  const m = G.mission;
+  if (!m || m.state !== 'on') return;
+  if (m.type === 'color') marks.forEach(v => { if (colorOf(v) === m.col) m.have++; });
+  else if (m.type === 'rows') m.have += rows;
+  else if (m.type === 'combo') m.have = Math.max(m.have, G.combo);
+  else { m.drop += marks.size; m.have = Math.max(m.have, m.drop); }
+  if (m.have >= m.need) missionWin(); else missionUI();
+}
+function missionWin() {
+  const m = G.mission;
+  m.state = 'done'; m.until = performance.now() + MISSION_SHOW;
+  addScore(missionPts(m));
+  banner(tr('missionWin'), rewardText(m), GOLD_LOOK, 1500);
+  flash('255,214,120', 0.25, 260);
+  sfx('mission'); buzz([30, 40, 30, 40, 60]);
+  missionUI();
+}
+// once per drop: there is always a mission (a game saved before this change may have none)
+function missionTick() {
+  if (!G.mission) nextMission();
+}
+// a finished mission stays on the bar for a moment, then the next one comes straight away
+function missionClock(now) {
+  const m = G.mission;
+  if (m && m.state !== 'on' && now > m.until) nextMission();
+}
+
+/* ---------- look ---------- */
+function applyTheme(k, instant) {
+  const th = THEMES[k] || THEMES[0];   // a game saved while there were several stages comes back on the one look
+  COLORS = th.cubes;
+  const all = Object.assign({}, THEMES[0].css, th.css), rs = document.documentElement.style;
+  for (const [n, v] of Object.entries(all)) rs.setProperty(n, v);
+  readColors();
+  cache.clear();
+  if (!instant && planks) { planksPrev = planks; fx.stageFade = { t0: performance.now(), dur: 900 }; }
+  else { planksPrev = null; fx.stageFade = null; }
+  planks = null;
+}
+
+/* ---------- screen effects ---------- */
+function shake(amp, dur = 300) {
+  if (REDUCE) return;
+  const now = performance.now(), cur = fx.shake;
+  const left = cur ? cur.amp * Math.max(0, 1 - (now - cur.t0) / cur.dur) : 0;
+  if (amp >= left) fx.shake = { t0: now, amp, dur };
+}
+function flash(rgbStr, a = 0.4, dur = 220) { fx.flash = { t0: performance.now(), rgb: rgbStr, a, dur }; }
+function banner(text, sub, look, dur = 1500) {
+  fx.banners.push({ text, sub, look, t0: performance.now(), dur });
+  if (fx.banners.length > 3) fx.banners.shift();
+}
+
+function die(reason) {
+  G.state = 'dying'; G.reason = reason;
+  G.feverLeft = 0; feverUI();
+  musicStop();
+  sfx('over');
+  if (drag) { try { cv.releasePointerCapture(drag.id); } catch (e) { /* already released */ } }
+  if (idrag) { try { cv.releasePointerCapture(idrag.id); } catch (e) { /* already released */ } }
+  drag = null; pending = null; idrag = null; pendingItem = null; G.stuck = false;
+  buzz([90, 60, 160]);
+  setTimeout(() => { if (G.state === 'dying') finish(); }, Math.max(150, 700 * ANIM));
+}
+
+// Continue once per game: the bottom rows go away and play goes on with the same score.
+// The 16-wide board loses 5 rows, the 32-wide one 10 (the same height on screen).
+const continueRows = () => (COLS >= 32 ? 10 : 5);
+function showRewardedAd(done) { done(); }   // the rewarded ad goes here later; for now the reward comes straight away
+function continueGame() {
+  if (G.state !== 'over' || G.continues >= 1) return;
+  showRewardedAd(() => {
+    const n = continueRows();
+    G.continues++;
+    G.grid.splice(ROWS - n, n);
+    for (let k = 0; k < n; k++) G.grid.unshift(Array(COLS).fill(0));
+    if (G.reason === 'nofit') G.tray = [dealPiece(), dealPiece(), dealPiece()];
+    G.reason = null; G.state = 'play'; G.phase = 'idle';
+    anim = null; pending = null; fx.shift = null; pendingItem = null; G.itemMove = false;
+    touchGrid(); hud(); showOnly(null);
+    musicStart(false);
+    checkNoFit();
+  });
+}
+
+function finish() {
+  G.state = 'over';
+  shownScore = G.score;
+  const prev = G.best, isBest = G.score > prev;
+  if (isBest) { G.best = G.score; saveBest(G.score); }
+  $('#over-reason').textContent = G.reason === 'top' ? tr('overTop') : tr('overNoFit');
+  $('#over-score').textContent = G.score.toLocaleString();
+  const ob = $('#over-best');
+  ob.textContent = isBest ? tr('newBest') : '';
+  ob.hidden = !isBest;
+  ob.classList.toggle('hot', isBest);
+  const canGo = (G.continues || 0) < 1;
+  const bc = $('#btn-continue');
+  bc.hidden = !canGo; bc.textContent = tr('cont', continueRows());
+  $('#btn-again').className = canGo ? 'btn ghost' : 'btn primary';
+  hud();
+  showOnly('over');
+}
+
+/* ---------- sound: everything is synthesized in the browser, nothing is downloaded ---------- */
+const SND = { ctx: null, out: null, sfxBus: null, wave: null, noise: null, musicOn: true, sfxOn: true, lastMove: 0,
+  buf: null, loading: null, src: null, musicGain: null, playing: false, pos: 0, srcT: 0, srcPos: 0 };
+try {
+  const s = JSON.parse(localStorage.getItem('rise-sound') || '{}');
+  SND.musicOn = s.music !== false; SND.sfxOn = s.sfx !== false; SND.vibOn = s.vib !== false;
+} catch (e) { /* storage unavailable: all on */ }
+if (SND.vibOn === undefined) SND.vibOn = true;
+function saveSound() { try { localStorage.setItem('rise-sound', JSON.stringify({ music: SND.musicOn, sfx: SND.sfxOn, vib: SND.vibOn })); } catch (e) { /* storage unavailable */ } }
+// short buzzes; in the Capacitor app this is the place to call the Haptics plugin instead
+function buzz(pattern) {
+  if (!SND.vibOn || !navigator.vibrate) return;
+  try { navigator.vibrate(pattern); } catch (e) { /* not allowed here */ }
+}
+function soundButtons() {
+  $('#opt-music').setAttribute('aria-pressed', String(SND.musicOn)); $('#music-state').textContent = tr(SND.musicOn ? 'on' : 'off');
+  $('#opt-sfx').setAttribute('aria-pressed', String(SND.sfxOn)); $('#sfx-state').textContent = tr(SND.sfxOn ? 'on' : 'off');
+  $('#opt-vib').setAttribute('aria-pressed', String(SND.vibOn)); $('#vib-state').textContent = tr(SND.vibOn ? 'on' : 'off');
+}
+
+// the audio context can only start on a touch or click, so it is made on the first one
+function audio() {
+  if (SND.ctx) {
+    if (SND.ctx.state === 'suspended' && !document.hidden) SND.ctx.resume().catch(() => {});
+    return SND.ctx;
+  }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  let ctx;
+  try { ctx = new AC(); } catch (e) { return null; }
+  wireAudio(ctx);
+  return ctx;
+}
+function wireAudio(ctx) {
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -14; comp.knee.value = 10; comp.ratio.value = 4; comp.attack.value = 0.002; comp.release.value = 0.15;
+  const out = ctx.createGain(); out.gain.value = 1;
+  out.connect(comp); comp.connect(ctx.destination);
+  const sfxBus = ctx.createGain(); sfxBus.gain.value = 1; sfxBus.connect(out);
+  // a 25% pulse wave: the thin, bright lead of old handheld consoles
+  const n = 28, re = new Float32Array(n), im = new Float32Array(n);
+  for (let k = 1; k < n; k++) re[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * 0.25);
+  const wave = ctx.createPeriodicWave(re, im);
+  const len = ctx.sampleRate, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  Object.assign(SND, { ctx, out, sfxBus, wave, noise: buf });
+}
+// one note: quick attack, decay to a sustain level, short release
+function voice(dest, t, f, dur, o = {}) {
+  const ctx = SND.ctx;
+  const osc = ctx.createOscillator();
+  if (o.type) osc.type = o.type; else osc.setPeriodicWave(SND.wave);
+  osc.frequency.setValueAtTime(f, t);
+  if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + (o.slide || dur));
+  const g = ctx.createGain();
+  const v = o.vol || 0.2, a = o.a || 0.004, rel = o.rel || Math.min(0.05, dur * 0.4);
+  const sus = o.sus === undefined ? 0.5 : o.sus;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(v, t + a);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0001, v * sus), t + Math.max(a + 0.002, dur - rel));
+  g.gain.linearRampToValueAtTime(0, t + dur);
+  osc.connect(g); g.connect(dest);
+  osc.start(t); osc.stop(t + dur + 0.02);
+}
+// filtered noise: drums, crumbles, whooshes
+function hiss(dest, t, dur, o = {}) {
+  const ctx = SND.ctx;
+  const src = ctx.createBufferSource(); src.buffer = SND.noise;
+  const f = ctx.createBiquadFilter(); f.type = o.filter || 'bandpass'; f.Q.value = o.q || 1;
+  f.frequency.setValueAtTime(o.f || 3000, t);
+  if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+  const g = ctx.createGain(), v = o.vol || 0.2;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(v, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(f); f.connect(g); g.connect(dest);
+  src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.02);
+}
+
+// Background music: "Sugar Rush", our own chiptune-pop track (bgm/tracks.js), rendered once to an MP3 that sits
+// next to this page. The file holds one pass of the song with 0.3 s of the loop's own end before it and of its
+// start after it, so the loop points are inside the file and the loop runs without a seam.
+const BGM_URL = 'bgm-sugar-rush.mp3';
+const BGM_LOOP = { start: 13230 / 44100, end: 2241441 / 44100 };   // 0.3 s .. 0.3 s + 2228211 samples
+const MUSIC_VOL = 0.45;
+function loadMusic() {
+  if (SND.buf || SND.loading || !SND.ctx) return;
+  SND.loading = fetch(BGM_URL)
+    .then(r => { if (!r.ok) throw new Error('music ' + r.status); return r.arrayBuffer(); })
+    .then(ab => new Promise((res, rej) => SND.ctx.decodeAudioData(ab, res, rej)))
+    .then(buf => { SND.buf = buf; if (SND.playing && !SND.src) startSource(); })
+    .catch(() => { SND.loading = null; });   // no music file: the game just runs without music
+}
+function startSource() {
+  const ctx = SND.ctx;
+  if (!ctx || !SND.buf || SND.src) return;
+  const t = ctx.currentTime + 0.03;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(MUSIC_VOL, t + 0.3);
+  g.connect(SND.out);
+  const src = ctx.createBufferSource();
+  src.buffer = SND.buf; src.loop = true; src.loopStart = BGM_LOOP.start; src.loopEnd = BGM_LOOP.end;
+  src.playbackRate.value = SND.rate || 1;
+  src.connect(g);
+  src.start(t, BGM_LOOP.start + SND.pos);
+  Object.assign(SND, { src, musicGain: g, srcT: t, srcPos: SND.pos });
+}
+function musicStart(fromTop) {
+  if (fromTop) SND.pos = 0;
+  if (!SND.musicOn || SND.playing || G.state !== 'play') return;
+  if (!audio()) return;
+  SND.playing = true;
+  if (SND.buf) startSource(); else loadMusic();   // starts as soon as the file is decoded
+}
+// playback speed of the music (faster when the stack is near the top); the position keeps counting correctly
+const DANGER_AT = 0.7, DANGER_RATE = 1.12;
+function musicPos() {
+  const len = BGM_LOOP.end - BGM_LOOP.start;
+  return (((SND.srcPos + Math.max(0, SND.ctx.currentTime - SND.srcT) * (SND.rate || 1)) % len) + len) % len;
+}
+function musicRate(r) {
+  if ((SND.rate || 1) === r) return;
+  if (SND.src && SND.ctx) {
+    SND.srcPos = musicPos(); SND.srcT = SND.ctx.currentTime;
+    SND.src.playbackRate.setTargetAtTime(r, SND.ctx.currentTime, 0.12);
+  }
+  SND.rate = r;
+}
+function musicStop() {
+  if (!SND.playing) return;
+  SND.playing = false;
+  const ctx = SND.ctx, src = SND.src, g = SND.musicGain;
+  if (ctx && src) {
+    SND.pos = musicPos();   // resume from here
+    g.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
+    try { src.stop(ctx.currentTime + 0.3); } catch (e) { /* already stopped */ }
+  }
+  SND.src = null; SND.musicGain = null;
+}
+
+// sound effects
+const C6 = 1046.5;
+const semi = n => Math.pow(2, n / 12);
+function sfx(name, o = {}) {
+  if (!SND.sfxOn) return;
+  const ctx = audio();
+  if (!ctx) return;
+  const t = ctx.currentTime + 0.01, bus = SND.sfxBus;
+  switch (name) {
+    case 'pick':   // a soft round 'pop' on pure sine tones (the old thin pulse wave sounded like a buzz)
+      voice(bus, t, 520, 0.085, { type: 'sine', to: 1040, slide: 0.03, vol: 0.35, a: 0.002, sus: 0.3, rel: 0.045 });
+      voice(bus, t, 1560, 0.035, { type: 'sine', to: 2080, slide: 0.02, vol: 0.06, a: 0.001, sus: 0.2, rel: 0.02 });
+      break;
+    case 'move': {
+      const now = performance.now();
+      if (now - SND.lastMove < 35) return;
+      SND.lastMove = now;
+      voice(bus, t, 1250, 0.025, { vol: 0.12, sus: 0.4, rel: 0.012 });
+      break;
+    }
+    case 'back': voice(bus, t, 700, 0.09, { to: 350, vol: 0.28, sus: 0.5 }); break;
+    case 'land':
+      voice(bus, t, 190, 0.1, { type: 'square', to: 70, slide: 0.08, vol: 0.32, sus: 0.3, rel: 0.04 });
+      hiss(bus, t, 0.07, { filter: 'lowpass', f: 1600, vol: 0.5 });
+      break;
+    case 'rise': hiss(bus, t, 0.14, { filter: 'lowpass', f: 420, to: 150, vol: 0.45 }); break;
+    case 'line': {
+      // rising arpeggio and a crumbling sweep; more rows reach higher, each chain step lifts the key
+      const up = semi(Math.min(12, (o.chain - 1) * 3));
+      const steps = [0, 4, 7, 12, 16, 19, 24].slice(0, Math.min(7, 3 + o.rows));
+      steps.forEach((s, i) => voice(bus, t + i * 0.042, 523.25 * semi(s) * up, 0.14, { vol: 0.22, sus: 0.55 }));
+      hiss(bus, t, 0.32 + 0.06 * Math.min(4, o.rows), { f: 700, to: 7000, q: 0.9, vol: 0.36 });
+      break;
+    }
+    case 'burst': {
+      const up = semi(Math.min(12, (o.chain - 1) * 3));
+      [12, 7, 16, 12, 19].forEach((s, i) => voice(bus, t + i * 0.035, 523.25 * semi(s) * up, 0.1, { type: 'triangle', vol: 0.32, sus: 0.4 }));
+      hiss(bus, t, 0.22, { f: 3500, to: 1200, q: 1.2, vol: 0.24 });
+      break;
+    }
+    case 'combo': {
+      // three quick notes a little higher every combo
+      const k = Math.min(14, o.combo - 2);
+      [0, 4, 7, 12].forEach((s, i) => voice(bus, t + 0.12 + i * 0.05, C6 * semi(k + s - 12), 0.11, { vol: 0.22, sus: 0.6 }));
+      break;
+    }
+    case 'fever': {
+      // a rising sweep into a bright fanfare
+      voice(bus, t, 220, 0.5, { type: 'sawtooth', to: 1760, slide: 0.45, vol: 0.12, sus: 0.8 });
+      hiss(bus, t, 0.55, { f: 600, to: 9000, q: 0.8, vol: 0.3 });
+      [0, 4, 7, 12, 16, 19, 24].forEach((st, i) => voice(bus, t + 0.42 + i * 0.05, 523.25 * semi(st), 0.18, { vol: 0.18, sus: 0.6 }));
+      voice(bus, t + 0.8, 1046.5, 0.45, { vol: 0.16, sus: 0.7 }); voice(bus, t + 0.8, 1318.5, 0.45, { vol: 0.12, sus: 0.7 });
+      break;
+    }
+    case 'feverEnd':
+      [12, 7, 4, 0].forEach((st, i) => voice(bus, t + i * 0.06, 523.25 * semi(st), 0.14, { vol: 0.12, sus: 0.5 }));
+      break;
+    case 'missionNew':
+      voice(bus, t, 880, 0.09, { vol: 0.14, sus: 0.6 }); voice(bus, t + 0.09, 1318.5, 0.14, { vol: 0.14, sus: 0.6 });
+      break;
+    case 'mission':
+      [0, 4, 7, 12].forEach((st, i) => voice(bus, t + i * 0.07, 659.25 * semi(st), 0.16, { vol: 0.18, sus: 0.6 }));
+      [0, 4, 7].forEach(st => voice(bus, t + 0.3, 1318.5 * semi(st), 0.4, { type: 'triangle', vol: 0.16, sus: 0.7 }));
+      break;
+    case 'missionFail':
+      voice(bus, t, 392, 0.14, { vol: 0.12, sus: 0.5 }); voice(bus, t + 0.13, 311.1, 0.22, { vol: 0.12, sus: 0.5 });
+      break;
+    case 'stage':
+      hiss(bus, t, 0.8, { f: 300, to: 6000, q: 0.7, vol: 0.28 });
+      [0, 7, 12, 16, 19, 24].forEach((st, i) => voice(bus, t + 0.25 + i * 0.06, 392 * semi(st), 0.5, { type: 'triangle', vol: 0.2, sus: 0.6 }));
+      break;
+    case 'rot':
+      voice(bus, t, 760, 0.07, { to: 1150, slide: 0.05, vol: 0.22, sus: 0.6 });
+      voice(bus, t + 0.05, 1150, 0.05, { vol: 0.12, sus: 0.5 });
+      break;
+    case 'bomb':
+      voice(bus, t, 140, 0.4, { type: 'sine', to: 38, slide: 0.32, vol: 0.7, sus: 0.4, rel: 0.12 });
+      hiss(bus, t, 0.55, { filter: 'lowpass', f: 2200, to: 140, vol: 0.6 });
+      hiss(bus, t, 0.12, { filter: 'highpass', f: 3000, vol: 0.25 });
+      break;
+    case 'bolt':
+      voice(bus, t, 2000, 0.22, { type: 'sawtooth', to: 260, slide: 0.2, vol: 0.18, sus: 0.5 });
+      hiss(bus, t, 0.25, { filter: 'highpass', f: 2500, to: 8000, vol: 0.3 });
+      voice(bus, t + 0.05, 1320, 0.12, { vol: 0.15, sus: 0.5 });
+      break;
+    case 'drill': {
+      // a grinding motor winding down, with crumbles chattering off the bit
+      voice(bus, t, 210, 0.5, { type: 'sawtooth', to: 120, slide: 0.48, vol: 0.13, sus: 0.8 });
+      voice(bus, t, 105, 0.5, { type: 'square', to: 62, slide: 0.48, vol: 0.1, sus: 0.8 });
+      hiss(bus, t, 0.5, { f: 1500, to: 500, q: 1.4, vol: 0.32 });
+      for (let i = 0; i < 7; i++) hiss(bus, t + 0.03 + i * 0.06, 0.035, { filter: 'highpass', f: 2400 + (i % 3) * 600, vol: 0.2 });
+      break;
+    }
+    case 'over':
+      [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0].forEach((s, i) => voice(bus, t + i * 0.07, 220 * semi(s), 0.1, { vol: 0.24, sus: 0.5 }));
+      hiss(bus, t + 0.9, 0.5, { filter: 'lowpass', f: 600, to: 120, vol: 0.3 });
+      break;
+  }
+}
+
+/* ---------- ui ---------- */
+const $ = s => document.querySelector(s);
+const stage = $('#stage');
+const cv = $('#cv');
+const ctx = cv.getContext('2d');
+
+function hud() {
+  $('#mode-label').textContent = tr('size', G.size);
+  $('#score').textContent = Math.round(shownScore).toLocaleString(); fitNum($('#score'));
+  $('#best').textContent = Math.max(G.best, G.score).toLocaleString(); fitNum($('#best'));
+}
+// a long score shrinks to fit beside its label instead of running under the size chip (checked again when the digits, language or width change)
+const numFit = new Map();
+function fitNum(el) {
+  const key = el.textContent.length + '|' + LANG + '|' + W;
+  if (numFit.get(el) === key) return;
+  numFit.set(el, key);
+  el.style.fontSize = '';
+  const stat = el.parentElement, lab = stat.querySelector('.label');
+  const cs = getComputedStyle(stat), side = cs.flexDirection !== 'column';   // a label beside the number takes room; one above it does not
+  const room = stat.clientWidth - (lab && side ? lab.offsetWidth + (parseFloat(cs.columnGap) || 0) : 0);
+  const w = el.scrollWidth;
+  if (room > 0 && w > room) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * room / w * 0.97).toFixed(1) + 'px';
+}
+function showOnly(id) {
+  for (const k of ['menu', 'over']) $('#' + k).hidden = k !== id;
+  if (id) { const b = $('#' + id).querySelector('.btn.primary:not([hidden])'); if (b) b.focus({ preventScroll: true }); }
+}
+function setMenu(mode, size) {
+  menuMode = 'moves'; menuSize = size;
+  $('#opt-32').setAttribute('aria-pressed', String(size === 32));
+  $('#opt-16').setAttribute('aria-pressed', String(size === 16));
+}
+// the pause menu
+function openMenu() {
+  if (G.state === 'play') G.state = 'menu';
+  musicStop();
+  drag = null;
+  showOnly('menu');
+}
+function resumeGame() {
+  if (!G.started) return;
+  const now = performance.now();
+  if (anim) anim.t0 += now - (G.pausedAt || now);
+  G.state = 'play'; last = now; showOnly(null);
+  musicStart(false);
+}
+
+/* ---------- screens: splash -> lobby -> game. Both are full-screen pages over the game; settings opens over either ---------- */
+let covered = false;   // the splash or the lobby hides the board, so it is not drawn
+// upright screens get the tall art, wider ones (turned phones, computers) the 3:4 one
+const ART = { ko: { tall: 'splash-ko-tall.webp', wide: 'splash-ko.webp' }, en: { tall: 'splash-en-tall.webp', wide: 'splash-en.webp' } };
+const tallMQ = matchMedia('(max-aspect-ratio: 3/4)');
+function artFor(l) {
+  const tall = tallMQ.matches;
+  document.documentElement.classList.toggle('tall-art', tall);
+  return ART[l][tall ? 'tall' : 'wide'];
+}
+const onShape = () => { const src = artFor(LANG); setArt($('#splash-art'), src); setArt($('#lobby-art'), src); placeLobbyArt(); };
+// lobby: slide the tall art so its logo (art height 20.5% - 41.5%) sits between the item pill and the card's score sign,
+// as far as the art still covers the screen. Layout positions only (the card's slide-in animation is ignored).
+function placeLobbyArt() {
+  const lob = $('#lobby'), box = $('#lobby-box');
+  if (lob.hidden || !document.documentElement.classList.contains('tall-art')) { box.style.top = ''; return; }
+  const H = lob.clientHeight, h = box.offsetHeight, pill = $('.lb-items'), card = $('.lb-card'), sign = $('.lb-best');
+  const from = pill.offsetTop + pill.offsetHeight, to = card.offsetTop + sign.offsetTop;
+  const t = (from + to) / 2 - h * 0.31;
+  box.style.top = Math.min(0, Math.max(H - h, t)).toFixed(1) + 'px';
+}
+addEventListener('resize', placeLobbyArt);
+if (document.fonts) document.fonts.ready.then(placeLobbyArt);   // the card's height settles once its fonts are in
+if (tallMQ.addEventListener) tallMQ.addEventListener('change', onShape); else tallMQ.addListener(onShape);   // turning the phone, resizing a window
+function setArt(img, src) {
+  if (img.dataset.src === src) return;
+  const box = img.parentElement;
+  img.dataset.src = src;
+  box.classList.remove('ready');
+  box.style.setProperty('--art', `url("${src}")`);
+  img.onload = () => box.classList.add('ready');
+  img.src = src;
+  if (img.complete && img.naturalWidth) box.classList.add('ready');
+}
+// every word on screen follows the language: fixed texts carry their key (data-t, data-ta for aria-label, data-talt for alt)
+function setLang(l, save = true) {
+  LANG = l;
+  if (save) { try { localStorage.setItem('rise-lang', l); } catch (e) { /* storage unavailable */ } }
+  document.documentElement.lang = l;
+  document.title = tr('title');
+  for (const e of document.querySelectorAll('[data-t]')) e.textContent = tr(e.dataset.t);
+  for (const e of document.querySelectorAll('[data-ta]')) e.setAttribute('aria-label', tr(e.dataset.ta));
+  for (const e of document.querySelectorAll('[data-talt]')) e.alt = tr(e.dataset.talt);
+  $('#opt-32 b').textContent = tr('size', 32); $('#opt-16 b').textContent = tr('size', 16);
+  const src = artFor(l);
+  setArt($('#splash-art'), src); setArt($('#lobby-art'), src);
+  $('#opt-ko').setAttribute('aria-pressed', String(l === 'ko'));
+  $('#opt-en').setAttribute('aria-pressed', String(l === 'en'));
+  feverShown = '';
+  hud(); feverUI(); missionUI(); soundButtons(); lobbyInfo();
+}
+function hideScreen(id) {
+  const el = $('#' + id);
+  clearTimeout(el._t);
+  el.classList.add('out');
+  el._t = setTimeout(() => { el.hidden = true; el.classList.remove('out'); }, 340);
+}
+function openSplash() {
+  const el = $('#splash');
+  clearTimeout(el._t);
+  el.hidden = false; el.classList.remove('out');
+  covered = true;
+}
+const bestFor = n => { try { return Number(localStorage.getItem(`rise7-best-${n}`)) || 0; } catch (e) { return 0; } };
+function lobbyInfo() {
+  $('#lb-best-label').textContent = tr('bestOf', menuSize);
+  $('#lb-best').textContent = bestFor(menuSize).toLocaleString();
+  for (const k of ITEM_KINDS) {
+    $(`#lb-${k}`).textContent = ITEMS[k] || 0;
+    const im = $(`#lb-${k}-ic`);
+    if (!im.getAttribute('src')) im.src = itemIcon(k, 30).toDataURL();
+  }
+}
+// leaving a game ends it: the score so far is the final one (a new best is kept)
+function quitGame() {
+  if (G.started && G.score > G.best) { G.best = G.score; saveBest(G.score); }
+  G.started = false; G.state = 'menu';
+  shownScore = G.score;
+}
+function openLobby(fade = true) {
+  if (G.started) quitGame();
+  musicStop();
+  drag = null;
+  setMenu(menuMode, menuSize);
+  lobbyInfo();
+  const el = $('#lobby');
+  clearTimeout(el._t);
+  if (fade) {
+    el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
+    placeLobbyArt();
+    el._t = setTimeout(() => { covered = true; showOnly(null); }, 340);   // the result or pause card goes once the lobby covers it
+  } else {
+    el.hidden = false; el.classList.remove('out');
+    placeLobbyArt();
+    covered = true; showOnly(null);
+  }
+}
+function leaveLobby() { covered = false; hideScreen('lobby'); }
+let settingsFrom = null;
+function openSettings(from) {
+  settingsFrom = from;
+  soundButtons();
+  if (from === 'menu') $('#menu').hidden = true;
+  $('#settings').hidden = false;
+}
+function closeSettings() {
+  $('#settings').hidden = true;
+  if (settingsFrom === 'menu') showOnly('menu');
+  settingsFrom = null;
+}
+function toast(msg, ms = 1600) {
+  const t = $('#toast');
+  t.textContent = msg; t.hidden = false;
+  t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
+  clearTimeout(t._t); t._t = setTimeout(() => { t.hidden = true; }, ms);
+}
+
+$('#splash').addEventListener('click', e => {
+  if ($('#splash').classList.contains('out')) return;
+  sfx('pick');   // the first touch also wakes the audio
+  openLobby(false);
+  hideScreen('splash');
+});
+$('#opt-32').addEventListener('click', () => { setMenu(menuMode, 32); lobbyInfo(); sfx('pick'); });
+$('#opt-16').addEventListener('click', () => { setMenu(menuMode, 16); lobbyInfo(); sfx('pick'); });
+$('#opt-music').addEventListener('click', () => { SND.musicOn = !SND.musicOn; if (!SND.musicOn) musicStop(); saveSound(); soundButtons(); });
+$('#opt-vib').addEventListener('click', () => { SND.vibOn = !SND.vibOn; saveSound(); soundButtons(); buzz(30); });
+$('#opt-sfx').addEventListener('click', () => { SND.sfxOn = !SND.sfxOn; saveSound(); soundButtons(); if (SND.sfxOn) sfx('pick'); });
+$('#opt-ko').addEventListener('click', () => { setLang('ko'); sfx('pick'); });
+$('#opt-en').addEventListener('click', () => { setLang('en'); sfx('pick'); });
+$('#btn-new').addEventListener('click', () => { newGame(menuMode, menuSize); showOnly(null); leaveLobby(); musicStart(true); });
+$('#btn-shop').addEventListener('click', () => { sfx('pick'); toast(tr('shopSoon')); });
+$('#opt-versus').addEventListener('click', () => { sfx('pick'); toast(tr('versusSoon')); });   // the mode itself comes later
+$('#btn-settings').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
+$('#btn-settings-close').addEventListener('click', () => { sfx('back'); closeSettings(); });
+$('#btn-pause').addEventListener('click', () => { if (G.state === 'play' || G.state === 'menu') { if (G.state === 'play') G.pausedAt = performance.now(); openMenu(); } });
+$('#btn-unpause').addEventListener('click', resumeGame);
+$('#btn-restart').addEventListener('click', () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); });
+$('#btn-psettings').addEventListener('click', () => { sfx('pick'); openSettings('menu'); });
+$('#btn-plobby').addEventListener('click', () => openLobby());
+$('#btn-continue').addEventListener('click', () => continueGame());
+$('#btn-again').addEventListener('click', () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); });
+$('#btn-menu').addEventListener('click', () => { G.started = false; G.state = 'menu'; openLobby(); });
+$('#fever').addEventListener('click', () => { if (!SND.playing) musicStart(false); useFever(); });   // a full gauge is the fever button
+
+/* ---------- drawing ---------- */
+let W = 0, H = 0, dpr = 1, cu = 12, u = 12, bx = 0, by = 0, BW = 384, BH = 480;
+let trayY = 0, trayH = 140, slotW = 128, sideX = 0, sideW = 0, itemY = 0, itemH = 40;
+// the item row sits between the board and the pockets: one box with four square slots (bomb, drill, two for later)
+const ITEM_U = 4.6, ITEM_SLOTS = 4;   // the row's height, in cubes of the 32-wide board
+let FR = 10;   // the cartoon frame round the board: dark outline, yellow band, dark inner line (8 on short screens)
+const OL = '#2b1a0e', TOON = { yellow: '#ffe14d', purple: '#3f9a38', board: '#1f4a29', orange: '#6ccf4f', red: '#e9483b', sky: '#e6f7d6', lilac: 'rgba(255,246,220,0.6)', cream: '#fff6dc', bark: '#8a5a2c', woodHi: '#e0a463', woodLo: '#b97540' };
+// the leaf cluster on the corners of the board frame (the same drawing as on the title sign)
+const LEAF = new Image();
+LEAF.onload = () => { planks = null; };
+LEAF.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg stroke='%232b1a0e' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M30 32 C10 30 4 14 8 4 C22 6 32 18 30 32 Z' fill='%236ccf4f'/%3E%3Cpath d='M30 32 C34 14 48 6 58 10 C56 24 44 34 30 32 Z' fill='%2391e063'/%3E%3Cpath d='M30 32 C24 46 30 56 40 58 C46 46 40 36 30 32 Z' fill='%234fb043'/%3E%3C/g%3E%3Cg stroke='%23ffffff' stroke-opacity='.45' stroke-width='2' fill='none' stroke-linecap='round'%3E%3Cpath d='M12 8 C18 16 24 24 29 30'/%3E%3Cpath d='M54 13 C46 18 38 24 32 30'/%3E%3C/g%3E%3C/svg%3E";
+function itemBox() {
+  const s = itemH - 8, gap = 6, w = ITEM_SLOTS * s + (ITEM_SLOTS - 1) * gap + 8;
+  return { x: Math.round(bx + (BW - w) / 2), y: itemY, w, h: itemH, s, gap };
+}
+function itemSlot(i) { const b = itemBox(); return { x: b.x + 4 + i * (b.s + b.gap), y: b.y + 4, w: b.s, h: b.s }; }
+function itemAt(x, y) {
+  for (let i = 0; i < ITEM_KINDS.length; i++) {
+    const b = itemSlot(i);
+    if (x >= b.x - 3 && x <= b.x + b.w + 3 && y >= b.y - 4 && y <= b.y + b.h + 4) return ITEM_KINDS[i];
+  }
+  return null;
+}
+let C = {};
+const cache = new Map();
+let planks = null, planksPrev = null;
+
+function readColors() {
+  const cs = getComputedStyle(document.documentElement);
+  const g = n => cs.getPropertyValue(n).trim();
+  C = { ink: g('--ink'), muted: g('--muted'), accent: g('--accent'), accentInk: g('--accent-ink'), danger: g('--danger'), frame: g('--frame'),
+        pa: g('--plank-a'), pb: g('--plank-b'), pc: g('--plank-c'), gap: g('--plank-gap') };
+}
+function layout() {
+  const rect = stage.getBoundingClientRect();
+  W = rect.width; H = rect.height;
+  if (!W || !H) return;
+  dpr = Math.min(window.devicePixelRatio || 1, 3);
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  // board on top, then the tray at the bottom where the thumb rests
+  // measured in u, the cube size of the 32-wide board; both boards take the same space on screen
+  const k = 32 / COLS;
+  FR = H < 600 ? 8 : 10;
+  const units = ROWS * k + 9 + ITEM_U, fixed = 2 + FR * 2 + 4 + 8 + 4;   // frame round the board, its shadow, gaps
+  let c = Math.min((W - 2 - FR * 2) / 32, (H - fixed) / units, 16);
+  c = Math.max(6, Math.floor(c * k * dpr) / (k * dpr));
+  u = c; cu = u * k;
+  BW = cu * COLS; BH = cu * ROWS;
+  const spare = Math.max(0, H - units * u - fixed);
+  bx = Math.round((W - BW) / 2 * dpr) / dpr;
+  by = Math.round((2 + FR + spare * 0.2) * dpr) / dpr;
+  itemY = by + BH + FR + 4 + 6;
+  itemH = Math.round(Math.max(42, Math.min(56, u * (ITEM_U - 0.5) + spare * 0.12)));   // taller phones get bigger slots
+  trayY = itemY + itemH + 8;
+  trayH = H - trayY - 4;
+  slotW = BW * 0.82 / 3;   // three pockets, then a narrow column showing the next block
+  sideX = bx + slotW * 3; sideW = BW - slotW * 3;
+  cache.clear(); textCache.clear();
+  planks = null; planksPrev = null; fx.stageFade = null;
+  sizeFx();
+}
+
+function hexRgb(h) {
+  h = h.replace('#', '');
+  if (h.length === 3) h = [...h].map(x => x + x).join('');
+  const n = parseInt(h, 16);
+  return [n >> 16 & 255, n >> 8 & 255, n & 255];
+}
+function mix(a, b, t) {
+  const A = Array.isArray(a) ? a : hexRgb(a), Bv = Array.isArray(b) ? b : hexRgb(b);
+  return A.map((v, i) => Math.round(v + (Bv[i] - v) * t));
+}
+const rgb = (a, al = 1) => `rgba(${a[0]},${a[1]},${a[2]},${al})`;
+const lighten = (a, t) => mix(a, [255, 240, 215], t);
+const darken = (a, t) => mix(a, [30, 15, 5], t);
+
+function rr(x, X, Y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  x.beginPath();
+  x.moveTo(X + r, Y);
+  x.arcTo(X + w, Y, X + w, Y + h, r);
+  x.arcTo(X + w, Y + h, X, Y + h, r);
+  x.arcTo(X, Y + h, X, Y, r);
+  x.arcTo(X, Y, X + w, Y, r);
+  x.closePath();
+}
+function seeded(seed) {
+  let a = seed >>> 0;
+  return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function baseColor(color) {
+  return hexRgb(COLORS[(color - 1) % COLORS.length]);
+}
+
+// one small wooden cube: raised face with four bevelled sides and a little grain
+// one small cube shaped like a studded biscuit: four sloped faces rising to a small flat top
+function sprite(v, s, glow) {
+  const color = colorOf(v), grain = (v >> 4) & 3, spc = specialOf(v);
+  const key = color + '|' + grain + '|' + spc + '|' + s + (glow ? '|g' : '');
+  let sp = cache.get(key);
+  if (sp) return sp;
+  const px = Math.max(1, Math.ceil(s * dpr));
+  sp = document.createElement('canvas');
+  sp.width = sp.height = px;
+  const x = sp.getContext('2d');
+  x.scale(px / s, px / s);
+  if (color === STONE) {
+    const m = s * 0.05, w = s - m * 2, r = s * 0.2, rnd2 = seeded(grain * 131 + 17), bs = glow ? [170, 166, 176] : [118, 114, 124];
+    rr(x, m, m + s * 0.05, w, w, r); x.fillStyle = 'rgba(0,0,0,0.42)'; x.fill();
+    rr(x, m, m, w, w, r);
+    x.fillStyle = (() => { const g = x.createLinearGradient(0, m, 0, m + w); g.addColorStop(0, rgb(mix(bs, [255, 255, 255], 0.22))); g.addColorStop(1, rgb(mix(bs, [0, 0, 0], 0.3))); return g; })(); x.fill();
+    x.save(); rr(x, m, m, w, w, r); x.clip();
+    for (let k = 0; k < 6; k++) { x.fillStyle = rnd2() < 0.5 ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.14)'; x.beginPath(); x.arc(m + rnd2() * w, m + rnd2() * w, s * (0.04 + rnd2() * 0.08), 0, Math.PI * 2); x.fill(); }
+    x.strokeStyle = 'rgba(30,26,34,0.75)'; x.lineWidth = Math.max(0.6 / dpr, s * 0.05); x.lineJoin = 'round';
+    x.beginPath(); let cx = m + w * (0.25 + rnd2() * 0.2), cy = m;
+    x.moveTo(cx, cy); for (let k = 0; k < 3; k++) { cx += (rnd2() - 0.4) * w * 0.35; cy += w * (0.22 + rnd2() * 0.15); x.lineTo(cx, cy); } x.stroke();
+    x.fillStyle = 'rgba(255,255,255,0.22)'; x.fillRect(m + r, m + s * 0.03, w - r * 2, s * 0.06);
+    x.restore();
+    x.strokeStyle = 'rgba(25,22,30,0.8)'; x.lineWidth = Math.max(0.5 / dpr, s * 0.035); rr(x, m, m, w, w, r); x.stroke();
+    cache.set(key, sp);
+    return sp;
+  }
+  let base = color === WILD ? [214, 210, 222] : spc === SP_BOMB ? [74, 70, 82] : baseColor(color);
+  if (glow) base = lighten(base, 0.4);
+  base = mix(base, grain & 1 ? [255, 255, 255] : [0, 0, 0], 0.03 * (grain >> 1));   // a hair of variation between cubes
+  const lit = t => rgb(mix(base, [255, 255, 255], t)), dim = (t, al = 1) => rgb(mix(base, [0, 0, 0], t), al);
+  // glossy jelly: a rounded tile on its own soft shadow, glowing from inside, a wide gloss on top and one glint
+  const m = s * 0.05, w = s - m * 2, r = s * 0.28;
+  rr(x, m, m + s * 0.05, w, w, r); x.fillStyle = 'rgba(0,0,0,0.42)'; x.fill();
+  rr(x, m, m, w, w, r);
+  x.fillStyle = (() => { const g = x.createRadialGradient(s * 0.5, s * 0.62, 0, s * 0.5, s * 0.62, w * 0.75); g.addColorStop(0, lit(0.35)); g.addColorStop(0.55, rgb(base)); g.addColorStop(1, dim(0.4)); return g; })();
+  x.fill();
+  x.save(); rr(x, m, m, w, w, r); x.clip();
+  x.fillStyle = (() => { const g = x.createLinearGradient(0, m, 0, m + w * 0.48); g.addColorStop(0, 'rgba(255,255,255,0.85)'); g.addColorStop(1, 'rgba(255,255,255,0.05)'); return g; })();
+  x.beginPath(); x.ellipse(s * 0.5, m + w * 0.18, w * 0.38, w * 0.22, 0, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = 'rgba(255,255,255,0.35)'; x.lineWidth = s * 0.05; rr(x, m + s * 0.04, m + s * 0.04, w - s * 0.08, w - s * 0.08, r * 0.8); x.stroke();
+  x.restore();
+  x.fillStyle = 'rgba(255,255,255,0.95)'; x.beginPath(); x.arc(m + w * 0.24, m + w * 0.26, s * 0.05, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = dim(0.6, 0.6); x.lineWidth = Math.max(0.5 / dpr, s * 0.03); rr(x, m, m, w, w, r); x.stroke();
+  if (color === WILD) {
+    // rainbow: the grey cube keeps its shading, the hue runs across it diagonally
+    x.globalCompositeOperation = 'color';
+    const g = x.createLinearGradient(0, 0, s, s);
+    [0, 55, 120, 190, 250, 300].forEach((h, i) => g.addColorStop(i / 5, `hsl(${h}, 95%, 55%)`));
+    x.fillStyle = g; rr(x, m, m, w, w, r); x.fill();   // only the tile, not its corners
+    x.globalCompositeOperation = 'source-over';
+    sparkle(x, s * 0.5, s * 0.5, s * 0.34);
+  } else if (spc === SP_BOMB) {
+    // bomb: black ball with a shine, a short fuse and a spark
+    x.fillStyle = '#121218'; x.beginPath(); x.arc(s * 0.47, s * 0.56, s * 0.27, 0, Math.PI * 2); x.fill();
+    x.fillStyle = 'rgba(255,255,255,0.55)'; x.beginPath(); x.arc(s * 0.38, s * 0.47, s * 0.07, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = '#e0b98a'; x.lineWidth = s * 0.07; x.beginPath(); x.moveTo(s * 0.62, s * 0.34); x.quadraticCurveTo(s * 0.7, s * 0.2, s * 0.78, s * 0.2); x.stroke();
+    x.fillStyle = '#ff7a00'; x.beginPath(); x.arc(s * 0.8, s * 0.18, s * 0.11, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#ffe36b'; x.beginPath(); x.arc(s * 0.8, s * 0.18, s * 0.055, 0, Math.PI * 2); x.fill();
+  } else if (spc === SP_BOLT) {
+    // lightning: a bright zigzag bolt with a dark edge
+    const pts = [0.6, 0.08, 0.26, 0.56, 0.48, 0.56, 0.38, 0.92, 0.76, 0.4, 0.54, 0.4, 0.66, 0.08];
+    x.beginPath(); x.moveTo(pts[0] * s, pts[1] * s);
+    for (let i = 2; i < pts.length; i += 2) x.lineTo(pts[i] * s, pts[i + 1] * s);
+    x.closePath();
+    x.lineJoin = 'round'; x.lineWidth = s * 0.09; x.strokeStyle = '#4a2600'; x.stroke();
+    x.fillStyle = '#fff36e'; x.fill();
+  }
+  cache.set(key, sp);
+  return sp;
+}
+// on the board the bomb's ball is one cube across (the ball is 0.64 of its picture, centred at 0.45, 0.59)
+const BOMB_CX = 0.45, BOMB_CY = 0.59, bombSize = () => cu / 0.64;
+// item pictures (drawn once per size): a round black bomb with a lit fuse, a steel drill bit pointing down
+function itemIcon(kind, s) {
+  const sz = Math.round(s * 2) / 2, key = 'item|' + kind + '|' + sz;
+  let c = cache.get(key);
+  if (c) return c;
+  const px = Math.max(1, Math.ceil(sz * dpr));
+  c = document.createElement('canvas');
+  c.width = c.height = px;
+  const x = c.getContext('2d');
+  x.scale(px / sz, px / sz);
+  s = sz;
+  x.lineJoin = 'round'; x.lineCap = 'round';
+  if (kind === 'bomb') {
+    const cx = s * 0.45, cy = s * 0.59, R = s * 0.32;
+    x.fillStyle = 'rgba(0,0,0,0.35)'; x.beginPath(); x.ellipse(cx, s * 0.93, R * 0.85, s * 0.05, 0, 0, Math.PI * 2); x.fill();
+    let g = x.createRadialGradient(cx - R * 0.35, cy - R * 0.4, R * 0.08, cx, cy, R);
+    g.addColorStop(0, '#7a7f99'); g.addColorStop(0.42, '#2b2d3c'); g.addColorStop(1, '#09090f');
+    x.fillStyle = g; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = 'rgba(130,150,220,0.45)'; x.lineWidth = s * 0.03;
+    x.beginPath(); x.arc(cx, cy, R - s * 0.025, Math.PI * 0.05, Math.PI * 0.6); x.stroke();
+    x.fillStyle = 'rgba(255,255,255,0.8)'; x.beginPath(); x.ellipse(cx - R * 0.4, cy - R * 0.42, R * 0.22, R * 0.12, -0.7, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = 'rgba(0,0,0,0.75)'; x.lineWidth = s * 0.025; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.stroke();
+    // the cap the fuse comes out of
+    x.save(); x.translate(cx + R * 0.62, cy - R * 0.66); x.rotate(0.75);
+    g = x.createLinearGradient(-s * 0.08, 0, s * 0.08, 0); g.addColorStop(0, '#5d6177'); g.addColorStop(0.5, '#c9cde0'); g.addColorStop(1, '#4a4d60');
+    rr(x, -s * 0.085, -s * 0.07, s * 0.17, s * 0.12, s * 0.03); x.fillStyle = g; x.fill();
+    x.strokeStyle = '#15151d'; x.lineWidth = s * 0.02; x.stroke();
+    x.restore();
+    // fuse and spark
+    const fx0 = cx + R * 0.78, fy0 = cy - R * 0.86, fx1 = s * 0.8, fy1 = s * 0.16;
+    x.strokeStyle = '#3b2a18'; x.lineWidth = s * 0.07; x.beginPath(); x.moveTo(fx0, fy0); x.quadraticCurveTo(s * 0.74, s * 0.2, fx1, fy1); x.stroke();
+    x.strokeStyle = '#e2c08f'; x.lineWidth = s * 0.04; x.beginPath(); x.moveTo(fx0, fy0); x.quadraticCurveTo(s * 0.74, s * 0.2, fx1, fy1); x.stroke();
+    const star = (r, col) => {
+      x.fillStyle = col; x.beginPath();
+      for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, rr2 = i % 2 ? r * 0.42 : r; x.lineTo(fx1 + Math.cos(a) * rr2, fy1 + Math.sin(a) * rr2); }
+      x.closePath(); x.fill();
+    };
+    star(s * 0.15, '#ff7a00'); star(s * 0.1, '#ffd84a');
+    x.fillStyle = '#fffbe6'; x.beginPath(); x.arc(fx1, fy1, s * 0.035, 0, Math.PI * 2); x.fill();
+  } else {
+    const cx = s * 0.5;
+    x.fillStyle = 'rgba(0,0,0,0.3)'; x.beginPath(); x.ellipse(cx + s * 0.02, s * 0.95, s * 0.12, s * 0.03, 0, 0, Math.PI * 2); x.fill();
+    // chuck: a ridged gold collar at the top
+    const cw = s * 0.42, ct = s * 0.04, ch = s * 0.28;
+    let g = x.createLinearGradient(cx - cw / 2, 0, cx + cw / 2, 0);
+    g.addColorStop(0, '#6b3d00'); g.addColorStop(0.35, '#ffd36b'); g.addColorStop(0.6, '#e09a1a'); g.addColorStop(1, '#5c3300');
+    rr(x, cx - cw / 2, ct, cw, ch, s * 0.06); x.fillStyle = g; x.fill();
+    x.strokeStyle = 'rgba(70,35,0,0.55)'; x.lineWidth = s * 0.025;
+    for (let i = 1; i <= 3; i++) { const yy = ct + (ch * i) / 4; x.beginPath(); x.moveTo(cx - cw / 2 + s * 0.04, yy); x.lineTo(cx + cw / 2 - s * 0.04, yy); x.stroke(); }
+    x.strokeStyle = '#2a1600'; x.lineWidth = s * 0.025; rr(x, cx - cw / 2, ct, cw, ch, s * 0.06); x.stroke();
+    // the steel bit: straight, then a point
+    const bw = s * 0.27, b0 = ct + ch - s * 0.01, b1 = s * 0.76, tip = s * 0.96;
+    const bit = () => { x.beginPath(); x.moveTo(cx - bw / 2, b0); x.lineTo(cx + bw / 2, b0); x.lineTo(cx + bw / 2, b1); x.lineTo(cx, tip); x.lineTo(cx - bw / 2, b1); x.closePath(); };
+    g = x.createLinearGradient(cx - bw / 2, 0, cx + bw / 2, 0);
+    g.addColorStop(0, '#4a5462'); g.addColorStop(0.35, '#f2f6fb'); g.addColorStop(0.62, '#a9b4c2'); g.addColorStop(1, '#3f4855');
+    bit(); x.fillStyle = g; x.fill();
+    x.save(); bit(); x.clip();
+    // spiral flutes: slanted dark grooves with a light edge
+    const pitch = s * 0.13;
+    for (let yy = b0 - pitch; yy < tip; yy += pitch) {
+      x.strokeStyle = 'rgba(25,32,44,0.6)'; x.lineWidth = s * 0.05;
+      x.beginPath(); x.moveTo(cx - bw / 2 - s * 0.02, yy); x.lineTo(cx + bw / 2 + s * 0.02, yy + pitch * 0.75); x.stroke();
+      x.strokeStyle = 'rgba(255,255,255,0.55)'; x.lineWidth = s * 0.018;
+      x.beginPath(); x.moveTo(cx - bw / 2 - s * 0.02, yy + s * 0.035); x.lineTo(cx + bw / 2 + s * 0.02, yy + pitch * 0.75 + s * 0.035); x.stroke();
+    }
+    x.restore();
+    bit(); x.strokeStyle = '#1b2029'; x.lineWidth = s * 0.025; x.stroke();
+  }
+  cache.set(key, c);
+  return c;
+}
+// four-point white glint
+function sparkle(x, cx, cy, r) {
+  x.fillStyle = 'rgba(255,255,255,0.95)';
+  x.beginPath();
+  x.moveTo(cx, cy - r); x.quadraticCurveTo(cx, cy, cx + r, cy); x.quadraticCurveTo(cx, cy, cx, cy + r);
+  x.quadraticCurveTo(cx, cy, cx - r, cy); x.quadraticCurveTo(cx, cy, cx, cy - r);
+  x.fill();
+}
+
+// a cartoon box: hard shadow straight down, a dark outline, then the fill
+function toon(x, X, Y, w, h, r, fill, lw = 3, sh = 4) {
+  if (sh) { rr(x, X, Y + sh, w, h, r); x.fillStyle = OL; x.fill(); }
+  rr(x, X, Y, w, h, r); x.fillStyle = OL; x.fill();
+  rr(x, X + lw, Y + lw, w - lw * 2, h - lw * 2, Math.max(0, r - lw)); x.fillStyle = fill; x.fill();
+}
+// what never moves: the framed board and the white pockets (the page behind shows through everything else)
+function buildPlanks() {
+  const c = document.createElement('canvas');
+  c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+  const x = c.getContext('2d');
+  x.scale(dpr, dpr);
+  // the board: dark outline, a wooden band with grain, dark inner line, deep forest green inside with a faint grid
+  const R = Math.min(18, FR + 6);
+  toon(x, bx - FR, by - FR, BW + FR * 2, BH + FR * 2, R, woodFill(x, by - FR, by + BH + FR), 3.5, 5);
+  woodGrain(x, bx - FR + 3.5, by - FR + 3.5, BW + FR * 2 - 7, BH + FR * 2 - 7, R - 3.5);
+  rr(x, bx - 3, by - 3, BW + 6, BH + 6, 5); x.fillStyle = OL; x.fill();
+  const bgG = x.createRadialGradient(bx + BW / 2, by, 0, bx + BW / 2, by, BH * 1.1);
+  bgG.addColorStop(0, '#2f6a3a'); bgG.addColorStop(1, '#1b4227');
+  x.fillStyle = bgG; x.fillRect(bx, by, BW, BH);
+  x.fillStyle = 'rgba(255,255,255,0.055)';
+  const gl = Math.max(1, cu * 0.07);
+  for (let cc = 1; cc < COLS; cc++) x.fillRect(bx + cc * cu - gl / 2, by, gl, BH);
+  for (let r = 1; r < ROWS; r++) x.fillRect(bx, by + r * cu - gl / 2, BW, gl);
+  // a soft shade under the top edge, so the board reads as sunk into its frame
+  const g = x.createLinearGradient(0, by, 0, by + cu * 1.5);
+  g.addColorStop(0, 'rgba(10,4,40,0.45)'); g.addColorStop(1, 'rgba(10,4,40,0)');
+  x.fillStyle = g; x.fillRect(bx, by, BW, cu * 1.5);
+  // leaves sprouting from the two top corners of the frame (kept on screen; the top rows are where the board is emptiest)
+  if (LEAF.complete && LEAF.naturalWidth) {
+    const L = Math.max(30, Math.min(42, u * 3.4)), x0 = bx - FR, y0 = by - FR, x1 = bx + BW + FR;
+    for (const [cx, sx] of [[x0 + L * 0.34, 1], [x1 - L * 0.34, -1]]) {
+      x.save(); x.translate(cx, y0 + L * 0.12); x.scale(sx, 1); x.rotate(-0.5); x.drawImage(LEAF, -L / 2, -L / 2, L, L); x.restore();
+    }
+  }
+  // tray: one cream pocket per block, sized for a thumb, and the next-block column
+  for (let i = 0; i < 3; i++) toon(x, bx + i * slotW + 4, trayY + 2, slotW - 8, trayH - 10, 16, TOON.cream);
+  const nb = nextBox();
+  toon(x, nb.x, nb.y, nb.w, nb.h, 14, TOON.cream);
+  planks = c;
+}
+// wood: a warm vertical gradient, and fine darker grain lines over an area
+function woodFill(x, y0, y1) { const g = x.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, TOON.woodHi); g.addColorStop(1, TOON.woodLo); return g; }
+function woodGrain(x, X, Y, w, h, r) {
+  x.save(); rr(x, X, Y, w, h, Math.max(0, r)); x.clip();
+  x.fillStyle = 'rgba(60,30,10,0.1)';
+  for (let yy = Y; yy < Y + h; yy += 7) x.fillRect(X, yy, w, 2);
+  x.restore();
+}
+
+// the backdrop: dark planks, one per board column so the columns stay easy to aim at
+function paintStage(x, th) {
+  const rnd = seeded(4242);
+  const tones = th.planks.map(hexRgb);
+  const start = bx - Math.ceil(bx / cu) * cu;
+  for (let px = start; px < W; px += cu) {
+    const t = tones[Math.floor(rnd() * 3)];
+    const g = x.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, rgb(darken(t, 0.25)));
+    g.addColorStop(0.35, rgb(t));
+    g.addColorStop(1, rgb(darken(t, 0.12)));
+    x.fillStyle = g;
+    x.fillRect(px, 0, cu, H);
+    x.strokeStyle = rgb(darken(t, 0.3), 0.5);
+    x.lineWidth = Math.max(0.5, cu * 0.05);
+    for (let k = 0; k < 2; k++) {
+      const gx = px + cu * (0.25 + rnd() * 0.5);
+      x.beginPath(); x.moveTo(gx, 0); x.lineTo(gx + (rnd() - 0.5) * 2, H); x.stroke();
+    }
+    x.fillStyle = rgb(lighten(t, 0.12), 0.35);
+    x.fillRect(px + 1 / dpr, 0, Math.max(1 / dpr, cu * 0.06), H);
+    x.fillStyle = th.gap;
+    x.fillRect(px, 0, 1 / dpr, H);
+  }
+}
+function vgrad(x, y0, y1, stops) { const g = x.createLinearGradient(0, y0, 0, y1); for (const [o, c] of stops) g.addColorStop(o, c); return g; }
+
+const ease = p => 1 - Math.pow(1 - p, 3);
+const clamp01 = p => Math.max(0, Math.min(1, p));
+const riseLeft = () => Math.max(0, moveIv() - G.riseAcc);
+const riseImminent = () => riseLeft() <= 1;
+
+function popAt(marks, text, sub, chained, pts) {
+  let r0 = 1e9, r1 = -1, c0 = 1e9, c1 = -1;
+  marks.forEach((v, k) => { const r = (k / COLS) | 0, c = k % COLS; r0 = Math.min(r0, r); r1 = Math.max(r1, r); c0 = Math.min(c0, c); c1 = Math.max(c1, c); });
+  const x = Math.max(bx + u * 5, Math.min(bx + BW - u * 5, bx + (c0 + c1 + 1) / 2 * cu));
+  let y = by + (r0 + r1 + 1) / 2 * cu;
+  // a chain pops again in the same spot: stack the new number above the one still showing
+  const now = performance.now();
+  for (const e of fx.pops) if (now - e.t0 < 700 && Math.abs(e.x - x) < u * 8 && Math.abs(e.y - y) < u * 4) y = Math.min(y, e.y - u * 5.8);
+  fx.pops.push({ text, sub, chained, x, y: Math.max(by + u * 3, y), t0: now });
+  if (pts) spawnOrbs(x, Math.max(by + u * 3, y), pts);
+}
+
+/* ---------- combo and score lettering ---------- */
+const FANCY = "'Gasoek One', 'Black Han Sans', sans-serif";
+// colour sets by combo size: gold, then fire, then neon, then a rainbow that keeps turning
+const COMBO_LOOK = [
+  { min: 2, stops: ['#fffbe0', '#ffd84a', '#ff9500'], edge: '#4a1d00', rim: '#fff3c4', glow: 'rgba(255,176,0,0.9)' },
+  { min: 4, stops: ['#fff1d6', '#ff8a3d', '#ff2d55'], edge: '#46000f', rim: '#ffd9c9', glow: 'rgba(255,72,60,0.9)' },
+  { min: 6, stops: ['#ffe6fb', '#ff5fd2', '#8f4dff'], edge: '#280640', rim: '#ffd6f6', glow: 'rgba(214,90,255,0.9)' },
+  { min: 10, rainbow: true, edge: '#160830', rim: '#ffffff', glow: 'rgba(120,220,255,0.95)' },
+];
+const SCORE_LOOK = { stops: ['#ffffff', '#ffe27a', '#ffb627'], edge: '#3a1a04', rim: '#fff6d8', glow: 'rgba(255,190,60,0.75)' };
+const CHAIN_LOOK = { stops: ['#f0fdff', '#5fe1ff', '#2d7bff'], edge: '#04203f', rim: '#dff8ff', glow: 'rgba(70,190,255,0.85)' };
+const comboLook = n => COMBO_LOOK.reduce((a, l) => (n >= l.min ? l : a), COMBO_LOOK[0]);
+const RAINBOW_LOOK = { rainbow: true, edge: '#1a0630', rim: '#ffffff', glow: 'rgba(255,120,230,0.95)' };
+const GOLD_LOOK = { stops: ['#fffbe0', '#ffd84a', '#ff9500'], edge: '#4a1d00', rim: '#fff3c4', glow: 'rgba(255,176,0,0.9)' };
+const MISSION_LOOK = { stops: ['#f4fff0', '#8ef06a', '#1fae55'], edge: '#06290f', rim: '#e9ffe0', glow: 'rgba(90,230,120,0.8)' };
+const SUB_LOOK = { stops: ['#ffffff', '#ffffff', '#fff3c4'], edge: '#1b1238', rim: '#ffffff', glow: 'rgba(0,0,0,0.6)', font: "'Black Han Sans', sans-serif" };
+// cartoon lettering: a hard dark shadow straight down, a thick dark outline, a bright body and a little gloss on top
+const textCache = new Map();
+function fancyText(str, x, y, size, look, t, align = 'center', thin = false) {
+  if (!look.rainbow) {
+    const img = textImg(str, size, look, thin);
+    const x0 = align === 'center' ? x - img.w / 2 : align === 'right' ? x - img.w : x;
+    ctx.drawImage(img.c, x0 - img.pad, y - img.h / 2, img.w + img.pad * 2, img.h);
+    return img.w;
+  }
+  return fancyLive(ctx, str, x, y, size, look, t, align, thin);
+}
+// render once into a small canvas: key by text, size, colours
+function textImg(str, size, look, thin) {
+  const sz = Math.round(size * 2) / 2, key = str + '|' + sz + '|' + look.stops.join() + (look.font || '') + (thin ? 't' : '');
+  let img = textCache.get(key);
+  if (img) return img;
+  if (textCache.size > 160) textCache.clear();
+  ctx.font = `${Math.round(sz)}px ${look.font || FANCY}`;
+  const w = ctx.measureText(str).width, pad = Math.ceil(sz * 0.75), h = Math.ceil(sz * 1.7 + pad);
+  const c = document.createElement('canvas');
+  c.width = Math.ceil((w + pad * 2) * dpr); c.height = Math.ceil(h * dpr);
+  const x = c.getContext('2d');
+  x.scale(dpr, dpr);
+  fancyLive(x, str, pad, h / 2, sz, look, 0, 'left', thin);
+  img = { c, w, h, pad };
+  textCache.set(key, img);
+  return img;
+}
+function fancyLive(ctx, str, x, y, size, look, t, align, thin) {
+  ctx.font = `${Math.round(size)}px ${look.font || FANCY}`;
+  ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  const w = ctx.measureText(str).width, x0 = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+  const lw = size * (thin ? 0.24 : 0.28), drop = size * 0.1;
+  ctx.fillStyle = OL; ctx.strokeStyle = OL; ctx.lineWidth = lw;
+  ctx.strokeText(str, x, y + drop); ctx.fillText(str, x, y + drop);   // the hard shadow
+  ctx.strokeText(str, x, y);                                         // the outline
+  let g;
+  if (look.rainbow) {
+    g = ctx.createLinearGradient(x0, 0, x0 + w, 0);
+    const h0 = (t / 4) % 360;
+    for (let k = 0; k <= 6; k++) g.addColorStop(k / 6, `hsl(${(h0 + k * 55) % 360}, 100%, 62%)`);
+  } else {
+    g = ctx.createLinearGradient(0, y - size * 0.5, 0, y + size * 0.45);
+    g.addColorStop(0, look.stops[0]); g.addColorStop(0.45, look.stops[1]); g.addColorStop(1, look.stops[2]);
+  }
+  ctx.fillStyle = g; ctx.fillText(str, x, y);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x0 - size, y - size * 0.62, w + size * 2, size * 0.42); ctx.clip();
+  ctx.globalAlpha *= 0.28; ctx.fillStyle = '#ffffff'; ctx.fillText(str, x, y);
+  ctx.restore();
+  return w;
+}
+// pop-in: shoots past full size, settles, then floats up and fades
+function popScale(ms) {
+  if (ms < 110) return 0.35 + 0.95 * ease(ms / 110);
+  if (ms < 220) return 1.3 - 0.3 * ((ms - 110) / 110);
+  return 1;
+}
+// a breaking cube pops up off the board, tumbling outward, then falls away
+function peel(a, k, v) {
+  a.spawned.add(k);
+  const r = (k / COLS) | 0, c = k % COLS, dir = a.dirs.get(k) || 1;
+  fx.cubes.push({ x: bx + (c + 0.5) * cu, y: by + (r + 0.5) * cu, v,
+    vx: dir * (2 + Math.random() * 6) * u, vy: -(13 + Math.random() * 9) * u,
+    a: 0, va: dir * (4 + Math.random() * 7), t0: performance.now(), life: 900 + Math.random() * 300 });
+  if (fx.cubes.length > 1600) fx.cubes.splice(0, fx.cubes.length - 1600);
+  const col = colorOf(v) === WILD ? 1 + rand(COLORS.length) : colorOf(v), glow = col === STONE ? 'rgb(205,200,210)' : rgb(lighten(baseColor(col), 0.5));
+  const n = Math.random() < 0.45 ? 2 : 1, now = performance.now();
+  for (let j = 0; j < n; j++) {
+    fx.sparks.push({ x: bx + (c + 0.5) * cu, y: by + (r + 0.5) * cu, vx: (Math.random() - 0.5) * u * 34, vy: -(u * 6 + Math.random() * u * 26),
+      t0: now, life: 420 + Math.random() * 480, s: u * (0.38 + Math.random() * 0.4), rot: Math.random() * 6, c: glow });
+  }
+  if (fx.sparks.length > 520) fx.sparks.splice(0, fx.sparks.length - 520);
+}
+
+// column under the thumb for the held block.
+// It is sticky: it only moves on once the thumb is a quarter cube (at least 4px) past the edge, so it does not flicker.
+const STICK = 0.25, STICK_PX = 4;
+function moveCol(now) { moveColFor(drag, shapeOf(G.tray[drag.i]).wd, now); }
+// the same for anything held d that is wd columns wide (a block, or an item: 1)
+function moveColFor(d, wd, now) {
+  const f = (d.x - bx) / cu - wd / 2;
+  const clampC = c => Math.max(0, Math.min(COLS - wd, c));
+  if (d.col == null) { d.col = clampC(Math.round(f)); d.hist = [{ t: now, c: d.col }]; d.trail = [{ t: now, x: d.x, y: d.y }]; return; }
+  d.trail.push({ t: now, x: d.x, y: d.y });
+  while (d.trail.length > 2 && d.trail[1].t < now - 600) d.trail.shift();
+  if (Math.abs(f - d.col) <= 0.5 + Math.max(STICK, STICK_PX / cu)) return;
+  const c = clampC(Math.round(f));
+  if (c === d.col) return;
+  d.col = c;
+  if (!d.home) sfx('move');
+  d.hist.push({ t: now, c });
+  if (d.hist.length > 24) d.hist.shift();
+}
+function dragCol() { return { s: shapeOf(G.tray[drag.i]), c: drag.col }; }
+// Lifting the thumb often rolls it a little in the last instant. If the thumb had been resting (moved under 4px for
+// 140ms) and only the last 90ms moved the block by 1-2 columns, the block goes where it was resting.
+// A thumb that was still sliding when it lifted keeps the column it reached.
+const LIFT_MS = 90, STEADY_MS = 140, STEADY_PX = 4;
+function releaseCol(d, now) { return releaseOn(d, d.hist, d.col, now); }
+function releaseOn(d, hist, cur, now) {
+  const tA = now - LIFT_MS;
+  let k = hist.length - 1;
+  while (k > 0 && hist[k].t > tA) k--;
+  const cA = hist[k].c;
+  if (cA === cur || Math.abs(cur - cA) > 2) return cur;
+  const tr = d.trail;
+  let j = tr.length - 1;
+  while (j > 0 && tr[j].t > tA) j--;
+  const pA = tr[j];
+  if (tr[0].t > tA - STEADY_MS) return cur;   // not held long enough to call it resting
+  for (let q = j; q >= 0; q--) {
+    if (Math.hypot(tr[q].x - pA.x, tr[q].y - pA.y) > STEADY_PX) return cur;
+    if (tr[q].t <= tA - STEADY_MS) break;
+  }
+  return cA;
+}
+// the bomb aims at the cell a little above the thumb, so the thumb never hides the spot
+const bombLift = () => Math.max(60, cu * 3.2);
+function moveRowFor(d, now) {
+  const f = (d.y - bombLift() - by) / cu - 0.5;
+  const clampR = r => Math.max(0, Math.min(ROWS - 1, r));
+  if (d.row == null) { d.row = clampR(Math.round(f)); d.rhist = [{ t: now, c: d.row }]; return; }
+  if (Math.abs(f - d.row) <= 0.5 + Math.max(STICK, STICK_PX / cu)) return;
+  const r = clampR(Math.round(f));
+  if (r === d.row) return;
+  d.row = r;
+  if (!d.home) sfx('move');
+  d.rhist.push({ t: now, c: r });
+  if (d.rhist.length > 24) d.rhist.shift();
+}
+// let go this close to where the block was picked up and it goes back to the tray
+const homeR = () => Math.max(18, u * 1.6);
+function updateGhost() {
+  if (!drag || !G.tray[drag.i]) return;
+  const { s, c } = dragCol();
+  if (drag.ghost && drag.ghost.c === c && drag.ghost.ver === gridVersion) return;
+  const cells = landing(G.grid, s, c);
+  if (!cells) { drag.ghost = { c, ver: gridVersion, cells: null }; return; }
+  // which cubes would burst right away if dropped here
+  const g2 = G.grid.map(row => row.slice());
+  const p = G.tray[drag.i];
+  cells.forEach((e, j) => { g2[e.r][e.c] = pieceCell(p, j); });
+  const b = findBursts(g2);
+  specialMarks(g2, cells).extra.forEach((v, k) => b.marks.set(k, v));
+  drag.ghost = { c, ver: gridVersion, cells, marks: b.marks.size ? b.marks : null };
+}
+
+function drawBlock(p, X, Y, size, alpha) {
+  if (alpha !== undefined) ctx.globalAlpha = alpha;
+  shapeOf(p).cells.forEach(([dr, dc], j) => ctx.drawImage(sprite(pieceCell(p, j), size), X + dc * size, Y + dr * size, size, size));
+  ctx.globalAlpha = 1;
+}
+
+// The aim of a held item, drawn over the board:
+//  bomb  - a heat glow spreading from the aimed cell, a target grid of dots on its empty cells, a shock ring pulsing out
+//          from the middle and four gold corner brackets that breathe around the 5x5 square;
+//  drill - a pale beam down the column from its first cube, chevrons running down it, brackets capping both ends.
+// Cubes that will break are lit and pulse. With nothing to break, all of it turns a muted red and stops moving.
+const AIM_LOOK = {
+  bomb: { glow: [255, 150, 70], line: '#ffd98a', ring: '255,226,160' },
+  drill: { glow: [175, 225, 255], line: '#d6f1ff', ring: '220,244,255' },
+  none: { glow: [255, 90, 80], line: '#ff8a7a', ring: '255,140,130' },
+};
+function drawAim(tg, kind, none, t, pulse) {
+  const bomb = kind === 'bomb', L = none ? AIM_LOOK.none : AIM_LOOK[kind];
+  const r0 = none && !bomb ? 0 : tg.r0, r1 = none && !bomb ? ROWS - 1 : tg.r1;
+  const x0 = bx + tg.c0 * cu, y0 = by + r0 * cu, w = (tg.c1 - tg.c0 + 1) * cu, h = (r1 - r0 + 1) * cu;
+  const cx = bx + (tg.cc + 0.5) * cu, cy = bomb ? by + (tg.rc + 0.5) * cu : y0 + h / 2;
+  const breath = none ? 0 : 0.5 + 0.5 * Math.sin(t / 230);
+  const [gr, gg, gb] = L.glow, rad = Math.min(cu * 0.35, w / 2);
+  ctx.save();
+  // 1) the zone
+  rr(ctx, x0, y0, w, h, rad);
+  let g;
+  if (bomb) {
+    g = ctx.createRadialGradient(cx, cy, cu * 0.2, cx, cy, Math.max(w, h) * 0.75);
+    g.addColorStop(0, `rgba(${gr},${gg},${gb},0.34)`); g.addColorStop(0.55, `rgba(${gr},${gg},${gb},0.16)`); g.addColorStop(1, `rgba(${gr},${gg},${gb},0.05)`);
+  } else {
+    g = ctx.createLinearGradient(0, y0, 0, y0 + h);
+    g.addColorStop(0, `rgba(${gr},${gg},${gb},0.32)`); g.addColorStop(1, `rgba(${gr},${gg},${gb},0.08)`);
+  }
+  ctx.fillStyle = g; ctx.fill();
+  ctx.save(); rr(ctx, x0, y0, w, h, rad); ctx.clip();
+  // 2) cubes that break: lit, pulsing; empty cells of the bomb's square get a small target dot
+  ctx.globalAlpha = none ? 0 : 0.22 + 0.26 * pulse;
+  tg.marks.forEach((v, k) => ctx.drawImage(sprite(v, cu, true), bx + (k % COLS) * cu, by + ((k / COLS) | 0) * cu, cu, cu));
+  ctx.globalAlpha = 1;
+  if (bomb) {
+    ctx.fillStyle = `rgba(${gr},${gg},${gb},0.55)`;
+    for (let r = tg.r0; r <= tg.r1; r++) for (let c = tg.c0; c <= tg.c1; c++) {
+      if (G.grid[r][c]) continue;
+      ctx.beginPath(); ctx.arc(bx + (c + 0.5) * cu, by + (r + 0.5) * cu, Math.max(1.2, cu * 0.07), 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  // 3) motion: a shock ring from the aimed cell (bomb), chevrons running down the column (drill)
+  if (!none && bomb) {
+    for (let j = 0; j < 2; j++) {
+      const p = ((t / 900) + j * 0.5) % 1, rr2 = cu * 0.5 + p * Math.max(w, h) * 0.62;
+      ctx.strokeStyle = `rgba(${L.ring},${0.55 * (1 - p)})`; ctx.lineWidth = Math.max(1.5, u * 0.22) * (1 - p * 0.5);
+      ctx.beginPath(); ctx.arc(cx, cy, rr2, 0, Math.PI * 2); ctx.stroke();
+    }
+  } else if (!none) {
+    // chevrons pointing down, sliding down the beam and fading in at the top
+    const cw = Math.max(3.5, cu * 0.3), ch = Math.max(2.2, cu * 0.17), step = Math.max(cw * 3.2, cu * 1.5), off = (t / 7) % step;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (let yy = y0 - step + off; yy < y0 + h + step; yy += step) {
+      const a = 0.9 * clamp01((yy - y0) / Math.max(1, step * 1.2));
+      if (a <= 0) continue;
+      ctx.beginPath(); ctx.moveTo(cx - cw, yy - ch); ctx.lineTo(cx, yy + ch); ctx.lineTo(cx + cw, yy - ch);
+      ctx.strokeStyle = `rgba(16,26,40,${a * 0.75})`; ctx.lineWidth = Math.max(3, cu * 0.17); ctx.stroke();
+      ctx.strokeStyle = `rgba(${L.ring},${a})`; ctx.lineWidth = Math.max(1.6, cu * 0.09); ctx.stroke();
+    }
+  }
+  ctx.restore();
+  // 4) the frame. Bomb: a faint outline joined by four corner brackets with a dark edge, breathing a little outward.
+  //    Drill: two rails down the sides of the column, capped top and bottom.
+  const o = 1.5 + breath * Math.max(1.5, u * 0.22), lw = Math.max(2, u * 0.3), m = lw / 2 + 1.5;
+  // kept inside the board, so a square on the edge keeps whole brackets
+  const bxl = Math.max(bx + m, x0 - o), byt = Math.max(by + m, y0 - o), bxr = Math.min(bx + BW - m, x0 + w + o), byb = Math.min(by + BH - m, y0 + h + o);
+  const ink = (path, width) => {
+    path(); ctx.strokeStyle = 'rgba(28,10,2,0.75)'; ctx.lineWidth = width + 2.5; ctx.stroke();
+    path(); ctx.strokeStyle = L.line; ctx.lineWidth = width; ctx.stroke();
+  };
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if (bomb) {
+    rr(ctx, x0 + 0.5, y0 + 0.5, w - 1, h - 1, rad);
+    ctx.strokeStyle = `rgba(${L.ring},0.28)`; ctx.lineWidth = 1; ctx.stroke();
+    const lx = Math.max(cu * 0.9, w * 0.24), ly = lx, kr = Math.min(cu * 0.3, 6);
+    for (const [x, y, sx, sy] of [[bxl, byt, 1, 1], [bxr, byt, -1, 1], [bxl, byb, 1, -1], [bxr, byb, -1, -1]]) {
+      ink(() => { ctx.beginPath(); ctx.moveTo(x + sx * lx, y); ctx.lineTo(x + sx * kr, y); ctx.quadraticCurveTo(x, y, x, y + sy * kr); ctx.lineTo(x, y + sy * ly); }, lw);
+    }
+  } else {
+    const rl = bxl, rrt = bxr;
+    ctx.globalAlpha = 0.7;
+    ink(() => { ctx.beginPath(); ctx.moveTo(rl, byt); ctx.lineTo(rl, byb); ctx.moveTo(rrt, byt); ctx.lineTo(rrt, byb); }, Math.max(1.2, lw * 0.45));
+    ctx.globalAlpha = 1;
+    const leg = Math.max(cu * 0.45, 4), kr = Math.min((rrt - rl) * 0.3, 5);
+    // a cap: a bar across the column bending into short legs along the rails
+    const cap = (y, sy) => () => {
+      ctx.beginPath(); ctx.moveTo(rl, y + sy * leg); ctx.lineTo(rl, y + sy * kr); ctx.quadraticCurveTo(rl, y, rl + kr, y);
+      ctx.lineTo(rrt - kr, y); ctx.quadraticCurveTo(rrt, y, rrt, y + sy * kr); ctx.lineTo(rrt, y + sy * leg);
+    };
+    ink(cap(byt, 1), lw); ink(cap(byb, -1), lw);
+  }
+  ctx.restore();
+}
+
+let lastDraw = performance.now();
+function draw(t) {
+  const dt = Math.min(0.05, Math.max(0, (t - lastDraw) / 1000));
+  lastDraw = t;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);   // the page's own background shows round the framed board and the boxes
+  if (!planks) buildPlanks();
+  // screen shake: the whole picture moves together, settling fast
+  let sx = 0, sy = 0;
+  if (fx.shake) {
+    const p = (t - fx.shake.t0) / fx.shake.dur;
+    if (p >= 1) fx.shake = null;
+    else { const a = fx.shake.amp * (1 - p) * (1 - p); sx = Math.sin(t * 0.093) * a; sy = Math.cos(t * 0.117) * a * 0.8; }
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, sx * dpr, sy * dpr);
+  // a new stage fades its backdrop in over the old one
+  if (fx.stageFade && planksPrev) {
+    const p = clamp01((t - fx.stageFade.t0) / fx.stageFade.dur);
+    ctx.drawImage(planksPrev, 0, 0, W, H);
+    ctx.globalAlpha = ease(p); ctx.drawImage(planks, 0, 0, W, H); ctx.globalAlpha = 1;
+    if (p >= 1) { fx.stageFade = null; planksPrev = null; }
+  } else ctx.drawImage(planks, 0, 0, W, H);
+  if (feverOn()) drawFeverBoard(t);
+
+  let shiftK = 0;
+  if (fx.shift) {
+    const p = clamp01((t - fx.shift.t0) / fx.shift.dur);
+    if (p >= 1) fx.shift = null; else shiftK = 1 - ease(p);
+  }
+  const yRise = shiftK * cu * (fx.shift ? fx.shift.rows || 1 : 1);
+  const moving = anim && anim.keys ? anim.keys : null;
+  const bursting = anim && anim.type === 'burst' ? anim : null;
+  const hold = drag && !drag.home && drag.ghost && drag.ghost.marks;
+  const pulse = 0.5 + 0.5 * Math.sin(t / 110);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(bx, by - u * 12, BW, BH + u * 12); ctx.clip();
+  for (let r = 0; r < ROWS; r++) {
+    const row = G.grid[r];
+    for (let c = 0; c < COLS; c++) {
+      const v = row[c];
+      if (!v) continue;
+      const k = r * COLS + c;
+      if (moving && moving.has(k)) continue;
+      let X = bx + c * cu, Y = by + r * cu + yRise, s = cu;
+      if (bursting && bursting.marks.has(k)) {
+        const left = bursting.delays.get(k) - (t - bursting.t0);
+        if (left <= 0) { if (!bursting.spawned.has(k)) peel(bursting, k, v); continue; }
+        const lift = left < 90 ? (1 - left / 90) * cu * 0.45 : 0;
+        ctx.drawImage(sprite(v, cu, left < 90), X, Y - lift, s, s);
+        continue;
+      }
+      ctx.drawImage(sprite(v, cu), X, Y, s, s);
+      if (hold && hold.has(k)) { ctx.globalAlpha = 0.25 + 0.35 * pulse; ctx.drawImage(sprite(v, cu, true), X, Y, s, s); ctx.globalAlpha = 1; }
+    }
+  }
+  // cubes in motion: dropping in from the top, or settling after a burst
+  if (moving) {
+    for (const e of anim.cells) {
+      const k = clamp01((t - anim.t0) / e.dur);
+      const y = by + (e.r0 + (e.r - e.r0) * k * k) * cu;
+      ctx.drawImage(sprite(G.grid[e.r][e.c] || 1, cu), bx + e.c * cu, y, cu, cu);
+    }
+  }
+  // landing preview for the held block
+  if (drag && !drag.home && drag.ghost && drag.ghost.cells) {
+    const p = G.tray[drag.i], s = shapeOf(p);
+    ctx.fillStyle = 'rgba(255,235,200,0.06)';
+    const top = Math.min(...drag.ghost.cells.map(e => e.r));
+    ctx.fillRect(bx + drag.ghost.c * cu, by, s.wd * cu, top * cu);
+    ctx.globalAlpha = hold ? 0.5 + 0.4 * pulse : 0.5;
+    drag.ghost.cells.forEach((e, j) => ctx.drawImage(sprite(pieceCell(p, j), cu, !!hold), bx + e.c * cu, by + e.r * cu, cu, cu));
+    ctx.globalAlpha = 1;
+  }
+  // a held item: its aim (see drawAim), and the item itself, see-through, where it will go off:
+  // the bomb on the cell it aims at, the drill on top of its column
+  if (idrag && !idrag.home && idrag.col != null && G.state === 'play') {
+    const bomb = idrag.k === 'bomb', tg = itemTargets(idrag.k, idrag.col, bomb ? idrag.row : null), none = !tg.marks.size;
+    drawAim(tg, idrag.k, none, t, pulse);
+    const gs = Math.max(cu * 1.5, u * 2.6);
+    ctx.globalAlpha = none ? 0.4 : 0.85;
+    if (bomb) {
+      // the ball is one cube across, sitting right on the aimed cell (kept whole on the board)
+      const bs = bombSize(), gx = Math.max(bx, Math.min(bx + BW - bs, bx + (tg.cc + 0.5) * cu - bs * BOMB_CX)), gy = Math.max(by, Math.min(by + BH - bs, by + (tg.rc + 0.5) * cu - bs * BOMB_CY));
+      ctx.drawImage(itemIcon('bomb', bs), gx, gy, bs, bs);
+    }
+    else ctx.drawImage(itemIcon(idrag.k, gs), bx + (idrag.col + 0.5) * cu - gs / 2, by + Math.min(tg.hit, ROWS) * cu - gs, gs, gs);
+    ctx.globalAlpha = 1;
+  }
+  // an item on its way: the bomb slams down onto its cell, the drill drops down its column
+  const itemSize = Math.max(cu * 1.5, u * 2.6);
+  if (anim && anim.type === 'item') {
+    const p = clamp01((t - anim.t0) / anim.dur);
+    if (anim.kind === 'bomb') {
+      const sc = 1.7 - 0.7 * ease(p), sz = bombSize() * sc;
+      ctx.globalAlpha = 0.55 + 0.45 * p;
+      ctx.drawImage(itemIcon('bomb', sz), bx + (anim.tg.cc + 0.5) * cu - sz * BOMB_CX, by + (anim.tg.rc + 0.5) * cu - sz * BOMB_CY, sz, sz);
+      ctx.globalAlpha = 1;
+    } else {
+      const r = anim.from + (anim.land - anim.from) * p * p;
+      ctx.drawImage(itemIcon(anim.kind, itemSize), bx + (anim.col + 0.5) * cu - itemSize / 2, by + (r + 1) * cu - itemSize, itemSize, itemSize);
+    }
+  }
+  // the drill grinding down through its column, shaking a little
+  if (fx.drill) {
+    const d = fx.drill, r = d.r0 + (t - d.t0) / Math.max(1, d.step);
+    if (r > d.r1 + 3 || G.state !== 'play') fx.drill = null;
+    else {
+      const jx = Math.sin(t / 16) * u * 0.14;
+      ctx.drawImage(itemIcon('drill', itemSize), bx + (d.col + 0.5) * cu - itemSize / 2 + jx, by + r * cu - itemSize * 0.96, itemSize, itemSize);
+    }
+  }
+  ctx.restore();
+
+  // danger: the stack is about to be pushed past the top
+  const h = heights(G.grid), maxH = Math.max(...h);
+  if (maxH >= ROWS - 3 && (G.state === 'play' || G.state === 'dying' || G.state === 'menu')) {
+    const fast = maxH >= ROWS || riseImminent();
+    const pl = 0.5 + 0.5 * Math.sin(t / (fast ? 90 : 200));
+    const band = u * 4;
+    const g = ctx.createLinearGradient(0, by, 0, by + band);
+    g.addColorStop(0, C.danger); g.addColorStop(1, 'rgba(255,107,85,0)');
+    ctx.fillStyle = g;
+    ctx.globalAlpha = (fast ? 0.35 : 0.18) + pl * (fast ? 0.3 : 0.12);
+    ctx.fillRect(bx, by, BW, band);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = C.danger;
+    ctx.fillRect(bx, by - 3, BW, 2);
+  }
+
+  // close to the top: the frame around the board flashes red and the music speeds up
+  const danger = (G.state === 'play' || G.state === 'dying') && maxH >= Math.ceil(ROWS * DANGER_AT);
+  if (danger) {
+    const k = clamp01((maxH - ROWS * DANGER_AT) / (ROWS * (1 - DANGER_AT)));
+    const fl = 0.5 + 0.5 * Math.sin(t / (k > 0.6 ? 80 : 130));
+    ctx.save();
+    ctx.strokeStyle = C.danger;
+    const al = (0.3 + 0.6 * fl) * (0.6 + 0.4 * k);
+    glowFrame(Math.max(3, u * 0.5), u * (1 + k), al);
+    ctx.restore();
+  }
+  if (feverOn()) {
+    ctx.save();
+    const h0 = (t / 5) % 360, g = ctx.createLinearGradient(bx, by, bx + BW, by + BH);
+    for (let k = 0; k <= 4; k++) g.addColorStop(k / 4, `hsl(${(h0 + k * 80) % 360}, 100%, 62%)`);
+    ctx.strokeStyle = g;
+    glowFrame(Math.max(3, u * 0.5), u * 1.6, 1);
+    ctx.restore();
+  }
+  musicRate(G.state !== 'play' ? 1 : feverOn() ? FEVER_RATE : danger ? DANGER_RATE : 1);
+
+  // tumbling cubes from breaks; they fall away behind the bottom edge of the board, never over the tray
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, W, by + BH); ctx.clip();
+  fx.cubes = fx.cubes.filter(q => {
+    const age = t - q.t0;
+    if (age >= q.life || q.y > by + BH + cu) return false;
+    q.vy += u * 70 * dt; q.x += q.vx * dt; q.y += q.vy * dt; q.a += q.va * dt;
+    ctx.save();
+    ctx.globalAlpha = age > q.life - 200 ? (q.life - age) / 200 : 1;
+    ctx.translate(q.x, q.y); ctx.rotate(q.a);
+    ctx.drawImage(sprite(q.v, cu), -cu / 2, -cu / 2, cu, cu);
+    ctx.restore();
+    return true;
+  });
+  ctx.restore();
+
+  // glitter from the breaks, added light so it glows over the board
+  if (fx.sparks.length) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    fx.sparks = fx.sparks.filter(q => {
+      const age = t - q.t0;
+      if (age >= q.life) return false;
+      q.vy += u * 34 * dt; q.vx *= 0.98; q.x += q.vx * dt; q.y += q.vy * dt;
+      const k = 1 - age / q.life;
+      ctx.globalAlpha = k;
+      ctx.fillStyle = q.c;
+      starPath(ctx, q.x, q.y, q.s * (0.55 + 0.45 * k), q.rot + age * 0.006); ctx.fill();
+      return true;
+    });
+    ctx.restore();
+  }
+
+  // tray
+  for (let i = 0; i < 3; i++) {
+    const p = G.tray[i];
+    const picked = drag && drag.i === i;
+    if (!p || (picked && !drag.home)) continue;
+    const s = shapeOf(p);
+    // the block sits below the turn button, so the two never overlap
+    const band = rotBtn(i).r * 2 + 12, room = trayH - band - 8;
+    const ts = Math.min(Math.max(u * 2, cu), (slotW * 0.7) / s.wd, (room * 0.85) / s.h);
+    const ox = bx + i * slotW + (slotW - s.wd * ts) / 2;
+    const oy = trayY + band + (room - s.h * ts) / 2;
+    const spin = fx.spin && fx.spin.i === i ? clamp01((t - fx.spin.t0) / 160) : 1;
+    if (spin < 1) {
+      ctx.save();
+      const cx = ox + s.wd * ts / 2, cy = oy + s.h * ts / 2;
+      ctx.translate(cx, cy); ctx.rotate(-(1 - ease(spin)) * Math.PI / 2); ctx.translate(-cx, -cy);
+      drawBlock(p, ox, oy, ts, canDropAnywhere(s) ? 1 : 0.3);
+      ctx.restore();
+    } else drawBlock(p, ox, oy, ts, canDropAnywhere(s) ? 1 : 0.3);
+    if (pending && pending.i === i) { ctx.strokeStyle = TOON.purple; ctx.lineWidth = 3; rr(ctx, bx + i * slotW + 9, trayY + 7, slotW - 18, trayH - 20, 11); ctx.stroke(); }
+    // held but still at the spot it was picked up from: letting go here puts it back
+    if (picked) { ctx.globalAlpha = 0.6; ctx.strokeStyle = TOON.purple; ctx.lineWidth = 3; rr(ctx, bx + i * slotW + 9, trayY + 7, slotW - 18, trayH - 20, 11); ctx.stroke(); ctx.globalAlpha = 1; }
+  }
+  // turn buttons: an orange disc with a dark outline and a hard shadow, a white clockwise arrow outlined in dark
+  for (let i = 0; i < 3; i++) {
+    const b = rotBtn(i), p = G.tray[i];
+    const on = p && (G.rotLeft || 0) > 0 && G.state === 'play' && !(drag && drag.i === i && !drag.home);
+    ctx.save();
+    ctx.globalAlpha = on ? 1 : 0.45;
+    ctx.fillStyle = OL;
+    ctx.beginPath(); ctx.arc(b.x, b.y + 3, b.r, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = on ? TOON.orange : '#cfc6b0';
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r - 2.8, 0, Math.PI * 2); ctx.fill();
+    const ar = b.r * 0.48, a0 = -Math.PI * 0.8, a1 = Math.PI * 0.6, lw = Math.max(2.4, b.r * 0.17);
+    const ex = b.x + Math.cos(a1) * ar, ey = b.y + Math.sin(a1) * ar;
+    const tx = -Math.sin(a1), ty = Math.cos(a1), hs = b.r * 0.32;   // clockwise direction at the arrow's end
+    const head = () => {
+      ctx.beginPath();
+      ctx.moveTo(ex + tx * hs, ey + ty * hs);
+      ctx.lineTo(ex - ty * hs * 0.8 - tx * hs * 0.3, ey + tx * hs * 0.8 - ty * hs * 0.3);
+      ctx.lineTo(ex + ty * hs * 0.8 - tx * hs * 0.3, ey - tx * hs * 0.8 - ty * hs * 0.3);
+      ctx.closePath();
+    };
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = OL; ctx.lineWidth = lw + 3;
+    ctx.beginPath(); ctx.arc(b.x, b.y, ar, a0, a1); ctx.stroke();
+    head(); ctx.lineWidth = 3; ctx.stroke();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = lw;
+    ctx.beginPath(); ctx.arc(b.x, b.y, ar, a0, a1); ctx.stroke();
+    head(); ctx.fillStyle = '#ffffff'; ctx.fill();
+    ctx.restore();
+  }
+  // the next block, dimmed (it cannot be picked) in its own column
+  {
+    const lh = Math.round(Math.max(11, u * 1.1)), nb = nextBox();
+    ctx.fillStyle = TOON.bark; ctx.font = `${lh + 1}px 'Black Han Sans', sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillText(tr('next'), nb.x + nb.w / 2, nb.y + 8);
+    if (G.next) {
+      const s = shapeOf(G.next), room = nb.h - lh - 14;
+      const ts = Math.min(Math.max(u * 2, cu) * 0.75, (nb.w * 0.78) / s.wd, (room * 0.6) / s.h);
+      drawBlock(G.next, nb.x + (nb.w - s.wd * ts) / 2, nb.y + lh + 12 + (room - s.h * ts) / 2, ts, 0.9);
+    }
+  }
+  // the item box between the board and the pockets: four square slots, a picture and a count in each filled one.
+  // They glow when no block fits and an item can help.
+  {
+    const box = itemBox(), cp = 0.5 + 0.5 * Math.sin(t / 140);
+    toon(ctx, box.x, box.y, box.w, box.h, 14, woodFill(ctx, box.y, box.y + box.h)); woodGrain(ctx, box.x + 3, box.y + 3, box.w - 6, box.h - 6, 11);
+    for (let i = 0; i < ITEM_SLOTS; i++) {
+      const b = itemSlot(i), k = ITEM_KINDS[i], n = k ? ITEMS[k] || 0 : 0;
+      const held = k && idrag && idrag.k === k, out = held && !idrag.home, call = k && G.stuck && n > 0 && G.state === 'play';
+      if (call) { ctx.strokeStyle = `rgba(255,120,60,${0.35 + 0.45 * cp})`; ctx.lineWidth = 6; rr(ctx, b.x - 2, b.y - 2, b.w + 4, b.h + 4, 10); ctx.stroke(); }
+      if (k) toon(ctx, b.x, b.y, b.w, b.h, 9, held ? '#fff6c2' : call ? '#ffe2cf' : TOON.sky, 2.5, 0);
+      else {   // an empty slot, for an item to come
+        rr(ctx, b.x, b.y, b.w, b.h, 9); ctx.fillStyle = TOON.lilac; ctx.fill();
+        ctx.setLineDash([4, 3]); ctx.strokeStyle = TOON.bark; ctx.lineWidth = 2; rr(ctx, b.x + 1, b.y + 1, b.w - 2, b.h - 2, 8); ctx.stroke(); ctx.setLineDash([]);
+      }
+      if (held) { ctx.strokeStyle = TOON.purple; ctx.lineWidth = 3; rr(ctx, b.x + 1.5, b.y + 1.5, b.w - 3, b.h - 3, 8); ctx.stroke(); }
+      if (!k) continue;   // an empty slot, for an item to come
+      // a little hop when one is earned
+      const bp = fx.itemBump && fx.itemBump.k === k ? (t - fx.itemBump.t0) / 520 : 1;
+      if (bp >= 1 && fx.itemBump && fx.itemBump.k === k) fx.itemBump = null;
+      const hop = bp < 1 ? Math.sin(bp * Math.PI) : 0;
+      const is = b.w * 0.8 * (1 + 0.25 * hop);
+      ctx.globalAlpha = n <= 0 ? 0.3 : out ? 0.35 : 1;
+      ctx.drawImage(itemIcon(k, is), b.x + (b.w - is) / 2, b.y + (b.h - is) / 2 - hop * b.h * 0.12, is, is);
+      ctx.globalAlpha = 1;
+      // how many: a small badge in the lower right corner
+      const br = Math.max(8.5, b.w * 0.22), bxc = b.x + b.w - br * 0.55, byc = b.y + b.h - br * 0.55;
+      ctx.fillStyle = OL; ctx.beginPath(); ctx.arc(bxc, byc, br, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = n > 0 ? TOON.red : '#b9b2cc'; ctx.beginPath(); ctx.arc(bxc, byc, br - 2.2, 0, Math.PI * 2); ctx.fill();
+      ctx.font = `${Math.round(br * 1.15)}px ${FANCY}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = OL; ctx.strokeText(String(Math.min(99, n)), bxc, byc + 0.5);
+      ctx.fillStyle = '#ffffff'; ctx.fillText(String(Math.min(99, n)), bxc, byc + 0.5);
+    }
+  }
+  // held block, floating just above the thumb so it stays visible
+  if (drag && G.tray[drag.i] && !drag.home) {
+    const p = G.tray[drag.i], s = shapeOf(p);
+    const ts = Math.min(Math.max(u * 2, cu), (slotW * 0.7) / s.wd);
+    const { c } = dragCol();
+    const x = bx + (c + s.wd / 2) * cu - s.wd * ts / 2;
+    const y = Math.max(by + BH + u * 0.3, drag.y - 56 - s.h * ts);
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = u; ctx.shadowOffsetY = u * 0.4;
+    drawBlock(p, x, y, ts, drag.ghost && drag.ghost.cells ? 1 : 0.45);
+    ctx.restore();
+  }
+
+  // score pops at the break
+  fx.pops = fx.pops.filter(e => {
+    const ms = t - e.t0, p = ms / 1100;
+    if (p >= 1) return false;
+    const a = p < 0.72 ? 1 : 1 - (p - 0.72) / 0.28;
+    const y = e.y - ease(Math.min(1, p * 1.3)) * u * 3.2;
+    const sc = popScale(ms);
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.translate(e.x, y); ctx.scale(sc, sc);
+    const big = u * 2.7;
+    fancyText(e.text, 0, 0, big, SCORE_LOOK, t);
+    if (e.sub) fancyText(e.sub, 0, big * 1.0, u * 2.1, e.chained ? CHAIN_LOOK : { stops: ['#ffffff', '#fff4e0', '#ffd9a8'], edge: '#2a1206', rim: '#ffffff', glow: 'rgba(0,0,0,0.5)' }, t, 'center', true);
+    ctx.restore();
+    return true;
+  });
+  // the combo banner, high over the board
+  if (fx.combo) {
+    const ms = t - fx.combo.t0, p = ms / 1300;
+    if (p >= 1) fx.combo = null;
+    else {
+      const n = fx.combo.n, look = comboLook(n);
+      const a = p < 0.75 ? 1 : 1 - (p - 0.75) / 0.25;
+      const sc = popScale(ms) * (1 + 0.035 * Math.sin(ms / 70) * (ms > 220 ? 1 : 0));
+      const rot = ms < 220 ? (-0.12 + 0.12 * ms / 220) : 0;
+      const size = u * Math.min(6.4, 4.4 + (n - 2) * 0.3);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.translate(bx + BW / 2, by + BH * 0.26 - ease(Math.max(0, p - 0.75) / 0.25) * u * 2);
+      ctx.rotate(rot); ctx.scale(sc, sc);
+      // the number big, the word smaller beside it, centred as one piece
+      ctx.font = `${Math.round(size)}px ${FANCY}`;
+      const wn = ctx.measureText(String(n)).width;
+      ctx.font = `${Math.round(size * 0.66)}px ${FANCY}`;
+      const cw = tr('combo'), ww = ctx.measureText(cw).width, gap = size * 0.16, total = wn + gap + ww;
+      fancyText(String(n), -total / 2, 0, size, look, t, 'left');
+      fancyText(cw, -total / 2 + wn + gap, size * 0.08, size * 0.66, look, t, 'left', true);
+      ctx.restore();
+    }
+  }
+  // flash over the board for the big moments
+  if (fx.flash) {
+    const p = (t - fx.flash.t0) / fx.flash.dur;
+    if (p >= 1) fx.flash = null;
+    else { ctx.fillStyle = `rgba(${fx.flash.rgb},${fx.flash.a * (1 - p) * (1 - p)})`; ctx.fillRect(bx - 6, by - 6, BW + 12, BH + 12); }
+  }
+  // banners: fever, missions, stages; on a dark ribbon so they read over any board
+  let below = by + BH * 0.36;   // the next banner starts under the one above it
+  fx.banners = fx.banners.filter(e => {
+    const ms = t - e.t0, p = ms / e.dur;
+    if (p >= 1) return false;
+    const a = p < 0.8 ? 1 : 1 - (p - 0.8) / 0.2;
+    const sc = popScale(ms);
+    const big = fitSize(e.text, u * 3.4, BW * 0.84), small = e.sub ? fitSize(e.sub, u * 1.6, BW * 0.84) : 0;
+    const y = below + big * 0.95 - ease(Math.max(0, p - 0.8) / 0.2) * u * 2;
+    below += big * 1.9 + (e.sub ? small * 1.5 : 0) + u * 0.8;
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.translate(bx + BW / 2, y); ctx.scale(sc, sc);
+    ctx.rotate(-0.03);
+    const bh = big * 1.9 + (e.sub ? small * 1.5 : 0);
+    toon(ctx, -BW * 0.44, -big * 0.95, BW * 0.88, bh, u * 1.4, woodFill(ctx, -big * 0.95, -big * 0.95 + bh), 3.5, 5);
+    woodGrain(ctx, -BW * 0.44 + 3.5, -big * 0.95 + 3.5, BW * 0.88 - 7, bh - 7, u * 1.4 - 3.5);
+    fancyText(e.text, 0, -big * 0.05, big, e.look, t, 'center', true);
+    if (e.sub) fancyText(e.sub, 0, big * 0.78 + small * 0.3, small, SUB_LOOK, t, 'center', true);
+    ctx.restore();
+    return true;
+  });
+  drawOrbs(t);
+}
+// a frame round the board with a soft halo: wide faint strokes under the bright one (cheaper than a blur)
+function glowFrame(lw, halo, alpha) {
+  for (const [w, a] of [[lw + halo * 1.4, 0.12], [lw + halo * 0.7, 0.22], [lw, 1]]) {
+    ctx.globalAlpha = alpha * a; ctx.lineWidth = w;
+    rr(ctx, bx - 3, by - 3, BW + 6, BH + 6, 6); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+// largest font size (up to size) at which str fits in maxW
+function fitSize(str, size, maxW) {
+  ctx.font = `${Math.round(size)}px ${FANCY}`;
+  const w = ctx.measureText(str).width * 1.12;
+  return w > maxW ? size * maxW / w : size;
+}
+function starPath(c, x, y, r, rot) {
+  c.beginPath();
+  for (let k = 0; k < 8; k++) {
+    const a = rot + k * Math.PI / 4, rr2 = k % 2 ? r * 0.28 : r;
+    const px = x + Math.cos(a) * rr2, py = y + Math.sin(a) * rr2;
+    k ? c.lineTo(px, py) : c.moveTo(px, py);
+  }
+  c.closePath();
+}
+// fever: neon washing over the board, pulsing on the beat of the music, with light beams sliding across
+function beatPhase(t) {
+  if (SND.src && SND.ctx) return ((musicPos() / (60 / 152)) % 1 + 1) % 1;
+  return (t / 395) % 1;
+}
+function drawFeverBoard(t) {
+  const pulse = Math.pow(1 - beatPhase(t), 3);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(bx, by, BW, BH); ctx.clip();
+  ctx.globalCompositeOperation = 'screen';
+  const h0 = (t / 12) % 360, g = ctx.createLinearGradient(bx, by + BH, bx + BW, by);
+  for (let k = 0; k <= 4; k++) g.addColorStop(k / 4, `hsl(${(h0 + k * 70) % 360}, 95%, 55%)`);
+  ctx.globalAlpha = 0.14 + 0.16 * pulse;
+  ctx.fillStyle = g; ctx.fillRect(bx, by, BW, BH);
+  ctx.globalAlpha = 0.08 + 0.07 * pulse;
+  for (let k = 0; k < 3; k++) {
+    const w = u * 4, x0 = bx - w + ((t * 0.09 + k * (BW + w) / 3) % (BW + w));
+    const bg = ctx.createLinearGradient(x0, 0, x0 + w, 0);
+    bg.addColorStop(0, 'rgba(255,255,255,0)'); bg.addColorStop(0.5, 'rgba(255,255,255,1)'); bg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = bg; ctx.fillRect(x0, by, w, BH);
+  }
+  ctx.restore();
+}
+
+/* ---------- score orbs: they fly from the break up into the score box (a page-wide layer over everything) ---------- */
+const fxc = document.getElementById('fxc'), fctx = fxc.getContext('2d');
+let fxDirty = false;
+const fxScale = () => Math.min(dpr, 1.5);
+function sizeFx() {
+  const w = Math.round(innerWidth * fxScale()), h = Math.round(innerHeight * fxScale());
+  if (fxc.width !== w || fxc.height !== h) { fxc.width = w; fxc.height = h; }
+}
+function spawnOrbs(x, y, pts) {
+  const cr = cv.getBoundingClientRect(), sr = $('#score').getBoundingClientRect();
+  const sx = cr.left + x, sy = cr.top + y, tx = sr.left + Math.min(sr.width, u * 5) * 0.5, ty = sr.top + sr.height * 0.5;
+  const n = Math.min(9, 3 + Math.floor(Math.log10(Math.max(10, pts)) * 1.3)), now = performance.now();
+  for (let k = 0; k < n; k++) {
+    fx.orbs.push({ sx: sx + (Math.random() - 0.5) * u * 4, sy: sy + (Math.random() - 0.5) * u * 2, tx, ty,
+      cx: sx + (Math.random() - 0.5) * u * 16, cy: Math.min(sy, ty) - u * (1 + Math.random() * 5),
+      t0: now + 240 + k * 45, dur: 460 + Math.random() * 140, r: u * (0.32 + Math.random() * 0.2), first: k === 0 });
+  }
+  if (fx.orbs.length > 120) fx.orbs.splice(0, fx.orbs.length - 120);
+  fx.scoreGate = Math.max(fx.scoreGate || 0, now + 240 + 460);
+}
+function bumpScore() {
+  const el = $('#score');
+  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+}
+function drawOrbs(t) {
+  if (!fx.orbs.length && !fxDirty) return;
+  sizeFx();
+  fctx.setTransform(fxScale(), 0, 0, fxScale(), 0, 0);
+  fctx.clearRect(0, 0, innerWidth, innerHeight);
+  fxDirty = fx.orbs.length > 0;
+  fctx.globalCompositeOperation = 'lighter';
+  fx.orbs = fx.orbs.filter(o => {
+    const age = t - o.t0;
+    if (age < 0) return true;
+    const p = age / o.dur;
+    if (p >= 1) { if (o.first) bumpScore(); return false; }
+    for (let k = 3; k >= 0; k--) {
+      const e = Math.max(0, p - k * 0.05), q = e * e * (3 - 2 * e), m = 1 - q;
+      const x = m * m * o.sx + 2 * m * q * o.cx + q * q * o.tx, y = m * m * o.sy + 2 * m * q * o.cy + q * q * o.ty;
+      const r = o.r * (k ? 0.7 - k * 0.12 : 1);
+      const g = fctx.createRadialGradient(x, y, 0, x, y, r * 3);
+      g.addColorStop(0, `rgba(255,250,220,${k ? 0.35 : 0.95})`); g.addColorStop(0.35, `rgba(255,200,80,${k ? 0.25 : 0.7})`); g.addColorStop(1, 'rgba(255,160,40,0)');
+      fctx.fillStyle = g; fctx.beginPath(); fctx.arc(x, y, r * 3, 0, Math.PI * 2); fctx.fill();
+    }
+    return true;
+  });
+}
+
+/* ---------- input: one thumb, bottom of the screen ---------- */
+function pt(e) { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+cv.addEventListener('pointerdown', e => {
+  if (G.state !== 'play' || drag || idrag) return;
+  const { x, y } = pt(e);
+  for (let k = 0; k < 3; k++) {
+    const b = rotBtn(k);
+    if (Math.hypot(x - b.x, y - b.y) <= b.r + 6) {
+      if (!SND.playing) musicStart(false);
+      rotateSlot(k);
+      e.preventDefault();
+      return;
+    }
+  }
+  if (pending || pendingItem) return;
+  // an item chip: held like a block
+  const ik = itemAt(x, y);
+  if (ik) {
+    if (!SND.playing) musicStart(false);
+    if ((ITEMS[ik] || 0) <= 0) { sfx('back'); e.preventDefault(); return; }   // none left (later: this opens the shop)
+    idrag = { k: ik, x, y, x0: x, y0: y, id: e.pointerId, col: null, row: null, home: true, hist: null, rhist: null, trail: null };
+    try { cv.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
+    sfx('pick');
+    moveColFor(idrag, 1, performance.now());
+    if (ik === 'bomb') moveRowFor(idrag, performance.now());
+    e.preventDefault();
+    return;
+  }
+  if (y < trayY - u || x < bx - u || x > bx + BW + u) return;
+  if (x >= sideX) return;   // the next-block column cannot be picked from
+  const i = Math.max(0, Math.min(2, Math.floor((x - bx) / slotW)));
+  if (!G.tray[i]) return;
+  drag = { i, x, y, x0: x, y0: y, id: e.pointerId, ghost: null, col: null, hist: null, home: true };
+  try { cv.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
+  if (!SND.playing) musicStart(false);   // e.g. a game restored after a reload: sound can only start on a touch
+  sfx('pick');
+  moveCol(performance.now());
+  updateGhost();
+  e.preventDefault();
+});
+cv.addEventListener('pointermove', e => {
+  if (idrag && e.pointerId === idrag.id) {
+    const p = pt(e); idrag.x = p.x; idrag.y = p.y;
+    idrag.home = Math.hypot(idrag.x - idrag.x0, idrag.y - idrag.y0) < homeR();
+    moveColFor(idrag, 1, performance.now());
+    if (idrag.k === 'bomb') moveRowFor(idrag, performance.now());
+    return;
+  }
+  if (!drag || e.pointerId !== drag.id) return;
+  const p = pt(e); drag.x = p.x; drag.y = p.y;
+  drag.home = Math.hypot(drag.x - drag.x0, drag.y - drag.y0) < homeR();
+  moveCol(performance.now());
+  updateGhost();
+});
+function endDrag(e, commit) {
+  if (idrag && e.pointerId === idrag.id) {
+    const d = idrag;
+    idrag = null;
+    if (!commit || G.state !== 'play') return;
+    if (d.home) { sfx('back'); return; }   // let go where it was picked up: kept
+    const now = performance.now();
+    useItem(d.k, releaseCol(d, now), d.k === 'bomb' ? releaseOn(d, d.rhist, d.row, now) : null);
+    return;
+  }
+  if (!drag || e.pointerId !== drag.id) return;
+  // the lift position itself is not used: the thumb rolls a little as it comes off the glass
+  const d = drag;
+  drag = null;
+  if (commit && d.home && G.state === 'play') sfx('back');
+  if (!commit || d.home || G.state !== 'play' || !G.tray[d.i]) return;
+  const c = releaseCol(d, performance.now());
+  if (G.phase === 'idle') dropPiece(d.i, c);
+  else pending = { i: d.i, c };   // board still settling: drop as soon as it is done
+}
+cv.addEventListener('pointerup', e => endDrag(e, true));
+cv.addEventListener('pointercancel', e => endDrag(e, false));
+cv.addEventListener('contextmenu', e => e.preventDefault());
+
+/* ---------- loop ---------- */
+let last = performance.now();
+function frame(t) {
+  const dt = Math.min(0.1, Math.max(0, (t - last) / 1000));
+  last = t;
+  if (G.state === 'play') {
+    if (anim && t - anim.t0 >= anim.dur) { const a = anim; anim = null; stepDone(a); }
+    if (G.feverLeft > 0) { G.feverLeft -= dt * 1000; if (G.feverLeft <= 0) endFever(); }
+    feverUI();
+    missionClock(t);
+  }
+  if (shownScore < G.score && t >= (fx.scoreGate || 0)) {
+    shownScore = Math.min(G.score, shownScore + Math.max(1, Math.ceil((G.score - shownScore) * Math.min(1, dt * 6))));
+    $('#score').textContent = Math.round(shownScore).toLocaleString(); fitNum($('#score'));
+  }
+  if (drag) updateGhost();
+  if (W && H && !covered) draw(t);
+  requestAnimationFrame(frame);
+}
+document.addEventListener('visibilitychange', () => {
+  last = performance.now();
+  if (!SND.ctx) return;
+  if (document.hidden) SND.ctx.suspend().catch(() => {});
+  else if (G.state === 'play') SND.ctx.resume().catch(() => {});
+});
+
+new ResizeObserver(() => layout()).observe(stage);
+
+function snapshot() { return { G: JSON.parse(JSON.stringify(G)), menuMode, menuSize }; }
+function start(data) {
+  readColors();
+  try { document.fonts.load(`40px ${FANCY}`); } catch (e) { /* the fallback font is used until it loads */ }
+  layout();
+  if (data && data.G && data.G.grid && data.G.size && data.G.phase !== undefined) {
+    setSize(data.G.size);
+    layout();
+    Object.assign(G, data.G);
+    G.tray.length = 3;   // a game saved while there was a hold box drops it
+    if (!G.next) G.next = dealPiece();
+    menuMode = data.menuMode || 'moves'; menuSize = data.menuSize || 32;
+    if (G.phase !== 'idle') G.phase = 'idle';
+    G.itemMove = false; G.stuck = false;
+    G.stage = 0; applyTheme(0, true);
+    touchGrid();
+    hud(); feverUI(); missionUI(); rotUI();
+    if (G.state === 'dying' || G.state === 'over') finish();
+    else if (G.state === 'menu') { if (G.started) openMenu(); else openLobby(false); }
+    else showOnly(null);
+  } else {
+    newGame('moves', 32);
+    G.started = false;
+    G.state = 'menu';
+    openSplash();
+  }
+  setLang(LANG, false);
+  last = performance.now();
+  requestAnimationFrame(frame);
+}
+window.claude?.hot?.snapshot?.(snapshot);
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+
+// read-only hooks for automated checks
+window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY, itemH }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
+                  busy: () => G.phase !== 'idle' || !!anim || !!pending || !!pendingItem, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
+                  items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
+                  sound: { SND, sfx, scoreFor, wireAudio, BGM_LOOP } };
+})();
+</script>
+</body>
+</html>
