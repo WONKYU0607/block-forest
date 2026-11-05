@@ -1186,10 +1186,10 @@ const clockText = ms => { const s = Math.ceil(Math.max(0, ms) / 1000); return Ma
 // always under 150,000. acorn: their mini game best (made up: 1,200 - 4,200, higher for the stronger ones; a bot
 // playing it on its own scores about 1,000 - 3,700).
 const VS_BOTS = [
-  { seed: 11000, name: '말랑콩떡', score: 130620, best: 140730, acorn: 4290 }, { seed: 11001, name: '버섯돌이', score: 90750, best: 103380, acorn: 3750 }, { seed: 11002, name: 'jun_99', score: 50500, best: 55600, acorn: 2200 }, { seed: 11003, name: '노을빛', score: 123770, best: 131540, acorn: 4250 },
-  { seed: 11010, name: 'Sora', score: 71710, best: 78550, acorn: 3020 }, { seed: 11011, name: '감자칩', score: 85610, best: 90510, acorn: 3870 }, { seed: 11012, name: '퍼즐고수', score: 34290, best: 38370, acorn: 2330 }, { seed: 11013, name: 'Luna', score: 59410, best: 64210, acorn: 2980 },
-  { seed: 11020, name: '토끼발', score: 55430, best: 61720, acorn: 2950 }, { seed: 11021, name: '숲속요정', score: 52430, best: 56380, acorn: 2600 }, { seed: 11022, name: 'mint_choco', score: 73820, best: 83940, acorn: 3260 }, { seed: 11023, name: '도토리왕', score: 24620, best: 27050, acorn: 1110 },
-  { seed: 11030, name: '나무늘보', score: 24150, best: 27330, acorn: 1080 }, { seed: 11031, name: '하늘다람쥐', score: 32050, best: 35040, acorn: 1730 }, { seed: 11032, name: '새벽세시', score: 30910, best: 32610, acorn: 1990 }, { seed: 11033, name: 'blue_berry', score: 29270, best: 32690, acorn: 1640 },
+  { seed: 11000, name: '말랑콩떡', score: 130620, best: 140730, acorn: 42900 }, { seed: 11001, name: '버섯돌이', score: 90750, best: 103380, acorn: 37500 }, { seed: 11002, name: 'jun_99', score: 50500, best: 55600, acorn: 22000 }, { seed: 11003, name: '노을빛', score: 123770, best: 131540, acorn: 42500 },
+  { seed: 11010, name: 'Sora', score: 71710, best: 78550, acorn: 30200 }, { seed: 11011, name: '감자칩', score: 85610, best: 90510, acorn: 38700 }, { seed: 11012, name: '퍼즐고수', score: 34290, best: 38370, acorn: 23300 }, { seed: 11013, name: 'Luna', score: 59410, best: 64210, acorn: 29800 },
+  { seed: 11020, name: '토끼발', score: 55430, best: 61720, acorn: 29500 }, { seed: 11021, name: '숲속요정', score: 52430, best: 56380, acorn: 26000 }, { seed: 11022, name: 'mint_choco', score: 73820, best: 83940, acorn: 32600 }, { seed: 11023, name: '도토리왕', score: 24620, best: 27050, acorn: 11100 },
+  { seed: 11030, name: '나무늘보', score: 24150, best: 27330, acorn: 10800 }, { seed: 11031, name: '하늘다람쥐', score: 32050, best: 35040, acorn: 17300 }, { seed: 11032, name: '새벽세시', score: 30910, best: 32610, acorn: 19900 }, { seed: 11033, name: 'blue_berry', score: 29270, best: 32690, acorn: 16400 },
 ];
 let vsLast = null;
 function pickOpponent() {
@@ -1302,6 +1302,8 @@ function syncBest() {
   for (const n of [16, 32]) if ((ME['best' + n] || 0) > bestFor(n)) { try { localStorage.setItem(`rise7-best-${n}`, String(ME['best' + n])); } catch (e) { /* storage unavailable */ } }
   const b16 = bestFor(16), b32 = bestFor(32);
   if (b16 > ME.best16 || b32 > ME.best32) NET.saveBest(b16, b32).then(() => { ME.best16 = Math.max(ME.best16, b16); ME.best32 = Math.max(ME.best32, b32); }).catch(() => {});
+  const ba = miniBest();
+  if (ba > (ME.bestAcorn || 0)) { ME.bestAcorn = ba; send({ t: 'acorn', uid: ME.uid, score: ba }); }
 }
 // writes that could not go out (offline) wait on the phone and go with the next sign-in
 const PEND = 'bf-pending';
@@ -2462,23 +2464,33 @@ function toast(msg, ms = 1600) {
   clearTimeout(t._t); t._t = setTimeout(() => { t.hidden = true; }, ms);
 }
 
-/* ---------- mini game: 도토리 받기 (Acorn Catch). The squirrel's basket follows the thumb left and right. Catch acorns
-   (10), golden acorns (50) and jelly cubes (20); keep away from stones (each costs one of three hearts); a heart now and
-   then gives one back. Every 10 catches in a row raise the multiplier (up to x5); a missed acorn or cube ends the
-   streak. It falls faster and thicker as it goes. The best goes to the account and the ranking's acorn tab. ---------- */
+/* ---------- mini game: 도토리 받기 (Acorn Catch). The squirrel follows the thumb left and right; whatever touches it is
+   caught. Acorns (100), golden acorns (500) and jelly cubes (200); keep away from stones (each costs one of three hearts
+   and ends the streak); a heart now and then gives one back. Every 10 catches in a row raise the multiplier (up to x5);
+   only a stone ends the streak. It falls faster and thicker as it goes. The best goes to the account and the ranking's
+   acorn tab. ---------- */
 const MINI_BEST = 'rise7-best-acorn';
+const MINI_PTS = { acorn: 100, cube: 200, gold: 500 };
+// the points went up tenfold (an acorn was 10): a best kept before that goes up with them, once
+try {
+  if (!localStorage.getItem('rise7-acorn-x10')) {
+    const b = parseInt(localStorage.getItem(MINI_BEST) || '0', 10) || 0;
+    if (b) localStorage.setItem(MINI_BEST, String(b * 10));
+    localStorage.setItem('rise7-acorn-x10', '1');
+  }
+} catch (e) { /* storage unavailable */ }
 const ACORN_K = 1.1;   // acorns are drawn this much bigger than the other falling things
 const MG = { st: 'off', W: 0, H: 0, t: 0, last: 0, items: [], pops: [], puffs: [], sparks: [], squash: 0, score: 0, best: 0, hearts: 3, combo: 0,
   x: 0, tx: 0, face: 1, hurt: 0, flash: 0, next: 0, raf: 0, drag: null, key: 0, end: 0, img: null };
 const mcv = $('#mini-cv'), mctx = mcv.getContext('2d');
 function miniBest() { try { return parseInt(localStorage.getItem(MINI_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
-// sizes from the canvas: where things are caught (bw wide, at rim), the squirrel's height, the ground, an item's half size,
+// sizes from the canvas: the basket's width (bw) and mouth (rim), the squirrel's height, the ground, an item's half size,
 // and u, the size the points and words are lettered at
 function miniGeo() {
   const W = MG.W, H = MG.H, r = Math.min(13, W * 0.029), u = Math.min(26, W * 0.058), gy = H - Math.max(34, H * 0.075);
-  // the squirrel's height on screen (not over a seventh of a short screen), and where things are caught: its basket's rim
-  // and a little over, so an item caught at the edge still overlaps the rim
-  const S = Math.min(H * 0.144, 0.9 * (Math.min(64, W * 0.135) - r * 0.64) / SQA.rimW), bw = S * SQA.rimW + r * 0.64, foot = gy + 2;
+  // the squirrel's height on screen (not over an eighth of a short screen); bw: about its basket's width, which keeps it
+  // on the screen (things are caught by touching any of it, see touchesSquirrel)
+  const S = Math.min(H * 0.1296, 0.81 * (Math.min(64, W * 0.135) - r * 0.64) / SQA.rimW), bw = S * SQA.rimW + r * 0.64, foot = gy + 2;
   return { bw, S, gy, foot, top: foot - S * SQA.foot, rim: foot - S * (SQA.foot - SQA.rim), r, u };
 }
 // a picture drawn once into a canvas at the screen's pixel density
@@ -2503,7 +2515,7 @@ function loadSquirrelArt() {
   if (!sqReady) {
     sqReady = Promise.all(Object.keys(SQ_ART).map(k => sqArt[k] ? true : new Promise(res => {
       const im = new Image();
-      im.onload = () => { sqArt[k] = im; MG.img = null; res(true); };
+      im.onload = () => { sqArt[k] = im; MG.img = null; if (k === 'main') squirrelMask(); res(true); };
       im.onerror = () => res(false);
       im.src = SQ_ART[k];
     })));
@@ -2511,6 +2523,34 @@ function loadSquirrelArt() {
   }
   return sqReady;
 }
+// The squirrel's shape, from the art's alpha on a coarse grid: anything that touches it is caught (or, a stone, hits)
+const SQ_MASK = { w: 48, h: 60, bits: null };
+function squirrelMask() {
+  if (SQ_MASK.bits || !sqArt.main) return SQ_MASK.bits;
+  const c = document.createElement('canvas'); c.width = SQ_MASK.w; c.height = SQ_MASK.h;
+  const x = c.getContext('2d', { willReadFrequently: true });
+  x.drawImage(sqArt.main, 0, 0, c.width, c.height);
+  try {
+    const d = x.getImageData(0, 0, c.width, c.height).data, bits = new Uint8Array(c.width * c.height);
+    for (let i = 0; i < bits.length; i++) bits[i] = d[i * 4 + 3] > 110 ? 1 : 0;
+    SQ_MASK.bits = bits;
+  } catch (e) { /* unreadable picture: the basket test stays */ }
+  return SQ_MASK.bits;
+}
+// does a round thing (centre, radius) touch the squirrel? null when the shape is not known (then the basket counts)
+function touchesSquirrel(px, py, rad, g) {
+  const bits = squirrelMask();
+  if (!bits) return null;
+  const S = g.S, W = SQA.w * S;
+  for (let k = 0; k < 9; k++) {   // the centre and eight points round the edge
+    const a = k * Math.PI / 4, rr = k === 8 ? 0 : rad, x = px + Math.cos(a) * rr, y = py + Math.sin(a) * rr;
+    const u = ((x - MG.x) * MG.face + SQA.mid * S) / W, v = (y - g.foot) / S + SQA.foot;
+    if (u < 0 || u >= 1 || v < 0 || v >= 1) continue;
+    if (bits[Math.floor(v * SQ_MASK.h) * SQ_MASK.w + Math.floor(u * SQ_MASK.w)]) return true;
+  }
+  return false;
+}
+const itemRad = (it, g) => g.r * (it.k === 'acorn' || it.k === 'gold' ? ACORN_K * 0.95 : 0.85);
 // a picture scaled once to its size on screen (smoothly, from the big art)
 function artPic(im, w, h) {
   return im ? miniPic(w, h, x => { x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, w, h); }) : null;
@@ -2642,14 +2682,17 @@ function miniStep(dt) {
     const y0 = it.y;
     it.vy += MG.H * 0.31 * dt; it.y += it.vy * dt; it.rot += it.spin * dt;
     if (!playing || it.done) continue;
-    // into the basket: it crossed the rim this frame, over the basket's mouth
-    if (y0 < g.rim && it.y >= g.rim && Math.abs(it.x - MG.x) < g.bw / 2 + g.r * 0.3) { it.done = true; miniCatch(it, g); }
+    // caught when it touches the squirrel anywhere (checked along this frame's fall, so it cannot slip past a thin part)
+    const rad = itemRad(it, g), steps = Math.max(1, Math.ceil((it.y - y0) / rad));
+    let hit = null;
+    for (let s = 1; s <= steps && !hit; s++) hit = touchesSquirrel(it.x, y0 + (it.y - y0) * s / steps, rad, g);
+    if (hit === null) hit = y0 < g.rim && it.y >= g.rim && Math.abs(it.x - MG.x) < g.bw / 2 + g.r * 0.3;   // no shape: the basket
+    if (hit) { it.done = true; miniCatch(it, g); }
   }
   for (const it of MG.items) {
     if (it.done || it.y < g.gy + g.r * 0.2) continue;
     it.done = true;
-    MG.puffs.push({ x: it.x, y: g.gy, t: 0, big: it.k === 'stone' });
-    if (playing && it.k !== 'stone' && it.k !== 'heart' && MG.combo) MG.combo = 0;   // a dropped acorn or cube ends the streak
+    MG.puffs.push({ x: it.x, y: g.gy, t: 0, big: it.k === 'stone' });   // a drop does not end the streak (only a stone does)
   }
   MG.items = MG.items.filter(it => !it.done);
   for (const p of MG.pops) p.t += dt;
@@ -2692,13 +2735,13 @@ function miniCatch(it, g) {
   MG.squash = 0.2;
   for (let i = 0, n = it.k === 'gold' ? 14 : 9; i < n; i++) {
     const a = -Math.PI / 2 + (Math.random() - 0.5) * 1.8, sp = 180 + Math.random() * 150;
-    MG.sparks.push({ x: it.x, y: g.rim - 4, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: 0, life: 0.5 + Math.random() * 0.25, c: col[i % 2], s: 2.6 + Math.random() * 2.2, star: i % 2 === 0 });
+    MG.sparks.push({ x: it.x, y: it.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: 0, life: 0.5 + Math.random() * 0.25, c: col[i % 2], s: 2.6 + Math.random() * 2.2, star: i % 2 === 0 });
   }
   MG.combo++;
-  const pts = (it.k === 'gold' ? 50 : it.k === 'cube' ? 20 : 10) * miniMult();
+  const pts = MINI_PTS[it.k] * miniMult();
   MG.score += pts; miniHud();
   sfx(it.k === 'gold' ? 'catchGold' : it.k === 'cube' ? 'catchCube' : 'catch', { n: MG.combo - 1 });
-  MG.pops.push({ text: '+' + pts, x: it.x, y, t: 0, look: it.k === 'gold' ? GOLD_LOOK : SCORE_LOOK, size: g.u * (it.k === 'gold' ? 1.5 : 1.15), life: 0.7 });
+  MG.pops.push({ text: '+' + pts.toLocaleString(), x: it.x, y, t: 0, look: it.k === 'gold' ? GOLD_LOOK : SCORE_LOOK, size: g.u * (it.k === 'gold' ? 1.5 : 1.15), life: 0.7 });
   if (miniMult() > before) {
     sfx('combo', { combo: 2 + (miniMult() - 2) * 2 });
     MG.pops.push({ text: 'x' + miniMult(), x: MG.W / 2, y: MG.H * 0.3, t: 0, look: RAINBOW_LOOK, size: Math.min(70, MG.W * 0.17), life: 1.0 });
