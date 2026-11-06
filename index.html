@@ -833,7 +833,7 @@ const STR = {
     pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
     inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
     account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    stairs: '토끼 계단', stairsShort: '계단', stLeft: '왼쪽', stRight: '오른쪽', stHint: '버튼을 누르면 시작해요', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    stairs: '토끼 계단', stairsShort: '계단', stLeft: '왼쪽', stRight: '오른쪽', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -862,7 +862,7 @@ const STR = {
     pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
     inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
     account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    stairs: 'Bunny Stairs', stairsShort: 'Stairs', stLeft: 'Left', stRight: 'Right', stHint: 'Press a button to start', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    stairs: 'Bunny Stairs', stairsShort: 'Stairs', stLeft: 'Left', stRight: 'Right', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -2884,13 +2884,14 @@ $('#btn-mini-quit').addEventListener('click', () => { sfx('pick'); miniFinish();
 $('#btn-mini-again').addEventListener('click', () => { sfx('pick'); miniStart(); musicStart(true); });
 $('#btn-mini-lobby').addEventListener('click', () => { sfx('pick'); closeMini(); });
 
-/* ---------- mini game: 토끼 계단 (Bunny Stairs), after Infinite Stairs. The steps zigzag up; 'Left' or 'Right' hops to
-   the next step on that side. A hop to the side with no step is a hop into the air: it falls, and that is the end. The time bar runs down, faster the higher it is, and every step puts a
-   little back; when it is empty the rabbit falls too. The score is the steps climbed; the best stays on the phone. ---------- */
+/* ---------- mini game: 토끼 계단 (Bunny Stairs). After a 5 second countdown the rabbit hops up the zigzag steps on its
+   own, faster and faster; 'Left' and 'Right' only turn it. Each hop goes the way it faces: with no step that way it hops
+   into the air and falls, and that is the end. The score is the steps climbed; the best stays on the phone. ---------- */
 const ST_BEST = 'rise7-best-stairs';
-const ST_GAIN = 0.07;   // time back per step (the bar is 1)
-const stDrain = n => Math.min(0.9, 0.18 + 0.0012 * n);   // the bar per second, at n steps (2.6 steps a second keep up at first, 6 at 200)
-const ST_HOP = 0.08;   // s, one hop
+const ST_COUNT = 5;   // s, the countdown
+const ST_V0 = 2, ST_VMAX = 10, ST_RAMP = 180;   // steps a second at the start and at the most (5x), and the seconds to get there
+const stSpeed = t => ST_V0 + (ST_VMAX - ST_V0) * Math.min(1, t / ST_RAMP);
+const ST_GRACE = 0.08;   // s: a turn this late (just after the hop into the air began) still counts
 const ST_RUNS = [1, 2, 2, 3, 3, 3, 4, 4, 5, 6];   // how many steps go the same way before the stairs turn
 // The rabbit's pictures, all at the same scale; RB_AT: where the feet are on each (for the fall, its middle). RB_H: the
 // standing picture's height, which the rabbit's height on screen is measured by.
@@ -2911,8 +2912,8 @@ function loadRabbitArt() {
   }
   return rbReady;
 }
-const ST = { st: 'off', W: 0, H: 0, xs: [0], way: 1, left: 4, idx: 0, dir: 1, runN: 0, score: 0, best: 0, time: 1, started: false,
-  pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, jumpT: 0, fall: null, end: 0, last: 0, raf: 0, img: null };
+const ST = { st: 'off', phase: 'count', cd: 0, cdT: 0, goT: 9, t: 0, W: 0, H: 0, xs: [0], way: 1, left: 4, idx: 0, dir: 1, score: 0, best: 0,
+  pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, fall: null, end: 0, last: 0, raf: 0, img: null };
 const scv = $('#st-cv'), sctx = scv.getContext('2d');
 function stBest() { try { return parseInt(localStorage.getItem(ST_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
 // sizes: a step's width and rise, how far down the rabbit's step sits, the rabbit's height
@@ -2976,33 +2977,31 @@ function openStairs() {
 function stStart() {
   $('#st-menu').hidden = true; $('#st-over').hidden = true;
   stResize();
-  Object.assign(ST, { st: 'play', xs: [0], way: 1, left: 4, idx: 0, dir: 1, runN: 0, score: 0, best: stBest(), time: 1, started: false,
-    pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, jumpT: 0, fall: null, end: 0 });
+  Object.assign(ST, { st: 'play', phase: 'count', cd: ST_COUNT, cdT: 0, goT: 9, t: 0, xs: [0], way: 1, left: 4, idx: 0, dir: 1, score: 0, best: stBest(),
+    pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, fall: null, end: 0 });
+  sfx('pick');   // the countdown's first tick
   stMore(60);
   ST.cam.x = stLook();
   stHud();
   cancelAnimationFrame(ST.raf); ST.last = performance.now(); ST.raf = requestAnimationFrame(stFrame);
 }
-// one press: a hop up to the left (-1) or the right (1)
-function stStep(d) {
-  if (ST.st !== 'play') return;
-  ST.started = true;
-  const turn = d !== ST.dir;
-  ST.dir = d;
+// the next hop, the way the rabbit faces: onto the next step, or (no step that way) into the air
+function stHop(k0 = 0) {
   stMore(ST.idx + 60);
-  const from = { x: ST.pos.x, y: ST.pos.y };
-  if (ST.xs[ST.idx + 1] - ST.xs[ST.idx] !== ST.dir) {   // no step that way: into the air
-    ST.hop = { fx: from.x, fy: from.y, tx: ST.xs[ST.idx] + ST.dir, ty: ST.idx + 1, t: 0 };
-    stFall();
-    return;
+  const fx = ST.xs[ST.idx], fy = ST.idx, ok = ST.xs[ST.idx + 1] - fx === ST.dir;
+  ST.hop = { fx, fy, tx: ok ? ST.xs[ST.idx + 1] : fx + ST.dir, ty: fy + 1, k: k0, el: 0, miss: !ok, gone: false };
+}
+// a button: face left (-1) or right (1); the next hop goes that way. Just after a hop into the air began, turning the
+// right way still saves it (ST_GRACE).
+function stTurn(d) {
+  if (ST.st !== 'play' || ST.phase !== 'run' || d === ST.dir) return;
+  ST.dir = d;
+  sfx('rot');
+  const h = ST.hop;
+  if (h && h.miss && !h.gone && ST.xs[ST.idx + 1] - ST.xs[ST.idx] === d) {
+    const tx = ST.xs[ST.idx + 1], k = Math.min(0.9, h.k);
+    h.fx = (ST.pos.x - tx * k) / (1 - k); h.tx = tx; h.miss = false;   // on from where it is shown, to the step
   }
-  ST.idx++; ST.score++;
-  ST.hop = { fx: from.x, fy: from.y, tx: ST.xs[ST.idx], ty: ST.idx, t: 0 };
-  ST.jumpT = 0.22;
-  ST.time = Math.min(1, ST.time + ST_GAIN);
-  ST.runN = turn ? 0 : ST.runN + 1;
-  sfx('catch', { n: ST.runN });   // up the scale while it keeps going one way
-  stHud();
 }
 function stFall() {
   ST.st = 'dying'; ST.fall = { vy: -4, rot: 0 }; ST.end = 1.0;
@@ -3038,18 +3037,29 @@ function stFrame(now) {
   stDraw(now);
 }
 function stUpdate(dt) {
-  if (ST.st === 'play' && ST.started) {
-    ST.time -= dt * stDrain(ST.score);
-    if (ST.time <= 0) { ST.time = 0; stFall(); }
+  if (ST.st === 'play' && ST.phase === 'count') {   // 5, 4, 3, 2, 1, then off it goes
+    const was = Math.ceil(ST.cd);
+    ST.cd -= dt; ST.cdT += dt;
+    if (ST.cd <= 0) { ST.phase = 'run'; ST.goT = 0; sfx('missionNew'); stHop(); }
+    else if (Math.ceil(ST.cd) !== was) { ST.cdT = 0; sfx('pick'); }
   }
-  if (ST.hop) {   // a quick arc from where it was shown to the new step
-    const h = ST.hop;
-    h.t += dt / ST_HOP;
-    const k = Math.min(1, h.t);
-    ST.pos.x = h.fx + (h.tx - h.fx) * k; ST.pos.y = h.fy + (h.ty - h.fy) * k + Math.sin(k * Math.PI) * 0.5;
-    if (k >= 1) ST.hop = null;
+  if (ST.phase === 'run') ST.goT += dt;
+  const h = ST.hop;
+  if (h && (ST.st === 'play' || ST.st === 'dying')) {
+    if (ST.st === 'play') ST.t += dt;
+    const T = 1 / stSpeed(ST.t), f = Math.min(1, ST.t / ST_RAMP);
+    h.k += dt / T; h.el += dt;
+    if (h.miss && !h.gone && h.el >= Math.min(ST_GRACE, 0.25 * T)) { h.gone = true; stFall(); }
+    const k = Math.min(1, h.k);   // an arc over the whole hop, lower when fast
+    ST.pos.x = h.fx + (h.tx - h.fx) * k; ST.pos.y = h.fy + (h.ty - h.fy) * k + Math.sin(k * Math.PI) * (0.5 - 0.2 * f);
+    if (h.k >= 1) {
+      if (h.miss) ST.hop = null;   // in the air: it falls from here
+      else {
+        ST.idx++; ST.score++; stHud(); sfx('move');
+        if (ST.st === 'play') stHop(Math.min(0.5, h.k - 1)); else ST.hop = null;
+      }
+    }
   }
-  ST.jumpT = Math.max(0, ST.jumpT - dt);
   if (ST.fall && !ST.hop) { ST.fall.vy += 46 * dt; ST.pos.y -= ST.fall.vy * dt; ST.fall.rot += dt * 2.2 * ST.dir; }
   if (!ST.fall) {   // the view follows the rabbit, a little ahead to show where the stairs go (not while it falls: it falls away)
     const a = 1 - Math.exp(-dt * 14);
@@ -3070,9 +3080,9 @@ function stDraw(now) {
     if (x < -g.sw || x > W + g.sw) continue;
     c.drawImage(P.slab[i % P.slab.length], x - g.sw / 2 - 2, y - 1, g.sw + 4, g.rise * 1.04 + 6);
   }
-  // the rabbit: standing, hopping, in a hurry when time runs low, falling
+  // the rabbit: standing for the countdown, hopping (running flat out once it is fast), falling
   const rx = X(ST.pos.x), ry = Y(ST.pos.y), k = P.k;
-  const pose = ST.fall && !ST.hop ? 'fall' : ST.hop || ST.jumpT > 0 ? 'jump' : ST.started && ST.time < 0.25 && ST.st === 'play' ? 'panic' : 'idle';
+  const pose = ST.fall && !ST.hop ? 'fall' : ST.hop ? (stSpeed(ST.t) >= 7 ? 'panic' : 'jump') : 'idle';
   const im = P.rb[pose] || P.rb.idle;
   if (im) {
     const a = RB_AT[pose] || RB_AT.idle, w = im.width / dpr, h = im.height / dpr;
@@ -3087,27 +3097,25 @@ function stDraw(now) {
   c.fillStyle = fade; c.fillRect(0, 0, W, 56);
   const low = c.createLinearGradient(0, H - 30, 0, H); low.addColorStop(0, 'rgba(0,0,0,0)'); low.addColorStop(1, 'rgba(0,0,0,1)');   // and above the buttons
   c.fillStyle = low; c.fillRect(0, H - 30, W, 30); c.restore();
-  // the time bar, under the top bar
-  const bw = Math.min(W * 0.7, 300), bh = 18, bx = (W - bw) / 2, byy = 12, f = Math.max(0, Math.min(1, ST.time));
-  rr(c, bx, byy + 3, bw, bh, bh / 2); c.fillStyle = 'rgba(0,0,0,0.3)'; c.fill();
-  rr(c, bx, byy, bw, bh, bh / 2); c.fillStyle = '#fff6dc'; c.fill();
-  if (f > 0) {
-    c.save(); rr(c, bx, byy, bw, bh, bh / 2); c.clip();
-    c.fillStyle = f > 0.5 ? '#6fd13f' : f > 0.25 ? '#ffc93c' : '#ff5a4a'; c.fillRect(bx, byy, bw * f, bh);
-    c.fillStyle = 'rgba(255,255,255,0.4)'; c.fillRect(bx, byy + 2, bw * f, bh * 0.3);
+  // the countdown in big numbers, then 'go'
+  if (ST.phase === 'count' && ST.st !== 'off') {
+    c.save(); c.translate(W / 2, H * 0.32); const sc = popScale(ST.cdT * 1000); c.scale(sc, sc);
+    miniText(c, String(Math.max(1, Math.ceil(ST.cd))), 0, 0, Math.min(120, W * 0.3), GOLD_LOOK, now);
+    c.restore();
+  } else if (ST.goT < 0.8) {
+    c.save(); c.globalAlpha = ST.goT > 0.55 ? (0.8 - ST.goT) / 0.25 : 1; c.translate(W / 2, H * 0.32); const sc = popScale(ST.goT * 1000); c.scale(sc, sc);
+    miniText(c, tr('go'), 0, 0, Math.min(72, W * 0.18), GOLD_LOOK, now);
     c.restore();
   }
-  rr(c, bx, byy, bw, bh, bh / 2); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
-  if (!ST.started && ST.st === 'play') miniText(c, tr('stHint'), W / 2, Y(ST.pos.y) - g.rh - 34, Math.min(22, W * 0.056), SUB_LOOK, now);
 }
 for (const [id, d] of [['#st-left', -1], ['#st-right', 1]]) {
   const b = $(id);
-  b.addEventListener('pointerdown', e => { e.preventDefault(); b.classList.add('down'); stStep(d); });
+  b.addEventListener('pointerdown', e => { e.preventDefault(); b.classList.add('down'); stTurn(d); });
   for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, () => b.classList.remove('down'));
 }
 addEventListener('keydown', e => {
   if (ST.st !== 'play' || e.repeat) return;
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { stStep(e.key === 'ArrowLeft' ? -1 : 1); e.preventDefault(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { stTurn(e.key === 'ArrowLeft' ? -1 : 1); e.preventDefault(); }
 });
 addEventListener('resize', () => { if (ST.st !== 'off') { stResize(); ST.img = null; } });
 document.addEventListener('visibilitychange', () => { if (document.hidden && ST.st === 'play') stPause(); });
@@ -4496,7 +4504,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   busy: () => G.phase !== 'idle' || !!anim || !!pending || !!pendingItem, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
                   items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), startVersus, VS_BOTS, mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, scoreFor, wireAudio, BGM_LOOP, SFXB, SFX_AT, musicStart, musicStop },
-                  stairs: { ST, step: d => stStep(d), geo: stGeo, more: stMore, open: openStairs, drain: stDrain, look: stLook } };
+                  stairs: { ST, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
 </script>
 </body>
