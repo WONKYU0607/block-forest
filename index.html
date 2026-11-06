@@ -389,17 +389,18 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 #pebble .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
 #pb-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; }
 #pebble .overlay { z-index: 3; }
-.st-pad { flex: none; display: flex; gap: 12px; padding: 6px 14px max(16px, env(safe-area-inset-bottom, 0px)); }
-.st-btn { flex: 1; min-width: 0; height: clamp(76px, 12vh, 104px); border: 4px solid var(--ol); border-radius: 22px; box-shadow: 0 6px 0 var(--ol); display: flex; flex-direction: column;
+.st-pad { flex: none; display: flex; justify-content: center; gap: 12px; padding: 6px 14px max(16px, env(safe-area-inset-bottom, 0px)); }
+.st-btn { flex: 0 0 50%; min-width: 0; height: clamp(38px, 6vh, 52px); border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 4px 0 var(--ol); display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 0; padding: 0 6px; touch-action: none; -webkit-tap-highlight-color: transparent; cursor: pointer;
   font-family: var(--num); color: #fff; background: linear-gradient(#86e85a, #4cc22e); }
 .st-btn svg { width: 40px; height: 40px; flex: none; }
 .st-btn b { font-weight: 400; font-size: 18px; white-space: nowrap; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; letter-spacing: 0.02em; }
-#st-turn { background: linear-gradient(#ffc14d, #ff9a1f); flex-direction: row; gap: 10px; }
-#st-turn svg { width: 46px; height: 46px; }
-#st-turn b { font-size: 22px; }
-.st-btn.down { transform: translateY(4px); box-shadow: 0 2px 0 var(--ol); }
+#st-turn { background: linear-gradient(#ffc14d, #ff9a1f); flex-direction: row; gap: 6px; }
+#st-turn svg { width: 26px; height: 26px; }
+#st-turn b { font-size: 15px; -webkit-text-stroke: 4px var(--ol); }
+.st-btn.down { transform: translateY(3px); box-shadow: 0 1px 0 var(--ol); }
 html[lang="en"] .st-btn b { font-size: 21px; }
+html[lang="en"] #st-turn b { font-size: 15px; }
 .st-cheer { display: block; width: min(150px, 40vw); height: auto; margin: -6px auto -2px; }
 .mg-img { object-fit: contain; }
 #splash { z-index: 40; cursor: pointer; }
@@ -902,7 +903,7 @@ const STR = {
     pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
     inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
     account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '아래로 당겼다 놓으면 던져요', stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -931,7 +932,7 @@ const STR = {
     pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
     inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
     account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Pull down, let go to throw', stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -1293,7 +1294,7 @@ const rule = () => { const L = levelRule(G.level || 1); return G.vs ? { ...L, he
 /* ---------- versus: both players play the same seed for 5 minutes, the higher score wins. No items, no continue,
    no blocks picked to fit the board, a row rises every VS_RISE_EVERY drops, and the level goes up with the drops (every VS_LEVEL_DROPS), not the score,
    so both get the same blocks and rows at the same point whatever they score. ---------- */
-const VS_MS = 5 * 60 * 1000, VS_COUNT = 5000, VS_LEVEL_DROPS = 20, VS_HURRY = 30000;   // the last 30 seconds: the clock turns red
+const VS_MS = 5 * 60 * 1000, VS_COUNT = 3000, VS_LEVEL_DROPS = 20, VS_HURRY = 30000;   // the last 30 seconds: the clock turns red
 // Without the blocks picked to fit the board a row rising after every drop ends most games in under a minute
 // (greedy bot: about 40 drops on 16 wide), so in versus a row rises every 2nd drop (bot: about 110-200 drops).
 const VS_RISE_EVERY = 2;
@@ -1316,7 +1317,7 @@ function pickOpponent() {
   vsLast = o;
   return o;
 }
-// versus is played on the 16-wide board only; it opens with a 5-second countdown (the board shows, nothing can be moved)
+// versus is played on the 16-wide board only; it opens with a 3-second countdown (the board shows, nothing can be moved)
 function startVersus(o = pickOpponent()) {
   newGame('moves', 16, { seed: o.seed, opp: { name: o.name, score: o.score, recordId: o.recordId || null, uid: o.uid || null } });
   fx.banners = [];   // the first mission's sign comes when the countdown ends
@@ -3013,7 +3014,7 @@ $('#btn-mini-quit').addEventListener('click', () => { sfx('pick'); miniFinish();
 $('#btn-mini-again').addEventListener('click', () => { sfx('pick'); miniStart(); musicStart(true); });
 $('#btn-mini-lobby').addEventListener('click', () => { sfx('pick'); closeMini(); });
 
-/* ---------- mini game: 토끼 계단 (Bunny Stairs). After a 5 second countdown the rabbit hops up the zigzag steps on its
+/* ---------- mini game: 토끼 계단 (Bunny Stairs). After a 3 second countdown the rabbit hops up the zigzag steps on its
    own, faster and faster; the one button only turns it round. Each hop goes the way it faces: with no step that way it hops
    into the air and falls, and that is the end. The score is 100 a step; the best stays on the phone. ---------- */
 const ST_BEST = 'rise7-best-stairs';
@@ -3025,10 +3026,11 @@ try {   // a best kept from when a step was 1 point: once, in the new points
     localStorage.setItem('rise7-stairs-x100', '1');
   }
 } catch (e) { /* storage unavailable */ }
-const ST_COUNT = 5;   // s, the countdown
+const ST_COUNT = 3;   // s, the countdown
 // steps a second at the start and at the most (10x); it speeds up as before (+8 steps a second every 3 minutes), so the top comes at 6:45
 const ST_V0 = 2, ST_VMAX = 20, ST_RAMP = 405;
 const stSpeed = t => ST_V0 + (ST_VMAX - ST_V0) * Math.min(1, t / ST_RAMP);
+const ST_PAN = 1.3;   // how fast the view turns with the stairs (1.3: 30% quicker than it first was)
 const ST_GRACE = 0.08;   // s: a turn this late (just after the hop into the air began) still counts
 const ST_RUNS = [1, 2, 2, 3, 3, 3, 4, 4, 5, 6];   // how many steps go the same way before the stairs turn
 // The rabbit's pictures, all at the same scale; RB_AT: where the feet are on each (for the fall, its middle). RB_H: the
@@ -3351,7 +3353,7 @@ function stFrame(now) {
   stDraw(now);
 }
 function stUpdate(dt) {
-  if (ST.st === 'play' && ST.phase === 'count') {   // 5, 4, 3, 2, 1, then off it goes
+  if (ST.st === 'play' && ST.phase === 'count') {   // 3, 2, 1, then off it goes
     const was = Math.ceil(ST.cd);
     ST.cd -= dt; ST.cdT += dt;
     if (ST.cd <= 0) { ST.phase = 'run'; ST.goT = 0; gsfx('stGo', 1, 'missionNew'); stHop(); }
@@ -3379,8 +3381,8 @@ function stUpdate(dt) {
   }
   if (ST.fall && !ST.hop) { ST.fall.vy += 46 * dt; ST.pos.y -= ST.fall.vy * dt; ST.fall.rot += dt * 2.2 * ST.dir; }
   if (!ST.fall) {   // the view follows the rabbit, a little ahead to show where the stairs go (not while it falls: it falls away); faster when it is fast
-    const a = 1 - Math.exp(-dt * 14 * Math.max(1, stSpeed(ST.t) / 4));
-    ST.cam.x += (stLook() - ST.cam.x) * a * 0.6; ST.cam.y += (ST.pos.y - ST.cam.y) * a;
+    const a = 1 - Math.exp(-dt * 14 * Math.max(1, stSpeed(ST.t) / 4)), ax = 1 - Math.pow(1 - a * 0.6, ST_PAN);
+    ST.cam.x += (stLook() - ST.cam.x) * ax; ST.cam.y += (ST.pos.y - ST.cam.y) * a;
   }
   if (ST.st === 'dying' && (ST.end -= dt) <= 0) stGameOver();
 }
@@ -3754,8 +3756,8 @@ $('#btn-fm-resume').addEventListener('click', () => { sfx('pick'); $('#fm-menu')
 $('#btn-fm-quit').addEventListener('click', () => { sfx('pick'); fmFinish(); closeMerge(); });
 $('#btn-fm-again').addEventListener('click', () => { sfx('pick'); fmStart(); musicStart(true); });
 $('#btn-fm-lobby').addEventListener('click', () => { sfx('pick'); closeMerge(); });
-/* ---------- mini game: 조약돌 깨기 (Pebble Break), after Ballz. Pull back anywhere and let go: the otter throws all its
-   pebbles one after another the other way. They bounce off the walls and the numbered blocks (each hit takes one off the
+/* ---------- mini game: 조약돌 깨기 (Pebble Break), after Ballz. Touch where to throw and let go: the otter throws all its
+   pebbles one after another that way. They bounce off the walls and the numbered blocks (each hit takes one off the
    number, at 0 the block breaks) and come back down to the bank; the first one down is where the otter throws from next.
    A +1 pebble among the blocks that a pebble passes through falls down and joins the end of the line for the next turn.
    After a turn the blocks come down a row and a new row comes in at the top; a block reaching the bottom row ends it.
@@ -3914,10 +3916,12 @@ function pbGrid() {
 }
 const pbFrom = () => [PB.x0, PB_R - PB_BR];   // where the pebbles leave: the otter's paw, on the bank
 function pbThrowDir(th) { return [Math.cos(th), -Math.sin(th)]; }
-// pulled back from where the finger came down: the throw goes the other way (only upward, never flatter than PB_MIN)
+// the throw goes from the paw toward the finger (only upward, never flatter than PB_MIN): touch where to throw, move to
+// adjust, let go to throw; a finger down on the sand calls it off
 function pbAimAt(x, y) {
-  const a = PB.aim, dx = a.sx - x, up = y - a.sy;
-  if (dx * dx + up * up < 16 * 16 || up < -8) { a.ok = false; return; }
+  const a = PB.aim, g = pbGeo(), b = pcv.getBoundingClientRect();
+  const dx = x - (b.left + pbX(g, PB.x0)), up = b.top + pbY(g, PB_R - PB_BR) - y;
+  if (y > b.top + g.B + 2 || dx * dx + up * up < 10 * 10) { a.ok = false; return; }
   PB.th = Math.max(PB_MIN, Math.min(Math.PI - PB_MIN, Math.atan2(Math.max(0, up), dx)));
   a.ok = true;
   pbFace(Math.cos(PB.th) >= 0 ? 1 : -1);
@@ -4115,33 +4119,49 @@ function pbDrawStone(c, pic, x, y, rot) {
   const w = pic.width / dpr;
   c.save(); c.translate(x, y); c.rotate(rot); c.drawImage(pic, -w / 2, -w / 2, w, w); c.restore();
 }
-// the aiming line: dots from the paw to the first thing the pebble meets, and a ghost pebble there
-function pbAimLine(c, g, P) {
-  const [x0, y0] = pbFrom(), [dx, dy] = pbThrowDir(PB.th), r = PB_BR;
-  let t = Infinity;
-  if (dx < 0) t = Math.min(t, (r - x0) / dx); else if (dx > 0) t = Math.min(t, (PB_C - r - x0) / dx);
-  if (dy < 0) t = Math.min(t, (r - y0) / dy);
-  for (const k of PB.blocks) {   // the block grown by the pebble's radius (a box test is close enough for aiming)
+// where a pebble from (x0, y0) going (dx, dy) first meets a wall or a block, and which way it bounces there (0: sideways,
+// 1: up or down); a block is taken grown by the pebble's radius, a box test that is close enough for aiming
+function pbRay(x0, y0, dx, dy) {
+  const r = PB_BR;
+  let t = Infinity, ax = 0;
+  if (dx < -1e-9) t = (r - x0) / dx; else if (dx > 1e-9) t = (PB_C - r - x0) / dx;
+  if (dy < -1e-9 && (r - y0) / dy < t) { t = (r - y0) / dy; ax = 1; }
+  if (dy > 1e-9 && (PB_R - r - y0) / dy < t) { t = (PB_R - r - y0) / dy; ax = 1; }
+  for (const k of PB.blocks) {
     if (k.dead) continue;
-    const ax = k.c + PB_GAP - r, bx = k.c + 1 - PB_GAP + r, ay = k.row + PB_GAP - r, by = k.row + 1 - PB_GAP + r;
-    let t0 = 0, t1 = t;
-    for (const [o, d, lo, hi] of [[x0, dx, ax, bx], [y0, dy, ay, by]]) {
+    const box = [[x0, dx, k.c + PB_GAP - r, k.c + 1 - PB_GAP + r], [y0, dy, k.row + PB_GAP - r, k.row + 1 - PB_GAP + r]];
+    let t0 = 1e-6, t1 = t, hit = -1;
+    for (let i = 0; i < 2; i++) {
+      const [o, d, lo, hi] = box[i];
       if (Math.abs(d) < 1e-9) { if (o < lo || o > hi) { t0 = Infinity; break; } continue; }
       let ta = (lo - o) / d, tb = (hi - o) / d;
       if (ta > tb) [ta, tb] = [tb, ta];
-      t0 = Math.max(t0, ta); t1 = Math.min(t1, tb);
+      if (ta > t0) { t0 = ta; hit = i; }
+      t1 = Math.min(t1, tb);
       if (t0 > t1) break;
     }
-    if (t0 <= t1 && t0 < t) t = t0;
+    if (t0 <= t1 && t0 < t && hit >= 0) { t = t0; ax = hit; }
   }
-  const ex = pbX(g, x0 + dx * t), ey = pbY(g, y0 + dy * t), sx = pbX(g, x0), sy = pbY(g, y0), len = Math.hypot(ex - sx, ey - sy);
-  const step = g.s * 0.32, n = Math.floor(len / step);
+  return { t, ax };
+}
+// the aiming line: dots from the paw to the first thing the pebble meets, a ghost pebble there, and a short, fainter run
+// of dots the way it bounces off
+function pbAimLine(c, g, P) {
+  const [x0, y0] = pbFrom(), [dx, dy] = pbThrowDir(PB.th), r = PB_BR;
+  const h1 = pbRay(x0, y0, dx, dy), x1 = x0 + dx * h1.t, y1 = y0 + dy * h1.t;
+  const bx = h1.ax ? dx : -dx, by = h1.ax ? -dy : dy, h2 = pbRay(x1, y1, bx, by), t2 = Math.min(h2.t, 2.6);
+  const dot = Math.max(1.8, g.s * 0.045), step = 0.32;
+  const run = (ax, ay, ux, uy, len, a0, a1) => {
+    const n = Math.floor(len / step);
+    for (let i = 1; i <= n; i++) {
+      const q = i / Math.max(1, n);
+      c.globalAlpha = a0 + (a1 - a0) * q; c.beginPath(); c.arc(pbX(g, ax + ux * i * step), pbY(g, ay + uy * i * step), dot, 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill();
+    }
+  };
   c.save();
-  for (let i = 1; i <= n; i++) {
-    const q = i / Math.max(1, n), x = sx + (ex - sx) * (i * step / len), y = sy + (ey - sy) * (i * step / len);
-    c.globalAlpha = 0.95 - q * 0.45; c.beginPath(); c.arc(x, y, Math.max(1.8, g.s * 0.045), 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill();
-  }
-  c.globalAlpha = 0.85; c.beginPath(); c.arc(ex, ey, r * g.s, 0, Math.PI * 2); c.lineWidth = 2; c.strokeStyle = '#fff'; c.setLineDash([3, 3]); c.stroke();
+  run(x0, y0, dx, dy, h1.t, 0.95, 0.6);
+  run(x1, y1, bx, by, t2, 0.5, 0.12);
+  c.globalAlpha = 0.85; c.beginPath(); c.arc(pbX(g, x1), pbY(g, y1), r * g.s, 0, Math.PI * 2); c.lineWidth = 2; c.strokeStyle = '#fff'; c.setLineDash([3, 3]); c.stroke();
   c.restore();
 }
 function pbDraw(now) {
@@ -4202,7 +4222,8 @@ function pbDraw(now) {
 }
 pcv.addEventListener('pointerdown', e => {
   if (PB.st !== 'play' || PB.phase !== 'aim') return;
-  e.preventDefault(); PB.aim = { sx: e.clientX, sy: e.clientY, ok: false }; PB.keyAim = false;
+  e.preventDefault(); PB.aim = { ok: false }; PB.keyAim = false;
+  pbAimAt(e.clientX, e.clientY);
   try { pcv.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
 });
 pcv.addEventListener('pointermove', e => { if (PB.aim) pbAimAt(e.clientX, e.clientY); });
@@ -5340,7 +5361,7 @@ function draw(t) {
     ctx.restore();
     return true;
   });
-  // the versus countdown: 5 4 3 2 1, big over the upper middle of the board
+  // the versus countdown: 3 2 1, big over the upper middle of the board
   if (G.vs && G.vs.count > 0) {
     const n = Math.ceil(G.vs.count / 1000), e = n * 1000 - G.vs.count;   // ms into this number
     ctx.save();
