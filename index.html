@@ -5104,11 +5104,26 @@ $('#btn-op-again').addEventListener('click', () => { sfx('pick'); opStart(); mus
 $('#btn-op-lobby').addEventListener('click', () => { sfx('pick'); closeOwlPost(); });
 /* ---------- mini game: 카멜레온 찾기 (Chameleon Hunt). A board of the same leaf, and one of them is the chameleon: like a
    spot-the-difference, a tiny bite is nibbled out of its edge (top, bottom or a side).
-   Tap it: it jumps out, 100, and the next board comes, a size bigger, with a smaller difference. A wrong leaf takes 3 s
+   Tap it: it jumps out, 100, and the next board comes, bigger (more leaves every time), with a smaller difference. A wrong leaf takes 3 s
    off the clock. 60 s on the clock; the clock waits while the chameleon jumps out. ---------- */
 const CM_BEST = 'rise7-best-chameleon';
 const CM_T0 = 60, CM_LOSE = 3, CM_PTS = 100;   // s on the clock, s off for a wrong leaf, a find
-const CM_N = r => Math.min(10, r + 1);   // leaves across in round r: one more every board (2x2, 3x3 ...), 10x10 at most
+const CM_CELL = 30, CM_CELL_LAST = 26;   // a leaf's cell: smallest while the boards grow a row at a time; smallest at all
+// the boards of a game on this screen: squares (2x2, 3x3 ...) while a cell stays 30px or more; then one row more each board
+// until the screen's height is full; then one column more each board (cells smaller, down to 26px) with the rows filling
+// the height. Each board has more leaves than the one before it; past the last one, the last again
+function cmSizes(W, H) {
+  const aw = Math.min(W - 28, 520) - 20, ah = H - 44 - 28 - 20, out = [];   // the room for cells (as in cmGeo)
+  for (let n = 2; aw / n >= CM_CELL && ah / n >= CM_CELL; n++) out.push([n, n]);
+  if (!out.length) out.push([2, 2]);
+  let c = out[out.length - 1][0];
+  for (let r = c + 1; r <= Math.floor(ah / (aw / c)); r++) out.push([c, r]);
+  for (c++; aw / c >= CM_CELL_LAST; c++) {
+    const r = Math.floor(ah / (aw / c)), [pc, pr] = out[out.length - 1];
+    if (c * r > pc * pr) out.push([c, r]);
+  }
+  return out;
+}
 const CM_SIZE = r => Math.max(0.07, 0.16 * Math.pow(0.93, r - 1));   // how big the bite is in round r, of the leaf's width
 // points round the leaf art's edge, as fractions of its width and height, with their outward direction (measured): bottom,
 // right side, top, left side; the outline is 5% of the width
@@ -5133,19 +5148,20 @@ function loadChamArt() {
 }
 // odd: the chameleon's leaf; at/size: where its bite is (an edge point) and how big; found: the reveal running (s left);
 // shake: the wrong leaf
-const CM = { st: 'off', W: 0, H: 0, round: 1, n: 2, odd: 0, at: 0, size: 0.16, time: CM_T0, score: 0, best: 0, found: 0, foundAt: 0,
+const CM = { st: 'off', W: 0, H: 0, round: 1, cols: 2, rows: 2, seq: [[2, 2]], odd: 0, at: 0, size: 0.16, time: CM_T0, score: 0, best: 0, found: 0, foundAt: 0,
   shake: -1, shakeT: 0, inT: 0, pops: [], sparks: [], raf: 0, last: 0, img: null };
 const cmcv = $('#cm-cv'), cmctx = cmcv.getContext('2d');
 function cmBest() { try { return parseInt(localStorage.getItem(CM_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
-// sizes on screen: the round and the clock on top, the board a square in the middle of what is left
+// sizes on screen: the round and the clock on top, the board in the middle of what is left, its square cells as big as
+// fit (the full width, up to 520px)
 function cmGeo() {
-  const W = CM.W, H = CM.H, top = 44, pad = 14;
-  const side = Math.floor(Math.min(W - 2 * pad, H - top - 2 * pad, 520));
-  const x = Math.round((W - side) / 2), y = Math.round(top + (H - top - side) / 2);
-  const n = CM.n, inner = 10, cell = (side - 2 * inner) / n;
-  return { W, H, top, side, x, y, n, inner, cell, leaf: cell * 0.86 };
+  const W = CM.W, H = CM.H, top = 44, pad = 14, inner = 10, cols = CM.cols, rows = CM.rows;
+  const cell = Math.min((Math.min(W - 2 * pad, 520) - 2 * inner) / cols, (H - top - 2 * pad - 2 * inner) / rows);
+  const bw = cols * cell + 2 * inner, bh = rows * cell + 2 * inner;
+  const x = Math.round((W - bw) / 2), y = Math.round(top + (H - top - bh) / 2);
+  return { W, H, top, x, y, bw, bh, cols, rows, inner, cell, leaf: cell * 0.86 };
 }
-const cmCell = (g, i) => ({ cx: g.x + g.inner + (i % g.n + 0.5) * g.cell, cy: g.y + g.inner + (Math.floor(i / g.n) + 0.5) * g.cell });
+const cmCell = (g, i) => ({ cx: g.x + g.inner + (i % g.cols + 0.5) * g.cell, cy: g.y + g.inner + (Math.floor(i / g.cols) + 0.5) * g.cell });
 // the leaf at its size; the chameleon's copy with a small round bite out of one edge: cut away (the leaf drawn out there),
 // then the bite's edge given the dark outline (drawn only over what is left of the leaf, so it hugs the cut)
 function cmLeafPic(w, at, size) {
@@ -5161,7 +5177,7 @@ function cmLeafPic(w, at, size) {
   });
 }
 function cmPics() {
-  const g = cmGeo(), key = [CM.W, CM.H, dpr, CM.n, CM.round, CM.at, Object.keys(cmArt).length].join('|');
+  const g = cmGeo(), key = [CM.W, CM.H, dpr, CM.cols, CM.rows, CM.round, CM.at, Object.keys(cmArt).length].join('|');
   if (CM.img && CM.img.key === key) return CM.img;
   const P = { key };
   if (cmArt.leaf) { P.leaf = cmLeafPic(g.leaf, -1); P.odd = cmLeafPic(g.leaf, CM.at, CM.size); }
@@ -5190,6 +5206,7 @@ function openChameleon() {
 function cmStart() {
   $('#cm-menu').hidden = true; $('#cm-over').hidden = true;
   cmResize();
+  CM.seq = cmSizes(CM.W, CM.H);
   Object.assign(CM, { st: 'play', time: CM_T0, score: 0, best: cmBest(), found: 0, shake: -1, shakeT: 0, pops: [], sparks: [] });
   cmRound(1);
   cmHud();
@@ -5197,13 +5214,13 @@ function cmStart() {
 }
 // a new board: its size and how far off the chameleon is, by the round; where it hides and how, at random
 function cmRound(r) {
-  CM.round = r; CM.n = CM_N(r); CM.size = CM_SIZE(r);
-  CM.odd = Math.floor(Math.random() * CM.n * CM.n);
+  CM.round = r; [CM.cols, CM.rows] = CM.seq[Math.min(r, CM.seq.length) - 1]; CM.size = CM_SIZE(r);
+  CM.odd = Math.floor(Math.random() * CM.cols * CM.rows);
   CM.at = Math.floor(Math.random() * CM_EDGES.length);   // which edge point
   CM.shake = -1; CM.inT = 0.18; CM.img = null;
 }
 function cmTap(i) {
-  if (CM.st !== 'play' || CM.found > 0 || i < 0 || i >= CM.n * CM.n) return;
+  if (CM.st !== 'play' || CM.found > 0 || i < 0 || i >= CM.cols * CM.rows) return;
   const g = cmGeo(), { cx, cy } = cmCell(g, i);
   if (i === CM.odd) {
     CM.score += CM_PTS; cmHud();
@@ -5274,13 +5291,13 @@ function cmDraw(now) {
   rr(c, bx, by, bw, bh, 9); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
   miniText(c, String(Math.ceil(CM.time)), bx + bw / 2, by + bh / 2 + 1, 15, SUB_LOOK, now);
   // the board: a mossy panel, the leaves on it (popping in on a new board)
-  rr(c, g.x + 3, g.y + 5, g.side, g.side, 18); c.fillStyle = 'rgba(0,0,0,0.22)'; c.fill();
-  rr(c, g.x, g.y, g.side, g.side, 18);
-  const bg = c.createLinearGradient(0, g.y, 0, g.y + g.side); bg.addColorStop(0, '#3f7d3a'); bg.addColorStop(1, '#2a5a2a');
+  rr(c, g.x + 3, g.y + 5, g.bw, g.bh, 18); c.fillStyle = 'rgba(0,0,0,0.22)'; c.fill();
+  rr(c, g.x, g.y, g.bw, g.bh, 18);
+  const bg = c.createLinearGradient(0, g.y, 0, g.y + g.bh); bg.addColorStop(0, '#3f7d3a'); bg.addColorStop(1, '#2a5a2a');
   c.fillStyle = bg; c.fill(); c.lineWidth = 3.5; c.strokeStyle = MOL; c.stroke();
   if (P.leaf) {
     const lw = P.leaf.width / dpr, lh = P.leaf.height / dpr, grow = CM.inT > 0 ? ease(1 - CM.inT / 0.18) : 1;
-    for (let i = 0; i < g.n * g.n; i++) {
+    for (let i = 0; i < g.cols * g.rows; i++) {
       if (CM.found > 0 && i === CM.foundAt) continue;
       const { cx, cy } = cmCell(g, i), im = i === CM.odd ? P.odd : P.leaf;
       const sx = i === CM.shake && CM.shakeT > 0 ? Math.sin(CM.shakeT * 60) * 5 * (CM.shakeT / 0.3) : 0, s = grow;
@@ -5315,8 +5332,8 @@ cmcv.addEventListener('pointerdown', e => {
   e.preventDefault();
   const b = cmcv.getBoundingClientRect(), x = e.clientX - b.left - 0, y = e.clientY - b.top, g = cmGeo();
   const col = Math.floor((x - g.x - g.inner) / g.cell), row = Math.floor((y - g.y - g.inner) / g.cell);
-  if (col < 0 || row < 0 || col >= g.n || row >= g.n) return;
-  cmTap(row * g.n + col);
+  if (col < 0 || row < 0 || col >= g.cols || row >= g.rows) return;
+  cmTap(row * g.cols + col);
 });
 addEventListener('resize', () => { if (CM.st !== 'off') cmResize(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && CM.st === 'play') cmPause(); });
@@ -6768,7 +6785,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   mushroom: { MS, geo: msGeo, start: msStart, open: openMushroom, tap: msTap, undo: msUndo, solve: msSolve, deal: msDeal, round: msRound, K: MS_K, can: msCan, full: msFull },
                   pebble: { PB, geo: pbGeo, open: openPebble, shoot: pbShoot, aimAt: pbAimAt, step: pbStep, grid: pbGrid, newRow: pbNewRow, fly: pbFly, end: pbEndTurn, col: pbCol, BR: PB_BR, C: PB_C, R: PB_R },
                   back: { BK, want: bkWant, have: bkHave, back: bkBack },
-                  chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, N: CM_N, SIZE: CM_SIZE, EDGES: CM_EDGES, T0: CM_T0, LOSE: CM_LOSE },
+                  chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, sizes: cmSizes, SIZE: CM_SIZE, EDGES: CM_EDGES, T0: CM_T0, LOSE: CM_LOSE },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
 </script>
