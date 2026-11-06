@@ -2162,47 +2162,69 @@ function hiss(dest, t, dur, o = {}) {
   src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.02);
 }
 
-// Background music: our own tune played on recorded instruments (the free GeneralUser GS sound bank through FluidSynth),
-// rendered once to an MP3 that sits next to this page. The file holds one pass of the song with 0.3 s of the loop's own
-// end before it and of its start after it, so the loop points are inside the file and the loop runs without a seam.
-const BGM_URL = 'bgm-acorn-stroll.mp3';
-const BGM_LOOP = { start: 13230 / 44100, end: 3662885 / 44100 };
+// Background music: our own tunes played on recorded instruments (the free GeneralUser GS sound bank through FluidSynth),
+// rendered to MP3s next to this page. Each file holds one pass of its tune with 0.3 s of the loop's own end before it and
+// of its start after it, so the loop points are inside the file and the loop runs without a seam. Each game has its own
+// tune; the two mini games that speed up have theirs at four speeds (played again faster, at the same pitch), and change
+// to the next one at the same place in the tune as the game gets faster.
+const MUSIC = {
+  main: [{ url: 'bgm-acorn-stroll.mp3', loop: [13230, 3662885] }],
+  acorn: [[1, 1336230], [2, 1194480], [3, 1071630], [4, 958230]].map(([k, e]) => ({ url: `bgm-acorn-catch-${k}.mp3`, loop: [13230, e] })),
+  stairs: [[1, 1222830], [2, 1093230], [3, 980910], [4, 877230]].map(([k, e]) => ({ url: `bgm-bunny-stairs-${k}.mp3`, loop: [13230, e] })),
+  merge: [{ url: 'bgm-fruit-merge.mp3', loop: [13230, 2553390] }],
+};
 const MUSIC_VOL = 0.45;
-function loadMusic() {
-  if (SND.buf || SND.loading || !SND.ctx) return;
-  SND.loading = fetch(BGM_URL)
+SND.track = 'main'; SND.lvl = 0; SND.bufs = {}; SND.loads = {}; SND.posOf = {};
+const musVar = () => MUSIC[SND.track][SND.lvl];
+const musLoop = v => ({ start: v.loop[0] / 44100, end: v.loop[1] / 44100 });
+// which tune: the game being played
+function musicFor() { return G.state === 'play' ? 'main' : MG.st === 'play' ? 'acorn' : ST.st === 'play' ? 'stairs' : FM.st === 'play' ? 'merge' : null; }
+function loadTune(url) {
+  if (SND.bufs[url] || SND.loads[url] || !SND.ctx) return;
+  SND.loads[url] = fetch(url)
     .then(r => { if (!r.ok) throw new Error('music ' + r.status); return r.arrayBuffer(); })
     .then(ab => new Promise((res, rej) => SND.ctx.decodeAudioData(ab, res, rej)))
-    .then(buf => { SND.buf = buf; if (SND.playing && !SND.src) startSource(); })
-    .catch(() => { SND.loading = null; });   // no music file: the game just runs without music
+    .then(buf => { SND.bufs[url] = buf; if (SND.playing && !SND.src) startSource(); })
+    .catch(() => { delete SND.loads[url]; });   // no music file: the game just runs without music
+}
+function loadMusic() {
+  loadTune(musVar().url);
+  for (const v of MUSIC[SND.track]) loadTune(v.url);   // the faster ones in the background
 }
 function startSource() {
-  const ctx = SND.ctx;
-  if (!ctx || !SND.buf || SND.src) return;
+  const ctx = SND.ctx, v = musVar(), buf = SND.bufs[v.url], L = musLoop(v);
+  if (!ctx || !buf || SND.src) return;
   const t = ctx.currentTime + 0.03;
   const g = ctx.createGain();
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(MUSIC_VOL, t + 0.3);
   g.connect(SND.out);
   const src = ctx.createBufferSource();
-  src.buffer = SND.buf; src.loop = true; src.loopStart = BGM_LOOP.start; src.loopEnd = BGM_LOOP.end;
+  src.buffer = buf; src.loop = true; src.loopStart = L.start; src.loopEnd = L.end;
   src.playbackRate.value = SND.rate || 1;
   src.connect(g);
-  src.start(t, BGM_LOOP.start + SND.pos);
+  src.start(t, L.start + SND.pos);
   Object.assign(SND, { src, musicGain: g, srcT: t, srcPos: SND.pos });
 }
 function musicStart(fromTop) {
-  if (fromTop) SND.pos = 0;
-  if (!SND.musicOn || SND.playing || (G.state !== 'play' && MG.st !== 'play' && ST.st !== 'play' && FM.st !== 'play')) return;   // a game or a mini game on
+  const want = musicFor();
+  if (!want) return;   // a game or a mini game on
+  if (want !== SND.track) {   // another game's tune: from where that one was left
+    const o = SND.posOf[want] || { pos: 0, lvl: 0 };
+    SND.track = want; SND.pos = o.pos; SND.lvl = Math.min(o.lvl, MUSIC[want].length - 1);
+  }
+  if (fromTop) { SND.pos = 0; SND.lvl = 0; }
+  if (!SND.musicOn || SND.playing) return;
   if (!audio()) return;
   SND.playing = true;
-  if (SND.buf) startSource(); else loadMusic();   // starts as soon as the file is decoded
+  if (SND.bufs[musVar().url]) { startSource(); loadMusic(); } else loadMusic();   // starts as soon as the file is decoded
 }
-// playback speed of the music (faster when the stack is near the top); the position keeps counting correctly
+// playback speed of the music (the main game: faster when the stack is near the top); the position keeps counting
 const DANGER_AT = 0.7, DANGER_RATE = 1.12;
-function musicPos() {
-  const len = BGM_LOOP.end - BGM_LOOP.start;
-  return (((SND.srcPos + Math.max(0, SND.ctx.currentTime - SND.srcT) * (SND.rate || 1)) % len) + len) % len;
+function musicPosAt(t) {
+  const L = musLoop(musVar()), len = L.end - L.start;
+  return (((SND.srcPos + Math.max(0, t - SND.srcT) * (SND.rate || 1)) % len) + len) % len;
 }
+function musicPos() { return musicPosAt(SND.ctx.currentTime); }
 function musicRate(r) {
   if ((SND.rate || 1) === r) return;
   if (SND.src && SND.ctx) {
@@ -2210,6 +2232,31 @@ function musicRate(r) {
     SND.src.playbackRate.setTargetAtTime(r, SND.ctx.currentTime, 0.12);
   }
   SND.rate = r;
+}
+// the mini games getting faster: the same tune, a faster take of it, picked up at the same place (a short cross-fade)
+function musicTempo(lvl) {
+  lvl = Math.max(0, Math.min(MUSIC[SND.track].length - 1, lvl));
+  if (lvl === SND.lvl) return;
+  const to = MUSIC[SND.track][lvl], buf = SND.bufs[to.url];
+  if (!SND.playing || !SND.src || !SND.ctx) {   // not playing: start there next time, at the same place
+    const a = musLoop(musVar()), b = musLoop(to);
+    SND.pos = SND.pos / (a.end - a.start) * (b.end - b.start); SND.lvl = lvl;
+    return;
+  }
+  if (!buf) { loadTune(to.url); return; }   // not here yet: keep going, try again next frame
+  const ctx = SND.ctx, t = ctx.currentTime + 0.03, a = musLoop(musVar()), b = musLoop(to);
+  const pos = musicPosAt(t) / (a.end - a.start) * (b.end - b.start), fade = 0.09;
+  const og = SND.musicGain, osrc = SND.src;
+  og.gain.cancelScheduledValues(t); og.gain.setValueAtTime(og.gain.value, t); og.gain.linearRampToValueAtTime(0, t + fade);
+  try { osrc.stop(t + fade + 0.02); } catch (e) { /* already stopped */ }
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(MUSIC_VOL, t + fade);
+  g.connect(SND.out);
+  const src = ctx.createBufferSource();
+  src.buffer = buf; src.loop = true; src.loopStart = b.start; src.loopEnd = b.end;
+  src.playbackRate.value = SND.rate || 1;
+  src.connect(g); src.start(t, b.start + pos);
+  Object.assign(SND, { src, musicGain: g, srcT: t, srcPos: pos, lvl });
 }
 function musicStop() {
   if (!SND.playing) return;
@@ -2220,13 +2267,14 @@ function musicStop() {
     g.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
     try { src.stop(ctx.currentTime + 0.3); } catch (e) { /* already stopped */ }
   }
+  SND.posOf[SND.track] = { pos: SND.pos, lvl: SND.lvl };
   SND.src = null; SND.musicGain = null;
 }
 
 // Sound effects: recorded instruments from the same sound bank (plus a little synthesis for noises), cut and levelled,
 // all in one file (sfx.mp3). SFX_AT: where each one sits in it, [start, length] in seconds.
 const SFX_URL = 'sfx.mp3';
-const SFX_AT = { pick: [0.12, 0.2895], move: [0.5295, 0.12], back: [0.7695, 0.45], land: [1.3395, 0.4], rise: [1.8595, 0.3], line: [2.2795, 1.0], burst: [3.3995, 0.6999], combo: [4.2193, 0.8], fever: [5.1393, 1.6], feverEnd: [6.8593, 0.8], missionNew: [7.7793, 0.7], mission: [8.5993, 1.3], missionFail: [10.0193, 0.65], stage: [10.7893, 1.4], rot: [12.3093, 0.3], bell: [12.7293, 2.4], bomb: [15.2493, 1.1], bolt: [16.4693, 0.4], drill: [16.9893, 0.55], over: [17.6593, 2.4], catch: [20.1793, 0.3999], catchGold: [20.6992, 0.9], catchCube: [21.7192, 0.45], heart: [22.2892, 0.8], hit: [23.2092, 0.45] };
+const SFX_AT = { pick: [0.12, 0.2895], move: [0.5295, 0.12], back: [0.7695, 0.45], land: [1.3395, 0.4], rise: [1.8595, 0.3], line: [2.2795, 1.0], burst: [3.3995, 0.6999], combo: [4.2193, 0.8], fever: [5.1393, 1.6], feverEnd: [6.8593, 0.8], missionNew: [7.7793, 0.7], mission: [8.5993, 1.3], missionFail: [10.0193, 0.65], stage: [10.7893, 1.4], rot: [12.3093, 0.3], bell: [12.7293, 2.4], bomb: [15.2493, 1.1], bolt: [16.4693, 0.4], drill: [16.9893, 0.55], over: [17.6593, 2.4], catch: [20.1793, 0.3999], catchGold: [20.6992, 0.9], catchCube: [21.7192, 0.45], heart: [22.2892, 0.8], hit: [23.2092, 0.45], acCatch: [23.7792, 0.304], acGold: [24.2032, 1.0], acCube: [25.3232, 0.45], acHeart: [25.8932, 0.95], acHit: [26.9632, 0.45], acCombo: [27.5332, 0.6], acOver: [28.2532, 1.8], acBest: [30.1732, 1.5997], stHop: [31.8929, 0.1999], stTurn: [32.2128, 0.1385], stTick: [32.4714, 0.22], stGo: [32.8114, 0.9], stFall: [33.8314, 1.0], stTheme: [34.9514, 1.3], stOver: [36.3714, 2.4], stBest: [38.8914, 1.8], fmDrop: [40.8114, 0.2677], fmPop: [41.199, 0.3862], fmBig: [41.7052, 1.0], fmMelon: [42.8252, 1.9], fmOver: [44.8452, 2.2], fmBest: [47.1652, 1.5022] };
 const SFXB = { bytes: null, buf: null, fetching: false, decoding: false };
 function fetchSfx() {   // the bytes come in at start; they are decoded once there is an audio context
   if (SFXB.bytes || SFXB.fetching) return;
@@ -2254,6 +2302,13 @@ function playSfx(name, rate = 1, vol = 1, delay = 0) {
 }
 const C6 = 1046.5;
 const semi = n => Math.pow(2, n / 12);
+// a mini game's own sound from the file; until the file is decoded, the older shared sound stands in
+function gsfx(name, rate = 1, stand = null, o = {}) {
+  if (!SND.sfxOn || !audio()) return;
+  if (SFXB.buf && SFX_AT[name] && playSfx(name, rate)) return;
+  decodeSfx();
+  if (stand) sfxSynth(stand, o);
+}
 const CATCH_STEPS = [0, 2, 4, 7, 9, 12];   // an acorn streak walks up the scale
 function sfx(name, o = {}) {
   if (!SND.sfxOn) return;
@@ -2731,7 +2786,7 @@ function miniFinish() {
 function miniGameOver() {
   const isBest = miniFinish();
   musicStop();
-  sfx('over');
+  gsfx(isBest ? 'acBest' : 'acOver', 1, 'over');
   $('#mini-final').textContent = MG.score.toLocaleString();
   const note = $('#mini-note'); note.hidden = !isBest; note.textContent = tr('newBest');
   setTimeout(() => { if (MG.st === 'over') $('#mini-over').hidden = false; }, 900);
@@ -2755,6 +2810,7 @@ function miniStep(dt) {
   const g = miniGeo(), playing = MG.st === 'play';
   if (playing) {
     MG.t += dt;
+    musicTempo(Math.floor(Math.min(1, MG.t / MINI_RAMP) * 3));   // the tune a step faster every 100 s, with the falling
     if (MG.key) MG.tx += MG.key * MG.W * 1.9 * dt;
     MG.tx = Math.max(g.bw / 2, Math.min(MG.W - g.bw / 2, MG.tx));
     MG.next -= dt;
@@ -2811,13 +2867,13 @@ function miniCatch(it, g) {
   const y = g.top - g.r * 0.4;   // the points rise from over the squirrel's head
   if (it.k === 'stone') {
     MG.hearts--; MG.combo = 0; MG.hurt = 0.8; MG.flash = 0.35;
-    sfx('hit'); buzz(40);
+    gsfx('acHit', 1, 'hit'); buzz(40);
     if (MG.hearts <= 0) { MG.st = 'dying'; MG.end = 0.4; }
     return;
   }
   if (it.k === 'heart') {
     MG.hearts = Math.min(3, MG.hearts + 1);
-    sfx('heart');
+    gsfx('acHeart', 1, 'heart');
     MG.pops.push({ text: '+1', x: it.x, y, t: 0, look: CHAIN_LOOK, size: g.u * 1.5, life: 0.8 });
     return;
   }
@@ -2830,10 +2886,11 @@ function miniCatch(it, g) {
   MG.combo++;
   const pts = MINI_PTS[it.k] * miniMult();
   MG.score += pts; miniHud();
-  sfx(it.k === 'gold' ? 'catchGold' : it.k === 'cube' ? 'catchCube' : 'catch', { n: MG.combo - 1 });
+  if (it.k === 'gold') gsfx('acGold', 1, 'catchGold'); else if (it.k === 'cube') gsfx('acCube', 1, 'catchCube');
+  else gsfx('acCatch', semi(CATCH_STEPS[(MG.combo - 1) % CATCH_STEPS.length]), 'catch', { n: MG.combo - 1 });
   MG.pops.push({ text: '+' + pts.toLocaleString(), x: it.x, y, t: 0, look: it.k === 'gold' ? GOLD_LOOK : SCORE_LOOK, size: g.u * (it.k === 'gold' ? 1.5 : 1.15), life: 0.7 });
   if (miniMult() > before) {
-    sfx('combo', { combo: 2 + (miniMult() - 2) * 2 });
+    gsfx('acCombo', semi(Math.min(9, (miniMult() - 2) * 2)), 'combo', { combo: 2 + (miniMult() - 2) * 2 });
     MG.pops.push({ text: 'x' + miniMult(), x: MG.W / 2, y: MG.H * 0.3, t: 0, look: RAINBOW_LOOK, size: Math.min(70, MG.W * 0.17), life: 1.0 });
   }
 }
@@ -2934,7 +2991,8 @@ try {   // a best kept from when a step was 1 point: once, in the new points
   }
 } catch (e) { /* storage unavailable */ }
 const ST_COUNT = 5;   // s, the countdown
-const ST_V0 = 2, ST_VMAX = 10, ST_RAMP = 180;   // steps a second at the start and at the most (5x), and the seconds to get there
+// steps a second at the start and at the most (10x); it speeds up as before (+8 steps a second every 3 minutes), so the top comes at 6:45
+const ST_V0 = 2, ST_VMAX = 20, ST_RAMP = 405;
 const stSpeed = t => ST_V0 + (ST_VMAX - ST_V0) * Math.min(1, t / ST_RAMP);
 const ST_GRACE = 0.08;   // s: a turn this late (just after the hop into the air began) still counts
 const ST_RUNS = [1, 2, 2, 3, 3, 3, 4, 4, 5, 6];   // how many steps go the same way before the stairs turn
@@ -2974,11 +3032,11 @@ function stMore(n) {
   }
 }
 // the pictures at screen size: a jelly slab for each colour, the rabbit's poses
-// The themes: every 100 steps the stairs and the sky change, climbing up from the forest (the screen's own forest
-// background) to canyon, snow peaks, above the clouds, night and space, then round again. Each step is a stone slab
+// The themes: every 200 steps the stairs and the sky change, climbing up from the forest (the screen's own forest
+// background) to canyon, snow peaks, above the clouds, night, space, the galaxy and at last heaven, which then stays. Each step is a stone slab
 // with its own top (moss, sand, snow, gold, glow, crystal), three close variants so a staircase does not look stamped.
-const ST_THEME_N = 6, ST_THEME_LEN = 100;
-const stTheme = i => Math.floor(i / ST_THEME_LEN) % ST_THEME_N;
+const ST_THEME_N = 8, ST_THEME_LEN = 200;
+const stTheme = i => Math.min(ST_THEME_N - 1, Math.floor(i / ST_THEME_LEN));
 const stVar = i => (i * 7 + (i >> 1) * 5) % 3;
 const ST_STONE = [
   { body: [[196, 188, 172], [208, 200, 184], [184, 178, 166]], top: ['#a8e05a', '#5fae3a'], depth: 0.26 },   // forest: grey stone, moss
@@ -2987,6 +3045,8 @@ const ST_STONE = [
   { body: [[238, 233, 244], [246, 242, 250], [226, 221, 236]], top: ['#ffe58f', '#e6b247'], depth: 0.14, veins: true, puffs: true },   // clouds: marble, gold
   { body: [[74, 82, 118], [84, 92, 130], [66, 74, 108]], top: ['#b8f0ff', '#4fb6ea'], depth: 0.14, glow: '#7fd8ff', stars: true },   // night: slate, blue glow
   { body: [[116, 86, 158], [128, 96, 170], [104, 76, 146]], top: ['#ffb3ec', '#c95cdc'], depth: 0.2, glow: '#ff9cf0', craters: true },   // space: rock, crystal
+  { body: [[70, 58, 150], [82, 70, 166], [60, 50, 136]], top: ['#b8ffe4', '#3fd6b0'], depth: 0.18, glow: '#7fffd4', stars: true, veins: true },   // galaxy: indigo star-glass, aurora
+  { body: [[246, 204, 92], [252, 214, 110], [238, 192, 80]], top: ['#ffffff', '#fff1c2'], depth: 0.2, glow: '#fff2a8', stars: true },   // heaven: gold, white light
 ];
 function stStonePic(g, t, v) {
   const T = ST_STONE[t], w = g.sw, h = g.rise * 1.04, pad = 4, W = w + pad * 2, H = h + 9;
@@ -3104,6 +3164,40 @@ function stBgPic(t, W, H) {
     x.strokeStyle = 'rgba(255,220,180,0.7)'; x.lineWidth = 3; x.beginPath(); x.ellipse(W * 0.24, H * 0.27, W * 0.2, W * 0.045, -0.35, 0, Math.PI * 2); x.stroke();
     x.fillStyle = '#7fd0e8'; x.beginPath(); x.arc(W * 0.84, H * 0.58, W * 0.04, 0, Math.PI * 2); x.fill();
   }
+  if (t === 6) {   // the galaxy
+    lin([[0, '#0a0622'], [0.6, '#170c38'], [1, '#22123f']]);
+    glow(W * 0.28, H * 0.34, W * 0.55, 'rgba(230,80,170,0.26)'); glow(W * 0.78, H * 0.66, W * 0.5, 'rgba(40,200,190,0.22)');
+    stars(240, 1);
+    x.save(); x.translate(W * 0.55, H * 0.36); x.rotate(-0.4); x.scale(1, 0.42);   // a spiral galaxy, tilted
+    for (let arm = 0; arm < 2; arm++) for (let i = 0; i < 70; i++) {
+      const a = arm * Math.PI + i * 0.09, r = 6 + i * W * 0.0055;
+      x.fillStyle = `rgba(${200 + rnd() * 55 | 0},${190 + rnd() * 50 | 0},255,${(0.5 - i / 160).toFixed(2)})`;
+      x.beginPath(); x.arc(Math.cos(a) * r, Math.sin(a) * r, 1.2 + rnd() * 2.4, 0, Math.PI * 2); x.fill();
+    }
+    const core = x.createRadialGradient(0, 0, 0, 0, 0, W * 0.12); core.addColorStop(0, 'rgba(255,244,220,0.95)'); core.addColorStop(1, 'rgba(255,200,240,0)');
+    x.fillStyle = core; x.beginPath(); x.arc(0, 0, W * 0.12, 0, Math.PI * 2); x.fill();
+    x.restore();
+    for (let i = 0; i < 3; i++) {   // aurora ribbons low down
+      const gr = x.createLinearGradient(0, H * (0.7 + i * 0.06), 0, H * (0.82 + i * 0.06)); gr.addColorStop(0, 'rgba(120,255,210,0)'); gr.addColorStop(0.5, `rgba(120,255,210,${0.16 - i * 0.04})`); gr.addColorStop(1, 'rgba(120,255,210,0)');
+      x.fillStyle = gr; x.beginPath(); x.moveTo(0, H * (0.74 + i * 0.06));
+      for (let k = 0; k <= 8; k++) x.lineTo(W * k / 8, H * (0.74 + i * 0.06) + Math.sin(k * 1.3 + i) * H * 0.025);
+      x.lineTo(W, H); x.lineTo(0, H); x.fill();
+    }
+  } else if (t === 7) {   // heaven: warm light, rays from above, golden clouds and the gates
+    lin([[0, '#fff1c0'], [0.45, '#ffd9a6'], [1, '#f6bfd2']]);
+    x.save(); x.translate(W * 0.5, -H * 0.05);
+    for (let i = 0; i < 9; i++) { x.rotate((i ? 0.17 : -0.68)); x.fillStyle = 'rgba(255,255,255,0.13)'; x.beginPath(); x.moveTo(0, 0); x.lineTo(-W * 0.06, H * 1.1); x.lineTo(W * 0.06, H * 1.1); x.fill(); }
+    x.restore();
+    glow(W * 0.5, H * 0.1, W * 0.6, 'rgba(255,255,240,0.8)');
+    x.strokeStyle = 'rgba(214,160,60,0.55)'; x.lineWidth = 6;   // the gates, faint
+    for (const sx of [-1, 1]) { x.beginPath(); x.moveTo(W * 0.5 + sx * W * 0.2, H * 0.36); x.lineTo(W * 0.5 + sx * W * 0.2, H * 0.18); x.stroke(); }
+    x.beginPath(); x.arc(W * 0.5, H * 0.18, W * 0.2, Math.PI, 0); x.stroke();
+    x.lineWidth = 2.5; for (let i = -3; i <= 3; i++) { x.beginPath(); x.moveTo(W * 0.5 + i * W * 0.05, H * 0.36); x.lineTo(W * 0.5 + i * W * 0.05, H * 0.18 - Math.sqrt(Math.max(0, 1 - (i / 4) ** 2)) * W * 0.2 + 4); x.stroke(); }
+    for (let i = 0; i < 5; i++) cloud(rnd() * W, H * (0.42 + i * 0.07), W * (0.07 + rnd() * 0.04), 'rgba(255,250,235,0.7)');
+    for (let i = 0; i < 8; i++) cloud((i / 7) * W, H * (0.88 + (i % 2) * 0.03), W * 0.13, 'rgba(255,244,214,0.95)');
+    for (let i = 0; i < 6; i++) cloud((i / 5 + 0.08) * W, H * 0.96, W * 0.15, '#fffaf0');
+    for (let i = 0; i < 40; i++) { x.fillStyle = 'rgba(255,255,255,0.8)'; x.beginPath(); x.arc(rnd() * W, rnd() * H * 0.85, 0.6 + rnd() * 1.4, 0, Math.PI * 2); x.fill(); }
+  }
   // dim it like the forest (the same easy-on-the-eyes darkness)
   const dim = x.createLinearGradient(0, 0, 0, H); dim.addColorStop(0, 'rgba(10,14,28,0.44)'); dim.addColorStop(0.55, 'rgba(10,14,28,0.3)'); dim.addColorStop(1, 'rgba(10,14,28,0.18)');
   x.fillStyle = dim; x.fillRect(0, 0, W, H);
@@ -3163,7 +3257,7 @@ function stStart() {
   Object.assign(ST, { st: 'play', phase: 'count', cd: ST_COUNT, cdT: 0, goT: 9, t: 0, xs: [0], way: 1, left: 4, idx: 0, dir: 1, score: 0, best: stBest(),
     pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, fall: null, end: 0 });
   Object.assign(stBg, { from: 0, to: 0, k: 1, dirty: true });   // back to the forest at once
-  sfx('pick');   // the countdown's first tick
+  gsfx('stTick', 1, 'pick');   // the countdown's first tick
   stMore(60);
   ST.cam.x = stLook();
   stHud();
@@ -3180,7 +3274,7 @@ function stHop(k0 = 0) {
 function stTurn(d) {
   if (ST.st !== 'play' || ST.phase !== 'run' || d === ST.dir) return;
   ST.dir = d;
-  sfx('rot');
+  gsfx('stTurn', 1, 'rot');
   const h = ST.hop;
   if (h && h.miss && !h.gone && ST.xs[ST.idx + 1] - ST.xs[ST.idx] === d) {
     const tx = ST.xs[ST.idx + 1], k = Math.min(0.9, h.k);
@@ -3189,7 +3283,7 @@ function stTurn(d) {
 }
 function stFall() {
   ST.st = 'dying'; ST.fall = { vy: -4, rot: 0 }; ST.end = 1.0;
-  sfx('hit'); buzz(40);
+  gsfx('stFall', 1, 'hit'); buzz(40);
 }
 function stFinish() {
   if (ST.st === 'over' || ST.st === 'off') return false;
@@ -3201,7 +3295,7 @@ function stFinish() {
 function stGameOver() {
   const isBest = stFinish();
   musicStop();
-  sfx(isBest ? 'stage' : 'over');
+  gsfx(isBest ? 'stBest' : 'stOver', 1, isBest ? 'stage' : 'over');
   $('#st-final').textContent = ST.score.toLocaleString();
   const note = $('#st-note'); note.hidden = !isBest; note.textContent = tr('newBest');
   $('#st-cheer').hidden = !isBest;
@@ -3225,29 +3319,32 @@ function stUpdate(dt) {
   if (ST.st === 'play' && ST.phase === 'count') {   // 5, 4, 3, 2, 1, then off it goes
     const was = Math.ceil(ST.cd);
     ST.cd -= dt; ST.cdT += dt;
-    if (ST.cd <= 0) { ST.phase = 'run'; ST.goT = 0; sfx('missionNew'); stHop(); }
-    else if (Math.ceil(ST.cd) !== was) { ST.cdT = 0; sfx('pick'); }
+    if (ST.cd <= 0) { ST.phase = 'run'; ST.goT = 0; gsfx('stGo', 1, 'missionNew'); stHop(); }
+    else if (Math.ceil(ST.cd) !== was) { ST.cdT = 0; gsfx('stTick', 1, 'pick'); }
   }
   if (ST.phase === 'run') ST.goT += dt;
   const h = ST.hop;
   if (h && (ST.st === 'play' || ST.st === 'dying')) {
-    if (ST.st === 'play') ST.t += dt;
+    if (ST.st === 'play') { ST.t += dt; musicTempo(Math.floor(ST.t / 60)); }   // the tune a step faster every minute (to 1.4x at 3 minutes)
     const T = 1 / stSpeed(ST.t), f = Math.min(1, ST.t / ST_RAMP);
     h.k += dt / T; h.el += dt;
-    if (h.miss && !h.gone && h.el >= Math.min(ST_GRACE, 0.25 * T)) { h.gone = true; stFall(); }
+    if (h.miss && !h.gone && h.el >= Math.min(ST_GRACE, Math.max(0.02, 0.25 * T))) { h.gone = true; stFall(); }
     const k = Math.min(1, h.k);   // an arc over the whole hop, lower when fast
     ST.pos.x = h.fx + (h.tx - h.fx) * k; ST.pos.y = h.fy + (h.ty - h.fy) * k + Math.sin(k * Math.PI) * (0.5 - 0.2 * f);
-    if (h.k >= 1) {
-      if (h.miss) ST.hop = null;   // in the air: it falls from here
-      else {
-        ST.idx++; ST.score += ST_PTS; stHud(); sfx('move');
-        if (ST.st === 'play') stHop(Math.min(0.5, h.k - 1)); else ST.hop = null;
-      }
+    let cur = h;
+    while (cur && cur.k >= 1) {   // at full speed a hop is 3 frames: one frame can finish one and go on into the next
+      if (cur.miss) { ST.hop = null; break; }   // in the air: it falls from here
+      ST.idx++; ST.score += ST_PTS; stHud();
+      if (ST.idx % ST_THEME_LEN === 0 && stTheme(ST.idx) !== stTheme(ST.idx - 1)) gsfx('stTheme', 1, 'missionNew'); else gsfx('stHop', 1, 'move');   // a new stretch of stairs
+      if (ST.st !== 'play') { ST.hop = null; break; }
+      const left = cur.k - 1; stHop(0); cur = ST.hop; cur.k = left; cur.el = left * T;
+      if (cur.miss && cur.el >= Math.min(ST_GRACE, Math.max(0.02, 0.25 * T))) { cur.gone = true; stFall(); }
+      const k2 = Math.min(1, cur.k); ST.pos.x = cur.fx + (cur.tx - cur.fx) * k2; ST.pos.y = cur.fy + (cur.ty - cur.fy) * k2 + Math.sin(k2 * Math.PI) * (0.5 - 0.2 * f);
     }
   }
   if (ST.fall && !ST.hop) { ST.fall.vy += 46 * dt; ST.pos.y -= ST.fall.vy * dt; ST.fall.rot += dt * 2.2 * ST.dir; }
-  if (!ST.fall) {   // the view follows the rabbit, a little ahead to show where the stairs go (not while it falls: it falls away)
-    const a = 1 - Math.exp(-dt * 14);
+  if (!ST.fall) {   // the view follows the rabbit, a little ahead to show where the stairs go (not while it falls: it falls away); faster when it is fast
+    const a = 1 - Math.exp(-dt * 14 * Math.max(1, stSpeed(ST.t) / 4));
     ST.cam.x += (stLook() - ST.cam.x) * a * 0.6; ST.cam.y += (ST.pos.y - ST.cam.y) * a;
   }
   if (ST.st === 'dying' && (ST.end -= dt) <= 0) stGameOver();
@@ -3428,7 +3525,7 @@ function fmDrop() {
   const g = fmGeo(), k = FM.held, r = fmR(k), x = Math.max(r, Math.min(1 - r, FM.aim));
   fmAddFruit(k, x, fmHeldY(g, k));
   FM.held = 0; FM.cool = FM_COOL;
-  sfx('rot');
+  gsfx('fmDrop', 1, 'rot');
 }
 function fmAimAt(clientX) {
   const g = fmGeo(), b = fcv.getBoundingClientRect();
@@ -3487,11 +3584,11 @@ function fmJoin(a, b) {
   const g = fmGeo();
   FM.pops.push({ text: '+' + pts, x: fmX(g, x), y: fmY(g, y), t: 0, life: 0.8, size: Math.min(26, 14 + k * 1.4), look: k >= 9 ? GOLD_LOOK : SCORE_LOOK });
   fmBurst(fmX(g, x), fmY(g, y), (k + (k < FM_N ? 1 : 0)), k >= FM_N ? 26 : 8 + k);
-  if (k >= FM_N) { sfx('catchGold'); buzz(30); return; }
+  if (k >= FM_N) { gsfx('fmMelon', 1, 'catchGold'); buzz(30); return; }
   const vx = ((a.x - a.px) * ma + (b.x - b.px) * mb) / (ma + mb) * 240, vy = ((a.y - a.py) * ma + (b.y - b.py) * mb) / (ma + mb) * 240;
   const f = fmAddFruit(k + 1, x, y, vx * 0.5, vy * 0.5, a.rf * 0.7);   // starts small where the two met and grows into place (no sudden push)
   f.age = 1;   // a joined fruit counts at once for the top line
-  if (k + 1 >= 8) sfx('catchGold'); else sfx('catch', { n: k - 1 });
+  if (k + 1 >= 8) gsfx('fmBig', 1, 'catchGold'); else gsfx('fmPop', semi(9 - k * 1.5), 'catch', { n: k - 1 });   // bigger fruit, lower pop
 }
 function fmBurst(x, y, k, n) {
   const col = [FM_COL[k - 1], '#fff6c8'];
@@ -3511,7 +3608,7 @@ function fmGameOver() {
   const isBest = fmFinish();
   FM.face = 'cry';
   musicStop();
-  sfx(isBest ? 'stage' : 'over'); buzz(40);
+  gsfx(isBest ? 'fmBest' : 'fmOver', 1, isBest ? 'stage' : 'over'); buzz(40);
   $('#fm-final').textContent = FM.score.toLocaleString();
   const note = $('#fm-note'); note.hidden = !isBest; note.textContent = tr('newBest');
   $('#fm-face').src = isBest ? FM_ART.joy : FM_ART.cry;
@@ -5000,7 +5097,7 @@ window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude
 window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY, itemH }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending || !!pendingItem, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
                   items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), startVersus, VS_BOTS, mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
-                  sound: { SND, sfx, scoreFor, wireAudio, BGM_LOOP, SFXB, SFX_AT, musicStart, musicStop },
+                  sound: { SND, sfx, gsfx, scoreFor, wireAudio, MUSIC, SFXB, SFX_AT, musicStart, musicStop, musicTempo, musicPos },
                   merge: { FM, geo: fmGeo, drop: fmDrop, add: fmAddFruit, R: fmR, HB: FM_HB, pts: FM_PTS, phys: fmPhys, open: openMerge },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
