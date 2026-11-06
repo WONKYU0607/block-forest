@@ -529,18 +529,31 @@ html[lang="en"] .rank-tabs .opt b { font-size: 13px; }
 .minis-wrap { position: absolute; inset: 0; display: grid; place-items: center; box-sizing: border-box; overflow-y: auto;
   padding: max(40px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .minis-card { width: min(100%, 380px); animation: sheetUp 0.45s cubic-bezier(.25, 1.4, .5, 1) both; }
-/* the card fits the screen; with more games than fit, the list scrolls inside it (the back button stays in view) */
-.minis-card { display: flex; flex-direction: column; box-sizing: border-box; max-height: calc(100vh - 100px); max-height: calc(100dvh - 100px); }
+/* the card takes the screen's height (up to 720px) and the list never scrolls: 5 rows of 2 (all 10 games), each row a fifth
+   of what is left, and each game's picture and words sized to its tile (container units) */
+.minis-card { display: flex; flex-direction: column; box-sizing: border-box; height: min(calc(100vh - 100px), 720px); height: min(calc(100dvh - 100px), 720px); }
 @keyframes sheetUp { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: none; opacity: 1; } }
-.minis-list { display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: 10px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 2px 8px; margin: 0 -2px; }
-/* a game: its picture over its name (two lines when long, broken between words) and its best */
-.mg-row { flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; padding: 12px 6px 10px; box-sizing: border-box; }
-.mg-row > div { width: 100%; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.mg-row b { font-size: 19px; line-height: 1.15; word-break: keep-all; text-wrap: balance; }
-html[lang="en"] .mg-row b { font-size: 16px; }
-.mg-row span { font-size: 13px; white-space: nowrap; }
-.mg-ic { flex: none; width: 54px; height: 54px; }
-@media (max-height: 700px) { .minis-card { padding-top: 48px; } .minis-list { gap: 8px; } .mg-row { gap: 4px; padding: 8px 6px 8px; } .mg-ic { width: 42px; height: 42px; } .mg-row b { font-size: 17px; } html[lang="en"] .mg-row b { font-size: 14px; } .mg-row span { font-size: 12px; } }
+.minis-list { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 8px; flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 0 2px 10px; margin: 0 -2px; }
+/* a game: its picture over its name and its best, all scaled to the tile's height */
+.mg-row { flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 3%; padding: 4px 6px; box-sizing: border-box; min-height: 0; overflow: hidden; container-type: size; }
+.mg-row > div { width: 100%; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.mg-row b { font-size: 17px; font-size: clamp(12px, 19cqh, 20px); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+html[lang="en"] .mg-row b { font-size: 15px; font-size: clamp(11px, 16cqh, 17px); }
+.mg-row span { font-size: 12px; font-size: clamp(10px, 13cqh, 14px); line-height: 1.2; white-space: nowrap; }
+/* the picture takes the height the name and the best leave (their line heights and the gaps), up to 60px */
+.mg-ic { flex: none; width: 44px; height: 44px; --ic: clamp(16px, calc(100cqh - 1.15 * clamp(12px, 19cqh, 20px) - 1.2 * clamp(10px, 13cqh, 14px) - 10px), 60px); width: var(--ic); height: var(--ic); }
+@media (max-height: 700px) { .minis-card { padding-top: 48px; padding-bottom: 14px; } .minis-list { gap: 6px; } }
+/* on a short screen the tiles are too low for a picture over two lines of words: picture on the left, name (up to two
+   lines, broken between words) and best on the right */
+@media (max-height: 660px) {
+  .mg-row { flex-direction: row; justify-content: flex-start; text-align: left; gap: 6px; padding: 4px 6px 4px 8px; }
+  .mg-row > div { align-items: flex-start; }
+  .mg-ic { --ic: clamp(24px, calc(100cqh - 4px), 40px); }
+  .mg-row b { white-space: normal; word-break: keep-all; font-size: 13px; font-size: clamp(11px, 21cqh, 14px); line-height: 1.12;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: clip; }
+  html[lang="en"] .mg-row b { font-size: 12px; font-size: clamp(10px, 19cqh, 13px); }
+  .mg-row span { font-size: 10px; font-size: clamp(9px, 15cqh, 11px); }
+}
 @media (prefers-reduced-motion: reduce) { .minis-card { animation: none; } }
 html[lang="en"] #opt-mini b { font-size: 15px; letter-spacing: -0.02em; }
 @media (max-width: 370px) { html[lang="en"] #opt-mini b { font-size: 13px; } }
@@ -5090,19 +5103,18 @@ $('#btn-op-quit').addEventListener('click', () => { sfx('pick'); opFinish(); clo
 $('#btn-op-again').addEventListener('click', () => { sfx('pick'); opStart(); musicStart(true); });
 $('#btn-op-lobby').addEventListener('click', () => { sfx('pick'); closeOwlPost(); });
 /* ---------- mini game: 카멜레온 찾기 (Chameleon Hunt). A board of the same leaf, and one of them is the chameleon: like a
-   spot-the-difference, its shape is a little off - a split tip, a shorter stem, a bite out of an edge or a small hole.
+   spot-the-difference, a tiny bite is nibbled out of its edge (top, bottom or a side).
    Tap it: it jumps out, 100, and the next board comes, a size bigger, with a smaller difference. A wrong leaf takes 3 s
    off the clock. 60 s on the clock; the clock waits while the chameleon jumps out. ---------- */
 const CM_BEST = 'rise7-best-chameleon';
 const CM_T0 = 60, CM_LOSE = 3, CM_PTS = 100;   // s on the clock, s off for a wrong leaf, a find
 const CM_N = r => Math.min(10, r + 1);   // leaves across in round r: one more every board (2x2, 3x3 ...), 10x10 at most
-const CM_SIZE = r => Math.max(0.07, 0.16 * Math.pow(0.93, r - 1));   // how big the difference is in round r, of the leaf's width (never under 4 px)
-const CM_KINDS = ['tip', 'stem', 'bite', 'hole'];
-// on the leaf art, as fractions of its width and height (measured): its tip and the way in from it, the stem's end and the
-// way up it, edge points with their outward direction (for a bite), plain spots (for a hole); the outline is 5% of the width
-const CM_TIP = [0.956, 0.013, -0.68, 0.73], CM_STEM = [0.022, 0.942, 0.66, -0.75], CM_OL = 0.05;
-const CM_EDGES = [[0.453, 0.934, 0, 1], [0.942, 0.553, 0.94, 0.34], [0.198, 0.194, -0.7, -0.72], [0.608, 0.034, 0, -1], [0.062, 0.395, -0.94, -0.35]];
-const CM_SPOTS = [[0.72, 0.35], [0.625, 0.575], [0.47, 0.37]];
+const CM_SIZE = r => Math.max(0.07, 0.16 * Math.pow(0.93, r - 1));   // how big the bite is in round r, of the leaf's width
+// points round the leaf art's edge, as fractions of its width and height, with their outward direction (measured): bottom,
+// right side, top, left side; the outline is 5% of the width
+const CM_OL = 0.05;
+const CM_EDGES = [[0.453, 0.934, 0, 1], [0.738, 0.844, 0.56, 0.83], [0.86, 0.715, 0.83, 0.56], [0.942, 0.553, 0.94, 0.34], [0.991, 0.208, 1, 0],
+  [0.775, 0.048, 0, -1], [0.608, 0.034, 0, -1], [0.386, 0.072, -0.38, -0.92], [0.198, 0.194, -0.7, -0.72], [0.062, 0.395, -0.94, -0.35], [0.058, 0.655, -0.93, 0.36]];
 const CM_REVEAL = 0.5;   // s the found chameleon shows (the clock waits)
 const CM_ART = { found: 'cham-found.webp', joy: 'cham-joy.webp', sad: 'cham-sad.webp', leaf: 'leaf.webp' };
 const cmArt = {};
@@ -5119,9 +5131,9 @@ function loadChamArt() {
   }
   return cmReady;
 }
-// odd: the chameleon's leaf; kind/at/size: how it differs, where, how much; found: the reveal running (s left); shake: the
-// wrong leaf
-const CM = { st: 'off', W: 0, H: 0, round: 1, n: 2, odd: 0, kind: 'tip', at: 0, size: 0.16, time: CM_T0, score: 0, best: 0, found: 0, foundAt: 0,
+// odd: the chameleon's leaf; at/size: where its bite is (an edge point) and how big; found: the reveal running (s left);
+// shake: the wrong leaf
+const CM = { st: 'off', W: 0, H: 0, round: 1, n: 2, odd: 0, at: 0, size: 0.16, time: CM_T0, score: 0, best: 0, found: 0, foundAt: 0,
   shake: -1, shakeT: 0, inT: 0, pops: [], sparks: [], raf: 0, last: 0, img: null };
 const cmcv = $('#cm-cv'), cmctx = cmcv.getContext('2d');
 function cmBest() { try { return parseInt(localStorage.getItem(CM_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
@@ -5134,40 +5146,25 @@ function cmGeo() {
   return { W, H, top, side, x, y, n, inner, cell, leaf: cell * 0.86 };
 }
 const cmCell = (g, i) => ({ cx: g.x + g.inner + (i % g.n + 0.5) * g.cell, cy: g.y + g.inner + (Math.floor(i / g.n) + 0.5) * g.cell });
-// the leaf at its size; the chameleon's copy with a piece of its shape changed: cut away (the leaf drawn out there), then
-// the new edge given the dark outline (drawn only over what is left of the leaf, so it hugs the cut)
-function cmLeafPic(w, kind, at, size) {
+// the leaf at its size; the chameleon's copy with a small round bite out of one edge: cut away (the leaf drawn out there),
+// then the bite's edge given the dark outline (drawn only over what is left of the leaf, so it hugs the cut)
+function cmLeafPic(w, at, size) {
   const im = cmArt.leaf, s = w / Math.max(im.naturalWidth, im.naturalHeight), lw = im.naturalWidth * s, lh = im.naturalHeight * s;
   return miniPic(lw, lh, x => {
     x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, lw, lh);
-    if (!kind) return;
-    const ol = CM_OL * lw, sz = Math.max(4, size * lw), P = (u, v) => [u * lw, v * lh];
-    const cut = path => { x.save(); x.globalCompositeOperation = 'destination-out'; x.fillStyle = '#000'; path(); x.fill(); x.restore(); };
-    const edge = (path, wid) => { x.save(); x.globalCompositeOperation = 'source-atop'; x.strokeStyle = MOL; x.lineWidth = wid; path(); x.stroke(); x.restore(); };
-    if (kind === 'tip') {   // the tip split: a V cut through the outline into the leaf
-      const [tx, ty] = P(CM_TIP[0], CM_TIP[1]), dx = CM_TIP[2], dy = CM_TIP[3], depth = ol + sz, hw = depth * 0.5;
-      const v = () => { x.beginPath(); x.moveTo(tx - dx * 3 - dy * hw, ty - dy * 3 + dx * hw); x.lineTo(tx + dx * depth, ty + dy * depth); x.lineTo(tx - dx * 3 + dy * hw, ty - dy * 3 - dx * hw); };
-      cut(() => { v(); x.closePath(); }); edge(v, ol * 2);
-    } else if (kind === 'stem') {   // the stem shorter: its end cut off square-ish, a new rounded end
-      const [ex, ey] = P(CM_STEM[0], CM_STEM[1]), dx = CM_STEM[2], dy = CM_STEM[3], L = Math.min(Math.max(4, sz * 1.3), 0.13 * lw), R = 0.5 * lw;
-      const c = () => { x.beginPath(); x.arc(ex - dx * R, ey - dy * R, R + L, 0, Math.PI * 2); };
-      cut(c); edge(c, ol * 2);
-    } else if (kind === 'bite') {   // a bite out of an edge
-      const [u, v, nx, ny] = CM_EDGES[at % CM_EDGES.length], [ex, ey] = P(u, v), r = Math.max(ol * 1.6, sz * 0.9);
-      const c = () => { x.beginPath(); x.arc(ex + nx * r * 0.25, ey + ny * r * 0.25, r, 0, Math.PI * 2); };
-      cut(c); edge(c, ol * 2);
-    } else {   // a small hole through the leaf
-      const [u, v] = CM_SPOTS[at % CM_SPOTS.length], [hx, hy] = P(u, v), r = Math.max(1.8, sz * 0.35);
-      const c = () => { x.beginPath(); x.arc(hx, hy, r, 0, Math.PI * 2); };
-      cut(c); edge(c, Math.max(1.2, ol * 0.9));
-    }
+    if (at < 0) return;
+    const ol = CM_OL * lw, [u, v, nx, ny] = CM_EDGES[at % CM_EDGES.length], ex = u * lw, ey = v * lh;
+    const r = Math.max(ol * 1.5, 3, size * lw * 0.55);   // through the outline and a little into the leaf
+    const c = () => { x.beginPath(); x.arc(ex + nx * r * 0.25, ey + ny * r * 0.25, r, 0, Math.PI * 2); };
+    x.save(); x.globalCompositeOperation = 'destination-out'; c(); x.fill(); x.restore();
+    x.save(); x.globalCompositeOperation = 'source-atop'; x.strokeStyle = MOL; x.lineWidth = ol * 2; c(); x.stroke(); x.restore();
   });
 }
 function cmPics() {
-  const g = cmGeo(), key = [CM.W, CM.H, dpr, CM.n, CM.round, CM.kind, CM.at, Object.keys(cmArt).length].join('|');
+  const g = cmGeo(), key = [CM.W, CM.H, dpr, CM.n, CM.round, CM.at, Object.keys(cmArt).length].join('|');
   if (CM.img && CM.img.key === key) return CM.img;
   const P = { key };
-  if (cmArt.leaf) { P.leaf = cmLeafPic(g.leaf, null); P.odd = cmLeafPic(g.leaf, CM.kind, CM.at, CM.size); }
+  if (cmArt.leaf) { P.leaf = cmLeafPic(g.leaf, -1); P.odd = cmLeafPic(g.leaf, CM.at, CM.size); }
   const fh = Math.max(110, g.cell * 1.5);   // the found chameleon: bigger than its leaf, never small
   for (const n of ['found', 'joy', 'sad']) if (cmArt[n]) { const im = cmArt[n], s = fh / im.naturalHeight; P[n] = artPic(im, im.naturalWidth * s, fh); }
   return (CM.img = P);
@@ -5202,8 +5199,7 @@ function cmStart() {
 function cmRound(r) {
   CM.round = r; CM.n = CM_N(r); CM.size = CM_SIZE(r);
   CM.odd = Math.floor(Math.random() * CM.n * CM.n);
-  CM.kind = CM_KINDS[Math.floor(Math.random() * CM_KINDS.length)];
-  CM.at = Math.floor(Math.random() * 15);   // which edge or spot (taken modulo their count)
+  CM.at = Math.floor(Math.random() * CM_EDGES.length);   // which edge point
   CM.shake = -1; CM.inT = 0.18; CM.img = null;
 }
 function cmTap(i) {
@@ -6772,7 +6768,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   mushroom: { MS, geo: msGeo, start: msStart, open: openMushroom, tap: msTap, undo: msUndo, solve: msSolve, deal: msDeal, round: msRound, K: MS_K, can: msCan, full: msFull },
                   pebble: { PB, geo: pbGeo, open: openPebble, shoot: pbShoot, aimAt: pbAimAt, step: pbStep, grid: pbGrid, newRow: pbNewRow, fly: pbFly, end: pbEndTurn, col: pbCol, BR: PB_BR, C: PB_C, R: PB_R },
                   back: { BK, want: bkWant, have: bkHave, back: bkBack },
-                  chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, N: CM_N, SIZE: CM_SIZE, KINDS: CM_KINDS, T0: CM_T0, LOSE: CM_LOSE },
+                  chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, N: CM_N, SIZE: CM_SIZE, EDGES: CM_EDGES, T0: CM_T0, LOSE: CM_LOSE },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
 </script>
