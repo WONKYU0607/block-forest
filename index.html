@@ -375,6 +375,8 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 #stairs .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
 #st-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; }
 #stairs .overlay { z-index: 3; }
+#st-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+#stairs > .mini-hud, #st-cv, .st-pad { position: relative; z-index: 1; }
 /* 과일 합치기: the canvas fills the screen under the top bar */
 #merge { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
 #merge[hidden] { display: none; }
@@ -700,6 +702,7 @@ html.tall-art .scr-box .ext { display: none; }
 </section>
 
 <section id="stairs" class="screen" hidden aria-label="토끼 계단" data-ta="stairs">
+  <canvas id="st-bg" aria-hidden="true"></canvas>
   <header class="hud mini-hud">
     <div class="stat"><span class="label" data-t="score">점수</span><span id="st-score" class="num">0</span></div>
     <button id="btn-st-pause" class="chip" type="button" aria-label="멈추고 메뉴 열기" data-ta="pause"><i class="pz" aria-hidden="true"></i><span data-t="stairsShort">계단</span></button>
@@ -2920,8 +2923,16 @@ $('#btn-mini-lobby').addEventListener('click', () => { sfx('pick'); closeMini();
 
 /* ---------- mini game: 토끼 계단 (Bunny Stairs). After a 5 second countdown the rabbit hops up the zigzag steps on its
    own, faster and faster; 'Left' and 'Right' only turn it. Each hop goes the way it faces: with no step that way it hops
-   into the air and falls, and that is the end. The score is the steps climbed; the best stays on the phone. ---------- */
+   into the air and falls, and that is the end. The score is 100 a step; the best stays on the phone. ---------- */
 const ST_BEST = 'rise7-best-stairs';
+const ST_PTS = 100;   // points per step
+try {   // a best kept from when a step was 1 point: once, in the new points
+  if (!localStorage.getItem('rise7-stairs-x100')) {
+    const b = parseInt(localStorage.getItem(ST_BEST) || '0', 10) || 0;
+    if (b) localStorage.setItem(ST_BEST, String(b * ST_PTS));
+    localStorage.setItem('rise7-stairs-x100', '1');
+  }
+} catch (e) { /* storage unavailable */ }
 const ST_COUNT = 5;   // s, the countdown
 const ST_V0 = 2, ST_VMAX = 10, ST_RAMP = 180;   // steps a second at the start and at the most (5x), and the seconds to get there
 const stSpeed = t => ST_V0 + (ST_VMAX - ST_V0) * Math.min(1, t / ST_RAMP);
@@ -2963,25 +2974,163 @@ function stMore(n) {
   }
 }
 // the pictures at screen size: a jelly slab for each colour, the rabbit's poses
+// The themes: every 100 steps the stairs and the sky change, climbing up from the forest (the screen's own forest
+// background) to canyon, snow peaks, above the clouds, night and space, then round again. Each step is a stone slab
+// with its own top (moss, sand, snow, gold, glow, crystal), three close variants so a staircase does not look stamped.
+const ST_THEME_N = 6, ST_THEME_LEN = 100;
+const stTheme = i => Math.floor(i / ST_THEME_LEN) % ST_THEME_N;
+const stVar = i => (i * 7 + (i >> 1) * 5) % 3;
+const ST_STONE = [
+  { body: [[196, 188, 172], [208, 200, 184], [184, 178, 166]], top: ['#a8e05a', '#5fae3a'], depth: 0.26 },   // forest: grey stone, moss
+  { body: [[214, 158, 104], [224, 170, 114], [202, 146, 96]], top: ['#fbe0a8', '#e6b874'], depth: 0.2, strata: true },   // canyon: sandstone, sand
+  { body: [[150, 168, 188], [164, 180, 200], [138, 156, 178]], top: ['#ffffff', '#d6e6f4'], depth: 0.34 },   // snow peaks: blue stone, snow
+  { body: [[238, 233, 244], [246, 242, 250], [226, 221, 236]], top: ['#ffe58f', '#e6b247'], depth: 0.14, veins: true, puffs: true },   // clouds: marble, gold
+  { body: [[74, 82, 118], [84, 92, 130], [66, 74, 108]], top: ['#b8f0ff', '#4fb6ea'], depth: 0.14, glow: '#7fd8ff', stars: true },   // night: slate, blue glow
+  { body: [[116, 86, 158], [128, 96, 170], [104, 76, 146]], top: ['#ffb3ec', '#c95cdc'], depth: 0.2, glow: '#ff9cf0', craters: true },   // space: rock, crystal
+];
+function stStonePic(g, t, v) {
+  const T = ST_STONE[t], w = g.sw, h = g.rise * 1.04, pad = 4, W = w + pad * 2, H = h + 9;
+  const tone = T.body[v];
+  const c = miniPic(W, H, x => {
+    const X = pad, Y = 2, r = Math.min(h * 0.3, 8);
+    const sh = (p, al = 1) => rgb(mix(tone, p < 0 ? [30, 24, 30] : [255, 255, 255], Math.abs(p)), al);
+    rr(x, X, Y + 3, w, h, r); x.fillStyle = 'rgba(0,0,0,0.28)'; x.fill();   // its shadow
+    if (T.glow) { x.save(); x.shadowColor = T.glow; x.shadowBlur = 8; rr(x, X, Y, w, h * 0.3, r); x.fillStyle = T.glow; x.fill(); x.restore(); }
+    rr(x, X, Y, w, h, r);
+    const gr = x.createLinearGradient(0, Y, 0, Y + h); gr.addColorStop(0, sh(0.12)); gr.addColorStop(0.55, sh(-0.08)); gr.addColorStop(1, sh(-0.34)); x.fillStyle = gr; x.fill();
+    x.save(); rr(x, X, Y, w, h, r); x.clip();
+    if (T.strata) {   // layered rock
+      x.strokeStyle = sh(-0.3, 0.45); x.lineWidth = 1.2;
+      for (const fy of [0.55, 0.78]) { x.beginPath(); x.moveTo(X, Y + h * fy); x.bezierCurveTo(X + w * 0.3, Y + h * (fy - 0.05), X + w * 0.7, Y + h * (fy + 0.05), X + w, Y + h * fy); x.stroke(); }
+    }
+    if (T.veins) {   // marble
+      x.strokeStyle = 'rgba(150,140,175,0.35)'; x.lineWidth = 1;
+      x.beginPath(); x.moveTo(X + w * [0.1, 0.3, 0.2][v], Y + h); x.bezierCurveTo(X + w * 0.4, Y + h * 0.6, X + w * 0.5, Y + h * 0.7, X + w * [0.8, 0.95, 0.7][v], Y + h * 0.3); x.stroke();
+    }
+    if (T.craters) {
+      for (const [px, py, pr] of [[0.25, 0.66, 0.11], [0.7, 0.74, 0.08], [0.5, 0.5, 0.05]].slice(0, 2 + (v === 1 ? 1 : 0))) {
+        x.fillStyle = sh(-0.3, 0.7); x.beginPath(); x.arc(X + w * px, Y + h * py, h * pr * 1.6, 0, Math.PI * 2); x.fill();
+        x.strokeStyle = sh(0.3, 0.6); x.lineWidth = 1; x.beginPath(); x.arc(X + w * px, Y + h * py + 0.6, h * pr * 1.6, 0.2, Math.PI - 0.2); x.stroke();
+      }
+    } else if (!T.veins) {   // a few chips and a crack
+      x.fillStyle = sh(-0.28, 0.5);
+      for (const [px, py, pr] of [[0.22, 0.64, 0.06], [0.7, 0.74, 0.05], [0.48, 0.84, 0.04], [0.86, 0.56, 0.035]].slice(v % 2, 4 - (v === 2 ? 1 : 0))) { x.beginPath(); x.arc(X + w * px, Y + h * py, Math.max(1, h * pr), 0, Math.PI * 2); x.fill(); }
+      x.strokeStyle = sh(-0.45, 0.55); x.lineWidth = 1.2; x.beginPath();
+      const cx = X + w * [0.62, 0.34, 0.5][v]; x.moveTo(cx, Y + h * 0.46); x.lineTo(cx + w * 0.05, Y + h * 0.64); x.lineTo(cx - w * 0.02, Y + h * 0.82); x.stroke();
+    }
+    if (T.stars) {   // little sparkles
+      x.fillStyle = '#fff3b0';
+      for (const [px, py] of [[0.28, 0.66], [0.74, 0.58], [0.55, 0.84]].slice(v, v + 2)) miniStar(x, X + w * px, Y + h * py, h * 0.1, '#fff3b0');
+    }
+    // the top layer, hanging down in a few soft bumps
+    const tg = x.createLinearGradient(0, Y, 0, Y + h * (T.depth + 0.12)); tg.addColorStop(0, T.top[0]); tg.addColorStop(1, T.top[1]);
+    x.fillStyle = tg; x.beginPath(); x.moveTo(X - 1, Y - 1); x.lineTo(X + w + 1, Y - 1);
+    const n = 5, ph = v * 1.7 + t;
+    for (let j = n; j >= 0; j--) { const q = j / n; x.lineTo(X + w * q, Y + h * (T.depth + 0.06 * Math.sin(q * 9 + ph) + (j % 2 ? 0.06 : 0))); }
+    x.closePath(); x.fill();
+    x.fillStyle = 'rgba(255,255,255,0.4)'; x.fillRect(X + 3, Y + 1.5, w - 6, Math.max(1, h * 0.07));
+    x.restore();
+    x.lineWidth = 2.5; x.strokeStyle = MOL; rr(x, X, Y, w, h, r); x.stroke();
+    if (T.puffs) {   // cloud puffs at a corner
+      const side = v === 1 ? 1 : 0, bx = side ? X + w - 2 : X + 2, by = Y + h - 1;
+      x.fillStyle = '#fff'; x.strokeStyle = MOL; x.lineWidth = 2;
+      x.beginPath(); x.arc(bx, by, h * 0.26, 0, Math.PI * 2); x.arc(bx + (side ? -1 : 1) * h * 0.32, by + h * 0.04, h * 0.2, 0, Math.PI * 2); x.stroke(); x.fill();
+    }
+  });
+  return { c, ox: -w / 2 - pad, oy: -2, w: W, h: H };
+}
+// the sky behind each theme (the forest one is the screen's own background): soft, and dimmed like it
+function stBgPic(t, W, H) {
+  const k = Math.min(2, dpr), cv = document.createElement('canvas');
+  cv.width = Math.round(W * k); cv.height = Math.round(H * k);
+  const x = cv.getContext('2d'); x.scale(k, k);
+  let seed = 7 + t * 101; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const lin = (stops) => { const gr = x.createLinearGradient(0, 0, 0, H); stops.forEach(([o, c]) => gr.addColorStop(o, c)); x.fillStyle = gr; x.fillRect(0, 0, W, H); };
+  const glow = (cx, cy, r, col) => { const gr = x.createRadialGradient(cx, cy, 0, cx, cy, r); gr.addColorStop(0, col); gr.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = gr; x.fillRect(cx - r, cy - r, r * 2, r * 2); };
+  const stars = (n, a) => { for (let i = 0; i < n; i++) { x.fillStyle = `rgba(255,250,230,${(a * (0.35 + rnd() * 0.65)).toFixed(2)})`; x.beginPath(); x.arc(rnd() * W, rnd() * H * 0.8, 0.5 + rnd() * 1.3, 0, Math.PI * 2); x.fill(); } };
+  const ridge = (y0, amp, n, col, sharp) => {   // a row of hills or peaks along y0
+    x.fillStyle = col; x.beginPath(); x.moveTo(0, H);
+    for (let i = 0; i <= n; i++) { const px = i / n * W, py = y0 - (sharp ? (i % 2 ? amp : amp * 0.25) : amp * (0.5 + 0.5 * Math.sin(i * 1.7 + y0))) * (0.7 + rnd() * 0.3); x.lineTo(px, py); }
+    x.lineTo(W, H); x.closePath(); x.fill();
+  };
+  const cloud = (cx, cy, s, col) => { x.fillStyle = col; x.beginPath(); for (const [dx, dy, r] of [[0, 0, 1], [0.9, 0.15, 0.75], [-0.9, 0.2, 0.7], [0.45, -0.4, 0.7], [-0.4, -0.3, 0.6]]) { x.moveTo(cx + dx * s + r * s, cy + dy * s); x.arc(cx + dx * s, cy + dy * s, r * s, 0, Math.PI * 2); } x.fill(); };
+  if (t === 1) {   // canyon at sunset
+    lin([[0, '#f29a5e'], [0.55, '#f7c48a'], [1, '#e7a06c']]);
+    glow(W * 0.74, H * 0.24, W * 0.3, 'rgba(255,236,180,0.7)');
+    x.fillStyle = '#ffe9b8'; x.beginPath(); x.arc(W * 0.74, H * 0.24, W * 0.07, 0, Math.PI * 2); x.fill();
+    const mesa = (x0, x1, top, col, lip) => {   // a flat-topped rock with sloped sides and a lit rim
+      const sl = (x1 - x0) * 0.12;
+      x.fillStyle = col; x.beginPath(); x.moveTo(x0, H); x.lineTo(x0 + sl * 0.6, top + H * 0.05); x.lineTo(x0 + sl, top); x.lineTo(x1 - sl, top); x.lineTo(x1 - sl * 0.5, top + H * 0.04); x.lineTo(x1, H); x.fill();
+      x.fillStyle = lip; x.fillRect(x0 + sl, top, x1 - x0 - sl * 2, H * 0.008);
+      x.fillStyle = 'rgba(90,40,20,0.18)'; for (let j = 1; j < 4; j++) x.fillRect(x0 + sl * 0.7, top + H * 0.035 * j, x1 - x0 - sl * 1.4, H * 0.004);
+    };
+    mesa(W * 0.02, W * 0.26, H * 0.52, '#d0855c', '#e6a07a'); mesa(W * 0.56, W * 0.92, H * 0.47, '#d0855c', '#e6a07a'); mesa(W * 0.3, W * 0.5, H * 0.6, '#c97a52', '#e09670');
+    mesa(-W * 0.06, W * 0.3, H * 0.66, '#b4653f', '#c9805a'); mesa(W * 0.64, W * 1.06, H * 0.62, '#b4653f', '#c9805a');
+    ridge(H * 0.86, H * 0.05, 6, '#8e4a2f', false);
+  } else if (t === 2) {   // snow peaks
+    lin([[0, '#8fb9e2'], [0.6, '#cfe2f3'], [1, '#e8f1f9']]);
+    const peaks = (y0, amp, col, cap) => {
+      for (let i = -1; i < 4; i++) {
+        const cx = (i + 0.5 + (rnd() - 0.5) * 0.3) * W / 3, hw = W * (0.24 + rnd() * 0.1), top = y0 - amp * (0.7 + rnd() * 0.3);
+        x.fillStyle = col; x.beginPath(); x.moveTo(cx - hw, y0 + H * 0.3); x.lineTo(cx, top); x.lineTo(cx + hw, y0 + H * 0.3); x.fill();
+        const f = 0.28; x.fillStyle = cap; x.beginPath(); x.moveTo(cx - hw * f, top + (y0 - top) * f); x.lineTo(cx, top); x.lineTo(cx + hw * f, top + (y0 - top) * f);
+        x.lineTo(cx + hw * f * 0.4, top + (y0 - top) * f * 1.25); x.lineTo(cx, top + (y0 - top) * f * 0.9); x.lineTo(cx - hw * f * 0.45, top + (y0 - top) * f * 1.2); x.fill();
+      }
+    };
+    peaks(H * 0.62, H * 0.3, '#93abc6', '#f4f8fc'); peaks(H * 0.78, H * 0.26, '#6f89a8', '#e9f1f8');
+    x.fillStyle = '#3f5c72';
+    for (let i = 0; i < 12; i++) { const px = rnd() * W, s = H * (0.05 + rnd() * 0.04), py = H * (0.9 + rnd() * 0.06); x.beginPath(); x.moveTo(px, py - s * 2); x.lineTo(px + s * 0.7, py); x.lineTo(px - s * 0.7, py); x.fill(); }
+    x.fillStyle = '#eaf2f9'; x.fillRect(0, H * 0.95, W, H);
+    for (let i = 0; i < 40; i++) { x.fillStyle = 'rgba(255,255,255,0.6)'; x.beginPath(); x.arc(rnd() * W, rnd() * H * 0.9, 0.8 + rnd() * 1.6, 0, Math.PI * 2); x.fill(); }
+  } else if (t === 3) {   // above the clouds
+    lin([[0, '#8e9de6'], [0.5, '#e8b4d2'], [1, '#ffd9b4']]);
+    glow(W * 0.3, H * 0.62, W * 0.6, 'rgba(255,240,210,0.6)');
+    for (let i = 0; i < 4; i++) cloud(rnd() * W, H * (0.15 + i * 0.12), W * (0.06 + rnd() * 0.04), 'rgba(255,255,255,0.55)');
+    for (let i = 0; i < 8; i++) cloud((i / 7) * W, H * (0.86 + (i % 2) * 0.03), W * 0.12, 'rgba(255,250,252,0.92)');
+    for (let i = 0; i < 6; i++) cloud((i / 5 + 0.08) * W, H * 0.95, W * 0.14, '#fff');
+  } else if (t === 4) {   // night
+    lin([[0, '#0d1636'], [0.6, '#1b2c5a'], [1, '#283e74']]);
+    stars(140, 1);
+    glow(W * 0.78, H * 0.17, W * 0.22, 'rgba(255,244,200,0.35)');
+    x.fillStyle = '#fff4cc'; x.beginPath(); x.arc(W * 0.78, H * 0.17, W * 0.065, 0, Math.PI * 2); x.fill();
+    x.fillStyle = 'rgba(220,210,170,0.5)'; for (const [dx, dy, r] of [[-0.02, -0.01, 0.014], [0.018, 0.012, 0.01], [0.005, -0.025, 0.008]]) { x.beginPath(); x.arc(W * (0.78 + dx), H * 0.17 + W * dy, W * r, 0, Math.PI * 2); x.fill(); }
+    for (let i = 0; i < 7; i++) cloud((i / 6) * W, H * (0.92 + (i % 2) * 0.03), W * 0.13, '#23376a');
+  } else if (t === 5) {   // space
+    lin([[0, '#07041a'], [0.6, '#120a30'], [1, '#1c0f3c']]);
+    glow(W * 0.25, H * 0.42, W * 0.6, 'rgba(140,60,200,0.28)'); glow(W * 0.8, H * 0.7, W * 0.5, 'rgba(40,150,200,0.22)');
+    stars(200, 1);
+    const pg = x.createRadialGradient(W * 0.2, H * 0.24, 0, W * 0.24, H * 0.27, W * 0.13); pg.addColorStop(0, '#ffc690'); pg.addColorStop(1, '#d8607e');
+    x.fillStyle = pg; x.beginPath(); x.arc(W * 0.24, H * 0.27, W * 0.11, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = 'rgba(255,220,180,0.7)'; x.lineWidth = 3; x.beginPath(); x.ellipse(W * 0.24, H * 0.27, W * 0.2, W * 0.045, -0.35, 0, Math.PI * 2); x.stroke();
+    x.fillStyle = '#7fd0e8'; x.beginPath(); x.arc(W * 0.84, H * 0.58, W * 0.04, 0, Math.PI * 2); x.fill();
+  }
+  // dim it like the forest (the same easy-on-the-eyes darkness)
+  const dim = x.createLinearGradient(0, 0, 0, H); dim.addColorStop(0, 'rgba(10,14,28,0.44)'); dim.addColorStop(0.55, 'rgba(10,14,28,0.3)'); dim.addColorStop(1, 'rgba(10,14,28,0.18)');
+  x.fillStyle = dim; x.fillRect(0, 0, W, H);
+  return cv;
+}
+const stBg = { cv: $('#st-bg'), pics: {}, key: '', from: 0, to: 0, k: 1 };
+// draw the sky: the old theme, the new one fading in over it (theme 0 is the screen's forest, so it is see-through)
+function stBgDraw(dt) {
+  const B = stBg, el = $('#stairs'), r = el.getBoundingClientRect(), W = Math.max(1, Math.round(r.width)), H = Math.max(1, Math.round(r.height)), key = [W, H, dpr].join('|');
+  if (key !== B.key) { B.key = key; B.pics = {}; B.cv.width = Math.round(W * Math.min(2, dpr)); B.cv.height = Math.round(H * Math.min(2, dpr)); B.dirty = true; }
+  const want = ST.st === 'off' ? 0 : stTheme(ST.idx);
+  if (want !== B.to) { B.from = B.k >= 1 ? B.to : B.from; B.to = want; B.k = 0; }
+  if (B.k < 1) { B.k = Math.min(1, B.k + dt / 0.9); B.dirty = true; }
+  if (!B.dirty) return;
+  B.dirty = false;
+  const x = B.cv.getContext('2d'), pic = t => t ? (B.pics[t] = B.pics[t] || stBgPic(t, W, H)) : null;
+  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, B.cv.width, B.cv.height);
+  const a = pic(B.from), b = pic(B.to), e = ease(B.k);
+  if (a && B.k < 1) { x.globalAlpha = b ? 1 : 1 - e; x.drawImage(a, 0, 0, B.cv.width, B.cv.height); }
+  if (b) { x.globalAlpha = e; x.drawImage(b, 0, 0, B.cv.width, B.cv.height); }
+  x.globalAlpha = 1;
+}
 function stPics() {
   const g = stGeo(), key = [ST.W, ST.H, dpr, Object.keys(rbArt).length].join('|');
   if (ST.img && ST.img.key === key) return ST.img;
-  const th = g.rise * 1.04, k = g.rh / RB_H, P = { key, slab: [], rb: {} };
-  for (let i = 0; i < COLORS.length; i++) {
-    const base = hexRgb(COLORS[i]), lit = t => rgb(mix(base, [255, 255, 255], t)), dim = (t, al = 1) => rgb(mix(base, [0, 0, 0], t), al);
-    P.slab.push(miniPic(g.sw + 4, th + 6, x => {
-      const w = g.sw, h = th, r = Math.min(h * 0.38, 9), X = 2, Y = 1;
-      rr(x, X, Y + 3, w, h, r); x.fillStyle = 'rgba(0,0,0,0.3)'; x.fill();   // its shadow
-      rr(x, X, Y, w, h, r);
-      const gr = x.createLinearGradient(0, Y, 0, Y + h); gr.addColorStop(0, lit(0.3)); gr.addColorStop(0.5, rgb(base)); gr.addColorStop(1, dim(0.32)); x.fillStyle = gr; x.fill();
-      x.save(); rr(x, X, Y, w, h, r); x.clip();
-      const gl = x.createLinearGradient(0, Y, 0, Y + h * 0.5); gl.addColorStop(0, 'rgba(255,255,255,0.8)'); gl.addColorStop(1, 'rgba(255,255,255,0.04)');
-      x.fillStyle = gl; x.beginPath(); x.ellipse(X + w / 2, Y + h * 0.2, w * 0.42, h * 0.26, 0, 0, Math.PI * 2); x.fill();
-      x.restore();
-      x.fillStyle = 'rgba(255,255,255,0.95)'; x.beginPath(); x.arc(X + w * 0.16, Y + h * 0.3, Math.max(1.4, h * 0.08), 0, Math.PI * 2); x.fill();
-      x.lineWidth = 2.5; x.strokeStyle = MOL; rr(x, X, Y, w, h, r); x.stroke();
-    }));
-  }
+  const k = g.rh / RB_H, P = { key, slab: [], rb: {} };
+  for (let t = 0; t < ST_THEME_N; t++) P.slab.push([0, 1, 2].map(v => stStonePic(g, t, v)));
   for (const n of Object.keys(RB_ART)) if (rbArt[n]) P.rb[n] = artPic(rbArt[n], rbArt[n].naturalWidth * k, rbArt[n].naturalHeight * k);
   P.k = k;
   return (ST.img = P);
@@ -3013,6 +3162,7 @@ function stStart() {
   stResize();
   Object.assign(ST, { st: 'play', phase: 'count', cd: ST_COUNT, cdT: 0, goT: 9, t: 0, xs: [0], way: 1, left: 4, idx: 0, dir: 1, score: 0, best: stBest(),
     pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, fall: null, end: 0 });
+  Object.assign(stBg, { from: 0, to: 0, k: 1, dirty: true });   // back to the forest at once
   sfx('pick');   // the countdown's first tick
   stMore(60);
   ST.cam.x = stLook();
@@ -3068,6 +3218,7 @@ function stFrame(now) {
   ST.raf = requestAnimationFrame(stFrame);
   const dt = Math.min(0.05, Math.max(0, (now - ST.last) / 1000)); ST.last = now;
   if (ST.st === 'play' || ST.st === 'dying' || ST.st === 'over') stUpdate(dt);
+  stBgDraw(dt);
   stDraw(now);
 }
 function stUpdate(dt) {
@@ -3089,7 +3240,7 @@ function stUpdate(dt) {
     if (h.k >= 1) {
       if (h.miss) ST.hop = null;   // in the air: it falls from here
       else {
-        ST.idx++; ST.score++; stHud(); sfx('move');
+        ST.idx++; ST.score += ST_PTS; stHud(); sfx('move');
         if (ST.st === 'play') stHop(Math.min(0.5, h.k - 1)); else ST.hop = null;
       }
     }
@@ -3112,7 +3263,7 @@ function stDraw(now) {
   for (let i = i1; i >= i0; i--) {
     const x = X(ST.xs[i]), y = Y(i);
     if (x < -g.sw || x > W + g.sw) continue;
-    c.drawImage(P.slab[i % P.slab.length], x - g.sw / 2 - 2, y - 1, g.sw + 4, g.rise * 1.04 + 6);
+    const sl = P.slab[stTheme(i)][stVar(i)]; c.drawImage(sl.c, x + sl.ox, y + sl.oy, sl.w, sl.h);
   }
   // the rabbit: standing for the countdown, hopping (running flat out once it is fast), falling
   const rx = X(ST.pos.x), ry = Y(ST.pos.y), k = P.k;
@@ -4851,7 +5002,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), startVersus, VS_BOTS, mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, scoreFor, wireAudio, BGM_LOOP, SFXB, SFX_AT, musicStart, musicStop },
                   merge: { FM, geo: fmGeo, drop: fmDrop, add: fmAddFruit, R: fmR, HB: FM_HB, pts: FM_PTS, phys: fmPhys, open: openMerge },
-                  stairs: { ST, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
+                  stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
 </script>
 </body>
