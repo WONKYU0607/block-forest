@@ -979,7 +979,7 @@ const STR = {
     pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
     inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
     account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', opSwap: '자리 바꿔요!', msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -1008,7 +1008,7 @@ const STR = {
     pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
     inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
     account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', opSwap: 'Places swap!', msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -4714,19 +4714,21 @@ $('#btn-ms-quit').addEventListener('click', () => { sfx('pick'); msFinish(); clo
 $('#btn-ms-again').addEventListener('click', () => { sfx('pick'); msStart(); musicStart(true); });
 $('#btn-ms-lobby').addEventListener('click', () => { sfx('pick'); closeMushroom(); });
 $('#ms-undo').addEventListener('click', () => msUndo());
-/* ---------- mini game: 부엉이 우체국 (Owl Post). Things come along a belt out of the owl's post box: honey, grapes,
-   apples and clovers. The four friends stand in a row under it, each waiting for its own thing (the bear honey, the fox grapes,
-   the hedgehog an apple, the deer a clover; each has it on a badge over its head). Tap a friend and the thing at the
-   front of the belt flies to it. The belt runs faster and faster; every 20 delivered the friends change places. A wrong
-   friend, or a thing that falls off the end of the belt, costs a heart; three gone and it is over. ---------- */
+/* ---------- mini game: 부엉이 우체국 (Owl Post). Things wait in a column that comes down out of the owl's post box:
+   honey, grapes, apples and clovers, the next ones in sight behind the front one. The four friends stand in a row under
+   it, each waiting for its own thing (the bear honey, the fox grapes, the hedgehog an apple, the deer a clover; each has
+   it on a badge over its head). Tap a friend and the front thing flies out to it; the column comes down one. Right:
+   100 and the streak goes on. Wrong: time off the clock and the streak gone. Every 20 delivered the friends change
+   places (the clock waits). The game ends when the clock runs out. ---------- */
 const OP_BEST = 'rise7-best-owlpost';
 const OP_PALS = ['bear', 'fox', 'hedgehog', 'deer'];
 const OP_GIFTS = ['honey', 'grape', 'apple', 'clover'];
-const OP_RATIO = 3.7;   // things to the belt's length: a new one comes on each time the belt moves 1/3.7 of its length
-const OP_GAP = n => 0.5 + 0.45 * Math.pow(0.97, n);   // s between things coming on, after n have come (0.95 s, toward 0.5 s)
+const OP_T0 = 60;   // s on the clock
+const OP_LOSE = 3;   // s off the clock for a wrong one
+const OP_PTS = 100;   // a thing delivered
 const OP_SHUFFLE = 20;   // the friends change places every this many delivered
-const OP_PTS = 100;   // a thing delivered (times the streak's multiplier, up to 5)
-const OP_FLY = 0.2;   // s a thing takes to fly to a friend
+const OP_FLY = 0.16;   // s a thing takes to fly to a friend
+const OP_SHOW = 7;   // things in the column at most (the front one and the ones behind it)
 const OP_ART = { hold: 'owl-hold.webp', joy: 'owl-joy.webp', oops: 'owl-oops.webp' };
 // where each picture stands (the middle between its feet, its soles); OP_OWL_H / OP_PAL_H: the standing pictures' heights
 const OP_OWL = { hold: [330, 699], joy: [334, 698], oops: [318, 687] }, OP_OWL_H = 704;
@@ -4749,33 +4751,28 @@ function loadOwlArt() {
   }
   return opReady;
 }
-// pos[place] = the friend standing there (places 0-3 left to right); items: on the belt, the front one first, u = how far
-// along (0 where they come on, 1 the end); odo: belt run since the last one came on, in belt lengths
-const OP = { st: 'off', W: 0, H: 0, pos: [0, 1, 2, 3], from: null, swapT: 0, swapIn: 0, items: [], odo: 0, came: 0, done: 0, streak: 0,
-  hearts: 3, score: 0, best: 0, belt: 0, owl: 'hold', owlT: 0, joyT: [0, 0, 0, 0], shakeT: [0, 0, 0, 0], tapT: [0, 0, 0, 0],
-  flying: [], falling: [], pops: [], sparks: [], shake: 0, raf: 0, last: 0, img: null };
+// pos[place] = the friend standing there (places 0-3 left to right); queue: the things in the column, the front one first
+// (one more than shows, waiting in the box); drop: how far the column still has to come down to its places, in places
+const OP = { st: 'off', W: 0, H: 0, pos: [0, 1, 2, 3], from: null, swapT: 0, swapIn: 0, queue: [], drop: 0, time: OP_T0, done: 0, streak: 0,
+  score: 0, best: 0, owl: 'hold', owlT: 0, joyT: [0, 0, 0, 0], shakeT: [0, 0, 0, 0], tapT: [0, 0, 0, 0], flying: [], falling: [], pops: [],
+  sparks: [], shake: 0, raf: 0, last: 0, img: null };
 const opcv = $('#op-cv'), opctx = opcv.getContext('2d');
 function opBest() { try { return parseInt(localStorage.getItem(OP_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
-const opMult = () => Math.min(5, 1 + Math.floor(OP.streak / 10));
-// sizes on screen: the friends in a row along the bottom, the belt over them, its right end inside a red post box with the
-// owl standing on top; the room left over goes 40% between the belt and the friends, 60% over the owl
+// sizes on screen: the clock bar on top, the friends in a row along the bottom, the column in the middle over them with
+// the front thing just above the badges, the post box on top of the column and the owl on the box
 function opGeo() {
   const W = OP.W, H = OP.H, top = 44;
-  const cw = Math.min(W, 560), ox = (W - cw) / 2;
+  const cw = Math.min(W, 560), ox = (W - cw) / 2, cx = ox + cw / 2;
   const ph = Math.min(cw * 0.23, H * 0.17), br = ph * 0.22;   // a friend's height, its badge's radius
   const foot = Math.max(12, H * 0.03), feet = H - foot, badgeY = feet - ph - br - 2;
-  const is = Math.min(cw * 0.155, 66), bt = Math.round(is * 0.4);   // a thing on the belt, the belt's thickness
-  const oh = Math.min(H * 0.22, cw * 0.38);   // the owl's height
-  const boxW = is * 1.55, boxH = is * 1.3;   // the post box
-  const spare = Math.max(0, H - top - (oh + boxH + bt + 2 * br + 4 + ph + foot));
-  const by = Math.round(badgeY - br - bt - Math.max(is * 0.6, spare * 0.4));   // the belt's top
-  const boxX = ox + cw - 4 - boxW;
-  const x0 = ox + cw * 0.04 + is * 0.5, x1 = boxX + is * 0.55;   // where a thing falls off (left), where it comes on (in the box)
+  const is = Math.min(cw * 0.155, H * 0.09, 66), sp = Math.round(is * 1.08);   // a thing in the column, from one to the next
+  const oh = Math.min(H * 0.15, cw * 0.3), boxW = is * 1.6, boxH = is * 1.05;   // the owl's height, the post box
+  const frontY = Math.round(badgeY - br - is * 0.4 - is / 2);   // the front thing's middle
+  const n = Math.max(3, Math.min(OP_SHOW, Math.floor((frontY - is / 2 - (top + oh * 0.95 + boxH)) / sp) + 1));
+  const boxY = frontY - (n - 1) * sp - is / 2 - boxH - 2;   // the box's top, just over the last thing that shows
   const slots = [0, 1, 2, 3].map(i => ox + cw * (i + 0.5) / 4);
-  return { W, H, top, cw, ox, ph, br, feet, badgeY, is, bt, oh, by, x0, x1, boxX, boxW, boxH, slots,
-    owlX: Math.min(boxX + boxW / 2, ox + cw - oh * 0.62), owlFeet: by - boxH, k: oh / OP_OWL_H, kp: ph / OP_PAL_H };
+  return { W, H, top, cw, ox, cx, ph, br, feet, badgeY, is, sp, n, frontY, boxW, boxH, boxY, oh, slots, k: oh / OP_OWL_H, kp: ph / OP_PAL_H };
 }
-const opItemX = (g, u) => g.x1 - u * (g.x1 - g.x0);
 function opPics() {
   const g = opGeo(), key = [OP.W, OP.H, dpr, Object.keys(opArt).length].join('|');
   if (OP.img && OP.img.key === key) return OP.img;
@@ -4789,7 +4786,6 @@ function opPics() {
     P['gift-' + n] = artPic(im, im.naturalWidth * s, im.naturalHeight * s);
     P['badge-' + n] = opBadgePic(im, g.br, '#fff3d6');
   }
-  P.heart = heartPic(11, false); P.heartOff = heartPic(11, true);
   return (OP.img = P);
 }
 // a round badge with a dark rim and the thing on it
@@ -4814,68 +4810,57 @@ function opHud() {
 function openOwlPost() {
   const el = $('#owlpost');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
-  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('opSwap') + tr('comboN', 0) + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('opSwap') + tr('comboN', 0) + tr('opLose', OP_LOSE) + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   const go = () => { opStart(); musicRate(1); musicStart(true); };
   if (opArt.hold && OP_PALS.every(p => opArt[p]) && OP_GIFTS.every(n => opArt['gift-' + n])) return go();
   Promise.race([loadOwlArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && OP.st === 'off') go(); });
 }
+const opRand = () => Math.floor(Math.random() * 4);
 function opStart() {
   $('#op-menu').hidden = true; $('#op-over').hidden = true;
   opResize();
-  Object.assign(OP, { st: 'play', pos: [0, 1, 2, 3], from: null, swapT: 0, swapIn: 0, items: [], odo: 1 / OP_RATIO, came: 0, done: 0, streak: 0,
-    hearts: 3, score: 0, best: opBest(), belt: 0, owl: 'hold', owlT: 0, joyT: [0, 0, 0, 0], shakeT: [0, 0, 0, 0], tapT: [0, 0, 0, 0],
+  Object.assign(OP, { st: 'play', pos: [0, 1, 2, 3], from: null, swapT: 0, swapIn: 0, queue: Array.from({ length: OP_SHOW + 1 }, opRand), drop: 0,
+    time: OP_T0, done: 0, streak: 0, score: 0, best: opBest(), owl: 'hold', owlT: 0, joyT: [0, 0, 0, 0], shakeT: [0, 0, 0, 0], tapT: [0, 0, 0, 0],
     flying: [], falling: [], pops: [], sparks: [], shake: 0 });
   opHud();
   cancelAnimationFrame(OP.raf); OP.last = performance.now(); OP.raf = requestAnimationFrame(opFrame);
 }
-// the belt moves; a new thing comes on every quarter of its length; the front one falls off at the end
-function opBelt(dt) {
-  const g = opGeo(), v = 1 / (OP_RATIO * OP_GAP(OP.came));   // belt lengths a second
-  OP.belt += v * dt * (g.x1 - g.x0);
-  for (const it of OP.items) it.u += v * dt;
-  if ((OP.odo += v * dt) >= 1 / OP_RATIO) {
-    OP.odo -= 1 / OP_RATIO;
-    OP.items.push({ gift: Math.floor(Math.random() * 4), u: OP.odo });
-    OP.came++;
-  }
-  if (OP.items.length && OP.items[0].u >= 1) {
-    const it = OP.items.shift();
-    OP.falling.push({ gift: it.gift, x: g.x0, y: g.by - g.is / 2, vx: -90, vy: -120, rot: 0, vr: -7, t: 0 });
-    opMiss();
-  }
-}
-// a friend tapped (by its place): the front thing flies to it; it is right if it is that friend's thing
+// a friend tapped (by its place): the front thing flies out to it, the column comes down one
 function opSend(place) {
   if (OP.st !== 'play' || OP.swapIn > 0 || OP.swapT > 0 || place < 0 || place > 3) return;
+  const g = opGeo(), gift = OP.queue.shift(), who = OP.pos[place], ok = who === gift, y0 = g.frontY - OP.drop * g.sp;   // where it is drawn now
+  OP.queue.push(opRand());
+  OP.drop = Math.min(3, OP.drop + 1);
   OP.tapT[place] = 0.14;
-  const g = opGeo();
-  if (!OP.items.length || opItemX(g, OP.items[0].u) > g.boxX) return;   // nothing out of the box yet
-  const it = OP.items.shift(), who = OP.pos[place], ok = who === it.gift;
-  OP.flying.push({ gift: it.gift, x0: opItemX(g, it.u), y0: g.by - g.is / 2, tx: g.slots[place], ty: g.feet - g.ph * 0.5, t: 0, ok, who });
+  OP.flying.push({ gift, x0: g.cx, y0, tx: g.slots[place], ty: g.feet - g.ph * 0.5, t: 0, ok, who });
   gsfx('opSend', 1, 'rot');
   if (ok) {
     OP.streak++; OP.done++;
-    const pts = OP_PTS * opMult();
-    OP.score += pts; opHud();
-    OP.pops.push({ text: '+' + pts, x: g.slots[place], y: g.badgeY - g.br - 16, t: 0, life: 0.6, size: 20, look: opMult() > 1 ? GOLD_LOOK : SCORE_LOOK });
-    if (OP.streak % 10 === 0) { OP.pops.push({ text: tr('comboN', OP.streak), x: g.ox + g.cw * 0.36, y: g.by - g.is - 34, t: 0, life: 1, size: 28, look: GOLD_LOOK }); OP.owl = 'joy'; OP.owlT = 0.4; }
+    OP.score += OP_PTS; opHud();
+    OP.pops.push({ text: '+' + OP_PTS, x: g.slots[place], y: g.badgeY, t: 0, life: 0.55, size: 20, look: SCORE_LOOK });
+    if (OP.streak % 10 === 0) { opSidePop(g, tr('comboN', OP.streak), 26, GOLD_LOOK, g.frontY - g.sp * 1.6, 1); OP.owl = 'joy'; OP.owlT = 0.4; }
     gsfx('opRight', semi(Math.min(12, Math.floor(OP.streak / 5) * 2)), 'catch');
     if (OP.done % OP_SHUFFLE === 0) OP.swapIn = OP_FLY + 0.05;   // once this one has landed, the friends change places
-  } else opMiss();
+  } else {
+    OP.streak = 0; OP.time = Math.max(0, OP.time - OP_LOSE); OP.owl = 'oops'; OP.owlT = 0.5; OP.shake = 0.3;
+    OP.pops.push({ text: tr('opLose', OP_LOSE), x: g.slots[place], y: g.badgeY, t: 0, life: 0.8, size: 22, look: COMBO_LOOK[1] });
+    gsfx('opWrong', 1, 'hit'); buzz(30);
+    if (OP.time <= 0) opGameOver();
+  }
 }
-function opMiss() {
-  OP.streak = 0; OP.hearts--; OP.owl = 'oops'; OP.owlT = 0.5; OP.shake = 0.3;
-  gsfx('opWrong', 1, 'hit'); buzz(30);
-  if (OP.hearts <= 0) opGameOver();
+// a message in the room right of the column, smaller if it would not fit there
+function opSidePop(g, text, size, look, y, life) {
+  const l = g.cx + g.is * 0.68 + 10, room = g.ox + g.cw - 8 - l, w = textImg(text, size, look, false).w * 1.15;
+  OP.pops.push({ text, x: l + room / 2, y, t: 0, life, size: Math.max(13, Math.min(size, size * room / w)), look });
 }
-// the friends change places (each to another place), hopping over; the belt waits
+// the friends change places (each to another place), hopping over; the clock waits
 function opShuffle() {
   const old = OP.pos.slice();
   let p;
   do { p = old.slice(); for (let i = p.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; } } while (p.some((v, i) => v === old[i]));
   OP.from = old; OP.pos = p; OP.swapT = 0.7;
   const g = opGeo();
-  OP.pops.push({ text: tr('opSwap'), x: g.ox + g.cw * 0.36, y: g.by - g.is - 34, t: 0, life: 1.1, size: 22, look: SUB_LOOK });
+  opSidePop(g, tr('opSwap'), 22, SUB_LOOK, g.frontY - g.sp * 2.6, 1.1);
   gsfx('opShuffle', 1, 'rise');
 }
 function opFinish() {
@@ -4912,13 +4897,13 @@ function opUpdate(dt) {
   if (OP.st === 'play') {
     if (OP.swapIn > 0) { if ((OP.swapIn -= dt) <= 0) { OP.swapIn = 0; opShuffle(); } }
     else if (OP.swapT > 0) { if ((OP.swapT -= dt) <= 0) { OP.swapT = 0; OP.from = null; } }
-    else opBelt(dt);
+    else if ((OP.time -= dt) <= 0) { OP.time = 0; opGameOver(); }
   }
+  OP.drop *= Math.exp(-dt * 22); if (OP.drop < 0.002) OP.drop = 0;   // the column settles quickly
   if (OP.owlT > 0 && (OP.owlT -= dt) <= 0) OP.owl = 'hold';
   for (let i = 0; i < 4; i++) { OP.joyT[i] -= dt; OP.shakeT[i] -= dt; OP.tapT[i] -= dt; }
   if (OP.shake > 0) OP.shake = Math.max(0, OP.shake - dt);
   // things in the air: a right one lands with a burst of stars, a wrong one bounces off and falls
-  const g = opGeo();
   for (const f of OP.flying) {
     f.t += dt;
     if (f.t < OP_FLY) continue;
@@ -4927,7 +4912,7 @@ function opUpdate(dt) {
       for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; OP.sparks.push({ x: f.tx, y: f.ty, vx: Math.cos(a) * 150, vy: Math.sin(a) * 150 - 60, t: 0, life: 0.45, c: '#ffe36b', s: 3 }); }
     } else {
       OP.shakeT[f.who] = 0.35;
-      OP.falling.push({ gift: f.gift, x: f.tx, y: f.ty, vx: (f.tx < g.ox + g.cw / 2 ? 1 : -1) * 120, vy: -320, rot: 0, vr: 9, t: 0 });
+      OP.falling.push({ gift: f.gift, x: f.tx, y: f.ty, vx: (f.tx < f.x0 ? -1 : 1) * 120, vy: -320, rot: 0, vr: 9, t: 0 });
     }
   }
   OP.flying = OP.flying.filter(f => f.t < OP_FLY);
@@ -4945,35 +4930,30 @@ function opPalAt(g, who) {
   const fr = g.slots[OP.from.indexOf(who)], q = ease(1 - OP.swapT / 0.7);
   return [fr + (to - fr) * q, g.feet - Math.sin(q * Math.PI) * g.ph * 0.45];
 }
-// the belt: a dark rubber band with treads that run left, a roller at each end, a wooden rail under it
-function opDrawBelt(c, g) {
-  const xl = g.x0 - g.is * 0.62, xr = g.boxX + g.boxW * 0.5, y = g.by, h = g.bt, r = h / 2;
-  rr(c, xl + 4, y + h * 0.55, xr - xl - 8, h * 0.75, h * 0.3); c.fillStyle = 'rgba(0,0,0,0.22)'; c.fill();   // its shadow
-  rr(c, xl, y, xr - xl, h, r);
-  const bg = c.createLinearGradient(0, y, 0, y + h); bg.addColorStop(0, '#6b5644'); bg.addColorStop(0.45, '#4a3a2e'); bg.addColorStop(1, '#2e241c');
-  c.fillStyle = bg; c.fill();
-  c.save(); rr(c, xl, y, xr - xl, h, r); c.clip();
-  const tw = h * 0.95, off = OP.belt % tw;
-  c.strokeStyle = 'rgba(255,240,210,0.16)'; c.lineWidth = 3;
-  for (let x = xl - off; x < xr + tw; x += tw) { c.beginPath(); c.moveTo(x, y + 3); c.lineTo(x - h * 0.3, y + h - 3); c.stroke(); }
-  c.fillStyle = 'rgba(255,255,255,0.18)'; c.fillRect(xl, y + 2, xr - xl, 2.5);
-  c.restore();
-  rr(c, xl, y, xr - xl, h, r); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
-  for (const x of [xl + r]) {   // the roller at the end
-    c.beginPath(); c.arc(x, y + r, r * 0.62, 0, Math.PI * 2); c.fillStyle = '#cfd6dc'; c.fill(); c.lineWidth = 2.4; c.strokeStyle = MOL; c.stroke();
-    c.beginPath(); c.arc(x, y + r, r * 0.2, 0, Math.PI * 2); c.fillStyle = MOL; c.fill();
+// the column: two wooden rails with a dark glass back between them, from under the post box down to a little tray the
+// front thing sits on
+function opDrawColumn(c, g) {
+  const w = g.is * 1.36, x = g.cx - w / 2, y0 = g.boxY + g.boxH - 6, y1 = g.frontY + g.is * 0.5 + 4;
+  rr(c, x, y0, w, y1 - y0, 10); c.fillStyle = 'rgba(30,45,30,0.32)'; c.fill();
+  for (const rx of [x - 5, x + w - 5]) {   // the rails
+    rr(c, rx, y0, 10, y1 - y0 + 4, 5);
+    const rg = c.createLinearGradient(rx, 0, rx + 10, 0); rg.addColorStop(0, '#e2b06a'); rg.addColorStop(1, '#a8713a');
+    c.fillStyle = rg; c.fill(); c.lineWidth = 2.6; c.strokeStyle = MOL; c.stroke();
   }
+  rr(c, x - 10, y1 - 2, w + 20, 12, 6);   // the tray
+  const tg = c.createLinearGradient(0, y1 - 2, 0, y1 + 10); tg.addColorStop(0, '#c98d48'); tg.addColorStop(1, '#8a5527');
+  c.fillStyle = tg; c.fill(); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
 }
-// the post box: red, a darker roof and base, an envelope on its front; the belt runs into it
+// the post box: red, a darker roof, an envelope on its front; the column comes out of its bottom
 function opDrawBox(c, g) {
-  const x = g.boxX, y = g.by - g.boxH, w = g.boxW, h = g.boxH + g.bt + 6;
+  const w = g.boxW, h = g.boxH, x = g.cx - w / 2, y = g.boxY;
   rr(c, x + 3, y + 5, w, h, 10); c.fillStyle = 'rgba(0,0,0,0.25)'; c.fill();
   rr(c, x, y, w, h, 10);
   const bg = c.createLinearGradient(x, 0, x + w, 0); bg.addColorStop(0, '#f05a48'); bg.addColorStop(0.55, '#d93d31'); bg.addColorStop(1, '#a92a22');
   c.fillStyle = bg; c.fill(); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
   rr(c, x - 4, y - 6, w + 8, 14, 6); c.fillStyle = '#9b241d'; c.fill(); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();   // the roof
-  rr(c, x + 6, y + 10, w * 0.16, h - 22, 4); c.fillStyle = 'rgba(255,255,255,0.22)'; c.fill();   // a shine down the left
-  const ew = w * 0.5, eh = ew * 0.66, ex = x + (w - ew) / 2 + w * 0.05, ey = y + h * 0.36;   // the envelope
+  rr(c, x + 6, y + 10, w * 0.14, h - 18, 4); c.fillStyle = 'rgba(255,255,255,0.22)'; c.fill();   // a shine down the left
+  const ew = w * 0.42, eh = ew * 0.66, ex = x + (w - ew) / 2 + w * 0.04, ey = y + (h - eh) / 2 + 3;   // the envelope
   rr(c, ex, ey, ew, eh, 3); c.fillStyle = '#fff8ea'; c.fill(); c.lineWidth = 2.4; c.strokeStyle = MOL; c.stroke();
   c.beginPath(); c.moveTo(ex + 2, ey + 2); c.lineTo(ex + ew / 2, ey + eh * 0.58); c.lineTo(ex + ew - 2, ey + 2); c.lineWidth = 2.2; c.stroke();
 }
@@ -4981,29 +4961,34 @@ function opDraw(now) {
   const c = opctx, g = opGeo(), P = opPics();
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   c.clearRect(0, 0, OP.W, OP.H);
-  // hearts, top left; the streak, top right
-  for (let i = 0; i < 3; i++) { const h = i < OP.hearts ? P.heart : P.heartOff; c.drawImage(h, 14 + i * 28, 10, h.width / dpr, h.height / dpr); }
-  if (OP.streak >= 2) miniText(c, tr('comboN', OP.streak), OP.W - 60, 22, 18, opMult() > 1 ? GOLD_LOOK : SCORE_LOOK, now);
-  // the belt, the things on it (the front one bigger, over a glow that turns yellow then red near the end), then the post
-  // box over the belt's right end with the owl on it
-  opDrawBelt(c, g);
-  for (let i = OP.items.length - 1; i >= 0; i--) {
-    const it = OP.items[i], im = P['gift-' + OP_GIFTS[it.gift]];
+  // the clock: a bar that empties, red and pulsing in the last 10 seconds
+  const bx = 16, bw = OP.W - 32, by = 13, bh = 18, f = Math.max(0, Math.min(1, OP.time / OP_T0));
+  rr(c, bx, by, bw, bh, 9); c.fillStyle = 'rgba(30,20,10,0.35)'; c.fill();
+  const low = OP.time <= 10, col = low ? (Math.sin(now / 120) > 0 ? '#ff4d3d' : '#ff8a5c') : OP.time <= 25 ? '#ffc23a' : '#6fdc4a';
+  if (f > 0) { rr(c, bx, by, Math.max(bh, bw * f), bh, 9); c.fillStyle = col; c.fill(); }
+  rr(c, bx, by, bw, bh, 9); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
+  miniText(c, String(Math.ceil(OP.time)), bx + bw / 2, by + bh / 2 + 1, 15, SUB_LOOK, now);
+  // the streak, by the column
+  if (OP.streak >= 2) miniText(c, tr('comboN', OP.streak), g.ox + g.cw * 0.2, g.frontY - g.sp * 0.4, 18, OP.streak >= 10 ? GOLD_LOOK : SCORE_LOOK, now);
+  // the column and the things in it (coming down to their places), the post box over it and the owl on the box
+  opDrawColumn(c, g);
+  c.save(); c.beginPath(); c.rect(0, g.boxY + g.boxH * 0.5, OP.W, OP.H); c.clip();   // the ones still in the box stay hidden
+  for (let i = Math.min(OP.queue.length, g.n + 1) - 1; i >= 0; i--) {
+    const im = P['gift-' + OP_GIFTS[OP.queue[i]]];
     if (!im) continue;
-    const x = opItemX(g, it.u), front = i === 0;
-    const s = front ? 1 : 0.88, w = im.width / dpr * s, h = im.height / dpr * s;
-    if (front && OP.st === 'play' && x < g.boxX + g.is * 0.3) {
-      const col = it.u < 0.6 ? '255,246,160' : it.u < 0.8 ? '255,194,58' : '255,90,61', pulse = 0.85 + 0.15 * Math.sin(now / 90);
-      const gr = c.createRadialGradient(x, g.by - g.is * 0.5, 0, x, g.by - g.is * 0.5, g.is * 0.9 * pulse);
-      gr.addColorStop(0, `rgba(${col},0.95)`); gr.addColorStop(0.55, `rgba(${col},0.6)`); gr.addColorStop(1, `rgba(${col},0)`);
-      c.fillStyle = gr; c.beginPath(); c.arc(x, g.by - g.is * 0.5, g.is * 0.9, 0, Math.PI * 2); c.fill();
+    const y = g.frontY - (i + OP.drop) * g.sp, front = i === 0, s = front ? 1 : 0.86, w = im.width / dpr * s, h = im.height / dpr * s;
+    if (front && OP.st === 'play') {
+      const pulse = 0.9 + 0.1 * Math.sin(now / 90), gr = c.createRadialGradient(g.cx, y, 0, g.cx, y, g.is * 0.85 * pulse);
+      gr.addColorStop(0, 'rgba(255,246,160,0.95)'); gr.addColorStop(0.55, 'rgba(255,246,160,0.55)'); gr.addColorStop(1, 'rgba(255,246,160,0)');
+      c.fillStyle = gr; c.beginPath(); c.arc(g.cx, y, g.is * 0.85, 0, Math.PI * 2); c.fill();
     }
-    c.drawImage(im, x - w / 2, g.by + 2 - h, w, h);
+    c.drawImage(im, g.cx - w / 2, y - h / 2, w, h);
   }
+  c.restore();
   opDrawBox(c, g);
   const sx = OP.shake > 0 ? Math.sin(OP.shake * 70) * 6 * (OP.shake / 0.3) : 0;
   const pose = OP.owl, oi = P[pose];
-  if (oi) { const a = OP_OWL[pose]; c.drawImage(oi, g.owlX - a[0] * g.k + sx, g.owlFeet + 3 - a[1] * g.k, oi.width / dpr, oi.height / dpr); }
+  if (oi) { const a = OP_OWL[pose]; c.drawImage(oi, g.cx - a[0] * g.k + sx, g.boxY - 2 - a[1] * g.k, oi.width / dpr, oi.height / dpr); }
   // the friends, their badges over their heads; a tapped one squashes, a wrong one shakes
   for (let who = 0; who < 4; who++) {
     const [x, y] = opPalAt(g, who), name = OP_PALS[who], joy = OP.joyT[who] > 0, key = joy ? name + '-joy' : name, im = P[key];
@@ -5023,7 +5008,7 @@ function opDraw(now) {
   for (const f of OP.flying) {
     const im = P['gift-' + OP_GIFTS[f.gift]];
     if (!im) continue;
-    const q = ease(Math.min(1, f.t / OP_FLY)), x = f.x0 + (f.tx - f.x0) * q, y = f.y0 + (f.ty - f.y0) * q - Math.sin(q * Math.PI) * g.is * 0.9;
+    const q = ease(Math.min(1, f.t / OP_FLY)), x = f.x0 + (f.tx - f.x0) * q, y = f.y0 + (f.ty - f.y0) * q - Math.sin(q * Math.PI) * g.is * 0.6;
     const s = 1 - 0.25 * q, w = im.width / dpr * s, h = im.height / dpr * s;
     c.drawImage(im, x - w / 2, y - h / 2, w, h);
   }
@@ -5039,17 +5024,18 @@ function opDraw(now) {
   for (const p of OP.pops) {
     const q = p.t / p.life;
     c.save(); c.globalAlpha = q > 0.7 ? (1 - q) / 0.3 : 1;
-    c.translate(Math.max(50, Math.min(OP.W - 50, p.x)), p.y - q * 26); const sc = popScale(p.t * 1000); c.scale(sc, sc);
+    const hw = textImg(p.text, p.size, p.look, false).w * 0.6 + 6;   // half its width (and the pop's overshoot): kept on screen
+    c.translate(Math.max(hw, Math.min(OP.W - hw, p.x)), p.y - q * 26); const sc = popScale(p.t * 1000); c.scale(sc, sc);
     miniText(c, p.text, 0, 0, p.size, p.look, now);
     c.restore();
   }
 }
-// a tap anywhere under the belt sends the front thing to the friend in that quarter of the screen; keys 1-4 too
+// a tap anywhere under the clock sends the front thing to the friend in that quarter of the screen; keys 1-4 too
 opcv.addEventListener('pointerdown', e => {
   if (OP.st !== 'play') return;
   e.preventDefault();
   const b = opcv.getBoundingClientRect(), x = e.clientX - b.left, y = e.clientY - b.top, g = opGeo();
-  if (y < g.by) return;
+  if (y < g.top) return;
   opSend(Math.max(0, Math.min(3, Math.floor((x - g.ox) / (g.cw / 4)))));
 });
 addEventListener('keydown', e => {
@@ -6445,7 +6431,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), startVersus, VS_BOTS, mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, gsfx, scoreFor, wireAudio, MUSIC, SFXB, SFX_AT, musicStart, musicStop, musicTempo, musicPos },
                   merge: { FM, geo: fmGeo, drop: fmDrop, add: fmAddFruit, R: fmR, HB: FM_HB, pts: FM_PTS, phys: fmPhys, open: openMerge },
-                  owlpost: { OP, geo: opGeo, open: openOwlPost, send: opSend, belt: opBelt, GAP: OP_GAP, PALS: OP_PALS, GIFTS: OP_GIFTS },
+                  owlpost: { OP, geo: opGeo, open: openOwlPost, send: opSend, PALS: OP_PALS, GIFTS: OP_GIFTS, T0: OP_T0, LOSE: OP_LOSE },
                   mushroom: { MS, geo: msGeo, start: msStart, open: openMushroom, tap: msTap, undo: msUndo, solve: msSolve, deal: msDeal, round: msRound, K: MS_K, can: msCan, full: msFull },
                   pebble: { PB, geo: pbGeo, open: openPebble, shoot: pbShoot, aimAt: pbAimAt, step: pbStep, grid: pbGrid, newRow: pbNewRow, fly: pbFly, end: pbEndTurn, col: pbCol, BR: PB_BR, C: PB_C, R: PB_R },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
