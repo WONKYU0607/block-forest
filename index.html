@@ -364,11 +364,29 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 #mini { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
 /* the mini games' forest: the game's, without the sun glow and the light shafts, and shaded (most at the top, where the eyes
    are), so a long play is easier on the eyes */
-#mini, #minis { background: linear-gradient(rgba(12, 40, 18, 0.44), rgba(12, 40, 18, 0.3) 55%, rgba(12, 40, 18, 0.18)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844' preserveAspectRatio='xMidYMax slice'%3E%3Cdefs%3E%3ClinearGradient id='sky' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23e9f7b8'/%3E%3Cstop offset='0.35' stop-color='%23b9e58f'/%3E%3Cstop offset='0.7' stop-color='%237cc46a'/%3E%3Cstop offset='1' stop-color='%233f8a44'/%3E%3C/linearGradient%3E%3CradialGradient id='sun' cx='0.15' cy='0.02' r='0.55'%3E%3Cstop offset='0' stop-color='%23fffbe0' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23fffbe0' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='fly' cx='0.5' cy='0.5' r='0.5'%3E%3Cstop offset='0' stop-color='%23fff9c4' stop-opacity='1'/%3E%3Cstop offset='0.4' stop-color='%23ffe066' stop-opacity='0.6'/%3E%3Cstop offset='1' stop-color='%23ffe066' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='390' height='844' fill='url(%23sky)'/%3E%3Cg fill='%23a3d98c'%3E%3Ccircle cx='10' cy='560' r='46'/%3E%3Ccircle cx='70' cy='540' r='52'/%3E%3Ccircle cx='140' cy='565' r='44'/%3E%3Ccircle cx='200' cy='535' r='56'/%3E%3Ccircle cx='265' cy='560' r='46'/%3E%3Ccircle cx='330' cy='538' r='54'/%3E%3Ccircle cx='392' cy='560' r='44'/%3E%3Crect x='0' y='560' width='390' height='300'/%3E%3C/g%3E%3Cg fill='%2362b35f'%3E%3Cpath d='M-10 700 L30 600 L70 700 Z M0 650 L30 570 L60 650 Z'/%3E%3Cpath d='M60 720 L110 590 L160 720 Z M75 660 L110 560 L145 660 Z'/%3E%3Cpath d='M150 710 L195 610 L240 710 Z M162 660 L195 585 L228 660 Z'/%3E%3Cpath d='M230 725 L285 585 L340 725 Z M245 665 L285 555 L325 665 Z'/%3E%3Cpath d='M320 705 L365 600 L410 705 Z M332 655 L365 575 L398 655 Z'/%3E%3Crect x='0' y='700' width='390' height='160'/%3E%3C/g%3E%3Cg fill='%233f8f45'%3E%3Ccircle cx='20' cy='800' r='50'/%3E%3Ccircle cx='95' cy='790' r='44'/%3E%3Ccircle cx='170' cy='808' r='48'/%3E%3Ccircle cx='245' cy='792' r='46'/%3E%3Ccircle cx='320' cy='805' r='50'/%3E%3Ccircle cx='385' cy='795' r='42'/%3E%3Crect x='0' y='800' width='390' height='60'/%3E%3C/g%3E%3Cg fill='%232f7436'%3E%3Ccircle cx='55' cy='835' r='30'/%3E%3Ccircle cx='210' cy='840' r='34'/%3E%3Ccircle cx='350' cy='838' r='30'/%3E%3C/g%3E%3Cg fill='%233b8a3f'%3E%3Ccircle cx='-10' cy='-10' r='70'/%3E%3Ccircle cx='70' cy='-30' r='60'/%3E%3Ccircle cx='150' cy='-40' r='55'/%3E%3Ccircle cx='240' cy='-35' r='60'/%3E%3Ccircle cx='320' cy='-25' r='62'/%3E%3Ccircle cx='400' cy='-5' r='70'/%3E%3C/g%3E%3Cg fill='%234ea34f'%3E%3Ccircle cx='30' cy='-25' r='48'/%3E%3Ccircle cx='115' cy='-45' r='50'/%3E%3Ccircle cx='200' cy='-50' r='52'/%3E%3Ccircle cx='285' cy='-40' r='50'/%3E%3Ccircle cx='365' cy='-30' r='48'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='40' cy='420' r='7' fill='url(%23fly)'/%3E%3Ccircle cx='352' cy='380' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='18' cy='640' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='372' cy='610' r='8' fill='url(%23fly)'/%3E%3Ccircle cx='188' cy='760' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='300' cy='770' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='90' cy='110' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='330' cy='140' r='6' fill='url(%23fly)'/%3E%3C/g%3E%3C/svg%3E") center bottom / cover no-repeat, #5d9f50; }
+#mini, #minis, #stairs { background: linear-gradient(rgba(12, 40, 18, 0.44), rgba(12, 40, 18, 0.3) 55%, rgba(12, 40, 18, 0.18)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844' preserveAspectRatio='xMidYMax slice'%3E%3Cdefs%3E%3ClinearGradient id='sky' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23e9f7b8'/%3E%3Cstop offset='0.35' stop-color='%23b9e58f'/%3E%3Cstop offset='0.7' stop-color='%237cc46a'/%3E%3Cstop offset='1' stop-color='%233f8a44'/%3E%3C/linearGradient%3E%3CradialGradient id='sun' cx='0.15' cy='0.02' r='0.55'%3E%3Cstop offset='0' stop-color='%23fffbe0' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23fffbe0' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='fly' cx='0.5' cy='0.5' r='0.5'%3E%3Cstop offset='0' stop-color='%23fff9c4' stop-opacity='1'/%3E%3Cstop offset='0.4' stop-color='%23ffe066' stop-opacity='0.6'/%3E%3Cstop offset='1' stop-color='%23ffe066' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='390' height='844' fill='url(%23sky)'/%3E%3Cg fill='%23a3d98c'%3E%3Ccircle cx='10' cy='560' r='46'/%3E%3Ccircle cx='70' cy='540' r='52'/%3E%3Ccircle cx='140' cy='565' r='44'/%3E%3Ccircle cx='200' cy='535' r='56'/%3E%3Ccircle cx='265' cy='560' r='46'/%3E%3Ccircle cx='330' cy='538' r='54'/%3E%3Ccircle cx='392' cy='560' r='44'/%3E%3Crect x='0' y='560' width='390' height='300'/%3E%3C/g%3E%3Cg fill='%2362b35f'%3E%3Cpath d='M-10 700 L30 600 L70 700 Z M0 650 L30 570 L60 650 Z'/%3E%3Cpath d='M60 720 L110 590 L160 720 Z M75 660 L110 560 L145 660 Z'/%3E%3Cpath d='M150 710 L195 610 L240 710 Z M162 660 L195 585 L228 660 Z'/%3E%3Cpath d='M230 725 L285 585 L340 725 Z M245 665 L285 555 L325 665 Z'/%3E%3Cpath d='M320 705 L365 600 L410 705 Z M332 655 L365 575 L398 655 Z'/%3E%3Crect x='0' y='700' width='390' height='160'/%3E%3C/g%3E%3Cg fill='%233f8f45'%3E%3Ccircle cx='20' cy='800' r='50'/%3E%3Ccircle cx='95' cy='790' r='44'/%3E%3Ccircle cx='170' cy='808' r='48'/%3E%3Ccircle cx='245' cy='792' r='46'/%3E%3Ccircle cx='320' cy='805' r='50'/%3E%3Ccircle cx='385' cy='795' r='42'/%3E%3Crect x='0' y='800' width='390' height='60'/%3E%3C/g%3E%3Cg fill='%232f7436'%3E%3Ccircle cx='55' cy='835' r='30'/%3E%3Ccircle cx='210' cy='840' r='34'/%3E%3Ccircle cx='350' cy='838' r='30'/%3E%3C/g%3E%3Cg fill='%233b8a3f'%3E%3Ccircle cx='-10' cy='-10' r='70'/%3E%3Ccircle cx='70' cy='-30' r='60'/%3E%3Ccircle cx='150' cy='-40' r='55'/%3E%3Ccircle cx='240' cy='-35' r='60'/%3E%3Ccircle cx='320' cy='-25' r='62'/%3E%3Ccircle cx='400' cy='-5' r='70'/%3E%3C/g%3E%3Cg fill='%234ea34f'%3E%3Ccircle cx='30' cy='-25' r='48'/%3E%3Ccircle cx='115' cy='-45' r='50'/%3E%3Ccircle cx='200' cy='-50' r='52'/%3E%3Ccircle cx='285' cy='-40' r='50'/%3E%3Ccircle cx='365' cy='-30' r='48'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='40' cy='420' r='7' fill='url(%23fly)'/%3E%3Ccircle cx='352' cy='380' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='18' cy='640' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='372' cy='610' r='8' fill='url(%23fly)'/%3E%3Ccircle cx='188' cy='760' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='300' cy='770' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='90' cy='110' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='330' cy='140' r='6' fill='url(%23fly)'/%3E%3C/g%3E%3C/svg%3E") center bottom / cover no-repeat, #5d9f50; }
 #mini[hidden] { display: none; }
 #mini .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
 #mini-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; }
 #mini .overlay { z-index: 3; }
+/* 토끼 계단: the same frame as the acorn game, two big buttons under the canvas (turn on the left, climb on the right) */
+#stairs { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
+#stairs[hidden] { display: none; }
+#stairs .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
+#st-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; }
+#stairs .overlay { z-index: 3; }
+.st-pad { flex: none; display: flex; gap: 12px; padding: 6px 14px max(16px, env(safe-area-inset-bottom, 0px)); }
+.st-btn { flex: 1; min-width: 0; height: clamp(76px, 12vh, 104px); border: 4px solid var(--ol); border-radius: 22px; box-shadow: 0 6px 0 var(--ol); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 0; padding: 0 6px; touch-action: none; -webkit-tap-highlight-color: transparent; cursor: pointer;
+  font-family: var(--num); color: #fff; background: linear-gradient(#86e85a, #4cc22e); }
+.st-btn svg { width: 40px; height: 40px; flex: none; }
+.st-btn b { font-weight: 400; font-size: 18px; white-space: nowrap; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; letter-spacing: 0.02em; }
+.st-btn.left { background: linear-gradient(#ffc14d, #ff9a1f); }
+.st-btn.right { background: linear-gradient(#6cc8ff, #2f8ef0); }
+.st-btn.down { transform: translateY(4px); box-shadow: 0 2px 0 var(--ol); }
+html[lang="en"] .st-btn b { font-size: 17px; }
+.st-cheer { display: block; width: min(150px, 40vw); height: auto; margin: -6px auto -2px; }
+.mg-img { object-fit: contain; }
 #splash { z-index: 40; cursor: pointer; }
 .scr-bg { position: absolute; inset: -20px; background: #6fbf5a url("data:image/jpeg;base64,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") center / cover no-repeat; }
 /* the art keeps its 3:4 shape: on a phone it is a little wider than the screen (the sides crop), on a wide screen it fits the height */
@@ -642,6 +660,7 @@ html.tall-art .scr-box .ext { display: none; }
       <div class="ribbon"><h2 data-t="minis">미니게임</h2></div>
       <div class="minis-list">
         <button class="opt mg-row" id="mg-acorn" type="button"><svg class="mg-ic" viewBox="0 0 34 34" aria-hidden="true"><path d="M8.5 15.5h17c0 9-3.8 14.5-8.5 15.5-4.7-1-8.5-6.5-8.5-15.5z" fill="#c9782f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><path d="M11.4 18.5c.2 4.6 1.6 8 3.6 9.6" fill="none" stroke="#f0b066" stroke-width="2" stroke-linecap="round"/><path d="M5.5 15.6C5.5 10 10.6 7 17 7s11.5 3 11.5 8.6c0 .9-.7 1.4-1.6 1.4H7.1c-.9 0-1.6-.5-1.6-1.4z" fill="#7a4a24" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><path d="M10 12.2l3 2.4M15 10.6l3 2.6M20.4 10.8l3 2.4" stroke="#a8703f" stroke-width="1.6" stroke-linecap="round"/><path d="M17 7.2c.2-2 1.2-3.4 3-4" fill="none" stroke="#2b1a0e" stroke-width="2.4" stroke-linecap="round"/></svg><div><b data-t="acorn">도토리 받기</b><span id="mg-acorn-best"></span></div><svg class="mg-go" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13.5" fill="#5fdc3c" stroke="#2b1a0e" stroke-width="3"/><path d="M13 10.2v11.6l9.4-5.8z" fill="#fff" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg></button>
+        <button class="opt mg-row" id="mg-stairs" type="button"><img class="mg-ic mg-img" src="rabbit-idle.webp" alt=""><div><b data-t="stairs">토끼 계단</b><span id="mg-stairs-best"></span></div><svg class="mg-go" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13.5" fill="#5fdc3c" stroke="#2b1a0e" stroke-width="3"/><path d="M13 10.2v11.6l9.4-5.8z" fill="#fff" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg></button>
       </div>
       <button class="btn plain" id="btn-minis-back" type="button" data-t="toLobby">로비로</button>
     </div>
@@ -669,6 +688,36 @@ html.tall-art .scr-box .ext { display: none; }
       <p id="mini-note" class="gap" hidden></p>
       <button class="btn primary" id="btn-mini-again" type="button" data-t="again">다시 하기</button>
       <button class="btn plain" id="btn-mini-lobby" type="button" data-t="toList">목록으로</button>
+    </div>
+  </section>
+</section>
+
+<section id="stairs" class="screen" hidden aria-label="토끼 계단" data-ta="stairs">
+  <header class="hud mini-hud">
+    <div class="stat"><span class="label" data-t="score">점수</span><span id="st-score" class="num">0</span></div>
+    <button id="btn-st-pause" class="chip" type="button" aria-label="멈추고 메뉴 열기" data-ta="pause"><i class="pz" aria-hidden="true"></i><span data-t="stairsShort">계단</span></button>
+    <div class="stat best"><span class="label" data-t="best">최고</span><span id="st-best" class="num">0</span></div>
+  </header>
+  <canvas id="st-cv"></canvas>
+  <div class="st-pad">
+    <button class="st-btn left" id="st-left" type="button"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M30 20H11M19 11l-9 9 9 9" fill="none" stroke="#2b1a0e" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 20H11M19 11l-9 9 9 9" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b data-t="stLeft">왼쪽</b></button>
+    <button class="st-btn right" id="st-right" type="button"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M10 20h19M21 11l9 9-9 9" fill="none" stroke="#2b1a0e" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20h19M21 11l9 9-9 9" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b data-t="stRight">오른쪽</b></button>
+  </div>
+  <section id="st-menu" class="overlay" hidden>
+    <div class="card">
+      <div class="ribbon"><h2 data-t="paused">일시정지</h2></div>
+      <button class="btn primary" id="btn-st-resume" type="button" data-t="resume">이어서 하기</button>
+      <button class="btn plain" id="btn-st-quit" type="button" data-t="toList">목록으로</button>
+    </div>
+  </section>
+  <section id="st-over" class="overlay" hidden>
+    <div class="card">
+      <div class="ribbon"><h2 data-t="stairs">토끼 계단</h2></div>
+      <img id="st-cheer" class="st-cheer" src="rabbit-cheer.webp" alt="" hidden>
+      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="st-final" class="num">0</span></div>
+      <p id="st-note" class="gap" hidden></p>
+      <button class="btn primary" id="btn-st-again" type="button" data-t="again">다시 하기</button>
+      <button class="btn plain" id="btn-st-lobby" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
 </section>
@@ -784,7 +833,7 @@ const STR = {
     pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
     inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
     account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    stairs: '토끼 계단', stairsShort: '계단', stLeft: '왼쪽', stRight: '오른쪽', stHint: '버튼을 누르면 시작해요', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -813,7 +862,7 @@ const STR = {
     pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
     inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
     account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    stairs: 'Bunny Stairs', stairsShort: 'Stairs', stLeft: 'Left', stRight: 'Right', stHint: 'Press a button to start', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -2107,7 +2156,7 @@ function startSource() {
 }
 function musicStart(fromTop) {
   if (fromTop) SND.pos = 0;
-  if (!SND.musicOn || SND.playing || (G.state !== 'play' && MG.st !== 'play')) return;   // a game or the mini game on
+  if (!SND.musicOn || SND.playing || (G.state !== 'play' && MG.st !== 'play' && ST.st !== 'play')) return;   // a game or a mini game on
   if (!audio()) return;
   SND.playing = true;
   if (SND.buf) startSource(); else loadMusic();   // starts as soon as the file is decoded
@@ -2471,6 +2520,7 @@ function toast(msg, ms = 1600) {
    acorn tab. ---------- */
 const MINI_BEST = 'rise7-best-acorn';
 const MINI_PTS = { acorn: 100, cube: 200, gold: 500 };
+const MINI_RAMP = 300;   // s: everything gets harder until 5 minutes in (speed x4, things twice as often, more stones), then stays
 // the points went up tenfold (an acorn was 10): a best kept before that goes up with them, once
 try {
   if (!localStorage.getItem('rise7-acorn-x10')) {
@@ -2622,7 +2672,10 @@ function openMinis() {
   minisInfo();
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
 }
-function minisInfo() { $('#mg-acorn-best').textContent = tr('mgBest', miniBest().toLocaleString()); }
+function minisInfo() {
+  $('#mg-acorn-best').textContent = tr('mgBest', miniBest().toLocaleString());
+  $('#mg-stairs-best').textContent = tr('mgBest', stBest().toLocaleString());
+}
 function closeMini() {   // back to the mini games' screen
   cancelAnimationFrame(MG.raf); MG.st = 'off';
   musicStop();
@@ -2649,9 +2702,9 @@ function miniGameOver() {
 // what falls next, more of it and faster as time goes on
 function miniSpawn() {
   const g = miniGeo(), t = MG.t, rnd = Math.random();
-  const stoneP = Math.min(0.3, 0.1 + t * 0.002), goldP = 0.04, cubeP = 0.16, heartP = MG.hearts < 3 ? 0.012 : 0;
+  const stoneP = Math.min(0.3, 0.1 + t * 0.2 / MINI_RAMP), goldP = 0.04, cubeP = 0.16, heartP = MG.hearts < 3 ? 0.012 : 0;
   const k = rnd < heartP ? 'heart' : rnd < heartP + goldP ? 'gold' : rnd < heartP + goldP + stoneP ? 'stone' : rnd < heartP + goldP + stoneP + cubeP ? 'cube' : 'acorn';
-  const v = Math.min(1.375, 0.55 + t * 0.0056) * MG.H * (0.9 + Math.random() * 0.2);
+  const v = (0.55 + 1.65 * Math.min(1, t / MINI_RAMP)) * MG.H * (0.9 + Math.random() * 0.2);   // up to 4x the start
   MG.items.push({ k, x: g.r + Math.random() * (MG.W - g.r * 2), y: -g.r * 1.4, vy: v, rot: (Math.random() - 0.5) * 0.6, spin: (Math.random() - 0.5) * 2.2,
     c: 1 + Math.floor(Math.random() * COLORS.length) });
 }
@@ -2670,8 +2723,8 @@ function miniStep(dt) {
     MG.next -= dt;
     if (MG.next <= 0) {
       miniSpawn();
-      if (MG.t > 40 && Math.random() < 0.25) miniSpawn();   // two at once, later on
-      MG.next = Math.max(0.32, 0.78 - MG.t * 0.007);
+      if (Math.random() < 0.25 * Math.min(1, MG.t / MINI_RAMP)) miniSpawn();   // two at once, more and more often
+      MG.next = 0.78 - 0.46 * Math.min(1, MG.t / MINI_RAMP);
     }
   }
   const dx = MG.tx - MG.x;
@@ -2830,6 +2883,240 @@ $('#btn-mini-resume').addEventListener('click', () => { sfx('pick'); $('#mini-me
 $('#btn-mini-quit').addEventListener('click', () => { sfx('pick'); miniFinish(); closeMini(); });
 $('#btn-mini-again').addEventListener('click', () => { sfx('pick'); miniStart(); musicStart(true); });
 $('#btn-mini-lobby').addEventListener('click', () => { sfx('pick'); closeMini(); });
+
+/* ---------- mini game: 토끼 계단 (Bunny Stairs), after Infinite Stairs. The steps zigzag up; 'Left' or 'Right' hops to
+   the next step on that side. A hop to the side with no step is a hop into the air: it falls, and that is the end. The time bar runs down, faster the higher it is, and every step puts a
+   little back; when it is empty the rabbit falls too. The score is the steps climbed; the best stays on the phone. ---------- */
+const ST_BEST = 'rise7-best-stairs';
+const ST_GAIN = 0.07;   // time back per step (the bar is 1)
+const stDrain = n => Math.min(0.9, 0.18 + 0.0012 * n);   // the bar per second, at n steps (2.6 steps a second keep up at first, 6 at 200)
+const ST_HOP = 0.08;   // s, one hop
+const ST_RUNS = [1, 2, 2, 3, 3, 3, 4, 4, 5, 6];   // how many steps go the same way before the stairs turn
+// The rabbit's pictures, all at the same scale; RB_AT: where the feet are on each (for the fall, its middle). RB_H: the
+// standing picture's height, which the rabbit's height on screen is measured by.
+const RB_ART = { idle: 'rabbit-idle.webp', jump: 'rabbit-jump.webp', panic: 'rabbit-panic.webp', fall: 'rabbit-fall.webp' };
+const RB_AT = { idle: [148, 417], jump: [150, 421], panic: [190, 379], fall: [211, 257] };
+const RB_H = 420;
+const rbArt = {};
+let rbReady = null;
+function loadRabbitArt() {
+  if (!rbReady) {
+    rbReady = Promise.all(Object.keys(RB_ART).map(k => rbArt[k] ? true : new Promise(res => {
+      const im = new Image();
+      im.onload = () => { rbArt[k] = im; ST.img = null; res(true); };
+      im.onerror = () => res(false);
+      im.src = RB_ART[k];
+    })));
+    rbReady.then(ok => { if (!ok.every(Boolean)) rbReady = null; });
+  }
+  return rbReady;
+}
+const ST = { st: 'off', W: 0, H: 0, xs: [0], way: 1, left: 4, idx: 0, dir: 1, runN: 0, score: 0, best: 0, time: 1, started: false,
+  pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, jumpT: 0, fall: null, end: 0, last: 0, raf: 0, img: null };
+const scv = $('#st-cv'), sctx = scv.getContext('2d');
+function stBest() { try { return parseInt(localStorage.getItem(ST_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
+// sizes: a step's width and rise, how far down the rabbit's step sits, the rabbit's height
+function stGeo() {
+  const W = ST.W, H = ST.H, sw = Math.min(60, W * 0.14, H * 0.1), rise = sw * 0.6;
+  return { sw, rise, by: H * 0.64, rh: sw * 1.35 };
+}
+// more steps above: runs the same way, then a turn
+function stMore(n) {
+  while (ST.xs.length < n) {
+    if (ST.left <= 0) { ST.way = -ST.way; ST.left = ST_RUNS[Math.floor(Math.random() * ST_RUNS.length)]; }
+    ST.xs.push(ST.xs[ST.xs.length - 1] + ST.way); ST.left--;
+  }
+}
+// the pictures at screen size: a jelly slab for each colour, the rabbit's poses
+function stPics() {
+  const g = stGeo(), key = [ST.W, ST.H, dpr, Object.keys(rbArt).length].join('|');
+  if (ST.img && ST.img.key === key) return ST.img;
+  const th = g.rise * 1.04, k = g.rh / RB_H, P = { key, slab: [], rb: {} };
+  for (let i = 0; i < COLORS.length; i++) {
+    const base = hexRgb(COLORS[i]), lit = t => rgb(mix(base, [255, 255, 255], t)), dim = (t, al = 1) => rgb(mix(base, [0, 0, 0], t), al);
+    P.slab.push(miniPic(g.sw + 4, th + 6, x => {
+      const w = g.sw, h = th, r = Math.min(h * 0.38, 9), X = 2, Y = 1;
+      rr(x, X, Y + 3, w, h, r); x.fillStyle = 'rgba(0,0,0,0.3)'; x.fill();   // its shadow
+      rr(x, X, Y, w, h, r);
+      const gr = x.createLinearGradient(0, Y, 0, Y + h); gr.addColorStop(0, lit(0.3)); gr.addColorStop(0.5, rgb(base)); gr.addColorStop(1, dim(0.32)); x.fillStyle = gr; x.fill();
+      x.save(); rr(x, X, Y, w, h, r); x.clip();
+      const gl = x.createLinearGradient(0, Y, 0, Y + h * 0.5); gl.addColorStop(0, 'rgba(255,255,255,0.8)'); gl.addColorStop(1, 'rgba(255,255,255,0.04)');
+      x.fillStyle = gl; x.beginPath(); x.ellipse(X + w / 2, Y + h * 0.2, w * 0.42, h * 0.26, 0, 0, Math.PI * 2); x.fill();
+      x.restore();
+      x.fillStyle = 'rgba(255,255,255,0.95)'; x.beginPath(); x.arc(X + w * 0.16, Y + h * 0.3, Math.max(1.4, h * 0.08), 0, Math.PI * 2); x.fill();
+      x.lineWidth = 2.5; x.strokeStyle = MOL; rr(x, X, Y, w, h, r); x.stroke();
+    }));
+  }
+  for (const n of Object.keys(RB_ART)) if (rbArt[n]) P.rb[n] = artPic(rbArt[n], rbArt[n].naturalWidth * k, rbArt[n].naturalHeight * k);
+  P.k = k;
+  return (ST.img = P);
+}
+function stResize() {
+  const r = scv.getBoundingClientRect();
+  ST.W = Math.max(1, Math.round(r.width)); ST.H = Math.max(1, Math.round(r.height));
+  scv.width = Math.round(ST.W * dpr); scv.height = Math.round(ST.H * dpr);
+}
+function stLook() {
+  stMore(ST.idx + 10);
+  let m = 0;
+  for (let i = 1; i <= 8; i++) m += ST.xs[ST.idx + i];
+  return (ST.pos.x + m / 8) / 2;
+}
+function stHud() {
+  $('#st-score').textContent = ST.score.toLocaleString(); fitNum($('#st-score'));
+  $('#st-best').textContent = Math.max(ST.best, ST.score).toLocaleString(); fitNum($('#st-best'));
+}
+function openStairs() {
+  const el = $('#stairs');
+  el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
+  const go = () => { stStart(); musicRate(1); musicStart(true); };
+  if (RB_ART && Object.keys(RB_ART).every(k => rbArt[k])) return go();
+  Promise.race([loadRabbitArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && ST.st === 'off') go(); });
+}
+function stStart() {
+  $('#st-menu').hidden = true; $('#st-over').hidden = true;
+  stResize();
+  Object.assign(ST, { st: 'play', xs: [0], way: 1, left: 4, idx: 0, dir: 1, runN: 0, score: 0, best: stBest(), time: 1, started: false,
+    pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, jumpT: 0, fall: null, end: 0 });
+  stMore(60);
+  ST.cam.x = stLook();
+  stHud();
+  cancelAnimationFrame(ST.raf); ST.last = performance.now(); ST.raf = requestAnimationFrame(stFrame);
+}
+// one press: a hop up to the left (-1) or the right (1)
+function stStep(d) {
+  if (ST.st !== 'play') return;
+  ST.started = true;
+  const turn = d !== ST.dir;
+  ST.dir = d;
+  stMore(ST.idx + 60);
+  const from = { x: ST.pos.x, y: ST.pos.y };
+  if (ST.xs[ST.idx + 1] - ST.xs[ST.idx] !== ST.dir) {   // no step that way: into the air
+    ST.hop = { fx: from.x, fy: from.y, tx: ST.xs[ST.idx] + ST.dir, ty: ST.idx + 1, t: 0 };
+    stFall();
+    return;
+  }
+  ST.idx++; ST.score++;
+  ST.hop = { fx: from.x, fy: from.y, tx: ST.xs[ST.idx], ty: ST.idx, t: 0 };
+  ST.jumpT = 0.22;
+  ST.time = Math.min(1, ST.time + ST_GAIN);
+  ST.runN = turn ? 0 : ST.runN + 1;
+  sfx('catch', { n: ST.runN });   // up the scale while it keeps going one way
+  stHud();
+}
+function stFall() {
+  ST.st = 'dying'; ST.fall = { vy: -4, rot: 0 }; ST.end = 1.0;
+  sfx('hit'); buzz(40);
+}
+function stFinish() {
+  if (ST.st === 'over' || ST.st === 'off') return false;
+  ST.st = 'over';
+  const isBest = ST.score > stBest();
+  if (isBest) { try { localStorage.setItem(ST_BEST, String(ST.score)); } catch (e) { /* storage unavailable */ } }
+  return isBest;
+}
+function stGameOver() {
+  const isBest = stFinish();
+  musicStop();
+  sfx(isBest ? 'stage' : 'over');
+  $('#st-final').textContent = ST.score.toLocaleString();
+  const note = $('#st-note'); note.hidden = !isBest; note.textContent = tr('newBest');
+  $('#st-cheer').hidden = !isBest;
+  setTimeout(() => { if (ST.st === 'over') $('#st-over').hidden = false; }, 500);
+}
+function closeStairs() {
+  cancelAnimationFrame(ST.raf); ST.st = 'off';
+  musicStop();
+  hideScreen('stairs');
+  lobbyInfo();
+}
+function stPause() { if (ST.st !== 'play') return; ST.st = 'pause'; musicStop(); $('#st-menu').hidden = false; }
+function stFrame(now) {
+  ST.raf = requestAnimationFrame(stFrame);
+  const dt = Math.min(0.05, Math.max(0, (now - ST.last) / 1000)); ST.last = now;
+  if (ST.st === 'play' || ST.st === 'dying' || ST.st === 'over') stUpdate(dt);
+  stDraw(now);
+}
+function stUpdate(dt) {
+  if (ST.st === 'play' && ST.started) {
+    ST.time -= dt * stDrain(ST.score);
+    if (ST.time <= 0) { ST.time = 0; stFall(); }
+  }
+  if (ST.hop) {   // a quick arc from where it was shown to the new step
+    const h = ST.hop;
+    h.t += dt / ST_HOP;
+    const k = Math.min(1, h.t);
+    ST.pos.x = h.fx + (h.tx - h.fx) * k; ST.pos.y = h.fy + (h.ty - h.fy) * k + Math.sin(k * Math.PI) * 0.5;
+    if (k >= 1) ST.hop = null;
+  }
+  ST.jumpT = Math.max(0, ST.jumpT - dt);
+  if (ST.fall && !ST.hop) { ST.fall.vy += 46 * dt; ST.pos.y -= ST.fall.vy * dt; ST.fall.rot += dt * 2.2 * ST.dir; }
+  if (!ST.fall) {   // the view follows the rabbit, a little ahead to show where the stairs go (not while it falls: it falls away)
+    const a = 1 - Math.exp(-dt * 14);
+    ST.cam.x += (stLook() - ST.cam.x) * a * 0.6; ST.cam.y += (ST.pos.y - ST.cam.y) * a;
+  }
+  if (ST.st === 'dying' && (ST.end -= dt) <= 0) stGameOver();
+}
+function stDraw(now) {
+  const c = sctx, W = ST.W, H = ST.H, g = stGeo(), P = stPics();
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, W, H);
+  const X = x => W / 2 + (x - ST.cam.x) * g.sw, Y = y => g.by - (y - ST.cam.y) * g.rise;
+  // the steps on screen, top ones first so the lower ones sit in front
+  const i0 = Math.max(0, Math.floor(ST.cam.y - (H - g.by) / g.rise) - 2), i1 = Math.ceil(ST.cam.y + g.by / g.rise) + 2;
+  stMore(i1 + 2);
+  for (let i = i1; i >= i0; i--) {
+    const x = X(ST.xs[i]), y = Y(i);
+    if (x < -g.sw || x > W + g.sw) continue;
+    c.drawImage(P.slab[i % P.slab.length], x - g.sw / 2 - 2, y - 1, g.sw + 4, g.rise * 1.04 + 6);
+  }
+  // the rabbit: standing, hopping, in a hurry when time runs low, falling
+  const rx = X(ST.pos.x), ry = Y(ST.pos.y), k = P.k;
+  const pose = ST.fall && !ST.hop ? 'fall' : ST.hop || ST.jumpT > 0 ? 'jump' : ST.started && ST.time < 0.25 && ST.st === 'play' ? 'panic' : 'idle';
+  const im = P.rb[pose] || P.rb.idle;
+  if (im) {
+    const a = RB_AT[pose] || RB_AT.idle, w = im.width / dpr, h = im.height / dpr;
+    c.save(); c.translate(rx, ry);
+    if (pose === 'fall') { c.translate(0, -g.rh * 0.45); c.rotate(ST.fall.rot); c.scale(ST.dir, 1); c.drawImage(im, -a[0] * k, -a[1] * k, w, h); }
+    else { if (pose !== 'idle') c.scale(ST.dir, 1); c.drawImage(im, -a[0] * k, -a[1] * k, w, h); }
+    c.restore();
+  }
+  // the steps fade out under the top bar and above the buttons (no slivers of steps cut at the edges)
+  c.save(); c.globalCompositeOperation = 'destination-out';
+  const fade = c.createLinearGradient(0, 0, 0, 56); fade.addColorStop(0, 'rgba(0,0,0,1)'); fade.addColorStop(0.45, 'rgba(0,0,0,0.85)'); fade.addColorStop(1, 'rgba(0,0,0,0)');
+  c.fillStyle = fade; c.fillRect(0, 0, W, 56);
+  const low = c.createLinearGradient(0, H - 30, 0, H); low.addColorStop(0, 'rgba(0,0,0,0)'); low.addColorStop(1, 'rgba(0,0,0,1)');   // and above the buttons
+  c.fillStyle = low; c.fillRect(0, H - 30, W, 30); c.restore();
+  // the time bar, under the top bar
+  const bw = Math.min(W * 0.7, 300), bh = 18, bx = (W - bw) / 2, byy = 12, f = Math.max(0, Math.min(1, ST.time));
+  rr(c, bx, byy + 3, bw, bh, bh / 2); c.fillStyle = 'rgba(0,0,0,0.3)'; c.fill();
+  rr(c, bx, byy, bw, bh, bh / 2); c.fillStyle = '#fff6dc'; c.fill();
+  if (f > 0) {
+    c.save(); rr(c, bx, byy, bw, bh, bh / 2); c.clip();
+    c.fillStyle = f > 0.5 ? '#6fd13f' : f > 0.25 ? '#ffc93c' : '#ff5a4a'; c.fillRect(bx, byy, bw * f, bh);
+    c.fillStyle = 'rgba(255,255,255,0.4)'; c.fillRect(bx, byy + 2, bw * f, bh * 0.3);
+    c.restore();
+  }
+  rr(c, bx, byy, bw, bh, bh / 2); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
+  if (!ST.started && ST.st === 'play') miniText(c, tr('stHint'), W / 2, Y(ST.pos.y) - g.rh - 34, Math.min(22, W * 0.056), SUB_LOOK, now);
+}
+for (const [id, d] of [['#st-left', -1], ['#st-right', 1]]) {
+  const b = $(id);
+  b.addEventListener('pointerdown', e => { e.preventDefault(); b.classList.add('down'); stStep(d); });
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, () => b.classList.remove('down'));
+}
+addEventListener('keydown', e => {
+  if (ST.st !== 'play' || e.repeat) return;
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { stStep(e.key === 'ArrowLeft' ? -1 : 1); e.preventDefault(); }
+});
+addEventListener('resize', () => { if (ST.st !== 'off') { stResize(); ST.img = null; } });
+document.addEventListener('visibilitychange', () => { if (document.hidden && ST.st === 'play') stPause(); });
+$('#mg-stairs').addEventListener('click', () => { sfx('pick'); openStairs(); });
+$('#btn-st-pause').addEventListener('click', () => { sfx('pick'); stPause(); });
+$('#btn-st-resume').addEventListener('click', () => { sfx('pick'); $('#st-menu').hidden = true; ST.st = 'play'; ST.last = performance.now(); musicStart(false); });
+$('#btn-st-quit').addEventListener('click', () => { sfx('pick'); stFinish(); closeStairs(); });
+$('#btn-st-again').addEventListener('click', () => { sfx('pick'); stStart(); musicStart(true); });
+$('#btn-st-lobby').addEventListener('click', () => { sfx('pick'); closeStairs(); });
 
 $('#splash').addEventListener('click', e => {
   if ($('#splash').classList.contains('out') || !$('#login').hidden || !$('#nick').hidden) return;
@@ -4172,7 +4459,7 @@ new ResizeObserver(() => layout()).observe(stage);
 function snapshot() { return { G: JSON.parse(JSON.stringify(G)), menuMode, menuSize }; }
 function start(data) {
   readColors();
-  loadItemArt(); loadSquirrelArt(); fetchSfx();
+  loadItemArt(); loadSquirrelArt(); loadRabbitArt(); fetchSfx();
   try { document.fonts.load(`40px ${FANCY}`); } catch (e) { /* the fallback font is used until it loads */ }
   layout();
   if (data && data.G && data.G.grid && data.G.size && data.G.phase !== undefined) {
@@ -4208,7 +4495,8 @@ window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude
 window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY, itemH }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending || !!pendingItem, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
                   items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), startVersus, VS_BOTS, mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
-                  sound: { SND, sfx, scoreFor, wireAudio, BGM_LOOP, SFXB, SFX_AT, musicStart, musicStop } };
+                  sound: { SND, sfx, scoreFor, wireAudio, BGM_LOOP, SFXB, SFX_AT, musicStart, musicStop },
+                  stairs: { ST, step: d => stStep(d), geo: stGeo, more: stMore, open: openStairs, drain: stDrain, look: stLook } };
 })();
 </script>
 </body>
