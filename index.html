@@ -2206,7 +2206,7 @@ const MUSIC = {
   acorn: [[1, 1336230], [2, 1194480], [3, 1071630], [4, 958230]].map(([k, e]) => ({ url: `bgm-acorn-catch-${k}.mp3`, loop: [13230, e] })),
   stairs: [[1, 1357230], [2, 1213230], [3, 1088430], [4, 973230]].map(([k, e]) => ({ url: `bgm-bunny-stairs-${k}.mp3`, loop: [13230, e] })),
   merge: [{ url: 'bgm-fruit-merge.mp3', loop: [13230, 2553390] }],
-  pebble: [{ url: 'bgm-pebble-brook.mp3', loop: [13230, 1641538] }],
+  pebble: [{ url: 'bgm-pebble-ska.mp3', loop: [13230, 1424430] }],
 };
 const MUSIC_VOL = 0.45;
 SND.track = 'main'; SND.lvl = 0; SND.bufs = {}; SND.loads = {}; SND.posOf = {};
@@ -3772,6 +3772,7 @@ const PB_V = 18;   // pebble speed, cells a second
 const PB_EVERY = 0.03;   // s between two pebbles of a throw
 const PB_HIT = 10;   // points a hit
 const PB_MIN = 0.14;   // the flattest throw (radians over the bank)
+const PB_IDLE = 0.6, PB_FF = 6;   // all thrown and nothing hit for this long (s): the rest speed up quickly, to this many times
 const PB_STEPS = [0, 2, 4, 7, 9];   // a block's knocks walk down the scale as its number drops
 const PB_ART = { aim: 'otter-aim.webp', throw: 'otter-throw.webp', cry: 'otter-cry.webp', joy: 'otter-joy.webp' };
 // where the otter stands on each picture (the middle of its belly, its soles; all four are drawn at one scale) and where
@@ -3797,7 +3798,7 @@ function loadPebbleArt() {
 }
 const PB = { st: 'off', W: 0, H: 0, phase: 'aim', turn: 1, count: 1, gained: 0, x0: 3.5, nextX: null, blocks: [], items: [], grid: [],
   balls: [], drops: [], launched: 0, launchT: 0, flyT: 0, shiftT: 0, aim: null, keyAim: false, th: Math.PI / 2, face: 1, ox: 3.5,
-  throwT: 0, score: 0, best: 0, sparks: [], hudDirty: false, lastHit: 0, lastBreak: 0, lastThrow: 0, raf: 0, last: 0, img: null };
+  throwT: 0, idleT: 0, ff: 1, score: 0, best: 0, sparks: [], hudDirty: false, lastHit: 0, lastBreak: 0, lastThrow: 0, raf: 0, last: 0, img: null };
 const pcv = $('#pb-cv'), pbctx = pcv.getContext('2d');
 function pbBest() { try { return parseInt(localStorage.getItem(PB_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
 // sizes on screen: the cell (s), the field (left L, top T, right R, bank B), the frame, the otter's scale (k)
@@ -3935,12 +3936,15 @@ function pbFace(f) {
 }
 function pbShoot() {
   if (PB.st !== 'play' || PB.phase !== 'aim') return;
-  Object.assign(PB, { phase: 'fly', balls: [], drops: [], launched: 0, launchT: 0, flyT: 0, nextX: null, gained: 0, throwT: 0.25, keyAim: false, aim: null });
+  Object.assign(PB, { phase: 'fly', balls: [], drops: [], launched: 0, launchT: 0, flyT: 0, nextX: null, gained: 0, throwT: 0.25, keyAim: false, aim: null, idleT: 0, ff: 1 });
 }
 function pbFly(dt) {
   PB.flyT += dt;
-  // a long turn speeds up, and one that goes on and on ends: the pebbles left sink to the bank
-  const m = PB.flyT < 6 ? 1 : PB.flyT < 10 ? 1.6 : PB.flyT < 15 ? 2.2 : 3, T = dt * m, sink = PB.flyT > 30;
+  // the last pebbles bouncing about with nothing more to hit: once all are thrown and nothing has been hit for a moment,
+  // the rest go quickly faster (and stay fast to the end of the turn). A long turn speeds up anyway, and one that goes
+  // on and on ends: the pebbles left sink to the bank
+  if (PB.launched >= PB.count && (PB.idleT += dt) > PB_IDLE) PB.ff = Math.max(PB.ff, Math.min(PB_FF, 1 + (PB.idleT - PB_IDLE) * 8));
+  const m = Math.max(PB.ff, PB.flyT < 6 ? 1 : PB.flyT < 10 ? 1.6 : PB.flyT < 15 ? 2.2 : 3), T = dt * m, sink = PB.flyT > 30;
   const [x0, y0] = pbFrom(), [dx, dy] = pbThrowDir(PB.th), now = performance.now();
   const n = Math.max(1, Math.ceil(T * PB_V / 0.08)), h = T / n;
   for (let i = 0; i < n; i++) {
@@ -4002,7 +4006,7 @@ function pbStep(b, h) {
   pbBank(b);
 }
 function pbHit(k) {
-  k.hp--; k.flash = 0.12;
+  k.hp--; k.flash = 0.12; PB.idleT = 0;
   PB.score += PB_HIT; PB.hudDirty = true;
   const now = performance.now();
   if (k.hp <= 0) { pbBreak(k); return; }
@@ -4020,7 +4024,7 @@ function pbBreak(k) {
 }
 function pbCollect(it) {
   it.dead = true; PB.grid[it.row * PB_C + it.c] = null;
-  PB.gained++;
+  PB.gained++; PB.idleT = 0;
   PB.drops.push({ x: it.c + 0.5, y: it.row + 0.5, vy: 0, st: 'fall', rot: 0 });
   const g = pbGeo(), x = pbX(g, it.c + 0.5), y = pbY(g, it.row + 0.5);
   for (let i = 0; i < 8; i++) {
