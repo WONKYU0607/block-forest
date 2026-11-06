@@ -970,7 +970,7 @@ const STR = {
     versus: '대결', vsSub: '5분 점수 대결', blank: '빈 칸',
     vsStart: '대결 시작!', vsOpp: n => `상대 ${n}`, vsWin: '승리!', vsLose: '패배', vsDraw: '무승부', vsTimeUp: '시간 종료!', vsQuit: '대결에서 나갔어요',
     vsMe: '나', vsAgain: '다시 대결', vsNoItems: '대결에서는 아이템을 쓸 수 없어요', vsResult: '대결 결과',
-    lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bell: '골든벨', bestOf: n => `최고 점수 · ${n}칸`, bestAll: '최고 점수', pickSize: '판 크기를 먼저 골라 주세요', start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요',
+    lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bell: '골든벨', bestOf: n => `최고 점수 · ${n}칸`, bestAll: '최고 점수', pickSize: '판 크기를 먼저 골라 주세요', start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요', backExit: '한 번 더 누르면 나가요',
     splash: '시작 화면', touch: '화면을 터치하세요',
     login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…', loginAsk: '대결 기록과 최고 점수를 계정에 저장해요',
     loginErr: '연결할 수 없어요. 인터넷 연결을 확인해 주세요.', loginBlocked: '로그인 창이 막혔어요. 다시 눌러 주세요.',
@@ -999,7 +999,7 @@ const STR = {
     versus: 'Versus', vsSub: '5-min duel', blank: 'Empty slot',
     vsStart: 'Versus!', vsOpp: n => `vs ${n}`, vsWin: 'You Win!', vsLose: 'You Lose', vsDraw: 'Draw', vsTimeUp: "Time's up!", vsQuit: 'You left the match',
     vsMe: 'You', vsAgain: 'Play again', vsNoItems: "Items can't be used in versus", vsResult: 'Versus result',
-    lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bell: 'Golden Bell', bestOf: n => `Best · ${n} Wide`, bestAll: 'Best', pickSize: 'Pick a board size first', start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon',
+    lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bell: 'Golden Bell', bestOf: n => `Best · ${n} Wide`, bestAll: 'Best', pickSize: 'Pick a board size first', start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon', backExit: 'Press back again to leave',
     splash: 'Title screen', touch: 'Touch to Start',
     login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…', loginAsk: 'Your versus records and bests are saved to your account',
     loginErr: "Can't connect. Check your internet connection.", loginBlocked: 'The sign-in window was blocked. Tap again.',
@@ -6429,6 +6429,63 @@ function start(data) {
 window.claude?.hot?.snapshot?.(snapshot);
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 
+/* ---------- the phone's back button. Chrome's back leaves the page unless the page has history entries of its own, so
+   the game keeps some: one for each layer on screen (lobby 1, a game or the games list 2, a mini game 3, a card or menu
+   over any of them 1 more) and, past the lobby, 2 spare. A back press takes one entry and does one step back in the game:
+   closes a card, pauses a game (a paused one goes on), leaves a finished game or the list. In the lobby it says "press
+   again to leave" and drops the page's entries, so the next press leaves. Chrome skips entries a page adds without a tap
+   since the last back press (they would let a page trap the back button), so entries are only ever added after a tap;
+   spares cover the back presses in between (pause, go on, pause...). ---------- */
+const BK = { act: false, ignore: 0 };
+const bkHave = () => (history.state && history.state.bf) || 0;
+const bkVis = id => { const el = $('#' + id); return !!el && !el.hidden && !el.classList.contains('out'); };
+// the mini games: screen, pause menu, end card, and the buttons that pause, go on and leave
+const BK_MINI = [['mini', 'mini'], ['stairs', 'st'], ['merge', 'fm'], ['pebble', 'pb'], ['mushroom', 'ms'], ['owlpost', 'op']];
+function bkWant() {
+  if (bkVis('splash')) return 0;
+  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || bkVis(k + '-over')) ? 4 : 3;   // over the list, over the lobby
+  if (bkVis('minis')) return 2;
+  if (bkVis('lobby')) return (bkVis('settings') || bkVis('rank') || bkVis('vspick')) ? 2 : 1;
+  return 2 + ((bkVis('menu') || bkVis('over') || bkVis('vsover')) ? 1 : 0) + (bkVis('settings') ? 1 : 0);
+}
+function bkSync() {
+  if (!BK.act || BK.ignore) return;
+  const want = bkWant(), target = want >= 2 ? want + 2 : want;
+  for (let have = bkHave(); have < target; have++) history.pushState({ bf: have + 1 }, '');
+}
+function bkBack() {
+  const press = id => { const b = $('#' + id); if (b && !b.hidden) b.click(); };
+  if (bkVis('settings')) return press('btn-settings-close');
+  if (bkVis('rank')) return press('btn-rank-close');
+  if (bkVis('vspick')) return press('btn-pick-close');
+  for (const [scr, k] of BK_MINI) if (bkVis(scr)) {
+    if (bkVis(k + '-over')) return press(`btn-${k}-lobby`);
+    if (bkVis(k + '-menu')) return press(`btn-${k}-resume`);
+    return press(`btn-${k}-pause`);
+  }
+  if (bkVis('minis')) return press('btn-minis-back');
+  if (bkVis('splash')) return;
+  if (bkVis('lobby')) {
+    toast(tr('backExit'));
+    const h = bkHave();
+    if (h > 0) { BK.ignore++; history.go(-h); }   // back to the page's first entry: the next press leaves
+    return;
+  }
+  if (bkVis('over')) return press('btn-menu');
+  if (bkVis('vsover')) return press('btn-vs-lobby');
+  if (bkVis('menu')) return press('btn-unpause');
+  press('btn-pause');
+}
+addEventListener('popstate', () => {
+  BK.act = false;   // Chrome only lets a page add entries again after a new tap
+  if (BK.ignore) { BK.ignore--; return; }
+  bkBack();
+});
+// a real tap or key (not the clicks bkBack makes): entries may be added again (after the tap's own handlers have changed
+// the screen)
+for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener(ev, e => { if (!e.isTrusted) return; BK.act = true; setTimeout(bkSync, 0); }, true);
+setInterval(bkSync, 300);   // cards that open by themselves (a game ending) get their entry too
+
 // read-only hooks for automated checks
 window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY, itemH }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending || !!pendingItem, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
@@ -6438,6 +6495,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   owlpost: { OP, geo: opGeo, open: openOwlPost, send: opSend, PALS: OP_PALS, GIFTS: OP_GIFTS, T0: OP_T0, LOSE: OP_LOSE, SWAP_AT: OP_SWAP_AT },
                   mushroom: { MS, geo: msGeo, start: msStart, open: openMushroom, tap: msTap, undo: msUndo, solve: msSolve, deal: msDeal, round: msRound, K: MS_K, can: msCan, full: msFull },
                   pebble: { PB, geo: pbGeo, open: openPebble, shoot: pbShoot, aimAt: pbAimAt, step: pbStep, grid: pbGrid, newRow: pbNewRow, fly: pbFly, end: pbEndTurn, col: pbCol, BR: PB_BR, C: PB_C, R: PB_R },
+                  back: { BK, want: bkWant, have: bkHave, back: bkBack },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
 </script>
