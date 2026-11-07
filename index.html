@@ -578,6 +578,7 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 #bfpick { z-index: 4; }
 /* a game's opening card (first places and my best) and the ranking card */
 #rkintro { z-index: 33; }
+.screen.rk-wait > * { visibility: hidden; }   /* the game waits behind its start card: only its background shows */
 #rkb { z-index: 37; }
 #rkb .rank-tabs { grid-template-columns: 1fr 1fr; }
 #rkb #rkb-sizes[hidden] { display: none; }
@@ -758,7 +759,7 @@ html.tall-art .scr-box .ext { display: none; }
       <div class="ribbon"><h2 data-t="title">미니게임 포레스트</h2></div>
       <div class="minis-list">
         <button class="opt mg-row" id="mg-block" type="button"><svg class="mg-ic" viewBox="0 0 34 34" aria-hidden="true"><g stroke="#2b1a0e" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="17" width="9" height="9" rx="2" fill="#ffd23f"/><rect x="12" y="17" width="9" height="9" rx="2" fill="#e9483b"/><rect x="12" y="8" width="9" height="9" rx="2" fill="#4fa3ff"/><rect x="21" y="17" width="9" height="9" rx="2" fill="#6ccf4f"/><rect x="21" y="8" width="9" height="9" rx="2" fill="#b46cf0"/></g><path d="M5 19.5h4M14 19.5h4M14 10.5h4M23 19.5h4M23 10.5h4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/></svg><div><b data-t="blockGame">블록 포레스트</b><span id="mg-block-best"></span></div></button>
-        <button class="opt mg-row" id="mg-acorn" type="button"><svg class="mg-ic" viewBox="0 0 34 34" aria-hidden="true"><path d="M8.5 15.5h17c0 9-3.8 14.5-8.5 15.5-4.7-1-8.5-6.5-8.5-15.5z" fill="#c9782f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><path d="M11.4 18.5c.2 4.6 1.6 8 3.6 9.6" fill="none" stroke="#f0b066" stroke-width="2" stroke-linecap="round"/><path d="M5.5 15.6C5.5 10 10.6 7 17 7s11.5 3 11.5 8.6c0 .9-.7 1.4-1.6 1.4H7.1c-.9 0-1.6-.5-1.6-1.4z" fill="#7a4a24" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><path d="M10 12.2l3 2.4M15 10.6l3 2.6M20.4 10.8l3 2.4" stroke="#a8703f" stroke-width="1.6" stroke-linecap="round"/><path d="M17 7.2c.2-2 1.2-3.4 3-4" fill="none" stroke="#2b1a0e" stroke-width="2.4" stroke-linecap="round"/></svg><div><b data-t="acorn">도토리 받기</b><span id="mg-acorn-best"></span></div></button>
+        <button class="opt mg-row" id="mg-acorn" type="button"><img class="mg-ic mg-img" src="mini-squirrel.webp" alt=""><div><b data-t="acorn">도토리 받기</b><span id="mg-acorn-best"></span></div></button>
         <button class="opt mg-row" id="mg-stairs" type="button"><img class="mg-ic mg-img" src="rabbit-idle.webp" alt=""><div><b data-t="stairs">토끼 계단</b><span id="mg-stairs-best"></span></div></button>
         <button class="opt mg-row" id="mg-merge" type="button"><img class="mg-ic mg-img" src="raccoon-hold.webp" alt=""><div><b data-t="merge">과일 합치기</b><span id="mg-merge-best"></span></div></button>
         <button class="opt mg-row" id="mg-pebble" type="button"><img class="mg-ic mg-img" src="otter-aim.webp" alt=""><div><b data-t="pebble">조약돌 깨기</b><span id="mg-pebble-best"></span></div></button>
@@ -1140,8 +1141,8 @@ html.tall-art .scr-box .ext { display: none; }
     <div class="ribbon"><h2 id="rki-name"></h2></div>
     <div class="rk-pic" id="rki-pic" aria-hidden="true"></div>
     <div class="rk-recs">
-      <div class="rk-rec top"><span class="lab" data-t="rkTop">1위</span><b class="nm" id="rki-top-nm"></b><span class="sc num" id="rki-top"></span></div>
-      <div class="rk-rec week"><span class="lab" data-t="rkWeekTop">이번 주 1위</span><b class="nm" id="rki-wk-nm"></b><span class="sc num" id="rki-wk"></span></div>
+      <div class="rk-rec top"><span class="lab" data-t="rkAllTop">전체 1위</span><b class="nm" id="rki-top-nm"></b><span class="sc num" id="rki-top"></span></div>
+      <div class="rk-rec week"><span class="lab" data-t="rkWeekTop">주간 1위</span><b class="nm" id="rki-wk-nm"></b><span class="sc num" id="rki-wk"></span></div>
       <div class="rk-rec me"><span class="lab" data-t="rkMine">내 최고</span><b class="nm" id="rki-me-rank"></b><span class="sc num" id="rki-me"></span></div>
     </div>
     <button class="btn primary" id="btn-rki-go" type="button" data-t="start">게임 시작</button>
@@ -1154,7 +1155,7 @@ html.tall-art .scr-box .ext { display: none; }
     <div class="ribbon"><h2 data-t="rank">순위표</h2></div>
     <p class="rkb-game" id="rkb-game"></p>
     <div class="opts rank-tabs" id="rkb-sizes"><button class="opt" id="rkb-32" type="button"><b>32칸</b></button><button class="opt" id="rkb-16" type="button"><b>16칸</b></button></div>
-    <div class="opts rank-tabs"><button class="opt" id="rkb-all" type="button"><b data-t="rkAll">역대</b></button><button class="opt" id="rkb-week" type="button"><b data-t="rkWeek">이번 주</b></button></div>
+    <div class="opts rank-tabs"><button class="opt" id="rkb-all" type="button"><b data-t="rkAll">전체</b></button><button class="opt" id="rkb-week" type="button"><b data-t="rkWeek">주간</b></button></div>
     <div id="rkb-list" class="pick-list rank-list"></div>
     <button class="btn plain" id="btn-rkb-close" type="button" data-t="close">닫기</button>
   </div>
@@ -1209,7 +1210,7 @@ const STR = {
     pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
     inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
     account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '고슴도치 가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cpHint: '밀어서 방향 바꾸기', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', cuPick: '도토리는 어디?', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkWeekTop: '이번 주 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '역대', rkWeek: '이번 주', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '고슴도치 가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cpHint: '누른 쪽으로 기어가요', cpRule: '긴 애벌레가 짧은 애벌레를 먹어요', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', cuPick: '도토리는 어디?', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkAllTop: '전체 1위', rkWeekTop: '주간 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '전체', rkWeek: '주간', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -1238,7 +1239,7 @@ const STR = {
     pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
     inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
     account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Caterpillar Munch', caterpillarShort: 'Munch', cpHint: 'Swipe to turn', cups: 'Acorn Cups', cupsShort: 'Cups', cuPick: 'Where is the acorn?', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkWeekTop: "This week's 1st", rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'All-time', rkWeek: 'This week', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Caterpillar Munch', caterpillarShort: 'Munch', cpHint: 'Touch where to crawl', cpRule: 'The longer one eats the shorter', cups: 'Acorn Cups', cupsShort: 'Cups', cuPick: 'Where is the acorn?', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkAllTop: 'Overall 1st', rkWeekTop: 'Weekly 1st', rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'Overall', rkWeek: 'Weekly', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -3440,6 +3441,7 @@ async function rkTops(games, period = 'all') {
 }
 // a mini game opens on its card; Start plays (go), the ranking card, or back to the list
 let rkGame = null, rkGo = null, rkN = 0;
+const rkUnwait = () => { for (const e of document.querySelectorAll('.rk-wait')) e.classList.remove('rk-wait'); };
 function rkGate(game, go) {
   rkGame = game; rkGo = go;
   const scr = $('#' + RK_SCREEN[game][0]);
@@ -3449,6 +3451,7 @@ function rkGate(game, go) {
   $('#rki-pic').replaceChildren(...(ic ? [ic.cloneNode(true)] : []));
   $('#rki-me').textContent = RK_LOCAL[game]().toLocaleString(); $('#rki-me-rank').textContent = '';
   for (const id of ['top', 'wk']) { $(`#rki-${id}-nm`).textContent = tr('loading'); $(`#rki-${id}`).textContent = ''; }
+  rkUnwait(); scr.classList.add('rk-wait');
   $('#rkintro').hidden = false;
   rkIntroFill(game);
 }
@@ -3463,8 +3466,8 @@ async function rkIntroFill(game) {
   const mine = RK_LOCAL[game]();
   if (me && me.score >= mine) { $('#rki-me').textContent = me.score.toLocaleString(); $('#rki-me-rank').textContent = tr('rkPlace', me.rank); }
 }
-function rkStart() { $('#rkintro').hidden = true; const go = rkGo; rkGo = null; if (go) go(); }
-function rkLeave() { $('#rkintro').hidden = true; rkGo = null; if (rkGame && RK_SCREEN[rkGame]) RK_SCREEN[rkGame][1](); }
+function rkStart() { $('#rkintro').hidden = true; rkUnwait(); const go = rkGo; rkGo = null; if (go) go(); }
+function rkLeave() { $('#rkintro').hidden = true; rkUnwait(); rkGo = null; if (rkGame && RK_SCREEN[rkGame]) RK_SCREEN[rkGame][1](); }
 $('#btn-rki-go').addEventListener('click', () => { sfx('pick'); rkStart(); });
 $('#btn-rki-rank').addEventListener('click', () => { sfx('pick'); rkBoard(rkGame); });
 $('#btn-rki-close').addEventListener('click', () => { sfx('pick'); rkLeave(); });
@@ -6363,31 +6366,32 @@ $('#btn-hh-resume').addEventListener('click', () => { sfx('pick'); $('#hh-menu')
 $('#btn-hh-quit').addEventListener('click', () => { sfx('pick'); hhFinish(); closeHedgehog(); });
 $('#btn-hh-again').addEventListener('click', () => { sfx('pick'); hhStart(); });
 $('#btn-hh-lobby').addEventListener('click', () => { sfx('pick'); closeHedgehog(); });
-/* ---------- mini game: 애벌레 잎 먹기 (Caterpillar Munch). A caterpillar crawls a mossy board square by square. Swipe to
-   turn it. Each leaf eaten makes it a segment longer (100) and a little faster; now and then a berry shows for a few
-   seconds (300, two segments). Into the board's edge or its own body, the game is over. ---------- */
+/* ---------- mini game: 애벌레 잎 먹기 (Caterpillar Munch). Caterpillars crawl a round meadow, bending as they go. The
+   player's always sits in the middle of the screen and heads toward where the finger is (let go, it keeps on that way).
+   Each leaf eaten makes a caterpillar a segment longer (10 points for the player's). When two touch, the longer eats the
+   shorter and grows by half of it (10 a segment); of the same length, they bounce off. The others look for leaves, go
+   after shorter ones and keep away from longer ones; new ones keep coming, some longer than the player (they frown;
+   shorter ones look worried). Eaten, the game is over. The meadow's edge stops a caterpillar but does not hurt it. ---------- */
 const CP_BEST = 'rise7-best-caterpillar';
-const CP_PTS = 100, CP_BERRY = 300, CP_BERRY_T = 6;   // a leaf; a berry; s a berry stays
-const CP_SWIPE = 18;   // px a finger moves before it counts as a swipe
-// body: squares, head first; from: where each segment was a step ago (drawn sliding between); dir: the way it goes;
-// queue: turns swiped ahead (up to two); started: it waits for the first swipe
-const CP = { st: 'off', W: 0, H: 0, cols: 13, rows: 20, body: [], from: [], dir: [0, -1], queue: [], step: 0.16, acc: 0, started: false,
-  leaf: null, berry: null, eaten: 0, grow: 0, score: 0, best: 0, pops: [], sparks: [], dead: 0, shake: 0, raf: 0, last: 0 };
+const CP_PTS = 10;                     // a segment the player's grows
+const CP_R = 1150;                     // the meadow's radius, in world units (the screen is about 390 wide)
+const CP_SPEED = 150, CP_TURN = 4.2;   // units a second; turning, radians a second at most
+const CP_LEN0 = 8, CP_MAX = 400, CP_LEAVES = 110, CP_BOTS = 9;
+// body, body (every other segment), head; the first is the player's
+const CP_COLORS = [['#7fd457', '#9be36d', '#a8ea7a'], ['#ff9f43', '#ffbe76', '#ffc98f'], ['#ff6b9a', '#ff9bbb', '#ffadc8'], ['#5bb8ff', '#8ccfff', '#a4dbff'],
+  ['#b18cff', '#cbb2ff', '#d6c2ff'], ['#ffc933', '#ffe07a', '#ffe894'], ['#3fc9bb', '#7fe0d6', '#9de9e1']];
+// worms: every caterpillar ({ me, segs: points head first, a: heading, aim: where it turns to, grow: segments to come,
+// col, speed, think: s to its next look round, bump: s it cannot bounce again, alive }); me: the player's; leaves; cam:
+// the view (centre and zoom); started: it waits for the first touch; dead: s since the player's was eaten; ghosts: eaten
+// ones going into their eaters' mouths
+const CP = { st: 'off', W: 0, H: 0, worms: [], leaves: [], me: null, started: false, score: 0, best: 0, t: 0, next: 0,
+  cam: { x: 0, y: 0, z: 1 }, pops: [], sparks: [], ghosts: [], shake: 0, dead: 0, raf: 0, last: 0 };
+const CP_GULP = 0.4;   // s an eaten one takes to go into the eater's mouth
 const cpcv = $('#cp-cv'), cpctx = cpcv.getContext('2d');
 function cpBest() { try { return parseInt(localStorage.getItem(CP_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
-// the board's squares for this screen (fixed for a game); cells about 31px on a phone
-function cpSize(W, H) {
-  const cols = Math.max(10, Math.min(14, Math.round((Math.min(W, 520) - 44) / 31)));
-  const cell = (Math.min(W, 520) - 44) / cols;
-  return [cols, Math.max(12, Math.floor((H - 30 - 24) / cell))];
-}
-function cpGeo() {
-  const W = CP.W, H = CP.H, inner = 8, cols = CP.cols, rows = CP.rows;
-  const cell = Math.min((Math.min(W, 520) - 28 - 2 * inner) / cols, (H - 30 - 2 * inner) / rows);
-  const bw = cols * cell + 2 * inner, bh = rows * cell + 2 * inner;
-  return { W, H, cell, inner, cols, rows, bw, bh, x: Math.round((W - bw) / 2), y: Math.round(10 + (H - 20 - bh) / 2) };
-}
-const cpAt = (g, cx, cy) => [g.x + g.inner + (cx + 0.5) * g.cell, g.y + g.inner + (cy + 0.5) * g.cell];
+const cpRad = n => 13 + 9 * (1 - Math.exp(-Math.max(0, n - CP_LEN0) / 70));   // a body's radius by its length
+const cpLen = w => w.segs.length + w.grow;
+const cpAng = d => Math.atan2(Math.sin(d), Math.cos(d));
 function cpResize() {
   const r = cpcv.getBoundingClientRect();
   CP.W = Math.max(1, Math.round(r.width)); CP.H = Math.max(1, Math.round(r.height));
@@ -6397,70 +6401,166 @@ function cpHud() {
   $('#cp-score').textContent = CP.score.toLocaleString(); fitNum($('#cp-score'));
   $('#cp-best').textContent = Math.max(CP.best, CP.score).toLocaleString(); fitNum($('#cp-best'));
 }
-// an empty square for a leaf or a berry, not right in front of the head
-function cpFree() {
-  const taken = new Set(CP.body.map(([x, y]) => x + ',' + y));
-  if (CP.leaf) taken.add(CP.leaf.join(','));
-  if (CP.berry) taken.add(CP.berry.x + ',' + CP.berry.y);
-  const [hx, hy] = CP.body[0], spots = [];
-  for (let y = 0; y < CP.rows; y++) for (let x = 0; x < CP.cols; x++) if (!taken.has(x + ',' + y) && Math.abs(x - hx) + Math.abs(y - hy) > 2) spots.push([x, y]);
-  return spots.length ? spots[Math.floor(Math.random() * spots.length)] : null;
+// a caterpillar of n segments with its head at (x, y) going a; stacked (it uncurls as it goes) or laid out straight back
+function cpWormNew(x, y, a, n, col, me, straight) {
+  const w = { me, segs: [], a, aim: a, grow: 0, col, speed: 1, think: Math.random() * 0.3, bump: 0, gt: 0, alive: true };
+  const gap = cpRad(n) * 0.5;
+  for (let i = 0; i < n; i++) w.segs.push(straight ? { x: x - Math.cos(a) * gap * i, y: y - Math.sin(a) * gap * i } : { x, y });
+  return w;
+}
+const cpSpot = edge => { const r = Math.sqrt(Math.random()) * (CP_R - edge), t = Math.random() * Math.PI * 2; return [Math.cos(t) * r, Math.sin(t) * r]; };
+// how far from the middle of the screen the view reaches, in world units
+const cpSight = () => Math.hypot(CP.W, CP.H) / 2 / CP.cam.z;
+// another caterpillar, out of sight: about a third longer than the player's, the rest shorter
+function cpSpawnBot(big) {
+  const P = CP.me ? cpLen(CP.me) : CP_LEN0;
+  if (big === undefined) big = Math.random() < 0.35;
+  const n = Math.min(CP_MAX, Math.round(big ? P * (1.15 + Math.random() * 0.5) + 2 : Math.max(4, P * (0.35 + Math.random() * 0.55))));
+  for (let k = 0; k < 60; k++) {
+    const [x, y] = cpSpot(150), h = CP.me && CP.me.segs[0];
+    if (h && Math.hypot(x - h.x, y - h.y) < cpSight() + 120) continue;
+    if (CP.worms.some(o => o.alive && Math.hypot(x - o.segs[0].x, y - o.segs[0].y) < 200)) continue;
+    const w = cpWormNew(x, y, Math.random() * Math.PI * 2, n, 1 + Math.floor(Math.random() * (CP_COLORS.length - 1)), false, false);
+    w.speed = 0.88 + Math.random() * 0.08;
+    CP.worms.push(w);
+    return w;
+  }
+  return null;
+}
+const cpLeafNew = () => { const [x, y] = cpSpot(40); return { x, y, rot: Math.random() * Math.PI * 2, s: 0 }; };
+function cpCamera(dt) {
+  const h = CP.me.segs[0], z = Math.min(CP.W, 520) / 390 * Math.max(0.55, 1 - (CP.me.segs.length - CP_LEN0) * 0.0035);
+  if (CP.me.alive) { CP.cam.x = h.x; CP.cam.y = h.y; }
+  CP.cam.z += (z - CP.cam.z) * (dt < 0 ? 1 : 1 - Math.exp(-dt * 2));
 }
 function openCaterpillar() {
   const el = $('#caterpillar');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
-  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('cpHint') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('cpHint') + tr('cpRule') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   rkGate('caterpillar', cpStart);
 }
 function cpStart() {
   $('#cp-menu').hidden = true; $('#cp-over').hidden = true;
   cpResize();
-  [CP.cols, CP.rows] = cpSize(CP.W, CP.H);
-  const x = Math.floor(CP.cols / 2), y = Math.floor(CP.rows * 0.7);
-  Object.assign(CP, { st: 'play', body: [[x, y], [x, y + 1], [x, y + 2]], dir: [0, -1], queue: [], step: 0.16, acc: 0, started: false, leaf: null, berry: null,
-    eaten: 0, grow: 0, score: 0, best: cpBest(), pops: [], sparks: [], dead: 0, shake: 0 });
-  CP.from = CP.body.map(p => p.slice());
-  CP.leaf = cpFree();
+  Object.assign(CP, { st: 'play', worms: [], leaves: [], started: false, score: 0, best: cpBest(), t: 0, next: 0, pops: [], sparks: [], ghosts: [], shake: 0, dead: 0 });
+  CP.me = cpWormNew(0, 0, -Math.PI / 2, CP_LEN0, 0, true, true);
+  CP.worms.push(CP.me);
+  cpCamera(-1);
+  for (let i = 0; i < CP_LEAVES; i++) { const l = cpLeafNew(); l.s = 1; CP.leaves.push(l); }
+  for (let i = 0; i < CP_BOTS; i++) cpSpawnBot(i < 3);   // three longer ones to begin with
+  cpTouch = null;
   cpHud();
   cancelAnimationFrame(CP.raf); CP.last = performance.now(); CP.raf = requestAnimationFrame(cpFrame);
 }
-// a swipe: turn (not straight back on itself); the first one sets it going
-function cpTurn(d) {
-  if (CP.st !== 'play') return;
-  const last = CP.queue.length ? CP.queue[CP.queue.length - 1] : CP.dir;
-  if (d[0] === -last[0] && d[1] === -last[1]) return;
-  if (!CP.started) { CP.started = true; CP.acc = 0; }
-  if (d[0] === last[0] && d[1] === last[1]) return;
-  if (CP.queue.length < 2) CP.queue.push(d);
+// a caterpillar of the others: every so often it looks round. A longer one near: away from it; else a shorter one's head
+// near: after it (a little ahead of it); else the nearest leaf; and back from the edge
+function cpThink(w, dt) {
+  if ((w.think -= dt) > 0) return;
+  w.think = 0.18 + Math.random() * 0.14;
+  const h = w.segs[0], n = cpLen(w), r = cpRad(n);
+  let away = null, fd = 90 + r * 5;
+  for (const o of CP.worms) {
+    if (o === w || !o.alive || cpLen(o) <= n) continue;
+    for (let i = 0; i < o.segs.length; i += 2) { const s = o.segs[i], d = Math.hypot(s.x - h.x, s.y - h.y); if (d < fd) { fd = d; away = s; } }
+  }
+  if (away) w.aim = Math.atan2(h.y - away.y, h.x - away.x);
+  else {
+    let prey = null, pd = 280;
+    for (const o of CP.worms) { if (o === w || !o.alive || cpLen(o) >= n) continue; const s = o.segs[0], d = Math.hypot(s.x - h.x, s.y - h.y); if (d < pd) { pd = d; prey = o; } }
+    if (prey) { const s = prey.segs[0]; w.aim = Math.atan2(s.y + Math.sin(prey.a) * 40 - h.y, s.x + Math.cos(prey.a) * 40 - h.x); }
+    else {
+      let leaf = null, ld = 360;
+      for (const l of CP.leaves) { const d = Math.hypot(l.x - h.x, l.y - h.y); if (d < ld) { ld = d; leaf = l; } }
+      w.aim = leaf ? Math.atan2(leaf.y - h.y, leaf.x - h.x) : w.a + (Math.random() - 0.5) * 1.2;
+    }
+  }
+  if (Math.hypot(h.x, h.y) > CP_R - 170) w.aim = Math.atan2(-h.y, -h.x) + (Math.random() - 0.5) * 0.9;
 }
-// one square on
-function cpStep() {
-  if (CP.queue.length) CP.dir = CP.queue.shift();
-  const old = CP.body.map(p => p.slice()), [hx, hy] = old[0], nx = hx + CP.dir[0], ny = hy + CP.dir[1];
-  if (nx < 0 || ny < 0 || nx >= CP.cols || ny >= CP.rows) return cpDie();
-  const growing = CP.grow > 0, rest = growing ? old : old.slice(0, -1);   // the tail moves on out of the way, unless growing
-  if (rest.some(([x, y]) => x === nx && y === ny)) return cpDie();
-  CP.body.unshift([nx, ny]);
-  if (growing) CP.grow--; else CP.body.pop();
-  CP.from = CP.body.map((p, i) => (i === 0 ? old[0] : old[i - 1]).slice());
-  const g = cpGeo(), [px, py] = cpAt(g, nx, ny);
-  if (CP.leaf && CP.leaf[0] === nx && CP.leaf[1] === ny) {
-    CP.score += CP_PTS; CP.eaten++; CP.grow++; cpHud();
-    CP.step = Math.max(0.085, 0.16 - 0.0025 * CP.eaten);
-    CP.pops.push({ text: '+' + CP_PTS, x: px, y: py - g.cell * 0.8, t: 0, life: 0.6, size: 18, look: SCORE_LOOK });
-    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; CP.sparks.push({ x: px, y: py, vx: Math.cos(a) * 120, vy: Math.sin(a) * 120 - 40, t: 0, life: 0.4, c: k % 2 ? '#d8ffb0' : '#6fdc4a', s: 2.6 }); }
-    CP.leaf = cpFree();
-    if (CP.eaten % 5 === 0 && !CP.berry) { const b = cpFree(); if (b) CP.berry = { x: b[0], y: b[1], t: CP_BERRY_T }; }
-    gsfx('cpEat', semi(Math.min(7, CP.eaten % 8)), 'pick');
-  } else if (CP.berry && CP.berry.x === nx && CP.berry.y === ny) {
-    CP.score += CP_BERRY; CP.grow += 2; CP.berry = null; cpHud();
-    CP.pops.push({ text: '+' + CP_BERRY, x: px, y: py - g.cell * 0.8, t: 0, life: 0.8, size: 22, look: GOLD_LOOK });
-    for (let k = 0; k < 10; k++) { const a = k * Math.PI / 5; CP.sparks.push({ x: px, y: py, vx: Math.cos(a) * 170, vy: Math.sin(a) * 170 - 50, t: 0, life: 0.5, c: k % 2 ? '#fff6c8' : '#ff4d6a', s: 3 }); }
-    gsfx('cpBerry', 1, 'rot');
+// turn toward its aim, go on, slide along the edge, grow at the tail, the body following the head round its bends
+function cpMove(w, dt) {
+  const turn = CP_TURN * dt, d = cpAng(w.aim - w.a);
+  w.a = cpAng(w.a + Math.max(-turn, Math.min(turn, d)));
+  const n = w.segs.length, v = CP_SPEED * w.speed * (1 - Math.min(0.18, (n - CP_LEN0) * 0.0015)), h = w.segs[0];
+  h.x += Math.cos(w.a) * v * dt; h.y += Math.sin(w.a) * v * dt;
+  const r = Math.hypot(h.x, h.y), lim = CP_R - cpRad(n);
+  if (r > lim) {
+    h.x *= lim / r; h.y *= lim / r;
+    const out = Math.atan2(h.y, h.x), dd = cpAng(w.a - out);
+    if (Math.abs(dd) < Math.PI / 2) w.a = cpAng(out + (dd >= 0 ? 1 : -1) * Math.PI / 2);
+  }
+  if (w.grow > 0 && (w.gt += dt) >= 0.04) {
+    w.gt = 0; w.grow--;
+    if (w.segs.length < CP_MAX) { const t = w.segs[w.segs.length - 1]; w.segs.push({ x: t.x, y: t.y }); }
+  }
+  const gap = cpRad(w.segs.length) * 0.5;
+  for (let i = 1; i < w.segs.length; i++) {
+    const p = w.segs[i - 1], s = w.segs[i], dx = s.x - p.x, dy = s.y - p.y, L = Math.hypot(dx, dy);
+    if (L > gap) { s.x = p.x + dx / L * gap; s.y = p.y + dy / L * gap; }
+  }
+  if (w.bump > 0) w.bump -= dt;
+}
+function cpBurst(x, y, k, sp, c1, c2, s) {
+  for (let i = 0; i < k; i++) { const a = i * Math.PI * 2 / k; CP.sparks.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 30, t: 0, life: 0.45, c: i % 2 ? c1 : c2, s }); }
+}
+function cpEatLeaves() {
+  for (const w of CP.worms) {
+    if (!w.alive) continue;
+    const h = w.segs[0], reach = cpRad(w.segs.length) + 11;
+    for (let i = CP.leaves.length - 1; i >= 0; i--) {
+      const l = CP.leaves[i];
+      if (Math.abs(l.x - h.x) > reach || Math.abs(l.y - h.y) > reach || Math.hypot(l.x - h.x, l.y - h.y) > reach) continue;
+      CP.leaves.splice(i, 1); w.grow++;
+      if (w.me) {
+        CP.score += CP_PTS; cpHud();
+        CP.pops.push({ text: '+' + CP_PTS, x: l.x, y: l.y - 22, t: 0, life: 0.55, size: 17, look: SCORE_LOOK });
+        cpBurst(l.x, l.y, 6, 110, '#d8ffb0', '#6fdc4a', 2.4);
+        gsfx('cpEat', semi((CP.score / CP_PTS) % 8), 'pick');
+      }
+    }
   }
 }
+// a body's box this frame, to skip most of it quickly
+function cpBox(w) {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const s of w.segs) { if (s.x < x0) x0 = s.x; if (s.x > x1) x1 = s.x; if (s.y < y0) y0 = s.y; if (s.y > y1) y1 = s.y; }
+  return w.box = [x0, y0, x1, y1];
+}
+// a head touching another caterpillar anywhere: the longer eats the shorter; the same length, the one that ran in turns back
+function cpMeet() {
+  const ws = CP.worms.filter(w => w.alive);
+  for (const w of ws) cpBox(w);
+  for (const a of ws) {
+    for (const b of ws) {
+      if (CP.st !== 'play') return;
+      if (b === a || !a.alive || !b.alive) continue;
+      const h = a.segs[0], reach = cpRad(a.segs.length) + cpRad(b.segs.length) * 0.85, bx = b.box;
+      if (h.x < bx[0] - reach || h.x > bx[2] + reach || h.y < bx[1] - reach || h.y > bx[3] + reach) continue;
+      let hit = false;
+      for (const s of b.segs) { const dx = s.x - h.x, dy = s.y - h.y; if (dx * dx + dy * dy < reach * reach) { hit = true; break; } }
+      if (!hit) continue;
+      const na = cpLen(a), nb = cpLen(b);
+      if (na > nb) cpGulp(a, b);
+      else if (nb > na) cpGulp(b, a);
+      else if (a.bump <= 0) { a.a = cpAng(a.a + Math.PI); a.aim = a.a; a.bump = 0.5; gsfx('cpBump', 1, 'land'); }
+    }
+  }
+}
+// the eater grows by half the eaten one
+function cpGulp(eater, food) {
+  food.alive = false;
+  const gain = Math.ceil(food.segs.length / 2), pal = CP_COLORS[food.col], h = food.segs[0], e = eater.segs[0];
+  eater.grow += gain;
+  CP.ghosts.push({ segs: food.segs.map(q => ({ x: q.x, y: q.y })), a: food.a, col: food.col, n: food.segs.length, t: 0, eater, at: { x: e.x, y: e.y } });
+  cpBurst(e.x, e.y, 8, 140, pal[1], '#fff6c8', 3.4);
+  if (eater.me) {
+    CP.score += gain * CP_PTS; cpHud();
+    CP.pops.push({ text: '+' + (gain * CP_PTS).toLocaleString(), x: h.x, y: h.y - 34, t: 0, life: 0.9, size: 24, look: GOLD_LOOK });
+    gsfx('cpGulp', 1, 'rot'); buzz(25);
+  }
+  if (food.me) cpDie();
+}
 function cpDie() {
-  CP.dead = 1; CP.shake = 0.35;
+  CP.dead = 0.0001; CP.shake = 0.35;
   buzz([40, 30, 60]);
   cpGameOver();
 }
@@ -6478,7 +6578,7 @@ function cpGameOver() {
   $('#cp-final').textContent = CP.score.toLocaleString();
   const note = $('#cp-note'); note.hidden = !isBest; note.textContent = tr('newBest');
   $('#cp-face').src = isBest ? CP_FACE.joy : CP_FACE.sad;
-  setTimeout(() => { if (CP.st === 'over') $('#cp-over').hidden = false; }, 900);
+  setTimeout(() => { if (CP.st === 'over') $('#cp-over').hidden = false; }, 1100);
   gsfx(isBest ? 'cpBest' : 'cpOver', 1, isBest ? 'stage' : 'over');
 }
 function closeCaterpillar() {
@@ -6495,20 +6595,37 @@ function cpFrame(now) {
   cpDraw(now);
 }
 function cpUpdate(dt) {
-  if (CP.st === 'play' && CP.started) {
-    CP.acc += dt;
-    while (CP.st === 'play' && CP.acc >= CP.step) { CP.acc -= CP.step; cpStep(); }
-    if (CP.berry && (CP.berry.t -= dt) <= 0) CP.berry = null;
+  const live = CP.st === 'play' && CP.started;
+  if (live || CP.st === 'over') {   // after the player's is eaten the others go on crawling
+    if (live) CP.t += dt;
+    for (const w of CP.worms) if (w.alive) { if (!w.me) cpThink(w, dt); cpMove(w, dt); }
+    if (live) { cpEatLeaves(); cpMeet(); }
+    CP.worms = CP.worms.filter(w => w.alive || w.me);
+    if (live) {
+      while (CP.leaves.length < CP_LEAVES) CP.leaves.push(cpLeafNew());
+      const want = CP_BOTS + Math.min(5, Math.floor(CP.t / 40));   // one more every 40 s, up to 14
+      if ((CP.next -= dt) <= 0 && CP.worms.length - 1 < want) { cpSpawnBot(); CP.next = 1.5; }
+    }
   }
+  cpCamera(dt);
+  for (const l of CP.leaves) if (l.s < 1) l.s = Math.min(1, l.s + dt * 2.5);
+  if (CP.dead > 0) CP.dead += dt;
+  for (const gh of CP.ghosts) {
+    gh.t += dt;
+    if (gh.eater.alive) { gh.at.x = gh.eater.segs[0].x; gh.at.y = gh.eater.segs[0].y; }
+    const k = 1 - Math.exp(-dt * 9);
+    for (const q of gh.segs) { q.x += (gh.at.x - q.x) * k; q.y += (gh.at.y - q.y) * k; }
+  }
+  CP.ghosts = CP.ghosts.filter(gh => gh.t < CP_GULP);
   if (CP.shake > 0) CP.shake = Math.max(0, CP.shake - dt);
-  for (const p of CP.sparks) { p.t += dt; p.vy += 600 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+  for (const p of CP.sparks) { p.t += dt; p.vy += 500 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
   CP.sparks = CP.sparks.filter(p => p.t < p.life);
   for (const p of CP.pops) p.t += dt;
   CP.pops = CP.pops.filter(p => p.t < p.life);
 }
-// a leaf in a square (r: about half a square), swaying a little
-function cpLeaf(c, x, y, r, t) {
-  c.save(); c.translate(x, y); c.rotate(-0.6 + Math.sin(t / 500 + x) * 0.08);
+// a leaf (r: about half its length), swaying a little
+function cpLeaf(c, x, y, r, t, rot = -0.6) {
+  c.save(); c.translate(x, y); c.rotate(rot + Math.sin(t / 500 + x) * 0.08);
   c.beginPath(); c.moveTo(-r, 0); c.bezierCurveTo(-r * 0.6, -r * 0.95, r * 0.5, -r * 0.8, r, 0); c.bezierCurveTo(r * 0.5, r * 0.8, -r * 0.6, r * 0.95, -r, 0); c.closePath();
   const g = c.createLinearGradient(0, -r, 0, r); g.addColorStop(0, '#8fe36a'); g.addColorStop(1, '#3fa33a');
   c.fillStyle = g; c.fill(); c.lineWidth = 2; c.strokeStyle = MOL; c.stroke();
@@ -6516,109 +6633,128 @@ function cpLeaf(c, x, y, r, t) {
   c.beginPath(); c.moveTo(-r, 0); c.lineTo(-r * 1.25, r * 0.12); c.lineWidth = 2; c.strokeStyle = MOL; c.stroke();
   c.restore();
 }
-function cpBerry(c, x, y, r, left) {
-  const blink = left < 2 && Math.sin(left * 18) < 0;   // its last two seconds: blinking
-  if (blink) return;
-  hhBerry(c, x, y + r * 0.1, r * 0.8);
-}
-// the caterpillar: one outline round the whole body first, then the segments tail to head (stripes, a line where each
-// one meets the next), the head with eyes looking where it goes and two feelers
-function cpWorm(c, g, f, now) {
-  const n = CP.body.length, r = g.cell * 0.5, pts = [];
-  for (let i = 0; i < n; i++) {
-    const [ax, ay] = cpAt(g, CP.from[i][0], CP.from[i][1]), [bx, by] = cpAt(g, CP.body[i][0], CP.body[i][1]);
-    pts.push([ax + (bx - ax) * f, ay + (by - ay) * f]);
-  }
-  const rad = i => (i === 0 ? r * 1.12 : r * (i === n - 1 ? 0.78 : 0.94 - 0.1 * (i / n)));
+// a caterpillar: one outline round the whole body first, then the segments tail to head (two colours, a shine), the head
+// with feelers and eyes toward where it goes. face: '' (the player's), 'mad' (longer than the player's), 'shy' (shorter),
+// 'dead'. view: [x0, y0, x1, y1] to leave out what is off screen
+function cpDrawWorm(c, w, face, view) {
+  const n = w.segs.length, r = cpRad(n), pal = CP_COLORS[w.col], segs = w.segs;
+  const rad = i => (i === 0 ? r * 1.12 : r * Math.max(0.55, 0.96 - 0.4 * (i / n) * (i / n)));
+  const seen = (s, q) => !view || (s.x > view[0] - q && s.x < view[2] + q && s.y > view[1] - q && s.y < view[3] + q);
   c.fillStyle = MOL;
-  for (let i = n - 1; i >= 0; i--) { c.beginPath(); c.arc(pts[i][0], pts[i][1], rad(i) + 2.6, 0, Math.PI * 2); c.fill(); }
+  for (let i = n - 1; i >= 0; i--) { const s = segs[i]; if (!seen(s, r * 2)) continue; c.beginPath(); c.arc(s.x, s.y, rad(i) + 2.6, 0, Math.PI * 2); c.fill(); }
   for (let i = n - 1; i >= 1; i--) {
-    const [x, y] = pts[i], rr2 = rad(i);
-    c.beginPath(); c.arc(x, y, rr2, 0, Math.PI * 2); c.fillStyle = i % 2 ? '#7fd457' : '#9be36d'; c.fill();
-    c.lineWidth = 1.4; c.strokeStyle = 'rgba(30,70,15,0.45)'; c.stroke();
-    c.beginPath(); c.arc(x - rr2 * 0.25, y - rr2 * 0.3, rr2 * 0.32, 0, Math.PI * 2); c.fillStyle = 'rgba(255,255,255,0.28)'; c.fill();
+    const s = segs[i], q = rad(i);
+    if (!seen(s, r * 2)) continue;
+    c.beginPath(); c.arc(s.x, s.y, q, 0, Math.PI * 2); c.fillStyle = pal[i % 2 ? 0 : 1]; c.fill();
+    c.beginPath(); c.arc(s.x - q * 0.25, s.y - q * 0.3, q * 0.32, 0, Math.PI * 2); c.fillStyle = 'rgba(255,255,255,0.28)'; c.fill();
   }
-  const [hx, hy] = pts[0], hr = rad(0), [dx, dy] = CP.dir, dead = CP.dead > 0;
+  const h = segs[0];
+  if (!seen(h, r * 3)) return;
+  const hr = rad(0), dx = Math.cos(w.a), dy = Math.sin(w.a);
   for (const s of [-1, 1]) {   // the feelers, behind the head, toward where it goes
-    const px = -dy * s, py = dx * s, ex = hx + (dx * 0.6 + px * 0.75) * hr * 1.6, ey = hy + (dy * 0.6 + py * 0.75) * hr * 1.6;
-    c.beginPath(); c.moveTo(hx + px * hr * 0.4, hy + py * hr * 0.4); c.quadraticCurveTo(hx + (dx * 0.2 + px) * hr * 1.3, hy + (dy * 0.2 + py) * hr * 1.3, ex, ey);
+    const px = -dy * s, py = dx * s, ex = h.x + (dx * 0.6 + px * 0.75) * hr * 1.6, ey = h.y + (dy * 0.6 + py * 0.75) * hr * 1.6;
+    c.beginPath(); c.moveTo(h.x + px * hr * 0.4, h.y + py * hr * 0.4); c.quadraticCurveTo(h.x + (dx * 0.2 + px) * hr * 1.3, h.y + (dy * 0.2 + py) * hr * 1.3, ex, ey);
     c.lineWidth = 2.2; c.strokeStyle = MOL; c.stroke();
     c.beginPath(); c.arc(ex, ey, hr * 0.2, 0, Math.PI * 2); c.fillStyle = '#ffb347'; c.fill(); c.lineWidth = 1.6; c.stroke();
   }
-  c.beginPath(); c.arc(hx, hy, hr, 0, Math.PI * 2); c.fillStyle = '#a8ea7a'; c.fill(); c.lineWidth = 2.6; c.strokeStyle = MOL; c.stroke();
-  for (const s of [-1, 1]) {   // eyes, on the side it goes
-    const px = -dy * s, py = dx * s, ex = hx + (dx * 0.28 + px * 0.42) * hr, ey = hy + (dy * 0.28 + py * 0.42) * hr;
-    if (dead) { c.beginPath(); c.moveTo(ex - hr * 0.16, ey - hr * 0.16); c.lineTo(ex + hr * 0.16, ey + hr * 0.16); c.moveTo(ex + hr * 0.16, ey - hr * 0.16); c.lineTo(ex - hr * 0.16, ey + hr * 0.16); c.lineWidth = 2; c.strokeStyle = MOL; c.stroke(); continue; }
+  c.beginPath(); c.arc(h.x, h.y, hr, 0, Math.PI * 2); c.fillStyle = pal[2]; c.fill(); c.lineWidth = 2.6; c.strokeStyle = MOL; c.stroke();
+  for (const s of [-1, 1]) {   // eyes on the side it goes, and brows: down to the middle (mad) or up (shy)
+    const px = -dy * s, py = dx * s, ex = h.x + (dx * 0.28 + px * 0.42) * hr, ey = h.y + (dy * 0.28 + py * 0.42) * hr;
+    if (face === 'dead') { const k = hr * 0.16; c.beginPath(); c.moveTo(ex - k, ey - k); c.lineTo(ex + k, ey + k); c.moveTo(ex + k, ey - k); c.lineTo(ex - k, ey + k); c.lineWidth = 2; c.strokeStyle = MOL; c.stroke(); continue; }
     c.beginPath(); c.arc(ex, ey, hr * 0.26, 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill(); c.lineWidth = 1.6; c.strokeStyle = MOL; c.stroke();
     c.beginPath(); c.arc(ex + dx * hr * 0.1, ey + dy * hr * 0.1, hr * 0.13, 0, Math.PI * 2); c.fillStyle = MOL; c.fill();
+    if (face === 'mad' || face === 'shy') {   // "up" on the face is where it goes: the inner end lower (mad) or higher (shy)
+      const bx = ex + dx * hr * 0.42, by = ey + dy * hr * 0.42, tilt = face === 'mad' ? -0.16 : 0.16;
+      c.beginPath();
+      c.moveTo(bx + px * hr * 0.28 - dx * hr * tilt, by + py * hr * 0.28 - dy * hr * tilt);
+      c.lineTo(bx - px * hr * 0.24 + dx * hr * tilt, by - py * hr * 0.24 + dy * hr * tilt);
+      c.lineWidth = 3.4; c.lineCap = 'round'; c.strokeStyle = MOL; c.stroke(); c.lineCap = 'butt';
+    }
   }
   c.fillStyle = 'rgba(255,120,120,0.5)';
-  for (const s of [-1, 1]) { const px = -dy * s, py = dx * s; c.beginPath(); c.arc(hx + (px * 0.62 - dx * 0.1) * hr, hy + (py * 0.62 - dy * 0.1) * hr, hr * 0.15, 0, Math.PI * 2); c.fill(); }
+  for (const s of [-1, 1]) { const px = -dy * s, py = dx * s; c.beginPath(); c.arc(h.x + (px * 0.62 - dx * 0.1) * hr, h.y + (py * 0.62 - dy * 0.1) * hr, hr * 0.15, 0, Math.PI * 2); c.fill(); }
 }
+// a little random number for a grass tuft at (i, j), the same every frame
+const cpHash = (i, j) => { const v = Math.sin(i * 127.1 + j * 311.7) * 43758.5453; return v - Math.floor(v); };
 function cpDraw(now) {
-  const c = cpctx, g = cpGeo();
+  const c = cpctx, W = CP.W, H = CP.H, cam = CP.cam, z = cam.z;
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  c.clearRect(0, 0, CP.W, CP.H);
-  if (CP.shake > 0) c.translate(Math.sin(now / 18) * 7 * CP.shake / 0.35, 0);
-  // the board: a mossy panel with faint squares
-  rr(c, g.x + 3, g.y + 5, g.bw, g.bh, 16); c.fillStyle = 'rgba(0,0,0,0.22)'; c.fill();
-  rr(c, g.x, g.y, g.bw, g.bh, 16);
-  const bg = c.createLinearGradient(0, g.y, 0, g.y + g.bh); bg.addColorStop(0, '#4b8a3f'); bg.addColorStop(1, '#2f6a2e');
-  c.fillStyle = bg; c.fill();
-  c.fillStyle = 'rgba(255,255,255,0.05)';
-  for (let y = 0; y < g.rows; y++) for (let x = (y % 2); x < g.cols; x += 2) c.fillRect(g.x + g.inner + x * g.cell, g.y + g.inner + y * g.cell, g.cell, g.cell);
-  rr(c, g.x, g.y, g.bw, g.bh, 16); c.lineWidth = 3.5; c.strokeStyle = MOL; c.stroke();
-  if (CP.leaf) { const [x, y] = cpAt(g, CP.leaf[0], CP.leaf[1]); cpLeaf(c, x, y, g.cell * 0.5, now); }
-  if (CP.berry) { const [x, y] = cpAt(g, CP.berry.x, CP.berry.y); cpBerry(c, x, y, g.cell * 0.42, CP.berry.t); }
-  const f = CP.started && CP.st === 'play' ? Math.min(1, CP.acc / CP.step) : 1;
-  cpWorm(c, g, f, now);
-  if (!CP.started && CP.st === 'play') {   // how to play, until the first swipe
-    const a = 0.65 + 0.35 * Math.sin(now / 260);
-    c.save(); c.globalAlpha = a; miniText(c, tr('cpHint'), CP.W / 2, g.y + g.bh * 0.3, 26, SUB_LOOK, now); c.restore();
+  c.fillStyle = '#244c22'; c.fillRect(0, 0, W, H);
+  const sx = CP.shake > 0 ? Math.sin(now / 18) * 7 * CP.shake / 0.35 : 0;
+  c.setTransform(dpr * z, 0, 0, dpr * z, dpr * (W / 2 - cam.x * z + sx), dpr * (H / 2 - cam.y * z));
+  const view = [cam.x - W / 2 / z, cam.y - H / 2 / z, cam.x + W / 2 / z, cam.y + H / 2 / z];
+  // the meadow: grass with tufts that pass by as it moves, a hedge round the edge
+  c.beginPath(); c.arc(0, 0, CP_R, 0, Math.PI * 2); c.fillStyle = '#4f9a43'; c.fill();
+  const G = 64;
+  for (let i = Math.floor(view[0] / G) - 1; i <= Math.ceil(view[2] / G); i++) for (let j = Math.floor(view[1] / G) - 1; j <= Math.ceil(view[3] / G); j++) {
+    const x = (i + cpHash(i, j)) * G, y = (j + cpHash(j, i)) * G;
+    if (x * x + y * y > (CP_R - 14) * (CP_R - 14)) continue;
+    const k = cpHash(i + 7, j - 3);
+    if (k < 0.55) { c.beginPath(); c.ellipse(x, y, 7 + k * 6, 4 + k * 3, 0, 0, Math.PI * 2); c.fillStyle = k < 0.28 ? '#5aa84c' : '#46903b'; c.fill(); }
+    else if (k < 0.75) { c.beginPath(); c.moveTo(x - 5, y + 3); c.lineTo(x - 2, y - 6); c.lineTo(x, y + 3); c.lineTo(x + 3, y - 7); c.lineTo(x + 5, y + 3); c.fillStyle = '#3d8433'; c.fill(); }
   }
+  c.beginPath(); c.arc(0, 0, CP_R + 14, 0, Math.PI * 2); c.lineWidth = 28; c.strokeStyle = '#2f6a2b'; c.stroke();
+  c.beginPath(); c.arc(0, 0, CP_R, 0, Math.PI * 2); c.lineWidth = 4; c.strokeStyle = MOL; c.stroke();
+  c.beginPath(); c.arc(0, 0, CP_R + 28, 0, Math.PI * 2); c.lineWidth = 4; c.stroke();
+  for (const l of CP.leaves) if (l.x > view[0] - 20 && l.x < view[2] + 20 && l.y > view[1] - 20 && l.y < view[3] + 20) cpLeaf(c, l.x, l.y, 12 * ease(l.s), now, l.rot);
+  // the others, shorter first (so a longer one passes over), then the player's
+  const me = CP.me, mine = cpLen(me), others = CP.worms.filter(w => !w.me && w.alive).sort((a, b) => a.segs.length - b.segs.length);
+  for (const w of others) cpDrawWorm(c, w, cpLen(w) > mine ? 'mad' : cpLen(w) < mine ? 'shy' : '', view);
+  if (me.alive) cpDrawWorm(c, me, '', view);
+  for (const gh of CP.ghosts) { c.save(); c.globalAlpha = Math.max(0, 1 - gh.t / CP_GULP); cpDrawWorm(c, gh, 'dead', view); c.restore(); }
   for (const p of CP.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
   c.globalAlpha = 1;
+  // points over where they came from, at screen size
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
   for (const p of CP.pops) {
-    const q = p.t / p.life;
+    const q = p.t / p.life, x = (p.x - cam.x) * z + W / 2 + sx, y = (p.y - cam.y) * z + H / 2;
     c.save(); c.globalAlpha = q > 0.7 ? (1 - q) / 0.3 : 1;
     const hw = textImg(p.text, p.size, p.look, false).w * 0.6 + 6;
-    c.translate(Math.max(hw, Math.min(CP.W - hw, p.x)), p.y - q * 26); const sc = popScale(p.t * 1000); c.scale(sc, sc);
+    c.translate(Math.max(hw, Math.min(W - hw, x)), y - q * 26); const sc = popScale(p.t * 1000); c.scale(sc, sc);
     miniText(c, p.text, 0, 0, p.size, p.look, now);
     c.restore();
   }
+  if (!CP.started && CP.st === 'play') {   // how to play, until the first touch
+    const a = 0.65 + 0.35 * Math.sin(now / 260);
+    c.save(); c.globalAlpha = a;
+    miniText(c, tr('cpHint'), W / 2, H * 0.72, 24, SUB_LOOK, now);
+    miniText(c, tr('cpRule'), W / 2, H * 0.72 + 34, 18, SUB_LOOK, now);
+    c.restore();
+  }
 }
-// its picture for the games list and the end card (until the drawn art comes): a short caterpillar curled round a leaf
+// its picture for the games list and the end card (until the drawn art comes): a caterpillar curled round a leaf
 function cpPortrait(sad) {
   const cv = document.createElement('canvas'), k = 3; cv.width = 120 * k; cv.height = 110 * k;
   const c = cv.getContext('2d'); c.scale(k, k);
-  const save = { body: CP.body, from: CP.from, dir: CP.dir, dead: CP.dead };
-  const g = { x: 0, y: 0, inner: 0, cell: 26 };
-  CP.body = [[3, 1], [3, 2], [2, 2], [1, 2], [1, 3]]; CP.from = CP.body; CP.dir = [0, -1]; CP.dead = sad ? 1 : 0;
-  c.translate(2, 6); cpLeaf(c, 30, 30, 14, 0); cpWorm(c, g, 1, 0);
-  Object.assign(CP, save);
+  const n = 15, w = cpWormNew(0, 0, 0, n, 0, true, false), gap = cpRad(n) * 0.5, R = 31, cx = 60, cy = 58, a0 = 0.15;
+  for (let i = 0; i < n; i++) { const t = a0 + Math.PI * 1.25 - i * gap / R; w.segs[i] = { x: cx + Math.cos(t) * R, y: cy + Math.sin(t) * R }; }
+  w.a = a0 + Math.PI * 1.25 + Math.PI / 2;
+  cpLeaf(c, cx, cy + 2, 17, 0);
+  cpDrawWorm(c, w, sad ? 'dead' : '', null);
   return cv.toDataURL('image/png');
 }
 const CP_FACE = {};
 try { CP_FACE.joy = cpPortrait(false); CP_FACE.sad = cpPortrait(true); $('#mg-caterpillar img').src = CP_FACE.joy; $('#cp-face').src = CP_FACE.sad; } catch (e) { /* no canvas */ }
-// swipes: each time a finger has moved far enough one way, that is a turn (one long drag can turn twice)
+// the finger: the player's turns toward it (from the head, in the middle of the screen); the first touch sets all going
 let cpTouch = null;
+function cpAimAt(e) {
+  const r = cpcv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, h = CP.me.segs[0];
+  const hx = (h.x - CP.cam.x) * CP.cam.z + CP.W / 2, hy = (h.y - CP.cam.y) * CP.cam.z + CP.H / 2;
+  if (Math.hypot(x - hx, y - hy) > 4) CP.me.aim = Math.atan2(y - hy, x - hx);
+}
 cpcv.addEventListener('pointerdown', e => {
   if (CP.st !== 'play') return;
-  e.preventDefault(); cpTouch = { id: e.pointerId, x: e.clientX, y: e.clientY };
+  e.preventDefault(); cpTouch = { id: e.pointerId };
   try { cpcv.setPointerCapture(e.pointerId); } catch (er) { /* not capturable */ }
+  if (!CP.started) { CP.started = true; CP.last = performance.now(); }
+  cpAimAt(e);
 });
-cpcv.addEventListener('pointermove', e => {
-  if (!cpTouch || e.pointerId !== cpTouch.id) return;
-  const dx = e.clientX - cpTouch.x, dy = e.clientY - cpTouch.y;
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < CP_SWIPE) return;
-  cpTurn(Math.abs(dx) > Math.abs(dy) ? [Math.sign(dx), 0] : [0, Math.sign(dy)]);
-  cpTouch.x = e.clientX; cpTouch.y = e.clientY;
-});
+cpcv.addEventListener('pointermove', e => { if (cpTouch && e.pointerId === cpTouch.id && CP.st === 'play') cpAimAt(e); });
 for (const ev of ['pointerup', 'pointercancel']) cpcv.addEventListener(ev, () => { cpTouch = null; });
-addEventListener('keydown', e => {
+addEventListener('keydown', e => {   // on a keyboard: left and right turn it
   if (CP.st !== 'play') return;
-  const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[e.key];
-  if (d) { cpTurn(d); e.preventDefault(); }
+  const d = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+  if (d) { CP.started = true; CP.me.aim = cpAng(CP.me.a + d * 1.2); e.preventDefault(); }
 });
 addEventListener('resize', () => { if (CP.st !== 'off') cpResize(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && CP.st === 'play') cpPause(); });
@@ -6671,11 +6807,19 @@ function cuHud() {
   $('#cu-score').textContent = CU.score.toLocaleString(); fitNum($('#cu-score'));
   $('#cu-best').textContent = Math.max(CU.best, CU.score).toLocaleString(); fitNum($('#cu-best'));
 }
-// a round: how many cups, where the acorn is, the swaps (more, faster, sometimes two pairs at once later on)
-function cuRound(r) {
+// a round: how many cups, where the acorn is, the swaps (more, faster, sometimes two pairs at once later on). After an
+// answer (keep), the cups stay where the last round left them and the acorn under the cup it was under (a new cup, at rounds 5
+// and 10, comes in at the right end); that cup is still up from the answer, so it shows the acorn without dropping first
+function cuRound(r, keep = false) {
+  const again = keep && CU.cups.length > 0 && CU.ac < CU.cups.length, up = again && CU.ph === 'reveal';
   CU.round = r; CU.n = r >= 10 ? 5 : r >= 5 ? 4 : 3;
-  CU.cups = Array.from({ length: CU.n }, (_, i) => ({ slot: i }));
-  CU.ac = Math.floor(Math.random() * CU.n);
+  if (again) {
+    CU.cups = CU.cups.map(c => ({ slot: c.slot }));
+    while (CU.cups.length < CU.n) CU.cups.push({ slot: CU.cups.length });
+  } else {
+    CU.cups = Array.from({ length: CU.n }, (_, i) => ({ slot: i }));
+    CU.ac = Math.floor(Math.random() * CU.n);
+  }
   const pair = () => { const a = Math.floor(Math.random() * CU.n); let b = Math.floor(Math.random() * (CU.n - 1)); if (b >= a) b++; return [a, b]; };
   CU.moves = [];
   for (let k = 0, m = Math.min(16, 3 + r); k < m; k++) {
@@ -6684,7 +6828,7 @@ function cuRound(r) {
     CU.moves.push(two);
   }
   CU.dur = Math.max(0.15, 0.42 - 0.025 * (r - 1));
-  CU.ph = 'show'; CU.t = 0; CU.swap = null; CU.picked = -1; CU.img = null;
+  CU.ph = 'show'; CU.t = up ? CU_LIFT : 0; CU.swap = null; CU.picked = -1; CU.img = null;
 }
 function cuNextSwap() {
   const two = CU.moves.shift(), at = s => CU.cups.findIndex(c => c.slot === s);
@@ -6769,9 +6913,9 @@ function cuUpdate(dt) {
     CU.swap = null;
     if (CU.moves.length) cuNextSwap(); else { CU.ph = 'pick'; CU.t = 0; }
   } else if (CU.ph === 'reveal' && CU.t >= CU_REVEAL) {
-    if (CU.right) cuRound(CU.round + 1);
+    if (CU.right) cuRound(CU.round + 1, true);
     else if (CU.hearts <= 0) cuGameOver();
-    else cuRound(CU.round);   // the same round again, shuffled anew
+    else cuRound(CU.round, true);   // the same round again, shuffled anew
   }
 }
 // how high a cup is lifted: the acorn's while it is shown; the picked one (and, after a miss, the acorn's) at the answer
@@ -8327,7 +8471,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   back: { BK, want: bkWant, have: bkHave, back: bkBack },
                   beaver: { BV, geo: bvGeo, open: openBeaver, press: bvPress, release: bvRelease, pose: bvPose, art: bvArt },
                   hedgehog: { HH, geo: hhGeo, open: openHedgehog, throw: hhThrow, round: hhRound, spin: hhSpin },
-                  caterpillar: { CP, geo: cpGeo, open: openCaterpillar, turn: cpTurn, step: cpStep, free: cpFree },
+                  caterpillar: { CP, open: openCaterpillar, spawn: cpSpawnBot, worm: cpWormNew, gulp: cpGulp, len: cpLen, meet: cpMeet },
                   cups: { CU, geo: cuGeo, open: openCups, pick: cuPick, round: cuRound, pos: cuPos },
                   chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, sizes: cmSizes, SIZE: CM_SIZE, EDGES: CM_EDGES, T0: CM_T0, LOSE: CM_LOSE },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
