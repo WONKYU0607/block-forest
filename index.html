@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>블록 포레스트</title>
+<title>미니게임 포레스트</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gasoek+One&family=Do+Hyeon&family=Gowun+Dodum&display=swap">
@@ -364,7 +364,7 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 #mini { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
 /* the mini games' forest: the game's, without the sun glow and the light shafts, and shaded (most at the top, where the eyes
    are), so a long play is easier on the eyes */
-#mini, #minis, #stairs, #merge, #pebble, #mushroom, #owlpost, #chameleon, #beaver { background: linear-gradient(rgba(12, 40, 18, 0.44), rgba(12, 40, 18, 0.3) 55%, rgba(12, 40, 18, 0.18)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844' preserveAspectRatio='xMidYMax slice'%3E%3Cdefs%3E%3ClinearGradient id='sky' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23e9f7b8'/%3E%3Cstop offset='0.35' stop-color='%23b9e58f'/%3E%3Cstop offset='0.7' stop-color='%237cc46a'/%3E%3Cstop offset='1' stop-color='%233f8a44'/%3E%3C/linearGradient%3E%3CradialGradient id='sun' cx='0.15' cy='0.02' r='0.55'%3E%3Cstop offset='0' stop-color='%23fffbe0' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23fffbe0' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='fly' cx='0.5' cy='0.5' r='0.5'%3E%3Cstop offset='0' stop-color='%23fff9c4' stop-opacity='1'/%3E%3Cstop offset='0.4' stop-color='%23ffe066' stop-opacity='0.6'/%3E%3Cstop offset='1' stop-color='%23ffe066' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='390' height='844' fill='url(%23sky)'/%3E%3Cg fill='%23a3d98c'%3E%3Ccircle cx='10' cy='560' r='46'/%3E%3Ccircle cx='70' cy='540' r='52'/%3E%3Ccircle cx='140' cy='565' r='44'/%3E%3Ccircle cx='200' cy='535' r='56'/%3E%3Ccircle cx='265' cy='560' r='46'/%3E%3Ccircle cx='330' cy='538' r='54'/%3E%3Ccircle cx='392' cy='560' r='44'/%3E%3Crect x='0' y='560' width='390' height='300'/%3E%3C/g%3E%3Cg fill='%2362b35f'%3E%3Cpath d='M-10 700 L30 600 L70 700 Z M0 650 L30 570 L60 650 Z'/%3E%3Cpath d='M60 720 L110 590 L160 720 Z M75 660 L110 560 L145 660 Z'/%3E%3Cpath d='M150 710 L195 610 L240 710 Z M162 660 L195 585 L228 660 Z'/%3E%3Cpath d='M230 725 L285 585 L340 725 Z M245 665 L285 555 L325 665 Z'/%3E%3Cpath d='M320 705 L365 600 L410 705 Z M332 655 L365 575 L398 655 Z'/%3E%3Crect x='0' y='700' width='390' height='160'/%3E%3C/g%3E%3Cg fill='%233f8f45'%3E%3Ccircle cx='20' cy='800' r='50'/%3E%3Ccircle cx='95' cy='790' r='44'/%3E%3Ccircle cx='170' cy='808' r='48'/%3E%3Ccircle cx='245' cy='792' r='46'/%3E%3Ccircle cx='320' cy='805' r='50'/%3E%3Ccircle cx='385' cy='795' r='42'/%3E%3Crect x='0' y='800' width='390' height='60'/%3E%3C/g%3E%3Cg fill='%232f7436'%3E%3Ccircle cx='55' cy='835' r='30'/%3E%3Ccircle cx='210' cy='840' r='34'/%3E%3Ccircle cx='350' cy='838' r='30'/%3E%3C/g%3E%3Cg fill='%233b8a3f'%3E%3Ccircle cx='-10' cy='-10' r='70'/%3E%3Ccircle cx='70' cy='-30' r='60'/%3E%3Ccircle cx='150' cy='-40' r='55'/%3E%3Ccircle cx='240' cy='-35' r='60'/%3E%3Ccircle cx='320' cy='-25' r='62'/%3E%3Ccircle cx='400' cy='-5' r='70'/%3E%3C/g%3E%3Cg fill='%234ea34f'%3E%3Ccircle cx='30' cy='-25' r='48'/%3E%3Ccircle cx='115' cy='-45' r='50'/%3E%3Ccircle cx='200' cy='-50' r='52'/%3E%3Ccircle cx='285' cy='-40' r='50'/%3E%3Ccircle cx='365' cy='-30' r='48'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='40' cy='420' r='7' fill='url(%23fly)'/%3E%3Ccircle cx='352' cy='380' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='18' cy='640' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='372' cy='610' r='8' fill='url(%23fly)'/%3E%3Ccircle cx='188' cy='760' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='300' cy='770' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='90' cy='110' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='330' cy='140' r='6' fill='url(%23fly)'/%3E%3C/g%3E%3C/svg%3E") center bottom / cover no-repeat, #5d9f50; }
+#mini, #minis, #stairs, #merge, #pebble, #mushroom, #owlpost, #chameleon, #beaver, #hedgehog, #caterpillar, #cups { background: linear-gradient(rgba(12, 40, 18, 0.44), rgba(12, 40, 18, 0.3) 55%, rgba(12, 40, 18, 0.18)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844' preserveAspectRatio='xMidYMax slice'%3E%3Cdefs%3E%3ClinearGradient id='sky' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23e9f7b8'/%3E%3Cstop offset='0.35' stop-color='%23b9e58f'/%3E%3Cstop offset='0.7' stop-color='%237cc46a'/%3E%3Cstop offset='1' stop-color='%233f8a44'/%3E%3C/linearGradient%3E%3CradialGradient id='sun' cx='0.15' cy='0.02' r='0.55'%3E%3Cstop offset='0' stop-color='%23fffbe0' stop-opacity='0.95'/%3E%3Cstop offset='1' stop-color='%23fffbe0' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='fly' cx='0.5' cy='0.5' r='0.5'%3E%3Cstop offset='0' stop-color='%23fff9c4' stop-opacity='1'/%3E%3Cstop offset='0.4' stop-color='%23ffe066' stop-opacity='0.6'/%3E%3Cstop offset='1' stop-color='%23ffe066' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='390' height='844' fill='url(%23sky)'/%3E%3Cg fill='%23a3d98c'%3E%3Ccircle cx='10' cy='560' r='46'/%3E%3Ccircle cx='70' cy='540' r='52'/%3E%3Ccircle cx='140' cy='565' r='44'/%3E%3Ccircle cx='200' cy='535' r='56'/%3E%3Ccircle cx='265' cy='560' r='46'/%3E%3Ccircle cx='330' cy='538' r='54'/%3E%3Ccircle cx='392' cy='560' r='44'/%3E%3Crect x='0' y='560' width='390' height='300'/%3E%3C/g%3E%3Cg fill='%2362b35f'%3E%3Cpath d='M-10 700 L30 600 L70 700 Z M0 650 L30 570 L60 650 Z'/%3E%3Cpath d='M60 720 L110 590 L160 720 Z M75 660 L110 560 L145 660 Z'/%3E%3Cpath d='M150 710 L195 610 L240 710 Z M162 660 L195 585 L228 660 Z'/%3E%3Cpath d='M230 725 L285 585 L340 725 Z M245 665 L285 555 L325 665 Z'/%3E%3Cpath d='M320 705 L365 600 L410 705 Z M332 655 L365 575 L398 655 Z'/%3E%3Crect x='0' y='700' width='390' height='160'/%3E%3C/g%3E%3Cg fill='%233f8f45'%3E%3Ccircle cx='20' cy='800' r='50'/%3E%3Ccircle cx='95' cy='790' r='44'/%3E%3Ccircle cx='170' cy='808' r='48'/%3E%3Ccircle cx='245' cy='792' r='46'/%3E%3Ccircle cx='320' cy='805' r='50'/%3E%3Ccircle cx='385' cy='795' r='42'/%3E%3Crect x='0' y='800' width='390' height='60'/%3E%3C/g%3E%3Cg fill='%232f7436'%3E%3Ccircle cx='55' cy='835' r='30'/%3E%3Ccircle cx='210' cy='840' r='34'/%3E%3Ccircle cx='350' cy='838' r='30'/%3E%3C/g%3E%3Cg fill='%233b8a3f'%3E%3Ccircle cx='-10' cy='-10' r='70'/%3E%3Ccircle cx='70' cy='-30' r='60'/%3E%3Ccircle cx='150' cy='-40' r='55'/%3E%3Ccircle cx='240' cy='-35' r='60'/%3E%3Ccircle cx='320' cy='-25' r='62'/%3E%3Ccircle cx='400' cy='-5' r='70'/%3E%3C/g%3E%3Cg fill='%234ea34f'%3E%3Ccircle cx='30' cy='-25' r='48'/%3E%3Ccircle cx='115' cy='-45' r='50'/%3E%3Ccircle cx='200' cy='-50' r='52'/%3E%3Ccircle cx='285' cy='-40' r='50'/%3E%3Ccircle cx='365' cy='-30' r='48'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='40' cy='420' r='7' fill='url(%23fly)'/%3E%3Ccircle cx='352' cy='380' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='18' cy='640' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='372' cy='610' r='8' fill='url(%23fly)'/%3E%3Ccircle cx='188' cy='760' r='6' fill='url(%23fly)'/%3E%3Ccircle cx='300' cy='770' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='90' cy='110' r='5' fill='url(%23fly)'/%3E%3Ccircle cx='330' cy='140' r='6' fill='url(%23fly)'/%3E%3C/g%3E%3C/svg%3E") center bottom / cover no-repeat, #5d9f50; }
 #mini[hidden] { display: none; }
 #mini .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
 #mini-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; }
@@ -413,6 +413,24 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 #beaver .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; position: relative; z-index: 1; }
 #bv-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 #beaver .overlay { z-index: 3; }
+/* 고슴도치 가시 꽂기: the canvas fills the screen under the top bar */
+#hedgehog { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
+#hedgehog[hidden] { display: none; }
+#hedgehog .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
+#hh-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; margin-bottom: env(safe-area-inset-bottom, 0px); }
+#hedgehog .overlay { z-index: 3; }
+/* 애벌레 잎 먹기: the canvas fills the screen under the top bar */
+#caterpillar { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
+#caterpillar[hidden] { display: none; }
+#caterpillar .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
+#cp-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; margin-bottom: env(safe-area-inset-bottom, 0px); }
+#caterpillar .overlay { z-index: 3; }
+/* 도토리 컵 찾기: the canvas fills the screen under the top bar */
+#cups { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
+#cups[hidden] { display: none; }
+#cups .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
+#cu-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; margin-bottom: env(safe-area-inset-bottom, 0px); }
+#cups .overlay { z-index: 3; }
 #ms-undo { background: linear-gradient(#9ad8ff, #4ea9f0); flex-direction: row; gap: 6px; }
 #ms-undo svg { width: 24px; height: 24px; }
 #ms-undo b { font-size: 15px; -webkit-text-stroke: 4px var(--ol); }
@@ -530,37 +548,38 @@ html[lang="en"] #st-turn b { font-size: 15px; }
 .rank-tabs .opt b { font-size: 16px; white-space: nowrap; }
 html[lang="en"] .rank-tabs .opt b { font-size: 13px; }
 #opt-mini b { white-space: nowrap; }
-/* the mini games' screen: a card of games on the forest, over the lobby */
+/* the home: my nickname and the settings on top, then a card of all twelve games (three across, four down) that takes the
+   rest of the screen and never scrolls; each game's picture and name sized to its tile (container units) */
 #minis { z-index: 31; }
-.minis-wrap { position: absolute; inset: 0; display: grid; place-items: center; box-sizing: border-box; overflow-y: auto;
-  padding: max(40px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
-.minis-card { width: min(100%, 380px); animation: sheetUp 0.45s cubic-bezier(.25, 1.4, .5, 1) both; }
-/* the card takes the screen's height (up to 720px) and the list never scrolls: 5 rows of 2 (all 10 games), each row a fifth
-   of what is left, and each game's picture and words sized to its tile (container units) */
-.minis-card { display: flex; flex-direction: column; box-sizing: border-box; height: min(calc(100vh - 100px), 720px); height: min(calc(100dvh - 100px), 720px); }
+.hm-top { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px));
+  display: flex; align-items: center; gap: 8px; }
+.hm-me { flex: 0 1 auto; height: 42px; }
+.hm-set { flex: none; margin-left: auto; appearance: none; box-sizing: border-box; width: 42px; height: 42px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  background: var(--wood); border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); }
+.hm-set svg { width: 26px; height: 26px; }
+.hm-set:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.minis-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;
+  padding: calc(max(12px, env(safe-area-inset-top, 0px)) + 78px) max(10px, env(safe-area-inset-right, 0px)) max(14px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
+.minis-card { width: min(100%, 440px); flex: 0 1 760px; min-height: 0; display: flex; flex-direction: column; box-sizing: border-box; padding: 42px 10px 12px;
+  animation: sheetUp 0.45s cubic-bezier(.25, 1.4, .5, 1) both; }
 @keyframes sheetUp { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: none; opacity: 1; } }
-.minis-list { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 8px; flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 0 2px 10px; margin: 0 -2px; }
-/* a game: its picture over its name and its best, all scaled to the tile's height */
-.mg-row { flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 3%; padding: 4px 6px; box-sizing: border-box; min-height: 0; overflow: hidden; container-type: size; }
+.minis-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 8px; flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 0 2px 6px; margin: 0 -2px; }
+/* a game: its picture over its name (room for two lines, broken between words) and its best */
+.mg-row { flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2%; padding: 6px 4px; box-sizing: border-box; min-height: 0; min-width: 0; overflow: hidden; container-type: size; }
 .mg-row > div { width: 100%; min-width: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 1px; }
-.mg-row b { font-size: 17px; font-size: clamp(12px, 19cqh, 20px); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-html[lang="en"] .mg-row b { font-size: 15px; font-size: clamp(11px, 16cqh, 17px); }
-.mg-row span { font-size: 12px; font-size: clamp(10px, 13cqh, 14px); line-height: 1.2; white-space: nowrap; }
-/* the picture takes the height the name and the best leave (their line heights and the gaps), up to 60px */
-.mg-ic { flex: none; width: 44px; height: 44px; --ic: clamp(16px, calc(100cqh - 1.15 * clamp(12px, 19cqh, 20px) - 1.2 * clamp(10px, 13cqh, 14px) - 10px), 60px); width: var(--ic); height: var(--ic); }
-@media (max-height: 700px) { .minis-card { padding-top: 48px; padding-bottom: 14px; } .minis-list { gap: 6px; } }
-/* on a short screen the tiles are too low for a picture over two lines of words: picture on the left, name (up to two
-   lines, broken between words) and best on the right */
-@media (max-height: 660px) {
-  .mg-row { flex-direction: row; justify-content: flex-start; text-align: left; gap: 6px; padding: 4px 6px 4px 8px; }
-  .mg-row > div { align-items: flex-start; }
-  .mg-ic { --ic: clamp(24px, calc(100cqh - 4px), 40px); }
-  .mg-row b { white-space: normal; word-break: keep-all; font-size: 13px; font-size: clamp(11px, 21cqh, 14px); line-height: 1.12;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: clip; }
-  html[lang="en"] .mg-row b { font-size: 12px; font-size: clamp(10px, 19cqh, 13px); }
-  .mg-row span { font-size: 10px; font-size: clamp(9px, 15cqh, 11px); }
-}
+.mg-row b { --nm: clamp(11px, min(10.5cqh, 15cqw), 16px); font-size: 14px; font-size: var(--nm); line-height: 1.13; height: 2.26em; display: flex; align-items: center; justify-content: center;
+  white-space: normal; word-break: keep-all; overflow: hidden; max-width: 100%; }
+html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
+.mg-row span { font-size: 11px; font-size: clamp(9px, min(8cqh, 11cqw), 13px); line-height: 1.2; white-space: nowrap; }
+/* the picture takes the height the name's two lines and the best leave */
+.mg-ic { flex: none; width: 44px; height: 44px; --ic: clamp(22px, min(calc(100cqh - 2.26 * clamp(11px, min(10.5cqh, 15cqw), 16px) - 1.2 * clamp(9px, min(8cqh, 11cqw), 13px) - 18px), 72cqw), 76px); width: var(--ic); height: var(--ic); }
+@media (max-height: 700px) { .minis-card { padding-top: 38px; } .minis-list { gap: 6px; } }
 @media (prefers-reduced-motion: reduce) { .minis-card { animation: none; } }
+#bfpick { z-index: 4; }
+.bf-size .opt span { font-family: 'Black Han Sans', sans-serif; font-size: 13px; color: var(--muted); }
+/* the ranking from Block Forest: its two boards only */
+#rank-vs, #rank-acorn { display: none; }
+#rank .rank-tabs { grid-template-columns: 1fr 1fr; }
 html[lang="en"] #opt-mini b { font-size: 15px; letter-spacing: -0.02em; }
 @media (max-width: 370px) { html[lang="en"] #opt-mini b { font-size: 13px; } }
 .pick-list.rank-list { max-height: min(60vh, 520px); gap: 6px; }   /* all ten in view on taller phones */
@@ -713,12 +732,14 @@ html.tall-art .scr-box .ext { display: none; }
   </div>
 </section>
 
-<section id="minis" class="screen" hidden aria-label="미니게임" data-ta="minis">
+<section id="minis" class="screen" hidden aria-label="미니게임 포레스트" data-ta="title">
+  <div class="hm-top"><div class="lb-me hm-me" aria-label="내 닉네임" data-ta="myName"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#6ccf4f" stroke="#2b1a0e" stroke-width="2.2"/><circle cx="12" cy="9.6" r="3.6" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8"/><path d="M5.6 18.6c1.3-2.9 3.7-4.3 6.4-4.3s5.1 1.4 6.4 4.3" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8" stroke-linecap="round"/></svg><b id="hm-name"></b></div><button class="hm-set" id="btn-home-set" type="button" aria-label="설정" data-ta="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></button></div>
   <div class="flies" aria-hidden="true"><i style="left:14%;top:20%;animation-delay:-1s"></i><i style="left:82%;top:30%;animation-delay:-3.4s"></i><i style="left:26%;top:78%;animation-delay:-5.2s;animation-duration:8s"></i><i style="left:70%;top:84%;animation-delay:-2.2s;animation-duration:6.4s"></i><i style="left:50%;top:12%;animation-delay:-4.4s"></i></div>
   <div class="minis-wrap">
     <div class="card minis-card">
-      <div class="ribbon"><h2 data-t="minis">미니게임</h2></div>
+      <div class="ribbon"><h2 data-t="title">미니게임 포레스트</h2></div>
       <div class="minis-list">
+        <button class="opt mg-row" id="mg-block" type="button"><svg class="mg-ic" viewBox="0 0 34 34" aria-hidden="true"><g stroke="#2b1a0e" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="17" width="9" height="9" rx="2" fill="#ffd23f"/><rect x="12" y="17" width="9" height="9" rx="2" fill="#e9483b"/><rect x="12" y="8" width="9" height="9" rx="2" fill="#4fa3ff"/><rect x="21" y="17" width="9" height="9" rx="2" fill="#6ccf4f"/><rect x="21" y="8" width="9" height="9" rx="2" fill="#b46cf0"/></g><path d="M5 19.5h4M14 19.5h4M14 10.5h4M23 19.5h4M23 10.5h4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/></svg><div><b data-t="blockGame">블록 포레스트</b><span id="mg-block-best"></span></div></button>
         <button class="opt mg-row" id="mg-acorn" type="button"><svg class="mg-ic" viewBox="0 0 34 34" aria-hidden="true"><path d="M8.5 15.5h17c0 9-3.8 14.5-8.5 15.5-4.7-1-8.5-6.5-8.5-15.5z" fill="#c9782f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><path d="M11.4 18.5c.2 4.6 1.6 8 3.6 9.6" fill="none" stroke="#f0b066" stroke-width="2" stroke-linecap="round"/><path d="M5.5 15.6C5.5 10 10.6 7 17 7s11.5 3 11.5 8.6c0 .9-.7 1.4-1.6 1.4H7.1c-.9 0-1.6-.5-1.6-1.4z" fill="#7a4a24" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><path d="M10 12.2l3 2.4M15 10.6l3 2.6M20.4 10.8l3 2.4" stroke="#a8703f" stroke-width="1.6" stroke-linecap="round"/><path d="M17 7.2c.2-2 1.2-3.4 3-4" fill="none" stroke="#2b1a0e" stroke-width="2.4" stroke-linecap="round"/></svg><div><b data-t="acorn">도토리 받기</b><span id="mg-acorn-best"></span></div></button>
         <button class="opt mg-row" id="mg-stairs" type="button"><img class="mg-ic mg-img" src="rabbit-idle.webp" alt=""><div><b data-t="stairs">토끼 계단</b><span id="mg-stairs-best"></span></div></button>
         <button class="opt mg-row" id="mg-merge" type="button"><img class="mg-ic mg-img" src="raccoon-hold.webp" alt=""><div><b data-t="merge">과일 합치기</b><span id="mg-merge-best"></span></div></button>
@@ -727,10 +748,23 @@ html.tall-art .scr-box .ext { display: none; }
         <button class="opt mg-row" id="mg-owlpost" type="button"><img class="mg-ic mg-img" src="owl-hold.webp" alt=""><div><b data-t="owlpost">부엉이 우체국</b><span id="mg-owlpost-best"></span></div></button>
         <button class="opt mg-row" id="mg-chameleon" type="button"><img class="mg-ic mg-img" src="cham-joy.webp" alt=""><div><b data-t="chameleon">카멜레온 찾기</b><span id="mg-chameleon-best"></span></div></button>
         <button class="opt mg-row" id="mg-beaver" type="button"><img class="mg-ic mg-img" src="beaver-idle.webp" alt=""><div><b data-t="beaver">비버 다리 놓기</b><span id="mg-beaver-best"></span></div></button>
+        <button class="opt mg-row" id="mg-hedgehog" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="hedgehog">고슴도치 가시 꽂기</b><span id="mg-hedgehog-best"></span></div></button>
+        <button class="opt mg-row" id="mg-caterpillar" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="caterpillar">애벌레 잎 먹기</b><span id="mg-caterpillar-best"></span></div></button>
+        <button class="opt mg-row" id="mg-cups" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="cups">도토리 컵 찾기</b><span id="mg-cups-best"></span></div></button>
       </div>
-      <button class="btn plain" id="btn-minis-back" type="button" data-t="toLobby">로비로</button>
     </div>
   </div>
+  <section id="bfpick" class="overlay" hidden aria-label="블록 포레스트" data-ta="blockGame">
+    <div class="card">
+      <div class="ribbon"><h2 data-t="blockGame">블록 포레스트</h2></div>
+      <div class="opts lb-size bf-size">
+        <button class="opt" id="bf-16" type="button"><i class="mini m16"><i></i></i><div><b>16칸</b><span id="bf-16-best"></span></div></button>
+        <button class="opt" id="bf-32" type="button"><i class="mini m32"><i></i></i><div><b>32칸</b><span id="bf-32-best"></span></div></button>
+      </div>
+      <button class="btn plain" id="btn-bf-rank" type="button" data-t="rank">순위표</button>
+      <button class="btn plain" id="btn-bf-close" type="button" data-t="close">닫기</button>
+    </div>
+  </section>
 </section>
 
 <section id="mini" class="screen" hidden aria-label="도토리 받기" data-ta="acorn">
@@ -945,10 +979,85 @@ html.tall-art .scr-box .ext { display: none; }
     </div>
   </section>
 </section>
+<section id="hedgehog" class="screen" hidden aria-label="고슴도치 가시 꽂기" data-ta="hedgehog">
+  <header class="hud mini-hud">
+    <div class="stat"><span class="label" data-t="score">점수</span><span id="hh-score" class="num">0</span></div>
+    <button id="btn-hh-pause" class="chip" type="button" aria-label="멈추고 메뉴 열기" data-ta="pause"><i class="pz" aria-hidden="true"></i><span data-t="hedgehogShort">가시</span></button>
+    <div class="stat best"><span class="label" data-t="best">최고</span><span id="hh-best" class="num">0</span></div>
+  </header>
+  <canvas id="hh-cv"></canvas>
+  <section id="hh-menu" class="overlay" hidden>
+    <div class="card">
+      <div class="ribbon"><h2 data-t="paused">일시정지</h2></div>
+      <button class="btn primary" id="btn-hh-resume" type="button" data-t="resume">이어서 하기</button>
+      <button class="btn plain" id="btn-hh-quit" type="button" data-t="toList">목록으로</button>
+    </div>
+  </section>
+  <section id="hh-over" class="overlay" hidden>
+    <div class="card">
+      <div class="ribbon"><h2 data-t="hedgehog">고슴도치 가시 꽂기</h2></div>
+      <img id="hh-face" class="st-cheer" src="" alt="">
+      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="hh-final" class="num">0</span></div>
+      <p id="hh-note" class="gap" hidden></p>
+      <button class="btn primary" id="btn-hh-again" type="button" data-t="again">다시 하기</button>
+      <button class="btn plain" id="btn-hh-lobby" type="button" data-t="toList">목록으로</button>
+    </div>
+  </section>
+</section>
+<section id="caterpillar" class="screen" hidden aria-label="애벌레 잎 먹기" data-ta="caterpillar">
+  <header class="hud mini-hud">
+    <div class="stat"><span class="label" data-t="score">점수</span><span id="cp-score" class="num">0</span></div>
+    <button id="btn-cp-pause" class="chip" type="button" aria-label="멈추고 메뉴 열기" data-ta="pause"><i class="pz" aria-hidden="true"></i><span data-t="caterpillarShort">애벌레</span></button>
+    <div class="stat best"><span class="label" data-t="best">최고</span><span id="cp-best" class="num">0</span></div>
+  </header>
+  <canvas id="cp-cv"></canvas>
+  <section id="cp-menu" class="overlay" hidden>
+    <div class="card">
+      <div class="ribbon"><h2 data-t="paused">일시정지</h2></div>
+      <button class="btn primary" id="btn-cp-resume" type="button" data-t="resume">이어서 하기</button>
+      <button class="btn plain" id="btn-cp-quit" type="button" data-t="toList">목록으로</button>
+    </div>
+  </section>
+  <section id="cp-over" class="overlay" hidden>
+    <div class="card">
+      <div class="ribbon"><h2 data-t="caterpillar">애벌레 잎 먹기</h2></div>
+      <img id="cp-face" class="st-cheer" src="" alt="">
+      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="cp-final" class="num">0</span></div>
+      <p id="cp-note" class="gap" hidden></p>
+      <button class="btn primary" id="btn-cp-again" type="button" data-t="again">다시 하기</button>
+      <button class="btn plain" id="btn-cp-lobby" type="button" data-t="toList">목록으로</button>
+    </div>
+  </section>
+</section>
+<section id="cups" class="screen" hidden aria-label="도토리 컵 찾기" data-ta="cups">
+  <header class="hud mini-hud">
+    <div class="stat"><span class="label" data-t="score">점수</span><span id="cu-score" class="num">0</span></div>
+    <button id="btn-cu-pause" class="chip" type="button" aria-label="멈추고 메뉴 열기" data-ta="pause"><i class="pz" aria-hidden="true"></i><span data-t="cupsShort">컵 찾기</span></button>
+    <div class="stat best"><span class="label" data-t="best">최고</span><span id="cu-best" class="num">0</span></div>
+  </header>
+  <canvas id="cu-cv"></canvas>
+  <section id="cu-menu" class="overlay" hidden>
+    <div class="card">
+      <div class="ribbon"><h2 data-t="paused">일시정지</h2></div>
+      <button class="btn primary" id="btn-cu-resume" type="button" data-t="resume">이어서 하기</button>
+      <button class="btn plain" id="btn-cu-quit" type="button" data-t="toList">목록으로</button>
+    </div>
+  </section>
+  <section id="cu-over" class="overlay" hidden>
+    <div class="card">
+      <div class="ribbon"><h2 data-t="cups">도토리 컵 찾기</h2></div>
+      <img id="cu-face" class="st-cheer" src="" alt="">
+      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="cu-final" class="num">0</span></div>
+      <p id="cu-note" class="gap" hidden></p>
+      <button class="btn primary" id="btn-cu-again" type="button" data-t="again">다시 하기</button>
+      <button class="btn plain" id="btn-cu-lobby" type="button" data-t="toList">목록으로</button>
+    </div>
+  </section>
+</section>
 
 <section id="splash" class="screen" hidden aria-label="시작 화면" data-ta="splash">
   <div class="scr-bg" aria-hidden="true"></div>
-  <div class="scr-box" id="splash-box"><i class="ext top"></i><i class="ext bot"></i><img class="scr-art" id="splash-art" alt="블록 포레스트" data-talt="title" decoding="async" fetchpriority="high"></div>
+  <div class="scr-box" id="splash-box"><i class="ext top"></i><i class="ext bot"></i><img class="scr-art" id="splash-art" alt="미니게임 포레스트" data-talt="title" decoding="async" fetchpriority="high"></div>
   <div class="flies" aria-hidden="true"><i style="left:10%;top:62%;animation-delay:-1s"></i><i style="left:86%;top:50%;animation-delay:-3.4s"></i><i style="left:28%;top:44%;animation-delay:-5.2s;animation-duration:8s"></i><i style="left:72%;top:34%;animation-delay:-2.2s;animation-duration:6.4s"></i><i style="left:52%;top:70%;animation-delay:-4.4s"></i><i style="left:18%;top:24%;animation-delay:-6s;animation-duration:7.6s"></i><i style="left:90%;top:76%;animation-delay:-0.4s;animation-duration:6.8s"></i></div>
   <p class="touch" id="splash-touch" data-t="touch">화면을 터치하세요</p>
 </section>
@@ -1032,7 +1141,7 @@ let LANG = 'ko';
 try { const l = localStorage.getItem('rise-lang'); LANG = l === 'ko' || l === 'en' ? l : (/^ko/i.test(navigator.language || '') ? 'ko' : 'en'); } catch (e) { LANG = /^ko/i.test(navigator.language || '') ? 'ko' : 'en'; }
 const STR = {
   ko: {
-    title: '블록 포레스트', score: '점수', best: '최고', pause: '멈추고 메뉴 열기', board: '게임 판', rotLeft: '남은 돌리기 횟수, 세 칸 합계',
+    title: '미니게임 포레스트', score: '점수', best: '최고', pause: '멈추고 메뉴 열기', board: '게임 판', rotLeft: '남은 돌리기 횟수, 세 칸 합계',
     feverGauge: '피버 게이지', feverOn: s => `피버! ${s}초`, feverCount: (n, g) => `피버 ${n}/${g}`,
     feverBanner: '피버 타임!', feverSub: s => `${s}초 동안 점수 2배`,
     size: n => `${n}칸`, lv: n => `Lv ${n}`, levelUp: '레벨 업!', sizeSmall: '작은 큐브 · 넓은 판', sizeBig: '큰 큐브 · 좁은 판', boardSize: '판 크기',
@@ -1043,25 +1152,25 @@ const STR = {
     lineColor: (c, h, n) => `${c} 큐브 ${h}/${n}`, lineRows: (h, n) => `줄 깨기 ${h}/${n}`, lineCombo: (h, n) => `콤보 ${h}/${n}`, lineBig: (h, n) => `한 번에 ${h}/${n}개`,
     stuck: '놓을 곳이 없어요', stuckSub: '아이템으로 자리를 만들어 보세요',
     fireBomb: '폭탄!', fireBolt: '번개!', fireDrill: '드릴!', fireBell: '골든벨!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
-    paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '로비로',
+    paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '목록으로',
     over: '게임 오버', overTop: '꼭대기를 넘었어요', overNoFit: '더 놓을 곳이 없어요', newBest: '새 최고 기록!', cont: n => `아래 ${n}줄 지우고 이어하기`, again: '다시 하기',
     versus: '대결', vsSub: '5분 점수 대결', blank: '빈 칸',
     vsStart: '대결 시작!', vsOpp: n => `상대 ${n}`, vsWin: '승리!', vsLose: '패배', vsDraw: '무승부', vsTimeUp: '시간 종료!', vsQuit: '대결에서 나갔어요',
     vsMe: '나', vsAgain: '다시 대결', vsNoItems: '대결에서는 아이템을 쓸 수 없어요', vsResult: '대결 결과',
     lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bell: '골든벨', bestOf: n => `최고 점수 · ${n}칸`, bestAll: '최고 점수', pickSize: '판 크기를 먼저 골라 주세요', start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요', backExit: '한 번 더 누르면 나가요',
     splash: '시작 화면', touch: '화면을 터치하세요',
-    login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…', loginAsk: '대결 기록과 최고 점수를 계정에 저장해요',
+    login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…', loginAsk: '게임별 최고 점수와 순위를 계정에 저장해요',
     loginErr: '연결할 수 없어요. 인터넷 연결을 확인해 주세요.', loginBlocked: '로그인 창이 막혔어요. 다시 눌러 주세요.',
     nickTitle: '닉네임', nickAsk: '대결에서 보일 이름을 정해 주세요', nickRule: '2~10자 · 한글, 영문, 숫자, _', nickTaken: '이미 사용 중인 닉네임이에요',
     nickBad: '2~10자, 한글·영문·숫자·_만 쓸 수 있어요', ok: '확인',
     pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
     inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
     account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '고슴도치 가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cpHint: '밀어서 방향 바꾸기', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', cuPick: '도토리는 어디?', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', blockGame: '블록 포레스트', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
-    title: 'Block Forest', score: 'Score', best: 'Best', pause: 'Pause and open the menu', board: 'Game board', rotLeft: 'Turns left, all three slots',
+    title: 'Mini Game Forest', score: 'Score', best: 'Best', pause: 'Pause and open the menu', board: 'Game board', rotLeft: 'Turns left, all three slots',
     feverGauge: 'Fever gauge', feverOn: s => `Fever! ${s}s`, feverCount: (n, g) => `Fever ${Math.floor(n * 100 / g)}%`,
     feverBanner: 'FEVER TIME!', feverSub: s => `Double points for ${s}s`,
     size: n => `${n} Wide`, lv: n => `Lv ${n}`, levelUp: 'LEVEL UP!', sizeSmall: 'Small cubes', sizeBig: 'Big cubes', boardSize: 'Board size',
@@ -1072,21 +1181,21 @@ const STR = {
     lineColor: (c, h, n) => `${c} ${h}/${n}`, lineRows: (h, n) => `Lines ${h}/${n}`, lineCombo: (h, n) => `Combo ${h}/${n}`, lineBig: (h, n) => `At once ${h}/${n}`,
     stuck: 'NO ROOM!', stuckSub: 'Use an item to make room',
     fireBomb: 'BOMB!', fireBolt: 'ZAP!', fireDrill: 'DRILL!', fireBell: 'GOLDEN BELL!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
-    paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Lobby',
+    paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Game list',
     over: 'Game Over', overTop: 'The blocks reached the top', overNoFit: 'No room left', newBest: 'New Best!', cont: n => `Continue (-${n} Rows)`, again: 'Play Again',
     versus: 'Versus', vsSub: '5-min duel', blank: 'Empty slot',
     vsStart: 'Versus!', vsOpp: n => `vs ${n}`, vsWin: 'You Win!', vsLose: 'You Lose', vsDraw: 'Draw', vsTimeUp: "Time's up!", vsQuit: 'You left the match',
     vsMe: 'You', vsAgain: 'Play again', vsNoItems: "Items can't be used in versus", vsResult: 'Versus result',
     lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bell: 'Golden Bell', bestOf: n => `Best · ${n} Wide`, bestAll: 'Best', pickSize: 'Pick a board size first', start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon', backExit: 'Press back again to leave',
     splash: 'Title screen', touch: 'Touch to Start',
-    login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…', loginAsk: 'Your versus records and bests are saved to your account',
+    login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…', loginAsk: 'Your bests and rankings are saved to your account',
     loginErr: "Can't connect. Check your internet connection.", loginBlocked: 'The sign-in window was blocked. Tap again.',
     nickTitle: 'Nickname', nickAsk: 'Pick the name others see in versus', nickRule: '2-10 letters, numbers or _', nickTaken: 'That nickname is taken',
     nickBad: 'Use 2-10 letters, numbers or _', ok: 'OK',
     pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
     inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
     account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Caterpillar Munch', caterpillarShort: 'Munch', cpHint: 'Swipe to turn', cups: 'Acorn Cups', cupsShort: 'Cups', cuPick: 'Where is the acorn?', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', blockGame: 'Block Forest', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -1608,8 +1717,8 @@ function pickRow(name, sub, tag, cls, onClick) {
   b.append(who, g);
   return b;
 }
-// the ranking: the top 10 of the 32-wide best, the 16-wide best, the best versus score and the mini game's best.
-// The starting opponents are in all but the 32-wide list too, like everyone else.
+// the ranking: the top 10 of the 32-wide best, the 16-wide best, the best versus score and the mini game's best; real
+// players only (the versus opponents made up for the first games are not in it)
 let rankTab = '32', rankN = 0;
 function openRank() { $('#rank').hidden = false; rankTab = '32'; fillRank(); }
 async function fillRank() {
@@ -1619,9 +1728,7 @@ async function fillRank() {
   let top = null;
   try { top = await NET.listTop(tab === 'vs' ? 'bestVs' : tab === 'acorn' ? 'bestAcorn' : 'best' + tab, 10); } catch (e) { /* the bots still show */ }
   if (n !== rankN) return;
-  const people = top || [], names = new Set(people.map(o => o.name.toLowerCase()));
-  const bots = tab === '32' ? [] : VS_BOTS.filter(b => !names.has(b.name.toLowerCase())).map(b => ({ uid: null, name: b.name, score: tab === 'vs' ? b.score : tab === 'acorn' ? b.acorn : b.best }));
-  const all = people.concat(bots).sort((a, b) => b.score - a.score).slice(0, 10);
+  const all = (top || []).slice().sort((a, b) => b.score - a.score).slice(0, 10);
   list.replaceChildren();
   if (!top && !all.length) { list.append(pickNote(tr('loginErr'))); return; }
   if (!all.length) { list.append(pickNote(tr('rankEmpty'))); return; }
@@ -2743,6 +2850,7 @@ function openSplash() {
 const bestFor = n => { try { return Number(localStorage.getItem(`rise7-best-${n}`)) || 0; } catch (e) { return 0; } };
 function lobbyInfo() {
   $('#lb-name').textContent = ME ? ME.name : '';
+  $('#hm-name').textContent = ME ? ME.name : '';
   $('#lb-best-label').textContent = menuSize ? tr('bestOf', menuSize) : tr('bestAll');   // nothing picked yet: the best of both
   $('#lb-best').textContent = (menuSize ? bestFor(menuSize) : Math.max(bestFor(16), bestFor(32))).toLocaleString();
   minisInfo();
@@ -2757,25 +2865,25 @@ function quitGame() {
   G.started = false; G.state = 'menu';
   shownScore = G.score;
 }
+// the home: every game on one screen (the games' list); it covers the block game's board while a game isn't on
 function openLobby(fade = true) {
   if (G.started) quitGame();
   musicStop();
   drag = null;
   setMenu(menuMode, menuSize);
   lobbyInfo();
-  const el = $('#lobby');
+  $('#bfpick').hidden = true;
+  const el = $('#minis');
   clearTimeout(el._t);
   if (fade) {
     el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
-    placeLobbyArt();
-    el._t = setTimeout(() => { covered = true; showOnly(null); }, 340);   // the result or pause card goes once the lobby covers it
+    el._t = setTimeout(() => { covered = true; showOnly(null); }, 340);   // the result or pause card goes once the home covers it
   } else {
     el.hidden = false; el.classList.remove('out');
-    placeLobbyArt();
     covered = true; showOnly(null);
   }
 }
-function leaveLobby() { covered = false; hideScreen('lobby'); }
+function leaveLobby() { covered = false; hideScreen('minis'); }
 let settingsFrom = null;
 function openSettings(from) {
   settingsFrom = from;
@@ -2957,6 +3065,7 @@ function openMinis() {
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
 }
 function minisInfo() {
+  $('#mg-block-best').textContent = tr('mgBest', Math.max(bestFor(16), bestFor(32)).toLocaleString());
   $('#mg-acorn-best').textContent = tr('mgBest', miniBest().toLocaleString());
   $('#mg-stairs-best').textContent = tr('mgBest', stBest().toLocaleString());
   $('#mg-merge-best').textContent = tr('mgBest', fmBest().toLocaleString());
@@ -2965,6 +3074,9 @@ function minisInfo() {
   $('#mg-owlpost-best').textContent = tr('mgBest', opBest().toLocaleString());
   $('#mg-chameleon-best').textContent = tr('mgBest', cmBest().toLocaleString());
   $('#mg-beaver-best').textContent = tr('mgBest', bvBest().toLocaleString());
+  $('#mg-hedgehog-best').textContent = tr('mgBest', hhBest().toLocaleString());
+  $('#mg-caterpillar-best').textContent = tr('mgBest', cpBest().toLocaleString());
+  $('#mg-cups-best').textContent = tr('mgBest', cuBest().toLocaleString()); cuFaces();
 }
 function closeMini() {   // back to the mini games' screen
   cancelAnimationFrame(MG.raf); MG.st = 'off';
@@ -3169,7 +3281,23 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && MG.
 function miniPause() { if (MG.st !== 'play') return; MG.st = 'pause'; MG.drag = null; MG.key = 0; musicStop(); $('#mini-menu').hidden = false; }
 $('#opt-mini').addEventListener('click', () => { sfx('pick'); openMinis(); });
 $('#mg-acorn').addEventListener('click', () => { sfx('pick'); openMini(); });
-$('#btn-minis-back').addEventListener('click', () => { sfx('pick'); hideScreen('minis'); });
+$('#btn-home-set').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
+// Block Forest: pick the board, and it starts
+function openBlockPick() {
+  $('#bf-16-best').textContent = tr('mgBest', bestFor(16).toLocaleString());
+  $('#bf-32-best').textContent = tr('mgBest', bestFor(32).toLocaleString());
+  $('#bfpick').hidden = false;
+}
+function startBlock(size) {
+  $('#bfpick').hidden = true;
+  setMenu(menuMode, size);
+  newGame(menuMode, size); showOnly(null); leaveLobby(); musicStart(true);
+}
+$('#mg-block').addEventListener('click', () => { sfx('pick'); openBlockPick(); });
+$('#bf-16').addEventListener('click', () => { sfx('pick'); startBlock(16); });
+$('#bf-32').addEventListener('click', () => { sfx('pick'); startBlock(32); });
+$('#btn-bf-rank').addEventListener('click', () => { sfx('pick'); openRank(); });
+$('#btn-bf-close').addEventListener('click', () => { sfx('pick'); $('#bfpick').hidden = true; });
 $('#btn-mini-pause').addEventListener('click', () => { sfx('pick'); miniPause(); });
 $('#btn-mini-resume').addEventListener('click', () => { sfx('pick'); $('#mini-menu').hidden = true; MG.st = 'play'; MG.last = performance.now(); musicStart(false); });
 $('#btn-mini-quit').addEventListener('click', () => { sfx('pick'); miniFinish(); closeMini(); });
@@ -5723,6 +5851,817 @@ $('#btn-bv-resume').addEventListener('click', () => { sfx('pick'); $('#bv-menu')
 $('#btn-bv-quit').addEventListener('click', () => { sfx('pick'); bvFinish(); closeBeaver(); });
 $('#btn-bv-again').addEventListener('click', () => { sfx('pick'); bvStart(); musicStart(true); });
 $('#btn-bv-lobby').addEventListener('click', () => { sfx('pick'); closeBeaver(); });
+/* ---------- mini game: 고슴도치 가시 꽂기 (Quill Toss). A log turns over the hedgehog. Tap: it flings one of its quills up
+   into the log. Each round needs so many quills; all in, the log splits and the next one comes, turning another way. A
+   quill that hits one already in bounces off and the game is over. A berry on the log's edge, hit, is a bonus. ---------- */
+const HH_BEST = 'rise7-best-hedgehog';
+const HH_PTS = 100, HH_BERRY = 200, HH_CLEAR = 500;   // a quill in; a berry hit as well; a log split
+const HH_FLY = 0.11;   // s a quill takes to reach the log
+const HH_TAU = Math.PI * 2;
+const hhAng = a => ((a % HH_TAU) + HH_TAU) % HH_TAU;
+const hhDiff = (a, b) => { const d = hhAng(a - b); return d > Math.PI ? d - HH_TAU : d; };
+// how the log turns, round by round (every fifth round faster and swinging back and forth)
+const HH_KINDS = ['steady', 'wave', 'steady', 'swing', 'wave', 'stutter'];
+// quills: where each sits on the log (its angle on the log, turning with it); fly: the quill on its way up; falls: quills
+// and log pieces dropping away; kick: the log's jolt when a quill goes in
+const HH = { st: 'off', W: 0, H: 0, round: 1, need: 6, left: 6, quills: [], berries: [], rot: 0, t: 0, kind: 'steady', dir: 1, base: 1.5,
+  fly: null, falls: [], pieces: [], chips: [], pops: [], sparks: [], clearT: 0, inT: 0, kick: 0, shake: 0, flash: 0, throwT: 0,
+  score: 0, best: 0, raf: 0, last: 0, img: null };
+const hhcv = $('#hh-cv'), hhctx = hhcv.getContext('2d');
+function hhBest() { try { return parseInt(localStorage.getItem(HH_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
+// sizes on screen: the log a little over the middle, the hedgehog at the bottom; a quill is a bit over half the log's
+// radius long and goes in `dig` deep; gap: how close (as an angle) two quills may sit
+function hhGeo() {
+  const W = HH.W, H = HH.H, s = Math.min(W, 520) / 390;
+  const R = Math.round(Math.min(W * 0.27, H * 0.17, 140)), cx = W / 2, cy = Math.round(Math.max(R + 64, H * 0.36));
+  const q = R * 0.66, qw = Math.max(6, R * 0.08), dig = R * 0.16, hb = Math.min(104 * s, H * 0.15), foot = H - 16;
+  return { W, H, s, R, cx, cy, q, qw, dig, hb, foot, from: foot - hb * 0.82 - q, gap: qw * 1.45 / R, br: R * 0.13 };
+}
+// the log's face, drawn once a size: bark round the edge, light wood with rings, a knot
+function hhLogPic(R) {
+  const d = R * 2 + 8, o = d / 2;
+  return miniPic(d, d, x => {
+    x.beginPath(); x.arc(o, o, R, 0, HH_TAU); x.fillStyle = '#7a4626'; x.fill();
+    x.save(); x.beginPath(); x.arc(o, o, R, 0, HH_TAU); x.clip(); x.strokeStyle = 'rgba(40,18,6,0.55)'; x.lineWidth = Math.max(1.5, R * 0.02);
+    for (let k = 0; k < 28; k++) { const a = k * HH_TAU / 28 + (k % 3) * 0.05, r0 = R * (k % 2 ? 0.9 : 0.87); x.beginPath(); x.moveTo(o + Math.cos(a) * r0, o + Math.sin(a) * r0); x.lineTo(o + Math.cos(a) * R, o + Math.sin(a) * R); x.stroke(); }
+    x.restore();
+    const fr = R * 0.84, fg = x.createRadialGradient(o - R * 0.2, o - R * 0.25, R * 0.1, o, o, fr);
+    fg.addColorStop(0, '#fbe3b4'); fg.addColorStop(1, '#e3ad6c');
+    x.beginPath(); x.arc(o, o, fr, 0, HH_TAU); x.fillStyle = fg; x.fill(); x.lineWidth = Math.max(2, R * 0.025); x.strokeStyle = 'rgba(90,45,15,0.7)'; x.stroke();
+    x.strokeStyle = 'rgba(176,110,52,0.55)'; x.lineWidth = Math.max(1.5, R * 0.018);
+    for (const f of [0.68, 0.48, 0.28]) { x.beginPath(); for (let k = 0; k <= 48; k++) { const a = k * HH_TAU / 48, r = fr * f * (1 + 0.025 * Math.sin(a * 5 + f * 9)); x.lineTo(o + Math.cos(a) * r, o + Math.sin(a) * r); } x.stroke(); }
+    x.beginPath(); x.ellipse(o + R * 0.08, o - R * 0.04, R * 0.07, R * 0.05, 0.4, 0, HH_TAU); x.fillStyle = '#a8662e'; x.fill();   // the knot
+    x.beginPath(); x.moveTo(o + fr * 0.15, o + fr * 0.05); x.lineTo(o + fr * 0.55, o + fr * 0.2); x.strokeStyle = 'rgba(120,64,24,0.55)'; x.lineWidth = Math.max(1.5, R * 0.02); x.stroke();   // a crack
+    x.beginPath(); x.arc(o, o, R, 0, HH_TAU); x.lineWidth = Math.max(3, R * 0.035); x.strokeStyle = MOL; x.stroke();
+  });
+}
+// a quill lying along +x: its sharp light tip at 0, its dark root at len
+function hhQuill(c, len, w) {
+  const g = c.createLinearGradient(0, 0, len, 0);
+  g.addColorStop(0, '#fff3d6'); g.addColorStop(0.35, '#d7a46a'); g.addColorStop(1, '#5b3a22');
+  c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(len * 0.3, -w * 0.5, len * 0.62, -w * 0.5); c.lineTo(len - w * 0.5, -w * 0.5);
+  c.arc(len - w * 0.5, 0, w * 0.5, -Math.PI / 2, Math.PI / 2); c.lineTo(len * 0.62, w * 0.5); c.quadraticCurveTo(len * 0.3, w * 0.5, 0, 0); c.closePath();
+  c.fillStyle = g; c.fill(); c.lineWidth = Math.max(1.4, w * 0.2); c.strokeStyle = MOL; c.lineJoin = 'round'; c.stroke();
+}
+// a berry (a raspberry) of radius r at (x, y)
+function hhBerry(c, x, y, r) {
+  c.beginPath(); c.arc(x, y, r, 0, HH_TAU); c.fillStyle = '#e8364f'; c.fill(); c.lineWidth = Math.max(1.6, r * 0.16); c.strokeStyle = MOL; c.stroke();
+  c.fillStyle = 'rgba(255,190,200,0.75)';
+  for (const [u, v] of [[-0.35, -0.3], [0.2, -0.38], [-0.45, 0.15], [0.05, 0.05], [0.4, 0.1], [-0.1, 0.45], [0.35, 0.45]]) { c.beginPath(); c.arc(x + u * r, y + v * r, r * 0.13, 0, HH_TAU); c.fill(); }
+  c.beginPath(); c.ellipse(x - r * 0.15, y - r * 1.05, r * 0.42, r * 0.2, -0.4, 0, HH_TAU); c.fillStyle = '#5fbf3f'; c.fill(); c.lineWidth = Math.max(1.2, r * 0.12); c.stroke();
+}
+// the hedgehog sitting with its back to the screen's bottom, looking up at the log: feet at (x, y), h tall; k: the throw
+// (0 to 1, a quick squash); sad: after a bounce
+function hhHog(c, x, y, h, k = 0, sad = false) {
+  const s = h / 100, sq = 1 - 0.08 * Math.sin(Math.min(1, k) * Math.PI);
+  c.save(); c.translate(x, y); c.scale(2 - sq, sq); c.lineJoin = 'round';
+  c.beginPath();   // the spiky back: a fan of spines round a dome
+  for (let i = 0; i <= 18; i++) { const a = Math.PI + i * Math.PI / 18, r = (i % 2 ? 50 : 62) * s; c.lineTo(Math.cos(a) * r * 1.05, -42 * s + Math.sin(a) * r * 0.92); }
+  c.lineTo(52 * s, -6 * s); c.lineTo(-52 * s, -6 * s); c.closePath();
+  const bg = c.createLinearGradient(0, -100 * s, 0, 0); bg.addColorStop(0, '#8a5a36'); bg.addColorStop(1, '#5b3a22');
+  c.fillStyle = bg; c.fill(); c.lineWidth = 3 * s; c.strokeStyle = MOL; c.stroke();
+  c.strokeStyle = 'rgba(255,230,190,0.35)'; c.lineWidth = 2 * s;
+  for (let i = 1; i < 18; i += 2) { const a = Math.PI + i * Math.PI / 18; c.beginPath(); c.moveTo(Math.cos(a) * 30 * s, -42 * s + Math.sin(a) * 27 * s); c.lineTo(Math.cos(a) * 48 * s, -42 * s + Math.sin(a) * 44 * s); c.stroke(); }
+  c.beginPath(); c.ellipse(0, -30 * s, 33 * s, 30 * s, 0, 0, HH_TAU); c.fillStyle = '#f4d9ae'; c.fill(); c.lineWidth = 3 * s; c.strokeStyle = MOL; c.stroke();   // the face
+  for (const sx of [-1, 1]) { c.beginPath(); c.ellipse(sx * 24 * s, -56 * s, 7 * s, 6 * s, 0, 0, HH_TAU); c.fillStyle = '#f4d9ae'; c.fill(); c.stroke(); }   // ears
+  c.fillStyle = MOL;
+  if (sad) { for (const sx of [-1, 1]) { c.beginPath(); c.moveTo(sx * 13 * s - 4 * s, -38 * s); c.lineTo(sx * 13 * s + 4 * s, -34 * s); c.lineWidth = 2.6 * s; c.strokeStyle = MOL; c.stroke(); } }
+  else for (const sx of [-1, 1]) { c.beginPath(); c.ellipse(sx * 13 * s, -38 * s, 4 * s, 5 * s, 0, 0, HH_TAU); c.fill(); c.beginPath(); c.arc(sx * 13 * s + 1.3 * s, -40 * s, 1.4 * s, 0, HH_TAU); c.fillStyle = '#fff'; c.fill(); c.fillStyle = MOL; }
+  c.beginPath(); c.ellipse(0, -26 * s, 6 * s, 4.5 * s, 0, 0, HH_TAU); c.fill();   // the nose
+  c.fillStyle = 'rgba(255,120,120,0.45)'; for (const sx of [-1, 1]) { c.beginPath(); c.ellipse(sx * 21 * s, -24 * s, 5 * s, 3.4 * s, 0, 0, HH_TAU); c.fill(); }
+  c.beginPath(); if (sad) c.arc(0, -11 * s, 5 * s, Math.PI * 1.15, Math.PI * 1.85); else c.arc(0, -19 * s, 5 * s, Math.PI * 0.15, Math.PI * 0.85);
+  c.lineWidth = 2.4 * s; c.strokeStyle = MOL; c.stroke();
+  for (const sx of [-1, 1]) { c.beginPath(); c.ellipse(sx * 16 * s, -4 * s, 9 * s, 6 * s, 0, 0, HH_TAU); c.fillStyle = '#e9c08a'; c.fill(); c.lineWidth = 2.6 * s; c.stroke(); }   // paws
+  c.restore();
+}
+function hhResize() {
+  const r = hhcv.getBoundingClientRect();
+  HH.W = Math.max(1, Math.round(r.width)); HH.H = Math.max(1, Math.round(r.height));
+  hhcv.width = Math.round(HH.W * dpr); hhcv.height = Math.round(HH.H * dpr);
+  HH.img = null;
+}
+function hhPics() {
+  const g = hhGeo(), key = [HH.W, HH.H, dpr].join('|');
+  if (HH.img && HH.img.key === key) return HH.img;
+  return (HH.img = { key, log: hhLogPic(g.R) });
+}
+function hhHud() {
+  $('#hh-score').textContent = HH.score.toLocaleString(); fitNum($('#hh-score'));
+  $('#hh-best').textContent = Math.max(HH.best, HH.score).toLocaleString(); fitNum($('#hh-best'));
+}
+// a round: how many quills, a few already in, a berry, and how the log turns
+function hhRound(r) {
+  HH.round = r; HH.need = HH.left = 6 + Math.min(4, Math.floor(r / 2));
+  HH.quills = []; HH.berries = [];
+  const used = [], free = a => used.every(u => Math.abs(hhDiff(a, u)) > 0.55), spot = () => { let a, n = 0; do { a = Math.random() * HH_TAU; } while (!free(a) && ++n < 60); used.push(a); return a; };
+  const pre = r < 2 ? 0 : Math.min(3, 1 + Math.floor((r - 2) / 2));
+  for (let k = 0; k < pre; k++) HH.quills.push({ a: spot(), t: 1 });
+  const nb = r === 1 || Math.random() < 0.6 ? 1 : 0;
+  for (let k = 0; k < nb; k++) HH.berries.push({ a: spot() });
+  HH.kind = r % 5 === 0 ? 'swing' : HH_KINDS[(r - 1) % HH_KINDS.length];
+  HH.dir = Math.random() < 0.5 ? 1 : -1; HH.base = (1.45 + 0.06 * Math.min(r, 20)) * (r % 5 === 0 ? 1.4 : 1);
+  HH.t = 0; HH.inT = 0.3; HH.clearT = 0; HH.fly = null;
+}
+// the log's turning speed (radians a second), t s into the round
+function hhSpin(t) {
+  const b = HH.base * HH.dir;
+  if (HH.kind === 'wave') return b * (1 + 0.75 * Math.sin(t * HH_TAU / 2.6));   // faster, slower
+  if (HH.kind === 'swing') return b * 1.3 * Math.sin(t * HH_TAU / 3.4);   // one way, slowing, back the other way
+  if (HH.kind === 'stutter') return b * ((t % 1.3) < 0.75 ? 1.6 : 0.3);   // a spurt, a pause
+  return b;
+}
+function openHedgehog() {
+  const el = $('#hedgehog');
+  el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('hhClear') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  hhStart();
+}
+function hhStart() {
+  $('#hh-menu').hidden = true; $('#hh-over').hidden = true;
+  hhResize();
+  Object.assign(HH, { st: 'play', score: 0, best: hhBest(), rot: 0, falls: [], pieces: [], chips: [], pops: [], sparks: [], kick: 0, shake: 0, flash: 0, throwT: 0 });
+  hhRound(1);
+  hhHud();
+  cancelAnimationFrame(HH.raf); HH.last = performance.now(); HH.raf = requestAnimationFrame(hhFrame);
+}
+function hhThrow() {
+  if (HH.st !== 'play' || HH.fly || HH.clearT > 0 || HH.left <= 0 || HH.inT > 0.12) return;
+  HH.fly = { t: 0 }; HH.left--; HH.throwT = 0.18;
+  gsfx('hhThrow', 1, 'rot');
+}
+// the quill reaches the log: in (a berry there is hit too), or onto another quill and off
+function hhHit() {
+  const g = hhGeo(), a = hhAng(Math.PI / 2 - HH.rot), tipY = g.cy + g.R - g.dig;
+  HH.fly = null;
+  if (HH.quills.some(q => Math.abs(hhDiff(a, q.a)) < g.gap)) return hhBounce(tipY);
+  HH.quills.push({ a, t: 0 }); HH.kick = 0.1;
+  for (let k = 0; k < 5; k++) HH.chips.push({ x: g.cx + (Math.random() - 0.5) * g.qw * 2, y: g.cy + g.R, vx: (Math.random() - 0.5) * 220 * g.s, vy: (60 + Math.random() * 120) * g.s, t: 0, life: 0.45 });
+  let pts = HH_PTS, berry = false;
+  const bi = HH.berries.findIndex(b => Math.abs(hhDiff(a, b.a)) < (g.br + g.qw * 0.5) / g.R);
+  if (bi >= 0) {
+    HH.berries.splice(bi, 1); pts += HH_BERRY; berry = true;
+    const bx = g.cx, by = g.cy + g.R + g.br * 0.2;
+    for (let k = 0; k < 10; k++) { const t = k * HH_TAU / 10; HH.sparks.push({ x: bx, y: by, vx: Math.cos(t) * 190, vy: Math.sin(t) * 190 - 40, t: 0, life: 0.5, c: k % 2 ? '#ffd0d8' : '#ff4d6a', s: 3 }); }
+    HH.pops.push({ text: '+' + (HH_PTS + HH_BERRY), x: bx + g.R * 0.7, y: by + 6, t: 0, life: 0.7, size: 22, look: GOLD_LOOK });
+  }
+  HH.score += pts; hhHud();
+  if (HH.left === 0) hhClear();
+  gsfx(HH.left === 0 ? 'hhClear' : berry ? 'hhBerry' : 'hhStick', 1, HH.left === 0 ? 'stage' : berry ? 'pick' : 'land');   // last: the state is already moved on
+}
+// every quill in: the log splits in four and flies apart with the quills, then the next log
+function hhClear() {
+  const g = hhGeo();
+  HH.clearT = 0.95; HH.score += HH_CLEAR; hhHud();
+  for (let k = 0; k < 4; k++) { const a = HH.rot + k * Math.PI / 2 + Math.PI / 4; HH.pieces.push({ a0: HH.rot + k * Math.PI / 2, rot0: HH.rot, x: g.cx, y: g.cy, vx: Math.cos(a) * 260 * g.s, vy: Math.sin(a) * 260 * g.s - 120 * g.s, r: 0, vr: (k % 2 ? 1 : -1) * 4, t: 0 }); }
+  for (const q of HH.quills) { const w = q.a + HH.rot, r = g.R - g.dig + g.q * 0.5; HH.falls.push({ x: g.cx + Math.cos(w) * r, y: g.cy + Math.sin(w) * r, a: w, vx: Math.cos(w) * 320 * g.s, vy: Math.sin(w) * 320 * g.s - 150 * g.s, vr: (Math.random() - 0.5) * 14, t: 0 }); }
+  HH.quills = []; HH.berries = [];
+  HH.pops.push({ text: tr('hhClear') + ' +' + HH_CLEAR, x: g.cx, y: g.cy, t: 0, life: 0.9, size: 26, look: GOLD_LOOK });
+}
+function hhBounce(tipY) {
+  const g = hhGeo();
+  HH.falls.push({ x: g.cx, y: tipY + g.q * 0.5, a: Math.PI / 2, vx: (Math.random() < 0.5 ? -1 : 1) * 170 * g.s, vy: 160 * g.s, vr: (Math.random() < 0.5 ? -1 : 1) * 16, t: 0 });
+  HH.shake = 0.35; HH.flash = 0.4;
+  hhGameOver();
+  buzz([40, 30, 60]);
+}
+function hhFinish() {
+  if (HH.st === 'over' || HH.st === 'off') return false;
+  HH.st = 'over';
+  const isBest = HH.score > hhBest();
+  if (isBest) { try { localStorage.setItem(HH_BEST, String(HH.score)); } catch (e) { /* storage unavailable */ } }
+  return isBest;
+}
+function hhGameOver() {
+  const isBest = hhFinish();
+  musicStop();
+  $('#hh-final').textContent = HH.score.toLocaleString();
+  const note = $('#hh-note'); note.hidden = !isBest; note.textContent = tr('newBest');
+  $('#hh-face').src = isBest ? HH_FACE.joy : HH_FACE.sad;
+  setTimeout(() => { if (HH.st === 'over') $('#hh-over').hidden = false; }, 900);
+  gsfx(isBest ? 'hhBest' : 'hhFail', 1, isBest ? 'stage' : 'over');
+}
+function closeHedgehog() {
+  cancelAnimationFrame(HH.raf); HH.st = 'off';
+  musicStop();
+  hideScreen('hedgehog');
+  lobbyInfo();
+}
+function hhPause() { if (HH.st !== 'play') return; HH.st = 'pause'; $('#hh-menu').hidden = false; }
+function hhFrame(now) {
+  HH.raf = requestAnimationFrame(hhFrame);
+  const dt = Math.min(0.05, Math.max(0, (now - HH.last) / 1000)); HH.last = now;
+  if (HH.st === 'play' || HH.st === 'over') hhUpdate(dt);
+  hhDraw(now);
+}
+function hhUpdate(dt) {
+  const g = hhGeo();
+  if (HH.clearT <= 0) { HH.t += dt; HH.rot += hhSpin(HH.t) * dt; }
+  if (HH.st === 'play') {
+    if (HH.inT > 0) HH.inT = Math.max(0, HH.inT - dt);
+    if (HH.fly && (HH.fly.t += dt) >= HH_FLY) hhHit();
+    if (HH.clearT > 0 && (HH.clearT -= dt) <= 0) hhRound(HH.round + 1);
+  }
+  for (const k of ['kick', 'shake', 'flash', 'throwT']) if (HH[k] > 0) HH[k] = Math.max(0, HH[k] - dt);
+  for (const q of HH.quills) if (q.t < 1) q.t = Math.min(1, q.t + dt / 0.25);
+  for (const f of HH.falls) { f.t += dt; f.vy += 1500 * g.s * dt; f.x += f.vx * dt; f.y += f.vy * dt; f.a += f.vr * dt; }
+  HH.falls = HH.falls.filter(f => f.y < HH.H + g.q * 2 && f.t < 3);
+  for (const p of HH.pieces) { p.t += dt; p.vy += 1300 * g.s * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.vr * dt; }
+  HH.pieces = HH.pieces.filter(p => p.y < HH.H + g.R * 2 && p.t < 3);
+  for (const p of HH.chips) { p.t += dt; p.vy += 900 * g.s * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+  HH.chips = HH.chips.filter(p => p.t < p.life);
+  for (const p of HH.sparks) { p.t += dt; p.vy += 700 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+  HH.sparks = HH.sparks.filter(p => p.t < p.life);
+  for (const p of HH.pops) p.t += dt;
+  HH.pops = HH.pops.filter(p => p.t < p.life);
+}
+function hhDraw(now) {
+  const c = hhctx, g = hhGeo(), P = hhPics();
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, HH.W, HH.H);
+  if (HH.shake > 0) c.translate(Math.sin(now / 18) * 7 * HH.shake / 0.35, 0);
+  // the round, top left
+  const lab = textImg(tr('msLevel', HH.round), 18, SUB_LOOK, false);
+  miniText(c, tr('msLevel', HH.round), 16 + lab.w / 2, 22, 18, SUB_LOOK, now);
+  // the quills still to throw, bottom left: the ones thrown dimmed
+  const iq = Math.min(28, (HH.H - g.cy - g.R - 40) / HH.need * 0.95), iw = Math.max(4, iq * 0.24);
+  for (let k = 0; k < HH.need; k++) {
+    c.save(); c.globalAlpha = k < HH.left ? 1 : 0.28; c.translate(22, HH.H - 14 - (k + 1) * iq + iq * 0.1); c.rotate(Math.PI / 2); hhQuill(c, iq * 0.85, iw); c.restore();
+  }
+  // the log: its quills (their tips under it), the face turning, the berries on its edge; falling in on a new round
+  const grow = HH.inT > 0 ? ease(1 - HH.inT / 0.3) : 1, ky = -(HH.kick / 0.1) * 7 * g.s;
+  if (HH.clearT <= 0) {
+    c.save(); c.translate(g.cx, g.cy + ky); c.scale(grow, grow);
+    for (const q of HH.quills) {
+      const w = q.a + HH.rot, wob = q.t < 1 ? Math.sin(q.t * 20) * 0.06 * (1 - q.t) : 0;
+      c.save(); c.rotate(w + wob); c.translate(g.R - g.dig, 0); hhQuill(c, g.q, g.qw); c.restore();
+    }
+    const lw = P.log.width / dpr;
+    c.save(); c.rotate(HH.rot); c.drawImage(P.log, -lw / 2, -lw / 2, lw, lw); c.restore();
+    if (HH.flash > 0) { c.beginPath(); c.arc(0, 0, g.R, 0, HH_TAU); c.fillStyle = `rgba(255,60,60,${0.45 * HH.flash / 0.4})`; c.fill(); }
+    for (const b of HH.berries) { const w = b.a + HH.rot; hhBerry(c, Math.cos(w) * (g.R + g.br * 0.15), Math.sin(w) * (g.R + g.br * 0.15), g.br); }
+    c.restore();
+  }
+  for (const p of HH.pieces) {   // the split log: quarters flying apart
+    const lw = P.log.width / dpr;
+    c.save(); c.translate(p.x, p.y); c.rotate(p.r);
+    c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, g.R + 2, p.a0, p.a0 + Math.PI / 2); c.closePath(); c.clip();
+    c.rotate(p.rot0); c.drawImage(P.log, -lw / 2, -lw / 2, lw, lw); c.restore();
+  }
+  for (const f of HH.falls) { c.save(); c.translate(f.x, f.y); c.rotate(f.a); c.translate(-g.q / 2, 0); hhQuill(c, g.q, g.qw); c.restore(); }
+  // the quill on its way up, and the next one ready over the hedgehog
+  const tip = g.cy + g.R - g.dig;
+  if (HH.fly) { const y = g.from - (g.from - tip) * Math.min(1, HH.fly.t / HH_FLY); c.save(); c.translate(g.cx, y); c.rotate(Math.PI / 2); hhQuill(c, g.q, g.qw); c.restore(); }
+  else if (HH.st === 'play' && HH.left > 0 && HH.clearT <= 0) {   // the next one comes up out of its back
+    const y = g.from + (HH.throwT > 0 ? HH.throwT / 0.18 : 0) * g.q * 0.8;
+    c.save(); c.translate(g.cx, y); c.rotate(Math.PI / 2); hhQuill(c, g.q, g.qw); c.restore();
+  }
+  hhHog(c, g.cx, g.foot, g.hb, HH.throwT > 0 ? 1 - HH.throwT / 0.18 : 0, HH.st === 'over');
+  for (const p of HH.chips) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); c.fillStyle = '#e0a868'; c.fillRect(p.x - 2.5, p.y - 2.5, 5, 5); }
+  for (const p of HH.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
+  c.globalAlpha = 1;
+  for (const p of HH.pops) {
+    const q = p.t / p.life;
+    c.save(); c.globalAlpha = q > 0.7 ? (1 - q) / 0.3 : 1;
+    const hw = textImg(p.text, p.size, p.look, false).w * 0.6 + 6;
+    c.translate(Math.max(hw, Math.min(HH.W - hw, p.x)), p.y - q * 26); const sc = popScale(p.t * 1000); c.scale(sc, sc);
+    miniText(c, p.text, 0, 0, p.size, p.look, now);
+    c.restore();
+  }
+}
+// its picture for the games list and the end card, drawn once (until the drawn art comes)
+function hhPortrait(sad) {
+  const cv = document.createElement('canvas'), s = 3; cv.width = 132 * s; cv.height = 118 * s;
+  const c = cv.getContext('2d'); c.scale(s, s); hhHog(c, 66, 112, 104, 0, sad);
+  return cv.toDataURL('image/png');
+}
+const HH_FACE = {};
+try { HH_FACE.joy = hhPortrait(false); HH_FACE.sad = hhPortrait(true); $('#mg-hedgehog img').src = HH_FACE.joy; $('#hh-face').src = HH_FACE.sad; } catch (e) { /* no canvas */ }
+hhcv.addEventListener('pointerdown', e => { if (HH.st !== 'play') return; e.preventDefault(); hhThrow(); });
+addEventListener('keydown', e => { if (HH.st === 'play' && (e.key === ' ' || e.key === 'ArrowUp') && !e.repeat) { hhThrow(); e.preventDefault(); } });
+addEventListener('resize', () => { if (HH.st !== 'off') hhResize(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && HH.st === 'play') hhPause(); });
+$('#mg-hedgehog').addEventListener('click', () => { sfx('pick'); openHedgehog(); });
+$('#btn-hh-pause').addEventListener('click', () => { sfx('pick'); hhPause(); });
+$('#btn-hh-resume').addEventListener('click', () => { sfx('pick'); $('#hh-menu').hidden = true; HH.st = 'play'; HH.last = performance.now(); });
+$('#btn-hh-quit').addEventListener('click', () => { sfx('pick'); hhFinish(); closeHedgehog(); });
+$('#btn-hh-again').addEventListener('click', () => { sfx('pick'); hhStart(); });
+$('#btn-hh-lobby').addEventListener('click', () => { sfx('pick'); closeHedgehog(); });
+/* ---------- mini game: 애벌레 잎 먹기 (Caterpillar Munch). A caterpillar crawls a mossy board square by square. Swipe to
+   turn it. Each leaf eaten makes it a segment longer (100) and a little faster; now and then a berry shows for a few
+   seconds (300, two segments). Into the board's edge or its own body, the game is over. ---------- */
+const CP_BEST = 'rise7-best-caterpillar';
+const CP_PTS = 100, CP_BERRY = 300, CP_BERRY_T = 6;   // a leaf; a berry; s a berry stays
+const CP_SWIPE = 18;   // px a finger moves before it counts as a swipe
+// body: squares, head first; from: where each segment was a step ago (drawn sliding between); dir: the way it goes;
+// queue: turns swiped ahead (up to two); started: it waits for the first swipe
+const CP = { st: 'off', W: 0, H: 0, cols: 13, rows: 20, body: [], from: [], dir: [0, -1], queue: [], step: 0.16, acc: 0, started: false,
+  leaf: null, berry: null, eaten: 0, grow: 0, score: 0, best: 0, pops: [], sparks: [], dead: 0, shake: 0, raf: 0, last: 0 };
+const cpcv = $('#cp-cv'), cpctx = cpcv.getContext('2d');
+function cpBest() { try { return parseInt(localStorage.getItem(CP_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
+// the board's squares for this screen (fixed for a game); cells about 31px on a phone
+function cpSize(W, H) {
+  const cols = Math.max(10, Math.min(14, Math.round((Math.min(W, 520) - 44) / 31)));
+  const cell = (Math.min(W, 520) - 44) / cols;
+  return [cols, Math.max(12, Math.floor((H - 30 - 24) / cell))];
+}
+function cpGeo() {
+  const W = CP.W, H = CP.H, inner = 8, cols = CP.cols, rows = CP.rows;
+  const cell = Math.min((Math.min(W, 520) - 28 - 2 * inner) / cols, (H - 30 - 2 * inner) / rows);
+  const bw = cols * cell + 2 * inner, bh = rows * cell + 2 * inner;
+  return { W, H, cell, inner, cols, rows, bw, bh, x: Math.round((W - bw) / 2), y: Math.round(10 + (H - 20 - bh) / 2) };
+}
+const cpAt = (g, cx, cy) => [g.x + g.inner + (cx + 0.5) * g.cell, g.y + g.inner + (cy + 0.5) * g.cell];
+function cpResize() {
+  const r = cpcv.getBoundingClientRect();
+  CP.W = Math.max(1, Math.round(r.width)); CP.H = Math.max(1, Math.round(r.height));
+  cpcv.width = Math.round(CP.W * dpr); cpcv.height = Math.round(CP.H * dpr);
+}
+function cpHud() {
+  $('#cp-score').textContent = CP.score.toLocaleString(); fitNum($('#cp-score'));
+  $('#cp-best').textContent = Math.max(CP.best, CP.score).toLocaleString(); fitNum($('#cp-best'));
+}
+// an empty square for a leaf or a berry, not right in front of the head
+function cpFree() {
+  const taken = new Set(CP.body.map(([x, y]) => x + ',' + y));
+  if (CP.leaf) taken.add(CP.leaf.join(','));
+  if (CP.berry) taken.add(CP.berry.x + ',' + CP.berry.y);
+  const [hx, hy] = CP.body[0], spots = [];
+  for (let y = 0; y < CP.rows; y++) for (let x = 0; x < CP.cols; x++) if (!taken.has(x + ',' + y) && Math.abs(x - hx) + Math.abs(y - hy) > 2) spots.push([x, y]);
+  return spots.length ? spots[Math.floor(Math.random() * spots.length)] : null;
+}
+function openCaterpillar() {
+  const el = $('#caterpillar');
+  el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('cpHint') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  cpStart();
+}
+function cpStart() {
+  $('#cp-menu').hidden = true; $('#cp-over').hidden = true;
+  cpResize();
+  [CP.cols, CP.rows] = cpSize(CP.W, CP.H);
+  const x = Math.floor(CP.cols / 2), y = Math.floor(CP.rows * 0.7);
+  Object.assign(CP, { st: 'play', body: [[x, y], [x, y + 1], [x, y + 2]], dir: [0, -1], queue: [], step: 0.16, acc: 0, started: false, leaf: null, berry: null,
+    eaten: 0, grow: 0, score: 0, best: cpBest(), pops: [], sparks: [], dead: 0, shake: 0 });
+  CP.from = CP.body.map(p => p.slice());
+  CP.leaf = cpFree();
+  cpHud();
+  cancelAnimationFrame(CP.raf); CP.last = performance.now(); CP.raf = requestAnimationFrame(cpFrame);
+}
+// a swipe: turn (not straight back on itself); the first one sets it going
+function cpTurn(d) {
+  if (CP.st !== 'play') return;
+  const last = CP.queue.length ? CP.queue[CP.queue.length - 1] : CP.dir;
+  if (d[0] === -last[0] && d[1] === -last[1]) return;
+  if (!CP.started) { CP.started = true; CP.acc = 0; }
+  if (d[0] === last[0] && d[1] === last[1]) return;
+  if (CP.queue.length < 2) CP.queue.push(d);
+}
+// one square on
+function cpStep() {
+  if (CP.queue.length) CP.dir = CP.queue.shift();
+  const old = CP.body.map(p => p.slice()), [hx, hy] = old[0], nx = hx + CP.dir[0], ny = hy + CP.dir[1];
+  if (nx < 0 || ny < 0 || nx >= CP.cols || ny >= CP.rows) return cpDie();
+  const growing = CP.grow > 0, rest = growing ? old : old.slice(0, -1);   // the tail moves on out of the way, unless growing
+  if (rest.some(([x, y]) => x === nx && y === ny)) return cpDie();
+  CP.body.unshift([nx, ny]);
+  if (growing) CP.grow--; else CP.body.pop();
+  CP.from = CP.body.map((p, i) => (i === 0 ? old[0] : old[i - 1]).slice());
+  const g = cpGeo(), [px, py] = cpAt(g, nx, ny);
+  if (CP.leaf && CP.leaf[0] === nx && CP.leaf[1] === ny) {
+    CP.score += CP_PTS; CP.eaten++; CP.grow++; cpHud();
+    CP.step = Math.max(0.085, 0.16 - 0.0025 * CP.eaten);
+    CP.pops.push({ text: '+' + CP_PTS, x: px, y: py - g.cell * 0.8, t: 0, life: 0.6, size: 18, look: SCORE_LOOK });
+    for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; CP.sparks.push({ x: px, y: py, vx: Math.cos(a) * 120, vy: Math.sin(a) * 120 - 40, t: 0, life: 0.4, c: k % 2 ? '#d8ffb0' : '#6fdc4a', s: 2.6 }); }
+    CP.leaf = cpFree();
+    if (CP.eaten % 5 === 0 && !CP.berry) { const b = cpFree(); if (b) CP.berry = { x: b[0], y: b[1], t: CP_BERRY_T }; }
+    gsfx('cpEat', semi(Math.min(7, CP.eaten % 8)), 'pick');
+  } else if (CP.berry && CP.berry.x === nx && CP.berry.y === ny) {
+    CP.score += CP_BERRY; CP.grow += 2; CP.berry = null; cpHud();
+    CP.pops.push({ text: '+' + CP_BERRY, x: px, y: py - g.cell * 0.8, t: 0, life: 0.8, size: 22, look: GOLD_LOOK });
+    for (let k = 0; k < 10; k++) { const a = k * Math.PI / 5; CP.sparks.push({ x: px, y: py, vx: Math.cos(a) * 170, vy: Math.sin(a) * 170 - 50, t: 0, life: 0.5, c: k % 2 ? '#fff6c8' : '#ff4d6a', s: 3 }); }
+    gsfx('cpBerry', 1, 'rot');
+  }
+}
+function cpDie() {
+  CP.dead = 1; CP.shake = 0.35;
+  buzz([40, 30, 60]);
+  cpGameOver();
+}
+function cpFinish() {
+  if (CP.st === 'over' || CP.st === 'off') return false;
+  CP.st = 'over';
+  const isBest = CP.score > cpBest();
+  if (isBest) { try { localStorage.setItem(CP_BEST, String(CP.score)); } catch (e) { /* storage unavailable */ } }
+  return isBest;
+}
+function cpGameOver() {
+  const isBest = cpFinish();
+  musicStop();
+  $('#cp-final').textContent = CP.score.toLocaleString();
+  const note = $('#cp-note'); note.hidden = !isBest; note.textContent = tr('newBest');
+  $('#cp-face').src = isBest ? CP_FACE.joy : CP_FACE.sad;
+  setTimeout(() => { if (CP.st === 'over') $('#cp-over').hidden = false; }, 900);
+  gsfx(isBest ? 'cpBest' : 'cpOver', 1, isBest ? 'stage' : 'over');
+}
+function closeCaterpillar() {
+  cancelAnimationFrame(CP.raf); CP.st = 'off';
+  musicStop();
+  hideScreen('caterpillar');
+  lobbyInfo();
+}
+function cpPause() { if (CP.st !== 'play') return; CP.st = 'pause'; cpTouch = null; $('#cp-menu').hidden = false; }
+function cpFrame(now) {
+  CP.raf = requestAnimationFrame(cpFrame);
+  const dt = Math.min(0.05, Math.max(0, (now - CP.last) / 1000)); CP.last = now;
+  if (CP.st === 'play' || CP.st === 'over') cpUpdate(dt);
+  cpDraw(now);
+}
+function cpUpdate(dt) {
+  if (CP.st === 'play' && CP.started) {
+    CP.acc += dt;
+    while (CP.st === 'play' && CP.acc >= CP.step) { CP.acc -= CP.step; cpStep(); }
+    if (CP.berry && (CP.berry.t -= dt) <= 0) CP.berry = null;
+  }
+  if (CP.shake > 0) CP.shake = Math.max(0, CP.shake - dt);
+  for (const p of CP.sparks) { p.t += dt; p.vy += 600 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+  CP.sparks = CP.sparks.filter(p => p.t < p.life);
+  for (const p of CP.pops) p.t += dt;
+  CP.pops = CP.pops.filter(p => p.t < p.life);
+}
+// a leaf in a square (r: about half a square), swaying a little
+function cpLeaf(c, x, y, r, t) {
+  c.save(); c.translate(x, y); c.rotate(-0.6 + Math.sin(t / 500 + x) * 0.08);
+  c.beginPath(); c.moveTo(-r, 0); c.bezierCurveTo(-r * 0.6, -r * 0.95, r * 0.5, -r * 0.8, r, 0); c.bezierCurveTo(r * 0.5, r * 0.8, -r * 0.6, r * 0.95, -r, 0); c.closePath();
+  const g = c.createLinearGradient(0, -r, 0, r); g.addColorStop(0, '#8fe36a'); g.addColorStop(1, '#3fa33a');
+  c.fillStyle = g; c.fill(); c.lineWidth = 2; c.strokeStyle = MOL; c.stroke();
+  c.beginPath(); c.moveTo(-r * 0.75, 0); c.lineTo(r * 0.7, 0); c.lineWidth = 1.4; c.strokeStyle = 'rgba(30,80,20,0.6)'; c.stroke();
+  c.beginPath(); c.moveTo(-r, 0); c.lineTo(-r * 1.25, r * 0.12); c.lineWidth = 2; c.strokeStyle = MOL; c.stroke();
+  c.restore();
+}
+function cpBerry(c, x, y, r, left) {
+  const blink = left < 2 && Math.sin(left * 18) < 0;   // its last two seconds: blinking
+  if (blink) return;
+  hhBerry(c, x, y + r * 0.1, r * 0.8);
+}
+// the caterpillar: one outline round the whole body first, then the segments tail to head (stripes, a line where each
+// one meets the next), the head with eyes looking where it goes and two feelers
+function cpWorm(c, g, f, now) {
+  const n = CP.body.length, r = g.cell * 0.5, pts = [];
+  for (let i = 0; i < n; i++) {
+    const [ax, ay] = cpAt(g, CP.from[i][0], CP.from[i][1]), [bx, by] = cpAt(g, CP.body[i][0], CP.body[i][1]);
+    pts.push([ax + (bx - ax) * f, ay + (by - ay) * f]);
+  }
+  const rad = i => (i === 0 ? r * 1.12 : r * (i === n - 1 ? 0.78 : 0.94 - 0.1 * (i / n)));
+  c.fillStyle = MOL;
+  for (let i = n - 1; i >= 0; i--) { c.beginPath(); c.arc(pts[i][0], pts[i][1], rad(i) + 2.6, 0, Math.PI * 2); c.fill(); }
+  for (let i = n - 1; i >= 1; i--) {
+    const [x, y] = pts[i], rr2 = rad(i);
+    c.beginPath(); c.arc(x, y, rr2, 0, Math.PI * 2); c.fillStyle = i % 2 ? '#7fd457' : '#9be36d'; c.fill();
+    c.lineWidth = 1.4; c.strokeStyle = 'rgba(30,70,15,0.45)'; c.stroke();
+    c.beginPath(); c.arc(x - rr2 * 0.25, y - rr2 * 0.3, rr2 * 0.32, 0, Math.PI * 2); c.fillStyle = 'rgba(255,255,255,0.28)'; c.fill();
+  }
+  const [hx, hy] = pts[0], hr = rad(0), [dx, dy] = CP.dir, dead = CP.dead > 0;
+  for (const s of [-1, 1]) {   // the feelers, behind the head, toward where it goes
+    const px = -dy * s, py = dx * s, ex = hx + (dx * 0.6 + px * 0.75) * hr * 1.6, ey = hy + (dy * 0.6 + py * 0.75) * hr * 1.6;
+    c.beginPath(); c.moveTo(hx + px * hr * 0.4, hy + py * hr * 0.4); c.quadraticCurveTo(hx + (dx * 0.2 + px) * hr * 1.3, hy + (dy * 0.2 + py) * hr * 1.3, ex, ey);
+    c.lineWidth = 2.2; c.strokeStyle = MOL; c.stroke();
+    c.beginPath(); c.arc(ex, ey, hr * 0.2, 0, Math.PI * 2); c.fillStyle = '#ffb347'; c.fill(); c.lineWidth = 1.6; c.stroke();
+  }
+  c.beginPath(); c.arc(hx, hy, hr, 0, Math.PI * 2); c.fillStyle = '#a8ea7a'; c.fill(); c.lineWidth = 2.6; c.strokeStyle = MOL; c.stroke();
+  for (const s of [-1, 1]) {   // eyes, on the side it goes
+    const px = -dy * s, py = dx * s, ex = hx + (dx * 0.28 + px * 0.42) * hr, ey = hy + (dy * 0.28 + py * 0.42) * hr;
+    if (dead) { c.beginPath(); c.moveTo(ex - hr * 0.16, ey - hr * 0.16); c.lineTo(ex + hr * 0.16, ey + hr * 0.16); c.moveTo(ex + hr * 0.16, ey - hr * 0.16); c.lineTo(ex - hr * 0.16, ey + hr * 0.16); c.lineWidth = 2; c.strokeStyle = MOL; c.stroke(); continue; }
+    c.beginPath(); c.arc(ex, ey, hr * 0.26, 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill(); c.lineWidth = 1.6; c.strokeStyle = MOL; c.stroke();
+    c.beginPath(); c.arc(ex + dx * hr * 0.1, ey + dy * hr * 0.1, hr * 0.13, 0, Math.PI * 2); c.fillStyle = MOL; c.fill();
+  }
+  c.fillStyle = 'rgba(255,120,120,0.5)';
+  for (const s of [-1, 1]) { const px = -dy * s, py = dx * s; c.beginPath(); c.arc(hx + (px * 0.62 - dx * 0.1) * hr, hy + (py * 0.62 - dy * 0.1) * hr, hr * 0.15, 0, Math.PI * 2); c.fill(); }
+}
+function cpDraw(now) {
+  const c = cpctx, g = cpGeo();
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, CP.W, CP.H);
+  if (CP.shake > 0) c.translate(Math.sin(now / 18) * 7 * CP.shake / 0.35, 0);
+  // the board: a mossy panel with faint squares
+  rr(c, g.x + 3, g.y + 5, g.bw, g.bh, 16); c.fillStyle = 'rgba(0,0,0,0.22)'; c.fill();
+  rr(c, g.x, g.y, g.bw, g.bh, 16);
+  const bg = c.createLinearGradient(0, g.y, 0, g.y + g.bh); bg.addColorStop(0, '#4b8a3f'); bg.addColorStop(1, '#2f6a2e');
+  c.fillStyle = bg; c.fill();
+  c.fillStyle = 'rgba(255,255,255,0.05)';
+  for (let y = 0; y < g.rows; y++) for (let x = (y % 2); x < g.cols; x += 2) c.fillRect(g.x + g.inner + x * g.cell, g.y + g.inner + y * g.cell, g.cell, g.cell);
+  rr(c, g.x, g.y, g.bw, g.bh, 16); c.lineWidth = 3.5; c.strokeStyle = MOL; c.stroke();
+  if (CP.leaf) { const [x, y] = cpAt(g, CP.leaf[0], CP.leaf[1]); cpLeaf(c, x, y, g.cell * 0.5, now); }
+  if (CP.berry) { const [x, y] = cpAt(g, CP.berry.x, CP.berry.y); cpBerry(c, x, y, g.cell * 0.42, CP.berry.t); }
+  const f = CP.started && CP.st === 'play' ? Math.min(1, CP.acc / CP.step) : 1;
+  cpWorm(c, g, f, now);
+  if (!CP.started && CP.st === 'play') {   // how to play, until the first swipe
+    const a = 0.65 + 0.35 * Math.sin(now / 260);
+    c.save(); c.globalAlpha = a; miniText(c, tr('cpHint'), CP.W / 2, g.y + g.bh * 0.3, 26, SUB_LOOK, now); c.restore();
+  }
+  for (const p of CP.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
+  c.globalAlpha = 1;
+  for (const p of CP.pops) {
+    const q = p.t / p.life;
+    c.save(); c.globalAlpha = q > 0.7 ? (1 - q) / 0.3 : 1;
+    const hw = textImg(p.text, p.size, p.look, false).w * 0.6 + 6;
+    c.translate(Math.max(hw, Math.min(CP.W - hw, p.x)), p.y - q * 26); const sc = popScale(p.t * 1000); c.scale(sc, sc);
+    miniText(c, p.text, 0, 0, p.size, p.look, now);
+    c.restore();
+  }
+}
+// its picture for the games list and the end card (until the drawn art comes): a short caterpillar curled round a leaf
+function cpPortrait(sad) {
+  const cv = document.createElement('canvas'), k = 3; cv.width = 120 * k; cv.height = 110 * k;
+  const c = cv.getContext('2d'); c.scale(k, k);
+  const save = { body: CP.body, from: CP.from, dir: CP.dir, dead: CP.dead };
+  const g = { x: 0, y: 0, inner: 0, cell: 26 };
+  CP.body = [[3, 1], [3, 2], [2, 2], [1, 2], [1, 3]]; CP.from = CP.body; CP.dir = [0, -1]; CP.dead = sad ? 1 : 0;
+  c.translate(2, 6); cpLeaf(c, 30, 30, 14, 0); cpWorm(c, g, 1, 0);
+  Object.assign(CP, save);
+  return cv.toDataURL('image/png');
+}
+const CP_FACE = {};
+try { CP_FACE.joy = cpPortrait(false); CP_FACE.sad = cpPortrait(true); $('#mg-caterpillar img').src = CP_FACE.joy; $('#cp-face').src = CP_FACE.sad; } catch (e) { /* no canvas */ }
+// swipes: each time a finger has moved far enough one way, that is a turn (one long drag can turn twice)
+let cpTouch = null;
+cpcv.addEventListener('pointerdown', e => {
+  if (CP.st !== 'play') return;
+  e.preventDefault(); cpTouch = { id: e.pointerId, x: e.clientX, y: e.clientY };
+  try { cpcv.setPointerCapture(e.pointerId); } catch (er) { /* not capturable */ }
+});
+cpcv.addEventListener('pointermove', e => {
+  if (!cpTouch || e.pointerId !== cpTouch.id) return;
+  const dx = e.clientX - cpTouch.x, dy = e.clientY - cpTouch.y;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < CP_SWIPE) return;
+  cpTurn(Math.abs(dx) > Math.abs(dy) ? [Math.sign(dx), 0] : [0, Math.sign(dy)]);
+  cpTouch.x = e.clientX; cpTouch.y = e.clientY;
+});
+for (const ev of ['pointerup', 'pointercancel']) cpcv.addEventListener(ev, () => { cpTouch = null; });
+addEventListener('keydown', e => {
+  if (CP.st !== 'play') return;
+  const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[e.key];
+  if (d) { cpTurn(d); e.preventDefault(); }
+});
+addEventListener('resize', () => { if (CP.st !== 'off') cpResize(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && CP.st === 'play') cpPause(); });
+$('#mg-caterpillar').addEventListener('click', () => { sfx('pick'); openCaterpillar(); });
+$('#btn-cp-pause').addEventListener('click', () => { sfx('pick'); cpPause(); });
+$('#btn-cp-resume').addEventListener('click', () => { sfx('pick'); $('#cp-menu').hidden = true; CP.st = 'play'; CP.last = performance.now(); });
+$('#btn-cp-quit').addEventListener('click', () => { sfx('pick'); cpFinish(); closeCaterpillar(); });
+$('#btn-cp-again').addEventListener('click', () => { sfx('pick'); cpStart(); });
+$('#btn-cp-lobby').addEventListener('click', () => { sfx('pick'); closeCaterpillar(); });
+/* ---------- mini game: 도토리 컵 찾기 (Acorn Cups). The acorn is shown under one of the cups, the cup goes down, the cups
+   are shuffled; tap the one it is under. Right: 100 (10 more each round) and the next round, shuffled more and faster
+   (four cups from round 5, five from round 10, two pairs at once from round 8). Wrong: a heart gone (the cup it was under
+   is lifted too); all three gone, the game is over. ---------- */
+const CU_BEST = 'rise7-best-cups';
+const CU_PTS = 100, CU_HEARTS = 3;
+const CU_LIFT = 0.22, CU_SHOW = 0.9, CU_REVEAL = 1.2;   // s a cup takes to lift or drop; s the acorn is shown; s an answer shows
+// cups: where each stands in the row (slot), and the swap it is in; ac: the cup the acorn is under; ph: 'show' (the
+// acorn's cup lifts and drops), 'shuffle', 'pick', 'reveal'; moves: the swaps still to do (one pair or two at once)
+const CU = { st: 'off', W: 0, H: 0, round: 1, n: 3, cups: [], ac: 0, ph: 'show', t: 0, moves: [], swap: null, dur: 0.4, hearts: CU_HEARTS,
+  picked: -1, right: false, score: 0, best: 0, pops: [], sparks: [], raf: 0, last: 0, img: null };
+const cucv = $('#cu-cv'), cuctx = cucv.getContext('2d');
+function cuBest() { try { return parseInt(localStorage.getItem(CU_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
+// sizes on screen: the row of cups a little under the middle on a round wooden table; y: where their rims sit
+function cuGeo() {
+  const W = CU.W, H = CU.H, n = CU.n, span = Math.min(W - 28, 500), sp = span / n;
+  const cw = Math.min(sp * 0.8, 112), ch = cw * 1.08;
+  return { W, H, n, span, sp, cw, ch, y: Math.round(H * 0.58), x0: W / 2 - span / 2 + sp / 2, ar: cw * 0.22, s: Math.min(W, 520) / 390 };
+}
+const cuSlotX = (g, i) => g.x0 + i * g.sp;
+// a cup at rest or in a swap: where it is, how much nearer (front, +) or further (back, -) it passes
+function cuPos(g, k) {
+  const cup = CU.cups[k], sw = CU.swap;
+  const m = sw && sw.find(p => p.k === k);
+  if (!m) return { x: cuSlotX(g, cup.slot), y: g.y, z: 0 };
+  const q = Math.min(1, CU.t / CU.dur), e = q < 0.5 ? 2 * q * q : 1 - 2 * (1 - q) * (1 - q), arc = Math.sin(Math.PI * e) * m.side;
+  return { x: cuSlotX(g, m.from) + (cuSlotX(g, m.to) - cuSlotX(g, m.from)) * e, y: g.y + arc * Math.min(g.sp * 0.32, 36 * g.s), z: arc };
+}
+function cuResize() {
+  const r = cucv.getBoundingClientRect();
+  CU.W = Math.max(1, Math.round(r.width)); CU.H = Math.max(1, Math.round(r.height));
+  cucv.width = Math.round(CU.W * dpr); cucv.height = Math.round(CU.H * dpr);
+  CU.img = null;
+}
+function cuPics() {
+  const g = cuGeo(), key = [CU.W, CU.H, dpr, CU.n].join('|');
+  if (CU.img && CU.img.key === key) return CU.img;
+  return (CU.img = { key, acorn: acornPic(g.ar, false), heart: heartPic(15, false), heartOff: heartPic(15, true) });
+}
+function cuHud() {
+  $('#cu-score').textContent = CU.score.toLocaleString(); fitNum($('#cu-score'));
+  $('#cu-best').textContent = Math.max(CU.best, CU.score).toLocaleString(); fitNum($('#cu-best'));
+}
+// a round: how many cups, where the acorn is, the swaps (more, faster, sometimes two pairs at once later on)
+function cuRound(r) {
+  CU.round = r; CU.n = r >= 10 ? 5 : r >= 5 ? 4 : 3;
+  CU.cups = Array.from({ length: CU.n }, (_, i) => ({ slot: i }));
+  CU.ac = Math.floor(Math.random() * CU.n);
+  const pair = () => { const a = Math.floor(Math.random() * CU.n); let b = Math.floor(Math.random() * (CU.n - 1)); if (b >= a) b++; return [a, b]; };
+  CU.moves = [];
+  for (let k = 0, m = Math.min(16, 3 + r); k < m; k++) {
+    const p = pair(), two = [p];
+    if (r >= 8 && CU.n >= 4 && Math.random() < 0.35) { let q, t = 0; do { q = pair(); } while ((q.includes(p[0]) || q.includes(p[1])) && ++t < 30); if (t < 30) two.push(q); }
+    CU.moves.push(two);
+  }
+  CU.dur = Math.max(0.15, 0.42 - 0.025 * (r - 1));
+  CU.ph = 'show'; CU.t = 0; CU.swap = null; CU.picked = -1; CU.img = null;
+}
+function cuNextSwap() {
+  const two = CU.moves.shift(), at = s => CU.cups.findIndex(c => c.slot === s);
+  CU.swap = [];
+  for (const [a, b] of two) {
+    const ka = at(a), kb = at(b), side = Math.random() < 0.5 ? 1 : -1;
+    CU.swap.push({ k: ka, from: a, to: b, side }, { k: kb, from: b, to: a, side: -side });
+  }
+  CU.t = 0;
+  gsfx('cuSwap', 1 + Math.min(0.5, (CU.round - 1) * 0.04), 'move');
+}
+function openCups() {
+  const el = $('#cups');
+  el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('cuPick') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  cuStart();
+}
+function cuStart() {
+  $('#cu-menu').hidden = true; $('#cu-over').hidden = true;
+  cuResize();
+  Object.assign(CU, { st: 'play', hearts: CU_HEARTS, score: 0, best: cuBest(), pops: [], sparks: [] });
+  cuRound(1);
+  cuHud();
+  cancelAnimationFrame(CU.raf); CU.last = performance.now(); CU.raf = requestAnimationFrame(cuFrame);
+}
+// a cup picked: lift it; the acorn there, points; not there, a heart gone and the right cup lifts too
+function cuPick(k) {
+  if (CU.st !== 'play' || CU.ph !== 'pick' || k < 0 || k >= CU.n) return;
+  const g = cuGeo(), x = cuSlotX(g, CU.cups[k].slot);
+  CU.picked = k; CU.right = k === CU.ac; CU.ph = 'reveal'; CU.t = 0;
+  if (CU.right) {
+    const pts = CU_PTS + 10 * (CU.round - 1);
+    CU.score += pts; cuHud();
+    CU.pops.push({ text: '+' + pts, x, y: g.y - g.ch * 1.9, t: 0, life: 0.8, size: 24, look: SCORE_LOOK });
+    for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5; CU.sparks.push({ x, y: g.y - g.ar, vx: Math.cos(a) * 180, vy: Math.sin(a) * 180 - 60, t: 0, life: 0.5, c: i % 2 ? '#fff6c8' : '#ffd84a', s: 3 }); }
+    gsfx('cuRight', semi(Math.min(7, (CU.round - 1) % 8)), 'pick');
+  } else {
+    CU.hearts--;
+    buzz(40);
+    gsfx('cuWrong', 1, 'back');
+  }
+}
+function cuFinish() {
+  if (CU.st === 'over' || CU.st === 'off') return false;
+  CU.st = 'over';
+  const isBest = CU.score > cuBest();
+  if (isBest) { try { localStorage.setItem(CU_BEST, String(CU.score)); } catch (e) { /* storage unavailable */ } }
+  return isBest;
+}
+function cuGameOver() {
+  const isBest = cuFinish();
+  musicStop();
+  $('#cu-final').textContent = CU.score.toLocaleString();
+  const note = $('#cu-note'); note.hidden = !isBest; note.textContent = tr('newBest');
+  const face = cuFaces()[isBest ? 'joy' : 'sad']; if (face) $('#cu-face').src = face;
+  setTimeout(() => { if (CU.st === 'over') $('#cu-over').hidden = false; }, 400);
+  gsfx(isBest ? 'cuBest' : 'cuOver', 1, isBest ? 'stage' : 'over');
+}
+function closeCups() {
+  cancelAnimationFrame(CU.raf); CU.st = 'off';
+  musicStop();
+  hideScreen('cups');
+  lobbyInfo();
+}
+function cuPause() { if (CU.st !== 'play') return; CU.st = 'pause'; $('#cu-menu').hidden = false; }
+function cuFrame(now) {
+  CU.raf = requestAnimationFrame(cuFrame);
+  const dt = Math.min(0.05, Math.max(0, (now - CU.last) / 1000)); CU.last = now;
+  if (CU.st === 'play') cuUpdate(dt);
+  for (const p of CU.sparks) { p.t += dt; p.vy += 700 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+  CU.sparks = CU.sparks.filter(p => p.t < p.life);
+  for (const p of CU.pops) p.t += dt;
+  CU.pops = CU.pops.filter(p => p.t < p.life);
+  cuDraw(now);
+}
+function cuUpdate(dt) {
+  CU.t += dt;
+  if (CU.ph === 'show' && CU.t >= CU_LIFT * 2 + CU_SHOW + 0.15) { CU.ph = 'shuffle'; cuNextSwap(); }
+  else if (CU.ph === 'shuffle' && CU.swap && CU.t >= CU.dur) {
+    for (const m of CU.swap) CU.cups[m.k].slot = m.to;
+    CU.swap = null;
+    if (CU.moves.length) cuNextSwap(); else { CU.ph = 'pick'; CU.t = 0; }
+  } else if (CU.ph === 'reveal' && CU.t >= CU_REVEAL) {
+    if (CU.right) cuRound(CU.round + 1);
+    else if (CU.hearts <= 0) cuGameOver();
+    else cuRound(CU.round);   // the same round again, shuffled anew
+  }
+}
+// how high a cup is lifted: the acorn's while it is shown; the picked one (and, after a miss, the acorn's) at the answer
+function cuLift(k) {
+  const up = t => Math.max(0, Math.min(1, t / CU_LIFT));
+  if (CU.ph === 'show' && k === CU.ac) { const t = CU.t; return t < CU_LIFT + CU_SHOW ? ease(up(t)) : 1 - ease(up(t - CU_LIFT - CU_SHOW)); }
+  if (CU.ph === 'reveal' || CU.st === 'over') {
+    const t = CU.st === 'over' ? 9 : CU.t;
+    if (k === CU.picked) return ease(up(t));
+    if (!CU.right && k === CU.ac) return ease(up(t - 0.35));
+  }
+  return 0;
+}
+// a cup upside down, its rim on the table at (x, y), w wide and h tall
+function cuCup(c, x, y, w, h) {
+  const top = y - h, tw = w * 0.62;
+  c.save(); c.lineJoin = 'round';
+  c.beginPath(); c.moveTo(x - w / 2, y); c.lineTo(x - tw / 2, top + h * 0.12); c.quadraticCurveTo(x, top - h * 0.06, x + tw / 2, top + h * 0.12); c.lineTo(x + w / 2, y);
+  c.quadraticCurveTo(x, y + h * 0.12, x - w / 2, y); c.closePath();
+  const gr = c.createLinearGradient(x - w / 2, 0, x + w / 2, 0); gr.addColorStop(0, '#d8693f'); gr.addColorStop(0.45, '#c4502f'); gr.addColorStop(1, '#8e3420');
+  c.fillStyle = gr; c.fill(); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
+  c.save(); c.clip();
+  c.fillStyle = '#f2b45a'; c.fillRect(x - w, y - h * 0.32, w * 2, h * 0.12);   // a band round it
+  c.fillStyle = 'rgba(255,255,255,0.25)'; c.beginPath(); c.ellipse(x - w * 0.22, top + h * 0.45, w * 0.06, h * 0.3, 0.12, 0, Math.PI * 2); c.fill();
+  c.restore();
+  c.beginPath(); c.moveTo(x - w / 2 + 4, y - h * 0.32); c.lineTo(x + w / 2 - 4, y - h * 0.32); c.moveTo(x - w / 2 + 3, y - h * 0.2); c.lineTo(x + w / 2 - 3, y - h * 0.2); c.lineWidth = 2; c.strokeStyle = 'rgba(43,26,14,0.55)'; c.stroke();
+  c.beginPath(); c.ellipse(x, top + h * 0.06, tw * 0.22, h * 0.06, 0, 0, Math.PI * 2); c.fillStyle = '#e8834f'; c.fill(); c.lineWidth = 2.4; c.strokeStyle = MOL; c.stroke();   // the knob
+  c.restore();
+}
+function cuDraw(now) {
+  const c = cuctx, g = cuGeo(), P = cuPics();
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, CU.W, CU.H);
+  const lab = textImg(tr('msLevel', CU.round), 18, SUB_LOOK, false);
+  miniText(c, tr('msLevel', CU.round), 16 + lab.w / 2, 22, 18, SUB_LOOK, now);
+  for (let k = 0; k < CU_HEARTS; k++) { const im = k < CU.hearts ? P.heart : P.heartOff; c.drawImage(im, CU.W - 16 - (CU_HEARTS - k) * 32, 7, 30, 30); }
+  // the table: a round slab of wood, its edge showing in front
+  const tx = CU.W / 2, ty = g.y + 6, trx = g.span / 2 + 18, try_ = Math.max(36, g.ch * 0.55), th = 16 * g.s;
+  c.beginPath(); c.ellipse(tx, ty + th, trx, try_, 0, 0, Math.PI); c.lineTo(tx - trx, ty); c.ellipse(tx, ty, trx, try_, 0, Math.PI, 0, true); c.closePath();
+  c.fillStyle = '#9a6034'; c.fill(); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
+  c.beginPath(); c.ellipse(tx, ty, trx, try_, 0, 0, Math.PI * 2);
+  const tg = c.createRadialGradient(tx - trx * 0.3, ty - try_ * 0.4, 10, tx, ty, trx); tg.addColorStop(0, '#f6d7a2'); tg.addColorStop(1, '#d9a464');
+  c.fillStyle = tg; c.fill(); c.lineWidth = 3; c.stroke();
+  c.strokeStyle = 'rgba(160,100,45,0.35)'; c.lineWidth = 2;
+  for (const f of [0.75, 0.5, 0.25]) { c.beginPath(); c.ellipse(tx, ty, trx * f, try_ * f, 0, 0, Math.PI * 2); c.stroke(); }
+  // the acorn on the table, then the cups over it, the further ones first
+  const order = CU.cups.map((cup, k) => ({ k, p: cuPos(g, k) })).sort((a, b) => a.p.y - b.p.y);
+  const ap = cuPos(g, CU.ac), aw = P.acorn.width / dpr, ah = P.acorn.height / dpr;
+  for (const { k, p } of order) {
+    const sc = 1 + 0.07 * p.z, w = g.cw * sc, h = g.ch * sc, lift = cuLift(k) * h * 0.8;
+    c.beginPath(); c.ellipse(p.x, p.y + 2, w * 0.5 * (1 - 0.25 * lift / h), w * 0.12, 0, 0, Math.PI * 2); c.fillStyle = 'rgba(60,30,10,0.25)'; c.fill();   // its shadow
+    if (k === CU.ac) c.drawImage(P.acorn, ap.x - aw / 2, ap.y - ah + 2, aw, ah);
+    cuCup(c, p.x, p.y - lift, w, h);
+  }
+  if (CU.ph === 'pick' && CU.st === 'play') {
+    const a = 0.7 + 0.3 * Math.sin(now / 240);
+    c.save(); c.globalAlpha = a; miniText(c, tr('cuPick'), CU.W / 2, g.y - g.ch * 1.75, 24, SUB_LOOK, now); c.restore();
+  }
+  if (CU.ph === 'reveal' && !CU.right) {   // a cross over the empty cup
+    const x = cuSlotX(g, CU.cups[CU.picked].slot), y = g.y - g.ch * 1.35, r = 12 * g.s, q = Math.min(1, CU.t / 0.2);
+    c.save(); c.globalAlpha = q; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x - r, y - r); c.lineTo(x + r, y + r); c.moveTo(x + r, y - r); c.lineTo(x - r, y + r); c.lineWidth = 9; c.strokeStyle = MOL; c.stroke(); c.lineWidth = 5; c.strokeStyle = '#ff4d3d'; c.stroke();
+    c.restore();
+  }
+  for (const p of CU.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
+  c.globalAlpha = 1;
+  for (const p of CU.pops) {
+    const q = p.t / p.life;
+    c.save(); c.globalAlpha = q > 0.7 ? (1 - q) / 0.3 : 1;
+    const hw = textImg(p.text, p.size, p.look, false).w * 0.6 + 6;
+    c.translate(Math.max(hw, Math.min(CU.W - hw, p.x)), p.y - q * 26); const sc = popScale(p.t * 1000); c.scale(sc, sc);
+    miniText(c, p.text, 0, 0, p.size, p.look, now);
+    c.restore();
+  }
+}
+// its picture for the games list and the end card (until the drawn art comes): a cup lifted off the acorn, or a cup
+// lifted off nothing
+function cuPortrait(found) {
+  const cv = document.createElement('canvas'), k = 3; cv.width = 120 * k; cv.height = 120 * k;
+  const c = cv.getContext('2d'); c.scale(k, k);
+  c.beginPath(); c.ellipse(60, 108, 52, 10, 0, 0, Math.PI * 2); c.fillStyle = 'rgba(60,30,10,0.25)'; c.fill();
+  if (found) { const a = acornPic(22, false); c.drawImage(a, 60 - 22, 108 - 50.6, 44, 50.6); }
+  c.save(); c.translate(60, 70); c.rotate(found ? -0.2 : 0.12); cuCup(c, 0, 0, 78, 70); c.restore();
+  return cv.toDataURL('image/png');
+}
+// made the first time the list shows (the acorn picture needs the screen's pixel density, set later at start-up)
+const CU_FACE = {};
+function cuFaces() {
+  if (!CU_FACE.joy) try { CU_FACE.joy = cuPortrait(true); CU_FACE.sad = cuPortrait(false); $('#mg-cups img').src = CU_FACE.joy; $('#cu-face').src = CU_FACE.sad; } catch (e) { /* no canvas */ }
+  return CU_FACE;
+}
+// a tap: the nearest cup along the row, if the tap is round the cups
+cucv.addEventListener('pointerdown', e => {
+  if (CU.st !== 'play' || CU.ph !== 'pick') return;
+  e.preventDefault();
+  const b = cucv.getBoundingClientRect(), x = e.clientX - b.left, y = e.clientY - b.top, g = cuGeo();
+  if (y < g.y - g.ch * 1.6 || y > g.y + g.ch * 0.6) return;
+  const slot = Math.round((x - g.x0) / g.sp);
+  if (slot < 0 || slot >= CU.n) return;
+  cuPick(CU.cups.findIndex(cup => cup.slot === slot));
+});
+addEventListener('resize', () => { if (CU.st !== 'off') cuResize(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && CU.st === 'play') cuPause(); });
+$('#mg-cups').addEventListener('click', () => { sfx('pick'); openCups(); });
+$('#btn-cu-pause').addEventListener('click', () => { sfx('pick'); cuPause(); });
+$('#btn-cu-resume').addEventListener('click', () => { sfx('pick'); $('#cu-menu').hidden = true; CU.st = 'play'; CU.last = performance.now(); });
+$('#btn-cu-quit').addEventListener('click', () => { sfx('pick'); cuFinish(); closeCups(); });
+$('#btn-cu-again').addEventListener('click', () => { sfx('pick'); cuStart(); });
+$('#btn-cu-lobby').addEventListener('click', () => { sfx('pick'); closeCups(); });
 
 
 
@@ -5751,7 +6690,7 @@ $('#btn-logout').addEventListener('click', async () => {
   try { if (NET) await NET.signOut(); } catch (e) { /* signed out here anyway */ }
   ME = null;
   closeSettings();
-  $('#lobby').hidden = true;
+  $('#lobby').hidden = true; $('#minis').hidden = true;
   openSplash();
 });
 $('#opt-32').addEventListener('click', () => { setMenu(menuMode, 32); lobbyInfo(); sfx('pick'); });
@@ -7110,12 +8049,11 @@ const BK = { act: false, ignore: 0 };
 const bkHave = () => (history.state && history.state.bf) || 0;
 const bkVis = id => { const el = $('#' + id); return !!el && !el.hidden && !el.classList.contains('out'); };
 // the mini games: screen, pause menu, end card, and the buttons that pause, go on and leave
-const BK_MINI = [['mini', 'mini'], ['stairs', 'st'], ['merge', 'fm'], ['pebble', 'pb'], ['mushroom', 'ms'], ['owlpost', 'op'], ['chameleon', 'cm'], ['beaver', 'bv']];
+const BK_MINI = [['mini', 'mini'], ['stairs', 'st'], ['merge', 'fm'], ['pebble', 'pb'], ['mushroom', 'ms'], ['owlpost', 'op'], ['chameleon', 'cm'], ['beaver', 'bv'], ['hedgehog', 'hh'], ['caterpillar', 'cp'], ['cups', 'cu']];
 function bkWant() {
   if (bkVis('splash')) return 0;
   for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || bkVis(k + '-over')) ? 4 : 3;   // over the list, over the lobby
-  if (bkVis('minis')) return 2;
-  if (bkVis('lobby')) return (bkVis('settings') || bkVis('rank') || bkVis('vspick')) ? 2 : 1;
+  if (bkVis('minis')) return (bkVis('settings') || bkVis('rank') || bkVis('bfpick')) ? 2 : 1;
   return 2 + ((bkVis('menu') || bkVis('over') || bkVis('vsover')) ? 1 : 0) + (bkVis('settings') ? 1 : 0);
 }
 function bkSync() {
@@ -7133,9 +8071,9 @@ function bkBack() {
     if (bkVis(k + '-menu')) return press(`btn-${k}-resume`);
     return press(`btn-${k}-pause`);
   }
-  if (bkVis('minis')) return press('btn-minis-back');
+  if (bkVis('bfpick')) return press('btn-bf-close');
   if (bkVis('splash')) return;
-  if (bkVis('lobby')) {
+  if (bkVis('minis')) {
     toast(tr('backExit'));
     const h = bkHave();
     if (h > 0) { BK.ignore++; history.go(-h); }   // back to the page's first entry: the next press leaves
@@ -7167,6 +8105,9 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   pebble: { PB, geo: pbGeo, open: openPebble, shoot: pbShoot, aimAt: pbAimAt, step: pbStep, grid: pbGrid, newRow: pbNewRow, fly: pbFly, end: pbEndTurn, col: pbCol, BR: PB_BR, C: PB_C, R: PB_R },
                   back: { BK, want: bkWant, have: bkHave, back: bkBack },
                   beaver: { BV, geo: bvGeo, open: openBeaver, press: bvPress, release: bvRelease, pose: bvPose, art: bvArt },
+                  hedgehog: { HH, geo: hhGeo, open: openHedgehog, throw: hhThrow, round: hhRound, spin: hhSpin },
+                  caterpillar: { CP, geo: cpGeo, open: openCaterpillar, turn: cpTurn, step: cpStep, free: cpFree },
+                  cups: { CU, geo: cuGeo, open: openCups, pick: cuPick, round: cuRound, pos: cuPos },
                   chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, sizes: cmSizes, SIZE: CM_SIZE, EDGES: CM_EDGES, T0: CM_T0, LOSE: CM_LOSE },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
