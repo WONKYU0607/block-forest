@@ -576,6 +576,24 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 @media (max-height: 700px) { .minis-card { padding-top: 38px; } .minis-list { gap: 6px; } }
 @media (prefers-reduced-motion: reduce) { .minis-card { animation: none; } }
 #bfpick { z-index: 4; }
+/* a game's opening card (first places and my best) and the ranking card */
+#rkintro { z-index: 33; }
+#rkb { z-index: 37; }
+#rkb .rank-tabs { grid-template-columns: 1fr 1fr; }
+#rkb #rkb-sizes[hidden] { display: none; }
+.rkb-game { margin: -2px 0 0; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 17px; color: var(--ol); }
+.rk-pic { width: min(104px, 28vw); height: min(104px, 28vw); margin: -6px auto -2px; display: grid; place-items: center; }
+.rk-pic > * { width: 100% !important; height: 100% !important; object-fit: contain; }
+.rk-recs { display: flex; flex-direction: column; gap: 6px; }
+.rk-rec { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 7px 12px; background: #fffaf0; border: 3px solid var(--ol); border-radius: 12px; box-shadow: 0 3px 0 var(--ol); }
+.rk-rec.top { background: #fff0b0; }
+.rk-rec.me { background: #e4f8c9; }
+.rk-rec .lab { font-family: 'Black Han Sans', sans-serif; font-size: 13px; color: #7a5a3a; white-space: nowrap; }
+.rk-rec .nm { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 15px; color: var(--ol); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rk-rec .sc { font-size: 19px; }
+.rank-gap { text-align: center; font-family: 'Black Han Sans', sans-serif; color: #7a5a3a; line-height: 1; flex: none; }
+.bf-size .opt span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+#bfpick .bf-size { display: grid; grid-template-columns: 1fr; gap: 8px; }   /* one size a row: room for its first place */
 .bf-size .opt span { font-family: 'Black Han Sans', sans-serif; font-size: 13px; color: var(--muted); }
 /* the ranking from Block Forest: its two boards only */
 #rank-vs, #rank-acorn { display: none; }
@@ -758,8 +776,8 @@ html.tall-art .scr-box .ext { display: none; }
     <div class="card">
       <div class="ribbon"><h2 data-t="blockGame">블록 포레스트</h2></div>
       <div class="opts lb-size bf-size">
-        <button class="opt" id="bf-16" type="button"><i class="mini m16"><i></i></i><div><b>16칸</b><span id="bf-16-best"></span></div></button>
-        <button class="opt" id="bf-32" type="button"><i class="mini m32"><i></i></i><div><b>32칸</b><span id="bf-32-best"></span></div></button>
+        <button class="opt" id="bf-16" type="button"><i class="mini m16"><i></i></i><div><b>16칸</b><span id="bf-16-top"></span><span id="bf-16-best"></span></div></button>
+        <button class="opt" id="bf-32" type="button"><i class="mini m32"><i></i></i><div><b>32칸</b><span id="bf-32-top"></span><span id="bf-32-best"></span></div></button>
       </div>
       <button class="btn plain" id="btn-bf-rank" type="button" data-t="rank">순위표</button>
       <button class="btn plain" id="btn-bf-close" type="button" data-t="close">닫기</button>
@@ -1117,6 +1135,31 @@ html.tall-art .scr-box .ext { display: none; }
   </div>
 </section>
 
+<section id="rkintro" class="overlay" hidden aria-label="게임 시작" data-ta="start">
+  <div class="card">
+    <div class="ribbon"><h2 id="rki-name"></h2></div>
+    <div class="rk-pic" id="rki-pic" aria-hidden="true"></div>
+    <div class="rk-recs">
+      <div class="rk-rec top"><span class="lab" data-t="rkTop">1위</span><b class="nm" id="rki-top-nm"></b><span class="sc num" id="rki-top"></span></div>
+      <div class="rk-rec week"><span class="lab" data-t="rkWeekTop">이번 주 1위</span><b class="nm" id="rki-wk-nm"></b><span class="sc num" id="rki-wk"></span></div>
+      <div class="rk-rec me"><span class="lab" data-t="rkMine">내 최고</span><b class="nm" id="rki-me-rank"></b><span class="sc num" id="rki-me"></span></div>
+    </div>
+    <button class="btn primary" id="btn-rki-go" type="button" data-t="start">게임 시작</button>
+    <div class="btn-row"><button class="btn plain" id="btn-rki-rank" type="button" data-t="rank">순위표</button><button class="btn plain" id="btn-rki-close" type="button" data-t="toList">목록으로</button></div>
+  </div>
+</section>
+
+<section id="rkb" class="overlay" hidden aria-label="순위표" data-ta="rank">
+  <div class="card pick">
+    <div class="ribbon"><h2 data-t="rank">순위표</h2></div>
+    <p class="rkb-game" id="rkb-game"></p>
+    <div class="opts rank-tabs" id="rkb-sizes"><button class="opt" id="rkb-32" type="button"><b>32칸</b></button><button class="opt" id="rkb-16" type="button"><b>16칸</b></button></div>
+    <div class="opts rank-tabs"><button class="opt" id="rkb-all" type="button"><b data-t="rkAll">역대</b></button><button class="opt" id="rkb-week" type="button"><b data-t="rkWeek">이번 주</b></button></div>
+    <div id="rkb-list" class="pick-list rank-list"></div>
+    <button class="btn plain" id="btn-rkb-close" type="button" data-t="close">닫기</button>
+  </div>
+</section>
+
 <section id="vspick" class="overlay" hidden aria-label="대결" data-ta="versus">
   <div class="card pick">
     <div class="ribbon"><h2 data-t="versus">대결</h2></div>
@@ -1166,7 +1209,7 @@ const STR = {
     pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
     inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
     account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '고슴도치 가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cpHint: '밀어서 방향 바꾸기', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', cuPick: '도토리는 어디?', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', blockGame: '블록 포레스트', minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '고슴도치 가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cpHint: '밀어서 방향 바꾸기', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', cuPick: '도토리는 어디?', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkWeekTop: '이번 주 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '역대', rkWeek: '이번 주', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -1195,7 +1238,7 @@ const STR = {
     pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
     inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
     account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Caterpillar Munch', caterpillarShort: 'Munch', cpHint: 'Swipe to turn', cups: 'Acorn Cups', cupsShort: 'Cups', cuPick: 'Where is the acorn?', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', blockGame: 'Block Forest', minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Caterpillar Munch', caterpillarShort: 'Munch', cpHint: 'Swipe to turn', cups: 'Acorn Cups', cupsShort: 'Cups', cuPick: 'Where is the acorn?', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkWeekTop: "This week's 1st", rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'All-time', rkWeek: 'This week', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -1661,7 +1704,7 @@ function signedIn(st) {
   openLobby(false); hideScreen('splash');
   lobbyInfo();
 }
-function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); flushPending(); }
+function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); flushPending(); rkSync(); }
 function openNick() {
   $('#nick').hidden = false;
   const err = $('#nick-err'); err.textContent = tr('nickRule'); err.classList.remove('bad');
@@ -2363,6 +2406,7 @@ function finish() {
   if (G.vs) { vsResult(); return; }
   const prev = G.best, isBest = G.score > prev;
   if (isBest) { G.best = G.score; saveBest(G.score); }
+  rkScore('block' + G.size, G.score);
   $('#over-reason').textContent = G.reason === 'top' ? tr('overTop') : tr('overNoFit');
   $('#over-score').textContent = G.score.toLocaleString();
   const ob = $('#over-best');
@@ -2862,6 +2906,7 @@ function lobbyInfo() {
 // leaving a game ends it: the score so far is the final one (a new best is kept)
 function quitGame() {
   if (G.started && !G.vs && G.score > G.best) { G.best = G.score; saveBest(G.score); }   // a versus score is not a best
+  if (G.started && !G.vs) rkScore('block' + G.size, G.score);
   G.started = false; G.state = 'menu';
   shownScore = G.score;
 }
@@ -3044,9 +3089,9 @@ function openMini() {
   const el = $('#mini');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   const go = () => { miniStart(); musicRate(1); musicStart(true); };   // the music from the top, at its own speed
-  if (sqArt.main && sqArt.hurt) return go();
+  if (sqArt.main && sqArt.hurt) return rkGate('acorn', go);
   // the squirrel's pictures normally came in at start; if not, wait for them a little
-  Promise.race([loadSquirrelArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && MG.st === 'off') go(); });
+  Promise.race([loadSquirrelArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && MG.st === 'off') rkGate('acorn', go); });
 }
 function miniStart() {
   $('#mini-menu').hidden = true; $('#mini-over').hidden = true;
@@ -3090,6 +3135,7 @@ function miniFinish() {
   MG.st = 'over';
   const best = miniBest(), isBest = MG.score > best;
   if (isBest) { try { localStorage.setItem(MINI_BEST, String(MG.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('acorn', MG.score);
   if (ME && MG.score > (ME.bestAcorn || 0)) { ME.bestAcorn = MG.score; send({ t: 'acorn', uid: ME.uid, score: MG.score }); }
   return isBest;
 }
@@ -3284,9 +3330,9 @@ $('#mg-acorn').addEventListener('click', () => { sfx('pick'); openMini(); });
 $('#btn-home-set').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
 // Block Forest: pick the board, and it starts
 function openBlockPick() {
-  $('#bf-16-best').textContent = tr('mgBest', bestFor(16).toLocaleString());
-  $('#bf-32-best').textContent = tr('mgBest', bestFor(32).toLocaleString());
+  for (const n of [16, 32]) { $(`#bf-${n}-best`).textContent = tr('rkMineOf', bestFor(n).toLocaleString()); $(`#bf-${n}-top`).textContent = tr('loading'); }
   $('#bfpick').hidden = false;
+  rkTops(['block16', 'block32']).then(tops => tops.forEach((t, i) => { const n = i ? 32 : 16; $(`#bf-${n}-top`).textContent = t === undefined ? '' : t ? tr('rkTopOf', t.name, t.score.toLocaleString()) : tr('rkTop') + ' ' + tr('rkNone'); }));
 }
 function startBlock(size) {
   $('#bfpick').hidden = true;
@@ -3296,8 +3342,171 @@ function startBlock(size) {
 $('#mg-block').addEventListener('click', () => { sfx('pick'); openBlockPick(); });
 $('#bf-16').addEventListener('click', () => { sfx('pick'); startBlock(16); });
 $('#bf-32').addEventListener('click', () => { sfx('pick'); startBlock(32); });
-$('#btn-bf-rank').addEventListener('click', () => { sfx('pick'); openRank(); });
+$('#btn-bf-rank').addEventListener('click', () => { sfx('pick'); rkBoard('block32'); });
 $('#btn-bf-close').addEventListener('click', () => { sfx('pick'); $('#bfpick').hidden = true; });
+/* ---------- rankings: a board per game (Block Forest's 16 and 32 apart), all-time and this week (weeks start Monday
+   00:00 in Korea). A game's final score: this phone keeps its best of the week (the all-time best it keeps already);
+   whatever beats what was last sent goes onto the boards (now, or at the next game or sign-in if it could not). A game
+   opens on a card with its first places (all-time and this week) and my best; the ranking card shows the top 20 and,
+   further down, me. A board's top 20 is one read (it is kept in one document, rewritten only when someone gets onto
+   it); what was read is shown again for a minute without asking. ---------- */
+const RK_SENT = 'rise-rk-sent', RK_WEEK = 'rise-rk-week', RK_TOP = 20, RK_KEEP = 60000;
+const rkWeek = (t = Date.now()) => Math.floor((t - 313200000) / 604800000);
+// each board's best on this phone
+const RK_LOCAL = { block16: () => bestFor(16), block32: () => bestFor(32), acorn: () => miniBest(), stairs: () => stBest(), merge: () => fmBest(), pebble: () => pbBest(),
+  mushroom: () => msBest(), owlpost: () => opBest(), chameleon: () => cmBest(), beaver: () => bvBest(), hedgehog: () => hhBest(), caterpillar: () => cpBest(), cups: () => cuBest() };
+// each mini game's screen and how to leave it
+const RK_SCREEN = { acorn: ['mini', () => closeMini()], stairs: ['stairs', () => closeStairs()], merge: ['merge', () => closeMerge()], pebble: ['pebble', () => closePebble()],
+  mushroom: ['mushroom', () => closeMushroom()], owlpost: ['owlpost', () => closeOwlPost()], chameleon: ['chameleon', () => closeChameleon()], beaver: ['beaver', () => closeBeaver()],
+  hedgehog: ['hedgehog', () => closeHedgehog()], caterpillar: ['caterpillar', () => closeCaterpillar()], cups: ['cups', () => closeCups()] };
+const rkLoad = k => { try { return JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) { return {}; } };
+const rkStore = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } };
+const rkOnline = () => !!(ME && NET && NET.boardSave);
+// what a board has of me, as this phone last sent or learned it: { s: score, k } by 'uid|game|period' (or null)
+function rkSent(key) { const v = rkLoad(RK_SENT)[key]; return v && typeof v === 'object' ? v : v ? { s: v } : null; }
+function rkSentPut(key, v) {
+  const all = rkLoad(RK_SENT), c = all[key] && typeof all[key] === 'object' ? all[key] : null;
+  if (!c || v.s > c.s || (v.s === c.s && !c.k)) { all[key] = { s: v.s, k: v.k }; rkStore(RK_SENT, all); }
+}
+// the boards' top 20s and my places as last read (or written), by board: kept for a minute
+const rkSeen = {}, rkSeenRank = {};
+async function rkList(game, period) {
+  const b = game + '-' + period, c = rkSeen[b];
+  if (c && Date.now() - c.t < RK_KEEP) return c.list;
+  const list = await NET.boardTop(game, period);
+  rkSeen[b] = { t: Date.now(), list };
+  return list;
+}
+// my score and place on a board ({ score, rank }), or null: from its top 20, or else from what this phone knows of me
+// (or the board, once) and a count. If I belong on the top 20 but am missing from it, I go back on.
+async function rkMe(game, period, list) {
+  const uid = ME.uid, b = game + '-' + period, key = uid + '|' + game + '|' + period, at = l => l.findIndex(o => o.uid === uid);
+  let i = at(list);
+  if (i >= 0) return { score: list[i].score, rank: i + 1 };
+  let me = rkSent(key);
+  if (!me || !me.k) {
+    if (list.length < RK_TOP) return null;   // not full, and I am not on it: I am not on the board
+    const c = rkSeenRank[b];
+    if (c && c.k === null && Date.now() - c.t < RK_KEEP) return null;
+    const m = await NET.boardMine(game, period);
+    if (!m) { rkSeenRank[b] = { t: Date.now(), k: null }; return null; }
+    me = { s: m.score, k: m.k }; rkSentPut(key, me);
+  }
+  if (list.length < RK_TOP || me.k > list[list.length - 1].k) {
+    const fixed = await NET.boardFix(game, period);
+    if (fixed) { rkSeen[b] = { t: Date.now(), list: fixed }; i = at(fixed); if (i >= 0) return { score: fixed[i].score, rank: i + 1 }; }
+  }
+  const c = rkSeenRank[b];
+  if (c && c.k === me.k && Date.now() - c.t < RK_KEEP) return { score: me.s, rank: c.rank };
+  const rank = await NET.boardRank(game, period, me.k);
+  rkSeenRank[b] = { t: Date.now(), k: me.k, rank };
+  return { score: me.s, rank };
+}
+// a game's final score (the game has already kept a new all-time best)
+function rkScore(game, score) {
+  score = Math.floor(score);
+  if (!(score > 0) || !RK_LOCAL[game]) return;
+  const wk = rkLoad(RK_WEEK), w = rkWeek();
+  if (!wk[game] || wk[game].w !== w || score > wk[game].s) { wk[game] = { w, s: score }; rkStore(RK_WEEK, wk); }
+  rkSync();
+}
+// whatever this phone has that beats what it last sent: onto the boards, one after another
+let rkBusy = false, rkAgain = false;
+async function rkSync() {
+  if (!rkOnline()) return;
+  if (rkBusy) { rkAgain = true; return; }
+  rkBusy = true;
+  try {
+    const uid = ME.uid, w = rkWeek(), wk = rkLoad(RK_WEEK);
+    for (const game of Object.keys(RK_LOCAL)) {
+      const best = { all: RK_LOCAL[game](), ['w' + w]: wk[game] && wk[game].w === w ? wk[game].s : 0 };
+      for (const period of Object.keys(best)) {
+        const key = uid + '|' + game + '|' + period, sent = rkSent(key);
+        if (!(best[period] > (sent ? sent.s : 0))) continue;
+        let r;
+        try { r = await NET.boardSave(game, period, best[period]); } catch (e) { continue; }   // offline or refused: next time
+        if (!r) continue;
+        rkSentPut(key, { s: r.score, k: r.k });
+        rkSeen[game + '-' + period] = { t: Date.now(), list: r.top }; delete rkSeenRank[game + '-' + period];
+      }
+    }
+  } finally { rkBusy = false; }
+  if (rkAgain) { rkAgain = false; rkSync(); }
+}
+// the first place of each board (all-time): a line, null (nobody yet) or undefined (could not ask)
+async function rkTops(games, period = 'all') {
+  if (!rkOnline()) return games.map(() => undefined);
+  return Promise.all(games.map(g => rkList(g, period).then(l => l[0] || null, () => undefined)));
+}
+// a mini game opens on its card; Start plays (go), the ranking card, or back to the list
+let rkGame = null, rkGo = null, rkN = 0;
+function rkGate(game, go) {
+  rkGame = game; rkGo = go;
+  const scr = $('#' + RK_SCREEN[game][0]);
+  for (const cv of scr.querySelectorAll('canvas')) { const c = cv.getContext('2d'); c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cv.width, cv.height); }   // not the last game's picture
+  $('#rki-name').textContent = tr(game);
+  const ic = $('#mg-' + game + ' .mg-ic');
+  $('#rki-pic').replaceChildren(...(ic ? [ic.cloneNode(true)] : []));
+  $('#rki-me').textContent = RK_LOCAL[game]().toLocaleString(); $('#rki-me-rank').textContent = '';
+  for (const id of ['top', 'wk']) { $(`#rki-${id}-nm`).textContent = tr('loading'); $(`#rki-${id}`).textContent = ''; }
+  $('#rkintro').hidden = false;
+  rkIntroFill(game);
+}
+async function rkIntroFill(game) {
+  const n = ++rkN;
+  const put = (id, t) => { $(`#rki-${id}-nm`).textContent = t === undefined ? '-' : t ? t.name : tr('rkNone'); $(`#rki-${id}`).textContent = t ? t.score.toLocaleString() : ''; };
+  if (!rkOnline()) { put('top', undefined); put('wk', undefined); return; }
+  const [all, week] = await Promise.all([rkList(game, 'all').catch(() => undefined), rkList(game, 'w' + rkWeek()).catch(() => undefined)]);
+  const me = all ? await rkMe(game, 'all', all).catch(() => null) : null;
+  if (n !== rkN) return;
+  put('top', all && (all[0] || null)); put('wk', week && (week[0] || null));
+  const mine = RK_LOCAL[game]();
+  if (me && me.score >= mine) { $('#rki-me').textContent = me.score.toLocaleString(); $('#rki-me-rank').textContent = tr('rkPlace', me.rank); }
+}
+function rkStart() { $('#rkintro').hidden = true; const go = rkGo; rkGo = null; if (go) go(); }
+function rkLeave() { $('#rkintro').hidden = true; rkGo = null; if (rkGame && RK_SCREEN[rkGame]) RK_SCREEN[rkGame][1](); }
+$('#btn-rki-go').addEventListener('click', () => { sfx('pick'); rkStart(); });
+$('#btn-rki-rank').addEventListener('click', () => { sfx('pick'); rkBoard(rkGame); });
+$('#btn-rki-close').addEventListener('click', () => { sfx('pick'); rkLeave(); });
+// the ranking card: a board's top 20, and me below if I am further down
+let rkbGame = 'acorn', rkbAll = true, rkbN = 0;
+function rkBoard(game) {
+  rkbGame = game; rkbAll = true;
+  $('#rkb-sizes').hidden = !game.startsWith('block');
+  $('#rkb').hidden = false;
+  rkbFill();
+}
+function rkRow(no, name, score, me) {
+  const row = document.createElement('div'), a = document.createElement('span'), b = document.createElement('span'), c = document.createElement('span');
+  row.className = 'rank-row' + (no <= 3 ? ' r' + no : '') + (me ? ' me' : '');
+  a.className = 'no'; a.textContent = no; b.className = 'nm'; b.textContent = name; c.className = 'sc'; c.textContent = score.toLocaleString();
+  row.append(a, b, c);
+  return row;
+}
+async function rkbFill() {
+  const n = ++rkbN, game = rkbGame, period = rkbAll ? 'all' : 'w' + rkWeek(), list = $('#rkb-list');
+  $('#rkb-game').textContent = game.startsWith('block') ? tr('blockGame') : tr(game);
+  for (const k of ['32', '16']) $('#rkb-' + k).setAttribute('aria-pressed', String(game === 'block' + k));
+  $('#rkb-all').setAttribute('aria-pressed', String(rkbAll)); $('#rkb-week').setAttribute('aria-pressed', String(!rkbAll));
+  list.replaceChildren(pickNote(tr('loading')));
+  if (!rkOnline()) { list.replaceChildren(pickNote(tr('loginErr'))); return; }
+  let top, me;
+  try { top = await rkList(game, period); me = await rkMe(game, period, top); } catch (e) { if (n === rkbN) list.replaceChildren(pickNote(tr('loginErr'))); return; }
+  if (n !== rkbN) return;
+  top = rkSeen[game + '-' + period] ? rkSeen[game + '-' + period].list : top;   // as put right by rkMe
+  list.replaceChildren();
+  if (!top.length && !me) { list.append(pickNote(tr('rankEmpty'))); return; }
+  top.forEach((o, i) => list.append(rkRow(i + 1, o.name, o.score, o.uid === ME.uid)));
+  if (me && !top.some(o => o.uid === ME.uid)) {
+    const gap = document.createElement('div'); gap.className = 'rank-gap'; gap.textContent = '⋮';
+    if (top.length) list.append(gap);
+    list.append(rkRow(me.rank, ME.name, me.score, true));
+  }
+}
+for (const k of ['32', '16']) $('#rkb-' + k).addEventListener('click', () => { if (rkbGame !== 'block' + k) { sfx('pick'); rkbGame = 'block' + k; rkbFill(); } });
+$('#rkb-all').addEventListener('click', () => { if (!rkbAll) { sfx('pick'); rkbAll = true; rkbFill(); } });
+$('#rkb-week').addEventListener('click', () => { if (rkbAll) { sfx('pick'); rkbAll = false; rkbFill(); } });
+$('#btn-rkb-close').addEventListener('click', () => { sfx('pick'); $('#rkb').hidden = true; });
 $('#btn-mini-pause').addEventListener('click', () => { sfx('pick'); miniPause(); });
 $('#btn-mini-resume').addEventListener('click', () => { sfx('pick'); $('#mini-menu').hidden = true; MG.st = 'play'; MG.last = performance.now(); musicStart(false); });
 $('#btn-mini-quit').addEventListener('click', () => { sfx('pick'); miniFinish(); closeMini(); });
@@ -3575,8 +3784,8 @@ function openStairs() {
   const el = $('#stairs');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   const go = () => { stStart(); musicRate(1); musicStart(true); };
-  if (RB_ART && Object.keys(RB_ART).every(k => rbArt[k])) return go();
-  Promise.race([loadRabbitArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && ST.st === 'off') go(); });
+  if (RB_ART && Object.keys(RB_ART).every(k => rbArt[k])) return rkGate('stairs', go);
+  Promise.race([loadRabbitArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && ST.st === 'off') rkGate('stairs', go); });
 }
 function stStart() {
   $('#st-menu').hidden = true; $('#st-over').hidden = true;
@@ -3617,6 +3826,7 @@ function stFinish() {
   ST.st = 'over';
   const isBest = ST.score > stBest();
   if (isBest) { try { localStorage.setItem(ST_BEST, String(ST.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('stairs', ST.score);
   return isBest;
 }
 function stGameOver() {
@@ -3829,8 +4039,8 @@ function openMerge() {
   const el = $('#merge');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   const go = () => { fmStart(); musicRate(1); musicStart(true); };
-  if (fmArt.hold && fmArt.fruit.filter(Boolean).length === FM_N) return go();
-  Promise.race([loadMergeArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && FM.st === 'off') go(); });
+  if (fmArt.hold && fmArt.fruit.filter(Boolean).length === FM_N) return rkGate('merge', go);
+  Promise.race([loadMergeArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && FM.st === 'off') rkGate('merge', go); });
 }
 function fmStart() {
   $('#fm-menu').hidden = true; $('#fm-over').hidden = true;
@@ -3929,6 +4139,7 @@ function fmFinish() {
   FM.st = 'over';
   const isBest = FM.score > fmBest();
   if (isBest) { try { localStorage.setItem(FM_BEST, String(FM.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('merge', FM.score);
   return isBest;
 }
 function fmGameOver() {
@@ -4174,8 +4385,8 @@ function openPebble() {
   const go = () => { pbStart(); musicRate(1); musicStart(true); };
   // the hint's letters may sit in a part of the font not loaded yet: load it, then draw the lettering again
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('pbHint') + '×0123456789').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
-  if (Object.keys(PB_ART).every(k => pbArt[k])) return go();
-  Promise.race([loadPebbleArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && PB.st === 'off') go(); });
+  if (Object.keys(PB_ART).every(k => pbArt[k])) return rkGate('pebble', go);
+  Promise.race([loadPebbleArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && PB.st === 'off') rkGate('pebble', go); });
 }
 function pbStart() {
   $('#pb-menu').hidden = true; $('#pb-over').hidden = true;
@@ -4347,6 +4558,7 @@ function pbFinish() {
   PB.st = 'over';
   const isBest = PB.score > pbBest();
   if (isBest) { try { localStorage.setItem(PB_BEST, String(PB.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('pebble', PB.score);
   return isBest;
 }
 function pbGameOver() {
@@ -4720,7 +4932,7 @@ function openMushroom() {
   const el = $('#mushroom');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('msClear') + '0123456789+초s').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
-  msStart(); musicRate(1); musicStart(true);
+  rkGate('mushroom', () => { msStart(); musicRate(1); musicStart(true); });
 }
 function msStart() {
   $('#ms-menu').hidden = true; $('#ms-over').hidden = true;
@@ -4810,6 +5022,7 @@ function msFinish() {
   MS.st = 'over';
   const isBest = MS.score > msBest();
   if (isBest) { try { localStorage.setItem(MS_BEST, String(MS.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('mushroom', MS.score);
   return isBest;
 }
 function msGameOver() {
@@ -5026,8 +5239,8 @@ function openOwlPost() {
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('opSwap') + tr('comboN', 0) + tr('opLose', OP_LOSE) + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   const go = () => { opStart(); musicRate(1); musicStart(true); };
-  if (opArt.hold && OP_PALS.every(p => opArt[p]) && OP_GIFTS.every(n => opArt['gift-' + n])) return go();
-  Promise.race([loadOwlArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && OP.st === 'off') go(); });
+  if (opArt.hold && OP_PALS.every(p => opArt[p]) && OP_GIFTS.every(n => opArt['gift-' + n])) return rkGate('owlpost', go);
+  Promise.race([loadOwlArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && OP.st === 'off') rkGate('owlpost', go); });
 }
 const opRand = () => Math.floor(Math.random() * 4);
 function opStart() {
@@ -5081,6 +5294,7 @@ function opFinish() {
   OP.st = 'over';
   const isBest = OP.score > opBest();
   if (isBest) { try { localStorage.setItem(OP_BEST, String(OP.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('owlpost', OP.score);
   return isBest;
 }
 function opGameOver() {
@@ -5363,8 +5577,8 @@ function openChameleon() {
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('opLose', CM_LOSE) + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   const go = () => { cmStart(); musicRate(1); musicStart(true); };
-  if (Object.keys(CM_ART).every(k => cmArt[k])) return go();
-  Promise.race([loadChamArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && CM.st === 'off') go(); });
+  if (Object.keys(CM_ART).every(k => cmArt[k])) return rkGate('chameleon', go);
+  Promise.race([loadChamArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && CM.st === 'off') rkGate('chameleon', go); });
 }
 function cmStart() {
   $('#cm-menu').hidden = true; $('#cm-over').hidden = true;
@@ -5404,6 +5618,7 @@ function cmFinish() {
   CM.st = 'over';
   const isBest = CM.score > cmBest();
   if (isBest) { try { localStorage.setItem(CM_BEST, String(CM.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('chameleon', CM.score);
   return isBest;
 }
 function cmGameOver() {
@@ -5657,9 +5872,9 @@ function openBeaver() {
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('bvPerfect') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   const go = () => { bvStart(); musicRate(1); musicStart(true); };
-  if (Object.keys(BV_ART).every(k => bvArt[k])) return go();
+  if (Object.keys(BV_ART).every(k => bvArt[k])) return rkGate('beaver', go);
   BV.st = 'off';
-  Promise.race([loadBeaverArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && BV.st === 'off') go(); });
+  Promise.race([loadBeaverArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && BV.st === 'off') rkGate('beaver', go); });
 }
 function bvStart() {
   $('#bv-menu').hidden = true; $('#bv-over').hidden = true;
@@ -5710,6 +5925,7 @@ function bvFinish() {
   BV.st = 'over';
   const isBest = BV.score > bvBest();
   if (isBest) { try { localStorage.setItem(BV_BEST, String(BV.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('beaver', BV.score);
   return isBest;
 }
 function bvGameOver() {
@@ -5974,7 +6190,7 @@ function openHedgehog() {
   const el = $('#hedgehog');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('hhClear') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
-  hhStart();
+  rkGate('hedgehog', hhStart);
 }
 function hhStart() {
   $('#hh-menu').hidden = true; $('#hh-over').hidden = true;
@@ -6029,6 +6245,7 @@ function hhFinish() {
   HH.st = 'over';
   const isBest = HH.score > hhBest();
   if (isBest) { try { localStorage.setItem(HH_BEST, String(HH.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('hedgehog', HH.score);
   return isBest;
 }
 function hhGameOver() {
@@ -6193,7 +6410,7 @@ function openCaterpillar() {
   const el = $('#caterpillar');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('cpHint') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
-  cpStart();
+  rkGate('caterpillar', cpStart);
 }
 function cpStart() {
   $('#cp-menu').hidden = true; $('#cp-over').hidden = true;
@@ -6252,6 +6469,7 @@ function cpFinish() {
   CP.st = 'over';
   const isBest = CP.score > cpBest();
   if (isBest) { try { localStorage.setItem(CP_BEST, String(CP.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('caterpillar', CP.score);
   return isBest;
 }
 function cpGameOver() {
@@ -6482,7 +6700,7 @@ function openCups() {
   const el = $('#cups');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('cuPick') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
-  cuStart();
+  rkGate('cups', cuStart);
 }
 function cuStart() {
   $('#cu-menu').hidden = true; $('#cu-over').hidden = true;
@@ -6514,6 +6732,7 @@ function cuFinish() {
   CU.st = 'over';
   const isBest = CU.score > cuBest();
   if (isBest) { try { localStorage.setItem(CU_BEST, String(CU.score)); } catch (e) { /* storage unavailable */ } }
+  rkScore('cups', CU.score);
   return isBest;
 }
 function cuGameOver() {
@@ -8052,8 +8271,8 @@ const bkVis = id => { const el = $('#' + id); return !!el && !el.hidden && !el.c
 const BK_MINI = [['mini', 'mini'], ['stairs', 'st'], ['merge', 'fm'], ['pebble', 'pb'], ['mushroom', 'ms'], ['owlpost', 'op'], ['chameleon', 'cm'], ['beaver', 'bv'], ['hedgehog', 'hh'], ['caterpillar', 'cp'], ['cups', 'cu']];
 function bkWant() {
   if (bkVis('splash')) return 0;
-  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || bkVis(k + '-over')) ? 4 : 3;   // over the list, over the lobby
-  if (bkVis('minis')) return (bkVis('settings') || bkVis('rank') || bkVis('bfpick')) ? 2 : 1;
+  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || bkVis(k + '-over') || bkVis('rkintro')) ? 4 + (bkVis('rkb') ? 1 : 0) : 3;   // over the home
+  if (bkVis('minis')) return (bkVis('settings') || bkVis('rank') || bkVis('bfpick') || bkVis('rkb')) ? 2 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) : 1;
   return 2 + ((bkVis('menu') || bkVis('over') || bkVis('vsover')) ? 1 : 0) + (bkVis('settings') ? 1 : 0);
 }
 function bkSync() {
@@ -8065,8 +8284,10 @@ function bkBack() {
   const press = id => { const b = $('#' + id); if (b && !b.hidden) b.click(); };
   if (bkVis('settings')) return press('btn-settings-close');
   if (bkVis('rank')) return press('btn-rank-close');
+  if (bkVis('rkb')) return press('btn-rkb-close');
   if (bkVis('vspick')) return press('btn-pick-close');
   for (const [scr, k] of BK_MINI) if (bkVis(scr)) {
+    if (bkVis('rkintro')) return press('btn-rki-close');
     if (bkVis(k + '-over')) return press(`btn-${k}-lobby`);
     if (bkVis(k + '-menu')) return press(`btn-${k}-resume`);
     return press(`btn-${k}-pause`);
