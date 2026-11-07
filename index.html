@@ -407,11 +407,11 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 #chameleon .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
 #cm-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; margin-bottom: env(safe-area-inset-bottom, 0px); }
 #chameleon .overlay { z-index: 3; }
-/* 비버 다리 놓기: the canvas fills the screen under the top bar */
-#beaver { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
+/* 비버 다리 놓기: the canvas fills the whole screen (the river picture behind the top bar too), the bar over it */
+#beaver { z-index: 32; display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; background: linear-gradient(#6ba95d 0 72%, #22b5f2 72%); }
 #beaver[hidden] { display: none; }
-#beaver .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; }
-#bv-cv { flex: 1; min-height: 0; width: 100%; display: block; touch-action: none; margin-bottom: env(safe-area-inset-bottom, 0px); }
+#beaver .mini-hud { flex: none; margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0; position: relative; z-index: 1; }
+#bv-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 #beaver .overlay { z-index: 3; }
 #ms-undo { background: linear-gradient(#9ad8ff, #4ea9f0); flex-direction: row; gap: 6px; }
 #ms-undo svg { width: 24px; height: 24px; }
@@ -726,7 +726,7 @@ html.tall-art .scr-box .ext { display: none; }
         <button class="opt mg-row" id="mg-mushroom" type="button"><svg class="mg-ic" viewBox="0 0 34 34" aria-hidden="true"><path d="M13.5 20h7v8.5c0 1.6-1.3 2.5-3.5 2.5s-3.5-.9-3.5-2.5z" fill="#fff3dc" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 20.5C4 11.5 9.8 5 17 5s13 6.5 13 15.5c0 1-.8 1.5-1.8 1.5H5.8C4.8 22 4 21.5 4 20.5z" fill="#ef3b36" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><circle cx="11" cy="14" r="2.6" fill="#fff7ee"/><circle cx="19.5" cy="10.5" r="3" fill="#fff7ee"/><circle cx="24" cy="17" r="2" fill="#fff7ee"/></svg><div><b data-t="mushroom">버섯 바구니 정리</b><span id="mg-mushroom-best"></span></div></button>
         <button class="opt mg-row" id="mg-owlpost" type="button"><img class="mg-ic mg-img" src="owl-hold.webp" alt=""><div><b data-t="owlpost">부엉이 우체국</b><span id="mg-owlpost-best"></span></div></button>
         <button class="opt mg-row" id="mg-chameleon" type="button"><img class="mg-ic mg-img" src="cham-joy.webp" alt=""><div><b data-t="chameleon">카멜레온 찾기</b><span id="mg-chameleon-best"></span></div></button>
-        <button class="opt mg-row" id="mg-beaver" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="beaver">비버 다리 놓기</b><span id="mg-beaver-best"></span></div></button>
+        <button class="opt mg-row" id="mg-beaver" type="button"><img class="mg-ic mg-img" src="beaver-idle.webp" alt=""><div><b data-t="beaver">비버 다리 놓기</b><span id="mg-beaver-best"></span></div></button>
       </div>
       <button class="btn plain" id="btn-minis-back" type="button" data-t="toLobby">로비로</button>
     </div>
@@ -937,7 +937,7 @@ html.tall-art .scr-box .ext { display: none; }
   <section id="bv-over" class="overlay" hidden>
     <div class="card">
       <div class="ribbon"><h2 data-t="beaver">비버 다리 놓기</h2></div>
-      <img id="bv-face" class="st-cheer" src="" alt="">
+      <img id="bv-face" class="st-cheer" src="beaver-idle.webp" alt="">
       <div class="bigscore"><span class="label" data-t="score">점수</span><span id="bv-final" class="num">0</span></div>
       <p id="bv-note" class="gap" hidden></p>
       <button class="btn primary" id="btn-bv-again" type="button" data-t="again">다시 하기</button>
@@ -2363,6 +2363,7 @@ const MUSIC = {
   pebble: [{ url: 'bgm-pebble-ska.mp3', loop: [13230, 1424430] }],
   owlpost: [{ url: 'bgm-owlpost.mp3', loop: [13230, 1142190] }],
   chameleon: [{ url: 'bgm-chameleon.mp3', loop: [13230, 1473092] }],
+  beaver: [{ url: 'bgm-beaver.mp3', loop: [13230, 1473092] }],
   mushroom: [{ url: 'bgm-mushroom.mp3', loop: [13230, 1473092] }],
 };
 const MUSIC_VOL = 0.45;
@@ -2370,7 +2371,7 @@ SND.track = 'main'; SND.lvl = 0; SND.bufs = {}; SND.loads = {}; SND.posOf = {};
 const musVar = () => MUSIC[SND.track][SND.lvl];
 const musLoop = v => ({ start: v.loop[0] / 44100, end: v.loop[1] / 44100 });
 // which tune: the game being played
-function musicFor() { return G.state === 'play' ? 'main' : MG.st === 'play' ? 'acorn' : ST.st === 'play' ? 'stairs' : FM.st === 'play' ? 'merge' : PB.st === 'play' ? 'pebble' : MS.st === 'play' ? 'mushroom' : OP.st === 'play' ? 'owlpost' : CM.st === 'play' ? 'chameleon' : null; }
+function musicFor() { return G.state === 'play' ? 'main' : MG.st === 'play' ? 'acorn' : ST.st === 'play' ? 'stairs' : FM.st === 'play' ? 'merge' : PB.st === 'play' ? 'pebble' : MS.st === 'play' ? 'mushroom' : OP.st === 'play' ? 'owlpost' : CM.st === 'play' ? 'chameleon' : BV.st === 'play' ? 'beaver' : null; }
 function loadTune(url) {
   if (SND.bufs[url] || SND.loads[url] || !SND.ctx) return;
   SND.loads[url] = fetch(url)
@@ -5385,17 +5386,72 @@ const BV_BEST = 'rise7-best-beaver';
 const BV_PTS = 100;   // a crossing; the mark doubles it
 const BV_GROW = 0.85;   // the log grows this many screen widths a second
 const BV_FALL = 0.32, BV_WALK = 0.9, BV_PAN = 0.35;   // s the log takes to fall; walking speed (screen widths a second); s the view takes to move on
+const BV_PARA = 0.3;   // the picture behind moves this much of the way the view does
+const BV_STEP = 0.12;   // s each walking picture shows
+const BV_ART = { idle: 'beaver-idle.webp', walk1: 'beaver-walk1.webp', walk2: 'beaver-walk2.webp', joy1: 'beaver-joy1.webp', joy2: 'beaver-joy2.webp',
+  stump: 'stump.webp', mark: 'bv-mark.webp', bg: 'bv-bg.webp' };
+// each beaver picture: where its feet are (under the middle of its head, on its soles), as parts of the picture; all five
+// share one scale, the standing one BV_TALL px from ears to soles
+const BV_POSE = { idle: [0.5703, 0.9899], walk1: [0.5624, 0.9898], walk2: [0.5598, 0.9898], joy1: [0.4624, 0.9904], joy2: [0.4784, 0.9902] };
+const BV_TALL = 348;
+// the stump picture, as parts of it: its sides, the middle of its top (where the beaver stands), where the top's rim ends
+// and the bark below ends; the top is an ellipse this flat (height / width)
+const BV_STUMP = { x0: 0.0051, x1: 0.9936, top: 0.1416, rim: 0.301, bark: 0.892, flat: 0.235 };
+const BV_MARK = { red: 0.706, mid: 0.31 };   // the mark picture: the red's width, the middle of its top, as parts of it
+const BV_RIVER = 1050 / 1448;   // the river's far bank in the picture behind, as a part of its height
+const bvArt = {};
+let bvReady = null;
+function loadBeaverArt() {
+  if (!bvReady) {
+    bvReady = Promise.all(Object.keys(BV_ART).map(k => bvArt[k] ? true : new Promise(res => {
+      const im = new Image();
+      im.onload = () => { bvArt[k] = im; BV.img = null; res(true); };
+      im.onerror = () => res(false);
+      im.src = BV_ART[k];
+    })));
+    bvReady.then(ok => { if (!ok.every(Boolean)) bvReady = null; });
+  }
+  return bvReady;
+}
 // stumps: x from the river's start and width; cur, cur: the one the beaver is on; log: its length and how far it has
 // fallen (0 up, 1 across); bx: the beaver's x; cam: the view's left edge
 const BV = { st: 'off', W: 0, H: 0, stumps: [], cur: 0, log: 0, lean: 0, logs: [], bx: 0, by: 0, vy: 0, cam: 0, camFrom: 0, camTo: 0, t: 0, splashed: false, phase: 'idle', ok: false, perfect: false,
-  n: 0, score: 0, best: 0, pops: [], drops: [], spin: 0, raf: 0, last: 0, held: false };
+  n: 0, score: 0, best: 0, pops: [], drops: [], rings: [], spin: 0, raf: 0, last: 0, held: false, img: null };
 const bvcv = $('#bv-cv'), bvctx = bvcv.getContext('2d');
 function bvBest() { try { return parseInt(localStorage.getItem(BV_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
-// sizes on screen: the stumps' tops a little over the middle, the river below; s scales everything to a 390px screen
+// sizes on screen: the picture behind as tall as the screen (its river's far bank at `water`); the stumps' tops a little
+// over the middle, standing in the river with their feet at `base`; s scales the rest to a 390px screen
 function bvGeo() {
   const W = BV.W, H = BV.H, s = Math.min(W, 520) / 390;
-  const top = Math.round(H * 0.6), water = Math.round(top + Math.max(60, H * 0.12));
-  return { W, H, s, top, water, lw: 11 * s, bh: 58 * s, mark: Math.max(7, 9 * s), stand: W * 0.3 };
+  const water = Math.round(H * BV_RIVER), base = Math.round(water + (H - water) * 0.3), top = Math.round(H * 0.62);
+  return { W, H, s, top, water, base, lw: 11 * s, bh: 62 * s, mark: Math.max(7, 9 * s), stand: W * 0.3 };
+}
+// the beaver pictures and the mark at their sizes on screen, made again when the screen changes
+function bvPics() {
+  const g = bvGeo(), key = [BV.W, BV.H, dpr, Object.keys(bvArt).length].join('|');
+  if (BV.img && BV.img.key === key) return BV.img;
+  const P = { key }, k = g.bh / BV_TALL;
+  for (const n of Object.keys(BV_POSE)) if (bvArt[n]) { const im = bvArt[n]; P[n] = artPic(im, im.naturalWidth * k, im.naturalHeight * k); }
+  if (bvArt.mark) { const im = bvArt.mark, w = g.mark / BV_MARK.red; P.mark = artPic(im, w, w * im.naturalHeight / im.naturalWidth); }
+  return (BV.img = P);
+}
+// a stump `w` wide, its top's middle at the top line and its foot in the river: the picture's top kept to scale (so its
+// ellipse stays as flat as on a wide one), the bark stretched down; the foot cut along the front of its round bottom.
+// Kept on the stump, made once (again if the screen changes)
+function bvStumpPic(g, st) {
+  const im = bvArt.stump, key = [g.H, dpr].join('|');
+  if (st.pic && st.pic.key === key) return st.pic;
+  const nw = im.naturalWidth, nh = im.naturalHeight, k = st.w / ((BV_STUMP.x1 - BV_STUMP.x0) * nw);
+  const dx = BV_STUMP.x0 * nw * k, up = BV_STUMP.top * nh * k, rim = BV_STUMP.rim * nh * k, ry = BV_STUMP.flat * st.w / 2;
+  const h = up + (g.base - g.top) + ry;
+  const c = miniPic(st.w, h, x => {
+    x.beginPath(); x.moveTo(0, 0); x.lineTo(st.w, 0); x.lineTo(st.w, h - ry); x.ellipse(st.w / 2, h - ry, st.w / 2, ry, 0, 0, Math.PI); x.closePath(); x.clip();
+    x.imageSmoothingQuality = 'high';
+    x.drawImage(im, 0, 0, nw, BV_STUMP.rim * nh, -dx, 0, nw * k, rim);
+    x.drawImage(im, 0, BV_STUMP.rim * nh, nw, (BV_STUMP.bark - BV_STUMP.rim) * nh, -dx, rim - 0.5, nw * k, h - rim + 0.5);
+  });
+  c.key = key; c.up = up; c.ry = ry;
+  return (st.pic = c);
 }
 // the beaver, feet at (0,0), facing right, drawn in the game's look (thick dark outline, flat colours); pose: 'stand',
 // 'hold' (paws up), 'walk' (k: the step)
@@ -5426,7 +5482,7 @@ function bvBeaver(c, s, pose = 'stand', k = 0) {
 }
 // a stump standing in the river: bark down its side, a light top with rings, the mark in the middle
 function bvStump(c, g, x, w) {
-  const y = g.top, h = g.water - y + 40 * g.s, r = Math.min(10 * g.s, w / 3);
+  const y = g.top, h = g.base - y, r = Math.min(10 * g.s, w / 3);
   const bg = c.createLinearGradient(x, 0, x + w, 0); bg.addColorStop(0, '#7a4a28'); bg.addColorStop(0.5, '#93603a'); bg.addColorStop(1, '#5e3a20');
   rr(c, x, y, w, h, r); c.fillStyle = bg; c.fill();
   c.save(); rr(c, x, y, w, h, r); c.clip(); c.strokeStyle = 'rgba(40,20,8,0.35)'; c.lineWidth = 2 * g.s;
@@ -5444,12 +5500,12 @@ function bvLog(c, g, x, y, L, lean) {
   if (L <= 0) return;
   c.save(); c.translate(x, y); c.rotate(lean * Math.PI / 2);
   const w = g.lw;
-  rr(c, -w, -L, w, L, w / 2.5); c.fillStyle = '#a86b38'; c.fill();
+  rr(c, -w, -L, w, L, w / 2.5); c.fillStyle = '#a65a24'; c.fill();
   c.save(); rr(c, -w, -L, w, L, w / 2.5); c.clip(); c.strokeStyle = 'rgba(60,30,10,0.45)'; c.lineWidth = 1.5 * g.s;
   for (let k = 14 * g.s; k < L; k += 22 * g.s) { c.beginPath(); c.moveTo(-w + 2, -k); c.lineTo(-2, -k - 6 * g.s); c.stroke(); }
   c.restore();
   rr(c, -w, -L, w, L, w / 2.5); c.lineWidth = 2.6 * g.s; c.strokeStyle = MOL; c.stroke();
-  c.beginPath(); c.ellipse(-w / 2, -L + 1, w / 2, w / 3.2, 0, 0, Math.PI * 2); c.fillStyle = '#f0cf98'; c.fill(); c.lineWidth = 2 * g.s; c.stroke();   // its cut end
+  c.beginPath(); c.ellipse(-w / 2, -L + 1, w / 2, w / 3.2, 0, 0, Math.PI * 2); c.fillStyle = '#fbd08f'; c.fill(); c.lineWidth = 2 * g.s; c.stroke();   // its cut end
   c.restore();
 }
 function bvResize() {
@@ -5465,21 +5521,24 @@ function bvHud() {
 function bvNext() {
   const g = bvGeo(), W = g.W, k = Math.min(1, BV.n / 30), prev = BV.stumps[BV.stumps.length - 1];
   const wMax = W * (0.26 - 0.1 * k), wMin = W * (0.12 - 0.05 * k), w = wMin + Math.random() * (wMax - wMin);
-  const gMin = W * 0.08, gMax = Math.max(gMin + 10, W * 0.66 - w), gap = gMin + Math.random() * (gMax - gMin);
+  const gMin = W * 0.08, gMax = Math.max(gMin + 10, Math.min(W * 0.66 - w, g.top - 40 - w)), gap = gMin + Math.random() * (gMax - gMin);   // never past the longest log
   BV.stumps.push({ x: prev.x + prev.w + gap, w });
 }
 function openBeaver() {
   const el = $('#beaver');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('bvPerfect') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
-  bvStart();
+  const go = () => { bvStart(); musicRate(1); musicStart(true); };
+  if (Object.keys(BV_ART).every(k => bvArt[k])) return go();
+  BV.st = 'off';
+  Promise.race([loadBeaverArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && BV.st === 'off') go(); });
 }
 function bvStart() {
   $('#bv-menu').hidden = true; $('#bv-over').hidden = true;
   bvResize();
   const g = bvGeo(), w0 = g.W * 0.24;
   Object.assign(BV, { st: 'play', stumps: [{ x: g.stand - w0, w: w0 }], cur: 0, log: 0, lean: 0, logs: [], cam: 0, camTo: 0, t: 0, phase: 'idle', n: 0, score: 0,
-    best: bvBest(), pops: [], drops: [], spin: 0, held: false, by: 0, vy: 0, splashed: false });
+    best: bvBest(), pops: [], drops: [], rings: [], spin: 0, held: false, by: 0, vy: 0, splashed: false });
   bvNext();
   BV.bx = g.stand - g.bh * 0.35; BV.by = 0;
   bvHud();
@@ -5527,17 +5586,20 @@ function bvFinish() {
 }
 function bvGameOver() {
   const isBest = bvFinish();
+  musicStop();
   if (isBest) gsfx('bvBest', 1, 'stage');
   $('#bv-final').textContent = BV.score.toLocaleString();
   const note = $('#bv-note'); note.hidden = !isBest; note.textContent = tr('newBest');
+  $('#bv-face').src = isBest ? BV_ART.joy2 : BV_ART.idle;
   setTimeout(() => { if (BV.st === 'over') $('#bv-over').hidden = false; }, 500);
 }
 function closeBeaver() {
   cancelAnimationFrame(BV.raf); BV.st = 'off';
+  musicStop();
   hideScreen('beaver');
   lobbyInfo();
 }
-function bvPause() { if (BV.st !== 'play') return; BV.st = 'pause'; BV.held = false; if (BV.phase === 'grow') bvRelease(); $('#bv-menu').hidden = false; }
+function bvPause() { if (BV.st !== 'play') return; BV.st = 'pause'; BV.held = false; if (BV.phase === 'grow') bvRelease(); musicStop(); $('#bv-menu').hidden = false; }
 function bvFrame(now) {
   BV.raf = requestAnimationFrame(bvFrame);
   const dt = Math.min(0.05, Math.max(0, (now - BV.last) / 1000)); BV.last = now;
@@ -5552,6 +5614,7 @@ function bvUpdate(dt) {
     else if (BV.phase === 'fall') { const q = Math.min(1, BV.t / BV_FALL); BV.lean = q * q; if (q >= 1) bvJudge(); }
     else if (BV.phase === 'walk') {
       BV.bx = Math.min(BV.walkTo, BV.bx + BV_WALK * g.W * dt);
+      if (!BV.ok) BV.cam = Math.max(BV.cam, BV.bx - g.W * 0.8);   // off the end of a long log: the view keeps the beaver in sight
       if (BV.bx >= BV.walkTo) { if (BV.ok) bvCrossed(); else bvFell(); }   // off the end of a short or long log: into the river
     } else if (BV.phase === 'pan') {
       const q = Math.min(1, BV.t / BV_PAN);
@@ -5560,45 +5623,81 @@ function bvUpdate(dt) {
     } else if (BV.phase === 'drop') {   // the beaver falls, turning; the log tips down after it
       BV.vy += 1600 * g.s * dt; BV.by += BV.vy * dt; BV.spin += dt * 5;
       if (BV.lean < 2) BV.lean = Math.min(2, BV.lean + dt / 0.3);
-      if (!BV.splashed && g.top + BV.by > g.water) {
+      if (!BV.splashed && g.top + BV.by > g.base) {   // into the river: drops fly up, rings spread
         BV.splashed = true;
-        for (let i = 0; i < 12; i++) { const a = -Math.PI * (0.15 + 0.7 * i / 11); BV.drops.push({ x: BV.bx - BV.cam, y: g.water, vx: Math.cos(a) * 160 * g.s, vy: Math.sin(a) * 260 * g.s, t: 0 }); }
+        for (let i = 0; i < 12; i++) { const a = -Math.PI * (0.15 + 0.7 * i / 11); BV.drops.push({ x: BV.bx - BV.cam, y: g.base, vx: Math.cos(a) * 160 * g.s, vy: Math.sin(a) * 260 * g.s, t: 0 }); }
+        for (let i = 0; i < 3; i++) BV.rings.push({ x: BV.bx - BV.cam, t: -i * 0.18 });
       }
       if (BV.t > 0.9) bvGameOver();
     }
   }
   for (const d of BV.drops) { d.t += dt; d.vy += 900 * g.s * dt; d.x += d.vx * dt; d.y += d.vy * dt; }
   BV.drops = BV.drops.filter(d => d.t < 0.8);
+  for (const r of BV.rings) r.t += dt;
+  BV.rings = BV.rings.filter(r => r.t < 1);
   for (const p of BV.pops) p.t += dt;
   BV.pops = BV.pops.filter(p => p.t < p.life);
 }
+// the picture behind, as tall as the screen, side by side with mirrored copies (so it runs on without a seam) and moving
+// a little as the view does; before it loads, its sky and river in flat colour
+function bvBack(c, g) {
+  const im = bvArt.bg;
+  if (!im) { c.fillStyle = '#6ba95d'; c.fillRect(0, 0, g.W, g.water); c.fillStyle = '#22b5f2'; c.fillRect(0, g.water, g.W, g.H - g.water); return; }
+  const tw = im.naturalWidth * g.H / im.naturalHeight, x0 = (g.W - tw) / 2 - BV.cam * BV_PARA, n = Math.ceil(x0 / tw);
+  for (let j = -n, x = x0 - n * tw; x < g.W; j++, x += tw) {
+    if (j % 2) { c.save(); c.translate(x + tw, 0); c.scale(-1, 1); c.drawImage(im, 0, 0, tw, g.H); c.restore(); }
+    else c.drawImage(im, x, 0, tw, g.H);
+  }
+}
+// rings on the water round a stump's foot (or where the beaver went in): one held still, one spreading out and fading
+function bvRing(c, g, cx, rx, q, a) {
+  const ry = rx * BV_STUMP.flat;
+  c.save(); c.globalAlpha = a; c.strokeStyle = '#eafaff'; c.lineWidth = 2.4 * g.s;
+  c.beginPath(); c.ellipse(cx, g.base, rx + 3 * g.s, ry + 2 * g.s, 0, 0, Math.PI * 2); c.stroke();
+  c.globalAlpha = a * (1 - q); c.lineWidth = 2 * g.s;
+  c.beginPath(); c.ellipse(cx, g.base, rx + (5 + 14 * q) * g.s, ry + (3 + 5 * q) * g.s, 0, 0, Math.PI * 2); c.stroke();
+  c.restore();
+}
+// which beaver picture: walking (two steps in turn, smiling after a mark), standing otherwise
+function bvPose() {
+  const joy = BV.ok && BV.perfect && (BV.phase === 'walk' || BV.phase === 'pan');
+  if (BV.phase === 'walk') return (joy ? 'joy' : 'walk') + (Math.floor(BV.t / BV_STEP) % 2 ? '2' : '1');
+  return joy ? 'joy2' : 'idle';
+}
 function bvDraw(now) {
-  const c = bvctx, g = bvGeo();
+  const c = bvctx, g = bvGeo(), P = bvPics();
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  c.clearRect(0, 0, BV.W, BV.H);
+  bvBack(c, g);
   const X = x => x - BV.cam;
-  // the stumps, the bridges already laid, the log in hand, the beaver
-  for (const st of BV.stumps) if (X(st.x + st.w) > -20 && X(st.x) < BV.W + 20) bvStump(c, g, X(st.x), st.w);
+  // the stumps standing in the river, the rings round their feet, the marks on their tops
+  for (const st of BV.stumps) {
+    const x = X(st.x);
+    if (x + st.w < -30 || x > BV.W + 30) continue;
+    if (bvArt.stump) { const pic = bvStumpPic(g, st); c.drawImage(pic, x, g.top - pic.up, st.w, pic.height / dpr); }
+    else bvStump(c, g, x, st.w);
+    bvRing(c, g, x + st.w / 2, st.w / 2, (now / 1600 + st.x * 0.0037) % 1, 0.75);
+    if (P.mark) { const m = P.mark, w = m.width / dpr, h = m.height / dpr; c.drawImage(m, x + st.w / 2 - w / 2, g.top - h * BV_MARK.mid, w, h); }
+  }
+  // the bridges already laid, the log in hand (tipped over, it goes under the water)
+  c.save(); c.beginPath(); c.rect(0, 0, BV.W, g.base); c.clip();
   for (const l of BV.logs) if (X(l.x + l.L) > -20) bvLog(c, g, X(l.x), g.top, l.L, 1);
   const a = BV.stumps[BV.cur];
   if (a) bvLog(c, g, X(a.x + a.w), g.top, BV.log, BV.lean);
-  if (BV.phase !== 'drop' || g.top + BV.by < g.water + g.bh) {
-    c.save(); c.translate(X(BV.bx), g.top + BV.by - (BV.phase === 'walk' ? Math.abs(Math.sin(BV.t * 14)) * 2.5 * g.s : 0));
+  c.restore();
+  // the beaver; falling, it turns over and goes under the water at the stumps' feet
+  if (BV.phase !== 'drop' || g.top + BV.by < g.base + g.bh * 1.2) {
+    c.save();
+    if (BV.phase === 'drop') { c.beginPath(); c.rect(0, 0, BV.W, g.base); c.clip(); }
+    const bob = BV.phase === 'walk' ? Math.abs(Math.sin(BV.t * Math.PI / BV_STEP)) * 2 * g.s : 0;
+    c.translate(X(BV.bx), g.top + BV.by - bob);
     if (BV.phase === 'drop') c.rotate(BV.spin);
-    bvBeaver(c, g.s, BV.phase === 'grow' ? 'hold' : BV.phase === 'walk' ? 'walk' : 'stand', BV.t * 14);
+    const n = bvPose(), pic = P[n];
+    if (pic) { const w = pic.width / dpr, h = pic.height / dpr; c.drawImage(pic, -BV_POSE[n][0] * w, -BV_POSE[n][1] * h, w, h); }
+    else bvBeaver(c, g.s, BV.phase === 'grow' ? 'hold' : BV.phase === 'walk' ? 'walk' : 'stand', BV.t * 14);
     c.restore();
   }
-  // the river over the stumps' feet: a moving wave line on top
-  const wy = g.water, wg = c.createLinearGradient(0, wy, 0, BV.H); wg.addColorStop(0, 'rgba(92,190,235,0.92)'); wg.addColorStop(1, 'rgba(36,110,170,0.96)');
-  c.beginPath(); c.moveTo(0, BV.H); c.lineTo(0, wy);
-  for (let x = 0; x <= BV.W + 8; x += 8) c.lineTo(x, wy + Math.sin((x + BV.cam) / 22 + now / 420) * 3 * g.s);
-  c.lineTo(BV.W, BV.H); c.closePath(); c.fillStyle = wg; c.fill();
-  c.beginPath();
-  for (let x = 0; x <= BV.W + 8; x += 8) { const y = wy + Math.sin((x + BV.cam) / 22 + now / 420) * 3 * g.s; x ? c.lineTo(x, y) : c.moveTo(x, y); }
-  c.lineWidth = 3 * g.s; c.strokeStyle = MOL; c.stroke();
-  c.strokeStyle = 'rgba(255,255,255,0.55)'; c.lineWidth = 2 * g.s;
-  for (let k = 0; k < 6; k++) { const x = ((k * 97 - BV.cam * 0.6 + now / 30) % (BV.W + 60)) - 30, y = wy + 22 * g.s + (k % 3) * 18 * g.s; c.beginPath(); c.moveTo(x, y); c.lineTo(x + 18 * g.s, y); c.stroke(); }
-  for (const d of BV.drops) { c.globalAlpha = Math.max(0, 1 - d.t / 0.8); c.beginPath(); c.arc(d.x, d.y, 3.2 * g.s, 0, Math.PI * 2); c.fillStyle = '#d8f3ff'; c.fill(); }
+  for (const r of BV.rings) if (r.t > 0) bvRing(c, g, r.x, g.bh * 0.3 + r.t * 30 * g.s, r.t, 1 - r.t);
+  for (const d of BV.drops) { c.globalAlpha = Math.max(0, 1 - d.t / 0.8); c.beginPath(); c.arc(d.x, d.y, 3.2 * g.s, 0, Math.PI * 2); c.fillStyle = '#e4f7ff'; c.fill(); }
   c.globalAlpha = 1;
   for (const p of BV.pops) {
     const q = p.t / p.life;
@@ -5609,13 +5708,6 @@ function bvDraw(now) {
     c.restore();
   }
 }
-// the beaver's picture for the games list and the end card, drawn once
-function bvPortrait() {
-  const cv = document.createElement('canvas'), s = 4; cv.width = 62 * s; cv.height = 66 * s;   // just round the beaver (tail to nose, ears to feet)
-  const c = cv.getContext('2d'); c.translate(34 * s, 63 * s); bvBeaver(c, s, 'stand');
-  return cv.toDataURL('image/png');
-}
-try { const src = bvPortrait(); $('#mg-beaver img').src = src; $('#bv-face').src = src; } catch (e) { /* no canvas */ }
 // hold anywhere to grow the log, let go to lay it
 bvcv.addEventListener('pointerdown', e => { if (BV.st !== 'play') return; e.preventDefault(); BV.held = true; bvPress(); });
 addEventListener('pointerup', () => { if (BV.held) bvRelease(); });
@@ -5626,9 +5718,9 @@ addEventListener('resize', () => { if (BV.st !== 'off') bvResize(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && BV.st === 'play') bvPause(); });
 $('#mg-beaver').addEventListener('click', () => { sfx('pick'); openBeaver(); });
 $('#btn-bv-pause').addEventListener('click', () => { sfx('pick'); bvPause(); });
-$('#btn-bv-resume').addEventListener('click', () => { sfx('pick'); $('#bv-menu').hidden = true; BV.st = 'play'; BV.last = performance.now(); });
+$('#btn-bv-resume').addEventListener('click', () => { sfx('pick'); $('#bv-menu').hidden = true; BV.st = 'play'; BV.last = performance.now(); musicStart(false); });
 $('#btn-bv-quit').addEventListener('click', () => { sfx('pick'); bvFinish(); closeBeaver(); });
-$('#btn-bv-again').addEventListener('click', () => { sfx('pick'); bvStart(); });
+$('#btn-bv-again').addEventListener('click', () => { sfx('pick'); bvStart(); musicStart(true); });
 $('#btn-bv-lobby').addEventListener('click', () => { sfx('pick'); closeBeaver(); });
 
 
@@ -6974,7 +7066,7 @@ new ResizeObserver(() => layout()).observe(stage);
 function snapshot() { return { G: JSON.parse(JSON.stringify(G)), menuMode, menuSize }; }
 function start(data) {
   readColors();
-  loadItemArt(); loadSquirrelArt(); loadRabbitArt(); loadMergeArt(); loadPebbleArt(); loadOwlArt(); loadChamArt(); fetchSfx();
+  loadItemArt(); loadSquirrelArt(); loadRabbitArt(); loadMergeArt(); loadPebbleArt(); loadOwlArt(); loadChamArt(); loadBeaverArt(); fetchSfx();
   try { document.fonts.load(`40px ${FANCY}`); } catch (e) { /* the fallback font is used until it loads */ }
   layout();
   if (data && data.G && data.G.grid && data.G.size && data.G.phase !== undefined) {
@@ -7073,7 +7165,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   mushroom: { MS, geo: msGeo, start: msStart, open: openMushroom, tap: msTap, undo: msUndo, solve: msSolve, deal: msDeal, round: msRound, K: MS_K, can: msCan, full: msFull },
                   pebble: { PB, geo: pbGeo, open: openPebble, shoot: pbShoot, aimAt: pbAimAt, step: pbStep, grid: pbGrid, newRow: pbNewRow, fly: pbFly, end: pbEndTurn, col: pbCol, BR: PB_BR, C: PB_C, R: PB_R },
                   back: { BK, want: bkWant, have: bkHave, back: bkBack },
-                  beaver: { BV, geo: bvGeo, open: openBeaver, press: bvPress, release: bvRelease },
+                  beaver: { BV, geo: bvGeo, open: openBeaver, press: bvPress, release: bvRelease, pose: bvPose, art: bvArt },
                   chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, sizes: cmSizes, SIZE: CM_SIZE, EDGES: CM_EDGES, T0: CM_T0, LOSE: CM_LOSE },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
