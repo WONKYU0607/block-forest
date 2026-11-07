@@ -767,7 +767,7 @@ html.tall-art .scr-box .ext { display: none; }
         <button class="opt mg-row" id="mg-owlpost" type="button"><img class="mg-ic mg-img" src="owl-hold.webp" alt=""><div><b data-t="owlpost">부엉이 우체국</b><span id="mg-owlpost-best"></span></div></button>
         <button class="opt mg-row" id="mg-chameleon" type="button"><img class="mg-ic mg-img" src="cham-joy.webp" alt=""><div><b data-t="chameleon">카멜레온 찾기</b><span id="mg-chameleon-best"></span></div></button>
         <button class="opt mg-row" id="mg-beaver" type="button"><img class="mg-ic mg-img" src="beaver-idle.webp" alt=""><div><b data-t="beaver">비버 다리 놓기</b><span id="mg-beaver-best"></span></div></button>
-        <button class="opt mg-row" id="mg-hedgehog" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="hedgehog">고슴도치 가시 꽂기</b><span id="mg-hedgehog-best"></span></div></button>
+        <button class="opt mg-row" id="mg-hedgehog" type="button"><img class="mg-ic mg-img" src="hh-face.webp" alt=""><div><b data-t="hedgehog">고슴도치 가시 꽂기</b><span id="mg-hedgehog-best"></span></div></button>
         <button class="opt mg-row" id="mg-caterpillar" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="caterpillar">애벌레 잎 먹기</b><span id="mg-caterpillar-best"></span></div></button>
         <button class="opt mg-row" id="mg-cups" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="cups">도토리 컵 찾기</b><span id="mg-cups-best"></span></div></button>
       </div>
@@ -1015,7 +1015,7 @@ html.tall-art .scr-box .ext { display: none; }
   <section id="hh-over" class="overlay" hidden>
     <div class="card">
       <div class="ribbon"><h2 data-t="hedgehog">고슴도치 가시 꽂기</h2></div>
-      <img id="hh-face" class="st-cheer" src="" alt="">
+      <img id="hh-face" class="st-cheer" src="hh-cry.webp" alt="">
       <div class="bigscore"><span class="label" data-t="score">점수</span><span id="hh-final" class="num">0</span></div>
       <p id="hh-note" class="gap" hidden></p>
       <button class="btn primary" id="btn-hh-again" type="button" data-t="again">다시 하기</button>
@@ -6087,18 +6087,55 @@ const HH = { st: 'off', W: 0, H: 0, round: 1, need: 6, left: 6, quills: [], berr
   fly: null, falls: [], pieces: [], chips: [], pops: [], sparks: [], clearT: 0, inT: 0, kick: 0, shake: 0, flash: 0, throwT: 0,
   score: 0, best: 0, raf: 0, last: 0, img: null };
 const hhcv = $('#hh-cv'), hhctx = hhcv.getContext('2d');
+// the drawn pictures (until they load, the shapes drawn in code stand in): the hedgehog from behind (sitting, throwing,
+// sad), the log's face, a quill (tip up), a berry, the picture behind
+const HH_ART = { idle: 'hh-idle.webp', throw: 'hh-throw.webp', sad: 'hh-sad.webp', log: 'hh-log.webp', quill: 'hh-quill.webp', berry: 'hh-berry.webp', bg: 'hh-bg.webp' };
+// each hedgehog picture: the middle of its body and its feet, as parts of the picture; all three at one scale, the
+// sitting one's body HH_TALL px tall
+const HH_POSE = { idle: [0.5, 0.9912], throw: [0.5048, 0.9931], sad: [0.4773, 0.9916] };
+const HH_TALL = 447;
+// the quill picture: its tip and root as parts of its height; its width along it, as parts of its length from the tip
+// (so two quills in the log touch when they are closer than this lets)
+const HH_QUILL = { tip: 0.0057, root: 0.9943 };
+const HH_QW = [[0.1, 0.110], [0.2, 0.169], [0.3, 0.218], [0.4, 0.260], [0.5, 0.289], [0.6, 0.303], [0.7, 0.297], [0.8, 0.264], [0.9, 0.208]];
+const HH_BERRY_AT = { cx: 0.5, cy: 0.6066, r: 0.4469 };   // the round berry in its picture: middle and radius (parts of its width/height)
+const HH_LOG_R = 0.4977;                                  // the log's radius as a part of its picture's width
+const HH_BG_AR = 941 / 1672, HH_BG_DIRT = 0.86;           // the picture behind: its shape; where the hedgehog sits on the path (part of its height)
+const hhArt = {};
+let hhReady = null;
+function loadHedgehogArt() {
+  if (!hhReady) {
+    hhReady = Promise.all(Object.keys(HH_ART).map(k => hhArt[k] ? true : new Promise(res => {
+      const im = new Image();
+      im.onload = () => { hhArt[k] = im; HH.img = null; res(true); };
+      im.onerror = () => res(false);
+      im.src = HH_ART[k];
+    })));
+    hhReady.then(ok => { if (!ok.every(Boolean)) hhReady = null; });
+  }
+  return hhReady;
+}
+// the picture behind, covering the screen (cut at the sides, or at the top on a wide one)
+function hhBgRect(W, H) {
+  const w = Math.max(W, H * HH_BG_AR), h = w / HH_BG_AR;
+  return { x: (W - w) / 2, y: H - h + (h - H) * 0.15, w, h };
+}
 function hhBest() { try { return parseInt(localStorage.getItem(HH_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
 // sizes on screen: the log a little over the middle, the hedgehog at the bottom; a quill is a bit over half the log's
 // radius long and goes in `dig` deep; gap: how close (as an angle) two quills may sit
 function hhGeo() {
   const W = HH.W, H = HH.H, s = Math.min(W, 520) / 390;
   const R = Math.round(Math.min(W * 0.27, H * 0.17, 140)), cx = W / 2, cy = Math.round(Math.max(R + 64, H * 0.36));
-  const q = R * 0.66, qw = Math.max(6, R * 0.08), dig = R * 0.16, hb = Math.min(104 * s, H * 0.15), foot = H - 16;
-  return { W, H, s, R, cx, cy, q, qw, dig, hb, foot, from: foot - hb * 0.82 - q, gap: qw * 1.45 / R, br: R * 0.13 };
+  const q = R * 0.55, qw = q * 0.303, dig = R * 0.16, hb = Math.min(128 * s, H * 0.17);
+  const bg = hhBgRect(W, H), foot = Math.round(Math.min(H - 12, bg.y + bg.h * HH_BG_DIRT));
+  // two quills touch where, along them, their widths add up to more than the room between them
+  const gap = Math.max(...HH_QW.map(([f, w]) => w * q / (R - dig + f * q))) * 0.95;
+  return { W, H, s, R, cx, cy, q, qw, dig, hb, foot, from: foot - hb * 0.82 - q, gap, br: R * 0.13 };
 }
-// the log's face, drawn once a size: bark round the edge, light wood with rings, a knot
+// the log's face, made once a size: the picture (or, until it loads, bark round the edge, light wood with rings, a knot)
 function hhLogPic(R) {
-  const d = R * 2 + 8, o = d / 2;
+  const d = R * 2 + 8, o = d / 2, im = hhArt.log;
+  if (im) { const w = R / HH_LOG_R, h = w * im.naturalHeight / im.naturalWidth; return miniPic(d, d, x => x.drawImage(im, o - w / 2, o - h / 2, w, h)); }
   return miniPic(d, d, x => {
     x.beginPath(); x.arc(o, o, R, 0, HH_TAU); x.fillStyle = '#7a4626'; x.fill();
     x.save(); x.beginPath(); x.arc(o, o, R, 0, HH_TAU); x.clip(); x.strokeStyle = 'rgba(40,18,6,0.55)'; x.lineWidth = Math.max(1.5, R * 0.02);
@@ -6116,6 +6153,12 @@ function hhLogPic(R) {
 }
 // a quill lying along +x: its sharp light tip at 0, its dark root at len
 function hhQuill(c, len, w) {
+  const im = hhArt.quill;
+  if (im) {   // the picture stands tip up: turned so its tip is at 0 and its root at len
+    const h = len / (HH_QUILL.root - HH_QUILL.tip), iw = h * im.naturalWidth / im.naturalHeight;
+    c.save(); c.rotate(-Math.PI / 2); c.drawImage(im, -iw / 2, -HH_QUILL.tip * h, iw, h); c.restore();
+    return;
+  }
   const g = c.createLinearGradient(0, 0, len, 0);
   g.addColorStop(0, '#fff3d6'); g.addColorStop(0.35, '#d7a46a'); g.addColorStop(1, '#5b3a22');
   c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(len * 0.3, -w * 0.5, len * 0.62, -w * 0.5); c.lineTo(len - w * 0.5, -w * 0.5);
@@ -6132,6 +6175,12 @@ function hhBerry(c, x, y, r) {
 // the hedgehog sitting with its back to the screen's bottom, looking up at the log: feet at (x, y), h tall; k: the throw
 // (0 to 1, a quick squash); sad: after a bounce
 function hhHog(c, x, y, h, k = 0, sad = false) {
+  const pose = sad ? 'sad' : k > 0 ? 'throw' : 'idle', im = hhArt[pose];
+  if (im) {   // from behind, its body h tall with its feet at (x, y)
+    const sc = h / HH_TALL, w = im.naturalWidth * sc, ih = im.naturalHeight * sc, [ax, ay] = HH_POSE[pose];
+    c.drawImage(im, x - ax * w, y - ay * ih, w, ih);
+    return;
+  }
   const s = h / 100, sq = 1 - 0.08 * Math.sin(Math.min(1, k) * Math.PI);
   c.save(); c.translate(x, y); c.scale(2 - sq, sq); c.lineJoin = 'round';
   c.beginPath();   // the spiky back: a fan of spines round a dome
@@ -6193,6 +6242,7 @@ function openHedgehog() {
   const el = $('#hedgehog');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('hhClear') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  loadHedgehogArt();
   rkGate('hedgehog', hhStart);
 }
 function hhStart() {
@@ -6219,7 +6269,7 @@ function hhHit() {
   const bi = HH.berries.findIndex(b => Math.abs(hhDiff(a, b.a)) < (g.br + g.qw * 0.5) / g.R);
   if (bi >= 0) {
     HH.berries.splice(bi, 1); pts += HH_BERRY; berry = true;
-    const bx = g.cx, by = g.cy + g.R + g.br * 0.2;
+    const bx = g.cx, by = g.cy + g.R + g.br * 0.7;
     for (let k = 0; k < 10; k++) { const t = k * HH_TAU / 10; HH.sparks.push({ x: bx, y: by, vx: Math.cos(t) * 190, vy: Math.sin(t) * 190 - 40, t: 0, life: 0.5, c: k % 2 ? '#ffd0d8' : '#ff4d6a', s: 3 }); }
     HH.pops.push({ text: '+' + (HH_PTS + HH_BERRY), x: bx + g.R * 0.7, y: by + 6, t: 0, life: 0.7, size: 22, look: GOLD_LOOK });
   }
@@ -6298,6 +6348,7 @@ function hhDraw(now) {
   const c = hhctx, g = hhGeo(), P = hhPics();
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   c.clearRect(0, 0, HH.W, HH.H);
+  if (hhArt.bg) { const b = hhBgRect(HH.W, HH.H); c.drawImage(hhArt.bg, b.x, b.y, b.w, b.h); }
   if (HH.shake > 0) c.translate(Math.sin(now / 18) * 7 * HH.shake / 0.35, 0);
   // the round, top left
   const lab = textImg(tr('msLevel', HH.round), 18, SUB_LOOK, false);
@@ -6318,7 +6369,13 @@ function hhDraw(now) {
     const lw = P.log.width / dpr;
     c.save(); c.rotate(HH.rot); c.drawImage(P.log, -lw / 2, -lw / 2, lw, lw); c.restore();
     if (HH.flash > 0) { c.beginPath(); c.arc(0, 0, g.R, 0, HH_TAU); c.fillStyle = `rgba(255,60,60,${0.45 * HH.flash / 0.4})`; c.fill(); }
-    for (const b of HH.berries) { const w = b.a + HH.rot; hhBerry(c, Math.cos(w) * (g.R + g.br * 0.15), Math.sin(w) * (g.R + g.br * 0.15), g.br); }
+    for (const b of HH.berries) {
+      const w = b.a + HH.rot, im = hhArt.berry;
+      if (im) {   // hanging off the log by its stem, the berry outward
+        const k = g.br / (HH_BERRY_AT.r * im.naturalWidth), dw = im.naturalWidth * k, dh = im.naturalHeight * k;
+        c.save(); c.rotate(w); c.translate(g.R + g.br * 0.7, 0); c.rotate(-Math.PI / 2); c.drawImage(im, -HH_BERRY_AT.cx * dw, -HH_BERRY_AT.cy * dh, dw, dh); c.restore();
+      } else hhBerry(c, Math.cos(w) * (g.R + g.br * 0.15), Math.sin(w) * (g.R + g.br * 0.15), g.br);
+    }
     c.restore();
   }
   for (const p of HH.pieces) {   // the split log: quarters flying apart
@@ -6335,7 +6392,7 @@ function hhDraw(now) {
     const y = g.from + (HH.throwT > 0 ? HH.throwT / 0.18 : 0) * g.q * 0.8;
     c.save(); c.translate(g.cx, y); c.rotate(Math.PI / 2); hhQuill(c, g.q, g.qw); c.restore();
   }
-  hhHog(c, g.cx, g.foot, g.hb, HH.throwT > 0 ? 1 - HH.throwT / 0.18 : 0, HH.st === 'over');
+  hhHog(c, g.cx, g.foot, g.hb, HH.throwT > 0 ? Math.max(0.01, 1 - HH.throwT / 0.18) : 0, HH.st === 'over');
   for (const p of HH.chips) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); c.fillStyle = '#e0a868'; c.fillRect(p.x - 2.5, p.y - 2.5, 5, 5); }
   for (const p of HH.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
   c.globalAlpha = 1;
@@ -6348,14 +6405,7 @@ function hhDraw(now) {
     c.restore();
   }
 }
-// its picture for the games list and the end card, drawn once (until the drawn art comes)
-function hhPortrait(sad) {
-  const cv = document.createElement('canvas'), s = 3; cv.width = 132 * s; cv.height = 118 * s;
-  const c = cv.getContext('2d'); c.scale(s, s); hhHog(c, 66, 112, 104, 0, sad);
-  return cv.toDataURL('image/png');
-}
-const HH_FACE = {};
-try { HH_FACE.joy = hhPortrait(false); HH_FACE.sad = hhPortrait(true); $('#mg-hedgehog img').src = HH_FACE.joy; $('#hh-face').src = HH_FACE.sad; } catch (e) { /* no canvas */ }
+const HH_FACE = { joy: 'hh-joy.webp', sad: 'hh-cry.webp' };   // the end card (the games list shows hh-face.webp: the happy one without its marks)
 hhcv.addEventListener('pointerdown', e => { if (HH.st !== 'play') return; e.preventDefault(); hhThrow(); });
 addEventListener('keydown', e => { if (HH.st === 'play' && (e.key === ' ' || e.key === 'ArrowUp') && !e.repeat) { hhThrow(); e.preventDefault(); } });
 addEventListener('resize', () => { if (HH.st !== 'off') hhResize(); });
@@ -8476,7 +8526,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   pebble: { PB, geo: pbGeo, open: openPebble, shoot: pbShoot, aimAt: pbAimAt, step: pbStep, grid: pbGrid, newRow: pbNewRow, fly: pbFly, end: pbEndTurn, col: pbCol, BR: PB_BR, C: PB_C, R: PB_R },
                   back: { BK, want: bkWant, have: bkHave, back: bkBack },
                   beaver: { BV, geo: bvGeo, open: openBeaver, press: bvPress, release: bvRelease, pose: bvPose, art: bvArt },
-                  hedgehog: { HH, geo: hhGeo, open: openHedgehog, throw: hhThrow, round: hhRound, spin: hhSpin },
+                  hedgehog: { HH, geo: hhGeo, open: openHedgehog, throw: hhThrow, round: hhRound, spin: hhSpin, art: hhArt },
                   caterpillar: { CP, open: openCaterpillar, spawn: cpSpawnBot, worm: cpWormNew, gulp: cpGulp, len: cpLen, meet: cpMeet },
                   cups: { CU, geo: cuGeo, open: openCups, pick: cuPick, round: cuRound, pos: cuPos },
                   chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, sizes: cmSizes, SIZE: CM_SIZE, EDGES: CM_EDGES, T0: CM_T0, LOSE: CM_LOSE },
