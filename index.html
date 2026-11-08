@@ -6637,12 +6637,19 @@ function cpDraw(now) {
   // points over where they came from, at screen size
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   if (me.alive) {   // how many the player's has eaten, on its body just behind the face
-    const r = cpRad(me.segs.length), want = r * 2.4;
-    let p = me.segs[0], d = 0;
-    for (let i = 1; i < me.segs.length && d < want; i++) { d += Math.hypot(me.segs[i].x - p.x, me.segs[i].y - p.y); p = me.segs[i]; }
-    if (d < want) { const a = me.a; p = { x: me.segs[0].x - Math.cos(a) * want, y: me.segs[0].y - Math.sin(a) * want }; }
+    // the point exactly 2.4 radii back along the body, between two segments (snapping to the nearest segment made it
+    // jump a segment back and forth whenever the distance fell right on one)
+    const r = cpRad(me.segs.length), want = r * 2.4, sg = me.segs;
+    let p = null, d = 0;
+    for (let i = 1; i < sg.length; i++) {
+      const L = Math.hypot(sg[i].x - sg[i - 1].x, sg[i].y - sg[i - 1].y);
+      if (d + L >= want) { const t = L > 0 ? (want - d) / L : 0; p = { x: sg[i - 1].x + (sg[i].x - sg[i - 1].x) * t, y: sg[i - 1].y + (sg[i].y - sg[i - 1].y) * t }; break; }
+      d += L;
+    }
+    if (!p) { const a = me.a; p = { x: sg[0].x - Math.cos(a) * want, y: sg[0].y - Math.sin(a) * want }; }
     c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
-    miniText(c, Math.round(CP.score / CP_PTS).toLocaleString(), (p.x - cam.x) * z + W / 2 + sx, (p.y - cam.y) * z + H / 2, 17, SUB_LOOK, now);
+    CP.tag = { x: (p.x - cam.x) * z + W / 2 + sx, y: (p.y - cam.y) * z + H / 2 };
+    miniText(c, Math.round(CP.score / CP_PTS).toLocaleString(), CP.tag.x, CP.tag.y, 17, SUB_LOOK, now);
     c.restore();
   }
   for (const p of CP.pops) {
