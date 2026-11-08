@@ -1876,13 +1876,18 @@ function die(reason) {
   setTimeout(() => { if (G.state === 'dying') finish(); }, Math.max(150, 700 * ANIM));
 }
 
-// Going on after the end: a new board as at the beginning, with the score (and so the level) it had
+// Going on after the end: the board as it was, its bottom rows cleared (5 on 16 wide, 10 on 32), the score kept
+const continueRows = () => (COLS >= 32 ? 10 : 5);
 function blockRevive() {
-  const key = 'block' + G.size, score = G.score, c = (G.continues || 0) + 1, b = END_BEST[key], ec = END_CONT[key];
-  newGame(G.mode, G.size);
-  END_BEST[key] = b; END_CONT[key] = ec;
-  G.score = shownScore = score; G.level = levelAt(score); G.continues = c;
-  showOnly(null); hud();
+  const n = continueRows();
+  G.continues = (G.continues || 0) + 1;
+  G.grid.splice(ROWS - n, n);
+  for (let k = 0; k < n; k++) G.grid.unshift(Array(COLS).fill(0));
+  if (G.reason === 'nofit') G.tray = [dealPiece(), dealPiece(), dealPiece()];
+  G.reason = null; G.state = 'play'; G.phase = 'idle';
+  anim = null; pending = null; fx.shift = null;
+  touchGrid(); hud(); showOnly(null);
+  checkNoFit();
 }
 for (const n of [16, 32]) END['block' + n] = { score: () => G.score, on: () => G.state === 'over' && G.size === n, revive: blockRevive, used: () => G.continues || 0,
   again: () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); }, list: () => { G.started = false; G.state = 'menu'; openLobby(); } };
@@ -2592,7 +2597,13 @@ function miniGameOver() {
   gsfx('acOver', 1, 'over');
   setTimeout(() => gameEnd('acorn'), 900);
 }
-END.acorn = { score: () => MG.score, on: () => MG.st === 'over', revive: () => endRestart('acorn', miniStart, n => { MG.score = n; miniHud(); }), again: () => { miniStart(); musicStart(true); }, list: () => closeMini(),
+// going on: hearts full again, the sky cleared
+function miniRevive() {
+  Object.assign(MG, { st: 'play', hearts: 3, items: [], combo: 0, hurt: 0, flash: 0, next: 0.9, drag: null, key: 0, end: 0 });
+  miniHud();
+  MG.pops.push({ text: tr('go'), x: MG.W / 2, y: MG.H * 0.36, t: 0, look: GOLD_LOOK, size: Math.min(64, MG.W * 0.15), life: 0.9 });
+}
+END.acorn = { score: () => MG.score, on: () => MG.st === 'over', revive: miniRevive, again: () => { miniStart(); musicStart(true); }, list: () => closeMini(),
   pics: () => ['mini-squirrel.webp', 'mini-squirrel-hurt.webp'], best: ['acBest', 'stage'] };
 // what falls next, more of it and faster as time goes on
 function miniSpawn() {
@@ -2969,13 +2980,6 @@ const CONT_PER_GAME = 1, END_CONT = {};   // going on: once a game
 // a game starts: its best before it (for "new best"), its continue not used yet; the ad for going on is fetched ahead
 const endBest = game => { END_BEST[game] = RK_LOCAL[game](); END_CONT[game] = 0; adsAhead(); };
 const endUsed = game => (END[game].used ? END[game].used() : END_CONT[game] || 0);
-// going on: the game starts again as at the beginning (time limits full again), with the score it had
-function endRestart(game, start, setScore) {
-  const score = END[game].score(), b = END_BEST[game], c = END_CONT[game];
-  start();
-  END_BEST[game] = b; END_CONT[game] = c;   // the same game still: its best before it, its continue used
-  setScore(score);
-}
 let endGame = null, resN = 0;   // the game whose continue card or result is up
 function endPic(box, game, good) {
   const p = END[game].pics && END[game].pics(), src = p && p[good ? 0 : 1];
@@ -3536,7 +3540,14 @@ function stGameOver() {
   gsfx('stOver', 1, 'over');
   setTimeout(() => gameEnd('stairs'), 500);
 }
-END.stairs = { score: () => ST.score, on: () => ST.st === 'over', revive: () => endRestart('stairs', stStart, n => { ST.score = n; stHud(); }), again: () => { stStart(); musicStart(true); }, list: () => closeStairs(),
+// going on: back on the step it hopped off, facing the next one, and the countdown again (the speed stays)
+function stRevive() {
+  const i = ST.idx, d = ST.xs[i + 1] - ST.xs[i];
+  Object.assign(ST, { st: 'play', phase: 'count', cd: ST_COUNT, cdT: 0, goT: 9, dir: d === 1 || d === -1 ? d : ST.dir, pos: { x: ST.xs[i], y: i }, hop: null, fall: null, end: 0 });
+  gsfx('stTick', 1, 'pick');
+  stHud();
+}
+END.stairs = { score: () => ST.score, on: () => ST.st === 'over', revive: stRevive, again: () => { stStart(); musicStart(true); }, list: () => closeStairs(),
   pics: () => ['rabbit-cheer.webp', 'rabbit-fall.webp'], best: ['stBest', 'stage'] };
 function closeStairs() {
   cancelAnimationFrame(ST.raf); ST.st = 'off';
@@ -3848,7 +3859,15 @@ function fmGameOver() {
   gsfx('fmOver', 1, 'over'); buzz(40);
   setTimeout(() => gameEnd('merge'), 900);
 }
-END.merge = { score: () => FM.score, on: () => FM.st === 'over', revive: () => endRestart('merge', fmStart, n => { FM.score = n; fmHud(); }), again: () => { fmStart(); musicStart(true); }, list: () => closeMerge(),
+// going on: every fruit reaching into the top 45% of the box pops (no points)
+function fmRevive() {
+  const g = fmGeo(), cut = FM_HB * 0.45;
+  for (const f of FM.fruits) if (f.y - f.r < cut) { f.gone = true; fmBurst(fmX(g, f.x), fmY(g, f.y), f.k, 8); }
+  FM.fruits = FM.fruits.filter(f => !f.gone);
+  Object.assign(FM, { st: 'play', overT: 0, face: 'hold', aiming: false });
+  gsfx('fmPop', 1, 'catch', { n: 1 });
+}
+END.merge = { score: () => FM.score, on: () => FM.st === 'over', revive: fmRevive, again: () => { fmStart(); musicStart(true); }, list: () => closeMerge(),
   pics: () => [FM_ART.joy, FM_ART.cry], best: ['fmBest', 'stage'] };
 function closeMerge() {
   cancelAnimationFrame(FM.raf); FM.st = 'off';
@@ -4265,7 +4284,13 @@ function pbGameOver() {
   gsfx('pbOver', 1, 'over'); buzz(40);
   setTimeout(() => gameEnd('pebble'), 900);
 }
-END.pebble = { score: () => PB.score, on: () => PB.st === 'over', revive: () => endRestart('pebble', pbStart, n => { PB.score = n; pbHud(); }), again: () => { pbStart(); musicStart(true); }, list: () => closePebble(),
+// going on: the blocks in the bottom four rows break (no points)
+function pbRevive() {
+  for (const b of PB.blocks) if (!b.dead && b.row >= PB_R - 4) pbBreak(b);
+  pbGrid();
+  Object.assign(PB, { st: 'play', phase: 'aim', aim: null });
+}
+END.pebble = { score: () => PB.score, on: () => PB.st === 'over', revive: pbRevive, again: () => { pbStart(); musicStart(true); }, list: () => closePebble(),
   pics: () => [PB_ART.joy, PB_ART.cry], best: ['pbBest', 'stage'] };
 function closePebble() {
   cancelAnimationFrame(PB.raf); PB.st = 'off';
@@ -4726,7 +4751,9 @@ function msGameOver() {
   gsfx('msOver', 1, 'over'); buzz(40);
   setTimeout(() => gameEnd('mushroom'), 700);
 }
-END.mushroom = { score: () => MS.score, on: () => MS.st === 'over', revive: () => endRestart('mushroom', msStart, n => { MS.score = n; msHud(); }), again: () => { msStart(); musicStart(true); }, list: () => closeMushroom(),
+// going on: where it stopped, with the clock full again (the minute it starts with)
+function msRevive() { Object.assign(MS, { st: 'play', time: MS_T0, tickAt: 0, sel: -1 }); msHud(); }
+END.mushroom = { score: () => MS.score, on: () => MS.st === 'over', revive: msRevive, again: () => { msStart(); musicStart(true); }, list: () => closeMushroom(),
   best: ['msBest', 'stage'] };
 function closeMushroom() {
   cancelAnimationFrame(MS.raf); MS.st = 'off';
@@ -4997,7 +5024,9 @@ function opGameOver() {
   gsfx('opOver', 1, 'over'); buzz(40);
   setTimeout(() => gameEnd('owlpost'), 900);
 }
-END.owlpost = { score: () => OP.score, on: () => OP.st === 'over', revive: () => endRestart('owlpost', opStart, n => { OP.score = n; opHud(); }), again: () => { opStart(); musicStart(true); }, list: () => closeOwlPost(),
+// going on: where it stopped, with the clock full again (the minute it starts with)
+function opRevive() { Object.assign(OP, { st: 'play', time: OP_T0, owl: 'hold', owlT: 0 }); opHud(); }
+END.owlpost = { score: () => OP.score, on: () => OP.st === 'over', revive: opRevive, again: () => { opStart(); musicStart(true); }, list: () => closeOwlPost(),
   pics: () => [OP_ART.joy, OP_ART.oops], best: ['opBest', 'stage'] };
 function closeOwlPost() {
   cancelAnimationFrame(OP.raf); OP.st = 'off';
@@ -5318,7 +5347,9 @@ function cmGameOver() {
   gsfx('cmOver', 1, 'over'); buzz(40);
   setTimeout(() => gameEnd('chameleon'), 800);
 }
-END.chameleon = { score: () => CM.score, on: () => CM.st === 'over', revive: () => endRestart('chameleon', cmStart, n => { CM.score = n; cmHud(); }), again: () => { cmStart(); musicStart(true); }, list: () => closeChameleon(),
+// going on: where it stopped, with the clock full again (the minute it starts with)
+function cmRevive() { Object.assign(CM, { st: 'play', time: CM_T0 }); cmHud(); }
+END.chameleon = { score: () => CM.score, on: () => CM.st === 'over', revive: cmRevive, again: () => { cmStart(); musicStart(true); }, list: () => closeChameleon(),
   pics: () => [CM_ART.joy, CM_ART.sad], best: ['cmBest', 'stage'] };
 function closeChameleon() {
   cancelAnimationFrame(CM.raf); CM.st = 'off';
@@ -5622,7 +5653,13 @@ function bvGameOver() {
   musicStop();
   setTimeout(() => gameEnd('beaver'), 500);
 }
-END.beaver = { score: () => BV.score, on: () => BV.st === 'over', revive: () => endRestart('beaver', bvStart, n => { BV.score = n; bvHud(); }), again: () => { bvStart(); musicStart(true); }, list: () => closeBeaver(),
+// going on: back on the stump it set off from, the same gap to cross again
+function bvRevive() {
+  const g = bvGeo(), a = BV.stumps[BV.cur];
+  Object.assign(BV, { st: 'play', phase: 'idle', log: 0, lean: 0, held: false, bx: a.x + a.w - g.bh * 0.35, by: 0, vy: 0, spin: 0, splashed: false, t: 0 });
+  BV.cam = BV.camTo = a.x + a.w - g.stand;
+}
+END.beaver = { score: () => BV.score, on: () => BV.st === 'over', revive: bvRevive, again: () => { bvStart(); musicStart(true); }, list: () => closeBeaver(),
   pics: () => [BV_ART.joy2, BV_ART.idle], best: ['bvBest', 'stage'] };
 function closeBeaver() {
   cancelAnimationFrame(BV.raf); BV.st = 'off';
@@ -5990,7 +6027,9 @@ function hhGameOver() {
   setTimeout(() => gameEnd('hedgehog'), 900);
   gsfx('hhFail', 1, 'over');
 }
-END.hedgehog = { score: () => HH.score, on: () => HH.st === 'over', revive: () => endRestart('hedgehog', hhStart, n => { HH.score = n; hhHud(); }), again: () => { hhStart(); musicStart(true); }, list: () => closeHedgehog(),
+// going on: the quill that bounced off comes back to be thrown again
+function hhRevive() { HH.left++; HH.st = 'play'; hhHud(); }
+END.hedgehog = { score: () => HH.score, on: () => HH.st === 'over', revive: hhRevive, again: () => { hhStart(); musicStart(true); }, list: () => closeHedgehog(),
   pics: () => [HH_FACE.joy, HH_FACE.sad], best: ['hhBest', 'stage'] };
 function closeHedgehog() {
   cancelAnimationFrame(HH.raf); HH.st = 'off';
@@ -6199,7 +6238,8 @@ function cpTintCanvases(col) {
   return out;
 }
 function cpBest() { try { return parseInt(localStorage.getItem(CP_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
-const cpRad = n => 13 + 9 * (1 - Math.exp(-Math.max(0, n - CP_LEN0) / 70));   // a body's radius by its length
+// a body's radius by its length: thicker as it grows, 13 at the start, about 21 at 50, 27 at 100, 34 at most
+const cpRad = n => 13 + 21 * (1 - Math.exp(-Math.max(0, n - CP_LEN0) / 90));
 // a caterpillar's length, as it shows: its segments now (not the ones still to grow), so who eats whom, the faces and
 // what the eye sees agree
 const cpLen = w => w.segs.length;
@@ -6251,7 +6291,9 @@ function cpSpawnBot(big) {
 // a leaf: anywhere near (at the start), or else out of sight
 const cpLeafNew = all => { const [x, y] = all ? cpSpot(60, CP_NEAR) : cpSpot(Math.min(CP_NEAR - 100, cpSight() + 30), CP_NEAR); return { x, y, rot: Math.random() * Math.PI * 2, s: all ? 1 : 0, kind: 1 + Math.floor(Math.random() * 3) }; };
 function cpCamera(dt) {
-  const h = CP.me.segs[0], z = Math.min(CP.W, 520) / 390 * Math.max(0.55, 1 - (CP.me.segs.length - CP_LEN0) * 0.0035);
+  // the view draws back as the player's grows (about twice as far at 200 long), a little less than it thickens, so it
+  // still looks a bit bigger on the screen
+  const h = CP.me.segs[0], z = Math.min(CP.W, 520) / 390 * Math.pow(cpRad(CP_LEN0) / cpRad(CP.me.segs.length), 0.8);
   if (CP.me.alive) { CP.cam.x = h.x; CP.cam.y = h.y; }
   CP.cam.z += (z - CP.cam.z) * (dt < 0 ? 1 : 1 - Math.exp(-dt * 2));
 }
@@ -6265,7 +6307,7 @@ function cpStart() {
   $('#cp-menu').hidden = true;
   cpResize();
   endBest('caterpillar');
-  Object.assign(CP, { st: 'play', worms: [], leaves: [], started: false, score: 0, best: cpBest(), t: 0, next: 0, pops: [], sparks: [], ghosts: [], shake: 0, dead: 0 });
+  Object.assign(CP, { st: 'play', worms: [], leaves: [], started: false, score: 0, best: cpBest(), t: 0, next: 0, pops: [], sparks: [], ghosts: [], shake: 0, dead: 0, safe: 0 });
   CP.me = cpWormNew(0, 0, -Math.PI / 2, CP_LEN0, 0, true, true);
   CP.worms.push(CP.me);
   cpCamera(-1);
@@ -6356,7 +6398,7 @@ function cpMeet() {
   for (let i = 0; i < ws.length; i++) for (let j = i + 1; j < ws.length; j++) {
     if (CP.st !== 'play') return;
     const a = ws[i], b = ws[j];
-    if (!a.alive || !b.alive) continue;
+    if (!a.alive || !b.alive || (CP.safe > 0 && (a.me || b.me))) continue;
     const p = a.segs[0], q = b.segs[0], reach = (cpRad(a.segs.length) * 1.12 + cpRad(b.segs.length) * 1.12) * 0.9;
     if (Math.abs(p.x - q.x) > reach || Math.abs(p.y - q.y) > reach || Math.hypot(p.x - q.x, p.y - q.y) > reach) continue;
     const na = cpLen(a), nb = cpLen(b);
@@ -6402,7 +6444,28 @@ function cpGameOver() {
   setTimeout(() => gameEnd('caterpillar'), 1100);
   gsfx('cpOver', 1, 'over');
 }
-END.caterpillar = { score: () => CP.score, on: () => CP.st === 'over', revive: () => endRestart('caterpillar', cpStart, n => { CP.score = n; cpHud(); }), again: () => { cpStart(); musicStart(true); }, list: () => closeCaterpillar(),
+// going on: as long as it was, somewhere near with no longer one's head close, pointing away from the nearest of them;
+// for CP_SAFE s it cannot eat or be eaten (it blinks)
+const CP_SAFE = 3;
+function cpRevive() {
+  const old = CP.me, n = Math.max(CP_LEN0, old.segs.length), h = old.segs[0];
+  const heads = CP.worms.filter(w => w.alive && !w.me && cpLen(w) >= n).map(w => w.segs[0]);
+  const near = p => heads.reduce((m, q) => Math.min(m, Math.hypot(q.x - p.x, q.y - p.y)), Infinity);
+  let at = { x: h.x, y: h.y }, far = near(at);
+  for (let k = 0; k < 40; k++) {
+    const r = 300 + Math.random() * 700, t = Math.random() * Math.PI * 2, p = { x: h.x + Math.cos(t) * r, y: h.y + Math.sin(t) * r }, d = near(p);
+    if (d > far) { far = d; at = p; }
+  }
+  const q = heads.reduce((m, s) => (!m || Math.hypot(s.x - at.x, s.y - at.y) < Math.hypot(m.x - at.x, m.y - at.y) ? s : m), null);
+  const a = q ? Math.atan2(at.y - q.y, at.x - q.x) : old.a;
+  CP.me = cpWormNew(at.x, at.y, a, n, old.col, true, true);
+  CP.worms = CP.worms.filter(w => w !== old); CP.worms.push(CP.me);
+  Object.assign(CP, { st: 'play', dead: 0, shake: 0, safe: CP_SAFE });
+  cpTouch = null;
+  cpCamera(-1);
+  cpHud();
+}
+END.caterpillar = { score: () => CP.score, on: () => CP.st === 'over', revive: cpRevive, again: () => { cpStart(); musicStart(true); }, list: () => closeCaterpillar(),
   pics: () => [CP_FACE.joy, CP_FACE.sad], best: ['cpBest', 'stage'] };
 function closeCaterpillar() {
   cancelAnimationFrame(CP.raf); CP.st = 'off';
@@ -6420,7 +6483,7 @@ function cpFrame(now) {
 function cpUpdate(dt) {
   const live = CP.st === 'play' && CP.started;
   if (live || CP.st === 'over') {   // after the player's is eaten the others go on crawling
-    if (live) CP.t += dt;
+    if (live) { CP.t += dt; if (CP.safe > 0) CP.safe = Math.max(0, CP.safe - dt); }
     for (const w of CP.worms) if (w.alive) { if (!w.me) cpThink(w, dt); cpMove(w, dt); }
     if (live) { cpEatLeaves(); cpMeet(); }
     CP.worms = CP.worms.filter(w => w.alive || w.me);
@@ -6552,7 +6615,10 @@ function cpDraw(now) {
   // the others, shorter first (so a longer one passes over), then the player's
   const me = CP.me, mine = cpLen(me), others = CP.worms.filter(w => !w.me && w.alive).sort((a, b) => a.segs.length - b.segs.length);
   for (const w of others) cpDrawWorm(c, w, cpLen(w) > mine ? 'mad' : cpLen(w) < mine ? 'shy' : '', view);
-  if (me.alive) cpDrawWorm(c, me, '', view);
+  if (me.alive) {   // blinking while it cannot be eaten
+    c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
+    cpDrawWorm(c, me, '', view); c.restore();
+  }
   for (const gh of CP.ghosts) { c.save(); c.globalAlpha = Math.max(0, 1 - gh.t / CP_GULP); cpDrawWorm(c, gh, 'dead', view); c.restore(); }
   for (const p of CP.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
   c.globalAlpha = 1;
@@ -6777,7 +6843,9 @@ function cuGameOver() {
   setTimeout(() => gameEnd('cups'), 400);
   gsfx('cuOver', 1, 'over');
 }
-END.cups = { score: () => CU.score, on: () => CU.st === 'over', revive: () => endRestart('cups', cuStart, n => { CU.score = n; cuHud(); }), again: () => { cuStart(); musicStart(true); }, list: () => closeCups(),
+// going on: the hearts full again, the same round again, shuffled anew
+function cuRevive() { CU.hearts = CU_HEARTS; CU.st = 'play'; cuRound(CU.round, true); cuHud(); }
+END.cups = { score: () => CU.score, on: () => CU.st === 'over', revive: cuRevive, again: () => { cuStart(); musicStart(true); }, list: () => closeCups(),
   pics: () => { const f = cuFaces(); return [f.joy, f.sad]; }, best: ['cuBest', 'stage'] };
 function closeCups() {
   cancelAnimationFrame(CU.raf); CU.st = 'off';
