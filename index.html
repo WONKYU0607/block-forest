@@ -6520,7 +6520,9 @@ function cpTintCanvases(col) {
 }
 function cpBest() { try { return parseInt(localStorage.getItem(CP_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
 const cpRad = n => 13 + 9 * (1 - Math.exp(-Math.max(0, n - CP_LEN0) / 70));   // a body's radius by its length
-const cpLen = w => w.segs.length + w.grow;
+// a caterpillar's length, as it shows: its segments now (not the ones still to grow), so who eats whom, the faces and
+// what the eye sees agree
+const cpLen = w => w.segs.length;
 const cpAng = d => Math.atan2(Math.sin(d), Math.cos(d));
 function cpResize() {
   const r = cpcv.getBoundingClientRect();
@@ -6546,7 +6548,8 @@ function cpSpot(r0, r1) {
   const h = CP.me ? CP.me.segs[0] : { x: 0, y: 0 }, r = Math.sqrt(r0 * r0 + Math.random() * (r1 * r1 - r0 * r0)), t = Math.random() * Math.PI * 2;
   return [h.x + Math.cos(t) * r, h.y + Math.sin(t) * r];
 }
-// another caterpillar, out of sight: about a third longer than the player's, the rest shorter
+// another caterpillar, out of sight: about a third longer than the player's, the rest shorter. It comes laid out at its
+// full length, trailing away from the player in a gentle bend (bunched up, a long one would look short for seconds)
 function cpSpawnBot(big) {
   const P = CP.me ? cpLen(CP.me) : CP_LEN0;
   if (big === undefined) big = Math.random() < 0.35;
@@ -6555,6 +6558,10 @@ function cpSpawnBot(big) {
     const [x, y] = cpSpot(cpSight() + 120, cpSight() + 700);
     if (CP.worms.some(o => o.alive && Math.hypot(x - o.segs[0].x, y - o.segs[0].y) < 200)) continue;
     const w = cpWormNew(x, y, Math.random() * Math.PI * 2, n, 1 + Math.floor(Math.random() * (CP_COLORS.length - 1)), false, false);
+    const h = CP.me ? CP.me.segs[0] : { x: 0, y: 0 }, gap = cpRad(n) * CP_GAP, bend = (Math.random() - 0.5) * 0.06;
+    let t = Math.atan2(y - h.y, x - h.x);
+    for (let i = 1; i < n; i++) { t += bend; w.segs[i] = { x: w.segs[i - 1].x + Math.cos(t) * gap, y: w.segs[i - 1].y + Math.sin(t) * gap }; }
+    w.a = w.aim = Math.atan2(y - h.y, x - h.x) + Math.PI + (Math.random() - 0.5) * 1.6;   // its head on, away from its body
     w.speed = 0.88 + Math.random() * 0.08;
     CP.worms.push(w);
     return w;
@@ -6588,28 +6595,42 @@ function cpStart() {
   cancelAnimationFrame(CP.raf); CP.last = performance.now(); CP.raf = requestAnimationFrame(cpFrame);
 }
 // a caterpillar of the others: every so often it looks round. A longer one's head near: away from it; else a shorter
-// one's head near: after it (a little ahead of it); else the nearest leaf; else on, wandering a little
+// one's head near: after it (a little ahead of it), for 4 s at most, then 3 s off it; else the nearest leaf (one it has
+// gone for 2.5 s without getting, it leaves); else on, wandering a little. Leaves and heads near a longer one's head it
+// leaves alone (else it would go to and fro between them and running away). A spot inside its turning circle it cannot
+// reach (it would go round and round it): straight on a moment first, then it comes back at it
 function cpThink(w, dt) {
   if ((w.think -= dt) > 0) return;
   w.think = 0.18 + Math.random() * 0.14;
-  const h = w.segs[0], n = cpLen(w), r = cpRad(n);
-  let away = null, fd = 140 + r * 5;
+  const h = w.segs[0], n = cpLen(w), r = cpRad(n), now = CP.t;
+  const fear = 140 + r * 5, threats = [];
+  let away = null, fd = fear;
   for (const o of CP.worms) {
     if (o === w || !o.alive || cpLen(o) <= n) continue;
     const s = o.segs[0], d = Math.hypot(s.x - h.x, s.y - h.y);
+    if (d < fear + 400) threats.push(s);
     if (d < fd) { fd = d; away = s; }
   }
-  if (away) w.aim = Math.atan2(h.y - away.y, h.x - away.x);
+  if (away) { w.aim = Math.atan2(h.y - away.y, h.x - away.x); w.why = 'flee'; return; }
+  const risky = q => threats.some(s => Math.hypot(s.x - q.x, s.y - q.y) < fear);   // near a longer one's head: not worth it
+  let prey = null, pd = 280;
+  if (!(w.rest > now)) for (const o of CP.worms) { if (o === w || !o.alive || cpLen(o) >= n || risky(o.segs[0])) continue; const s = o.segs[0], d = Math.hypot(s.x - h.x, s.y - h.y); if (d < pd) { pd = d; prey = o; } }
+  if (prey && w.prey !== prey) { w.prey = prey; w.preyAt = now; }
+  if (prey && now - w.preyAt > 4) { w.rest = now + 3; w.prey = null; prey = null; }
+  let tx, ty;
+  if (prey) { const s = prey.segs[0]; tx = s.x + Math.cos(prey.a) * 40; ty = s.y + Math.sin(prey.a) * 40; }
   else {
-    let prey = null, pd = 280;
-    for (const o of CP.worms) { if (o === w || !o.alive || cpLen(o) >= n) continue; const s = o.segs[0], d = Math.hypot(s.x - h.x, s.y - h.y); if (d < pd) { pd = d; prey = o; } }
-    if (prey) { const s = prey.segs[0]; w.aim = Math.atan2(s.y + Math.sin(prey.a) * 40 - h.y, s.x + Math.cos(prey.a) * 40 - h.x); }
-    else {
-      let leaf = null, ld = 360;
-      for (const l of CP.leaves) { const d = Math.hypot(l.x - h.x, l.y - h.y); if (d < ld) { ld = d; leaf = l; } }
-      w.aim = leaf ? Math.atan2(leaf.y - h.y, leaf.x - h.x) : w.a + (Math.random() - 0.5) * 1.2;
-    }
+    let leaf = null, ld = 360;
+    for (const l of CP.leaves) { if (l === w.skip) continue; const d = Math.hypot(l.x - h.x, l.y - h.y); if (d < ld && !risky(l)) { ld = d; leaf = l; } }
+    if (leaf && w.leaf !== leaf) { w.leaf = leaf; w.leafAt = now; }
+    if (leaf && now - w.leafAt > 2.5) { w.skip = leaf; w.leaf = null; leaf = null; }
+    if (!leaf) { w.aim = w.a + (Math.random() - 0.5) * 1.2; w.why = 'wander'; return; }
+    tx = leaf.x; ty = leaf.y;
   }
+  const R = CP_SPEED * w.speed / CP_TURN_BOT, px = -Math.sin(w.a), py = Math.cos(w.a);
+  const inside = [-1, 1].some(k => Math.hypot(tx - (h.x + px * R * k), ty - (h.y + py * R * k)) < R);
+  w.aim = inside ? w.a : Math.atan2(ty - h.y, tx - h.x);
+  w.why = (prey ? 'hunt' : 'leaf') + (inside ? '-straight' : '');
 }
 // turn toward its aim, go on, grow at the tail, the body following the head round its bends
 function cpMove(w, dt) {
@@ -6617,7 +6638,7 @@ function cpMove(w, dt) {
   w.a = cpAng(w.a + Math.max(-turn, Math.min(turn, d)));
   const n = w.segs.length, v = CP_SPEED * w.speed * (1 - Math.min(0.18, (n - CP_LEN0) * 0.0015)), h = w.segs[0];
   h.x += Math.cos(w.a) * v * dt; h.y += Math.sin(w.a) * v * dt;
-  if (w.grow > 0 && (w.gt += dt) >= 0.04) {
+  if (w.grow > 0 && (w.gt += dt) >= 0.02) {   // a segment every 0.02 s: an eaten one's half in about a second
     w.gt = 0; w.grow--;
     if (w.segs.length < CP_MAX) { const t = w.segs[w.segs.length - 1]; w.segs.push({ x: t.x, y: t.y }); }
   }
