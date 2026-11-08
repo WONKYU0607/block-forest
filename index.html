@@ -6145,11 +6145,11 @@ $('#btn-hh-quit').addEventListener('click', () => { sfx('pick'); hhFinish(); clo
 const CP_BEST = 'rise7-best-caterpillar';
 const CP_PTS = 100;                    // a segment the player's grows
 // world units (the screen is about 390 wide). Leaves are kept within CP_NEAR of the player's head and the others within
-// CP_FAR; past those they go, and new ones come in out of sight
+// CP_FAR (both further out once the view reaches past them); past those they go, and new ones come in out of sight
 const CP_NEAR = 1300, CP_FAR = 2400;
 const CP_SPEED = 150, CP_TURN = 9, CP_TURN_BOT = 4.5;   // units a second; turning, radians a second at most (the player's; the others')
 const CP_STICK = 60;                                    // px: how far the thumb's stick reaches from where it went down
-const CP_LEN0 = 8, CP_MAX = 400, CP_LEAVES = 130, CP_BOTS = 9;
+const CP_LEN0 = 8, CP_LEAVES = 130, CP_BOTS = 9;   // no longest: it grows (and thickens, and the view draws back) for ever
 // body, body (every other segment), head; the first is the player's
 const CP_COLORS = [['#7fd457', '#9be36d', '#a8ea7a'], ['#ff9f43', '#ffbe76', '#ffc98f'], ['#ff6b9a', '#ff9bbb', '#ffadc8'], ['#5bb8ff', '#8ccfff', '#a4dbff'],
   ['#b18cff', '#cbb2ff', '#d6c2ff'], ['#ffc933', '#ffe07a', '#ffe894'], ['#3fc9bb', '#7fe0d6', '#9de9e1']];
@@ -6238,8 +6238,9 @@ function cpTintCanvases(col) {
   return out;
 }
 function cpBest() { try { return parseInt(localStorage.getItem(CP_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
-// a body's radius by its length: thicker as it grows, 13 at the start, about 21 at 50, 27 at 100, 34 at most
-const cpRad = n => 13 + 21 * (1 - Math.exp(-Math.max(0, n - CP_LEN0) / 90));
+// a body's radius by its length: thicker as it grows, with no end (13 at the start, 22 at 50, 28 at 100, 42 at 400,
+// 55 at 1000)
+const cpRad = n => 13 * Math.pow(Math.max(CP_LEN0, n) / CP_LEN0, 0.3);
 // a caterpillar's length, as it shows: its segments now (not the ones still to grow), so who eats whom, the faces and
 // what the eye sees agree
 const cpLen = w => w.segs.length;
@@ -6273,12 +6274,13 @@ function cpSpot(r0, r1) {
 function cpSpawnBot(big) {
   const P = CP.me ? cpLen(CP.me) : CP_LEN0;
   if (big === undefined) big = Math.random() < 0.35;
-  const n = Math.min(CP_MAX, Math.round(big ? P * (1.15 + Math.random() * 0.5) + 2 : Math.max(4, P * (0.35 + Math.random() * 0.55))));
+  const n = Math.round(big ? P * (1.15 + Math.random() * 0.5) + 2 : Math.max(4, P * (0.35 + Math.random() * 0.55)));
   for (let k = 0; k < 60; k++) {
     const [x, y] = cpSpot(cpSight() + 120, cpSight() + 700);
     if (CP.worms.some(o => o.alive && Math.hypot(x - o.segs[0].x, y - o.segs[0].y) < 200)) continue;
     const w = cpWormNew(x, y, Math.random() * Math.PI * 2, n, 1 + Math.floor(Math.random() * (CP_COLORS.length - 1)), false, false);
-    const h = CP.me ? CP.me.segs[0] : { x: 0, y: 0 }, gap = cpRad(n) * CP_GAP, bend = (Math.random() - 0.5) * 0.06;
+    // the bend over the whole body stays gentle (a long one bent a little at every segment would coil up beside the view)
+    const h = CP.me ? CP.me.segs[0] : { x: 0, y: 0 }, gap = cpRad(n) * CP_GAP, bend = (Math.random() - 0.5) * Math.min(0.06, 3 / n);
     let t = Math.atan2(y - h.y, x - h.x);
     for (let i = 1; i < n; i++) { t += bend; w.segs[i] = { x: w.segs[i - 1].x + Math.cos(t) * gap, y: w.segs[i - 1].y + Math.sin(t) * gap }; }
     w.a = w.aim = Math.atan2(y - h.y, x - h.x) + Math.PI + (Math.random() - 0.5) * 1.6;   // its head on, away from its body
@@ -6289,10 +6291,14 @@ function cpSpawnBot(big) {
   return null;
 }
 // a leaf: anywhere near (at the start), or else out of sight
-const cpLeafNew = all => { const [x, y] = all ? cpSpot(60, CP_NEAR) : cpSpot(Math.min(CP_NEAR - 100, cpSight() + 30), CP_NEAR); return { x, y, rot: Math.random() * Math.PI * 2, s: all ? 1 : 0, kind: 1 + Math.floor(Math.random() * 3) }; };
+// how far leaves and the others are kept: further out once the view reaches past CP_NEAR / CP_FAR; as many leaves for
+// the same ground (at most 700)
+const cpNear = () => Math.max(CP_NEAR, cpSight() + 300), cpFar = () => Math.max(CP_FAR, cpSight() + 1100);
+const cpLeafWant = () => Math.min(700, Math.round(CP_LEAVES * (cpNear() / CP_NEAR) ** 2));
+const cpLeafNew = all => { const N = cpNear(), [x, y] = all ? cpSpot(60, N) : cpSpot(Math.min(N - 100, cpSight() + 30), N); return { x, y, rot: Math.random() * Math.PI * 2, s: all ? 1 : 0, kind: 1 + Math.floor(Math.random() * 3) }; };
 function cpCamera(dt) {
-  // the view draws back as the player's grows (about twice as far at 200 long), a little less than it thickens, so it
-  // still looks a bit bigger on the screen
+  // the view draws back as the player's grows, with no end (twice as far at about 160 long, three times at 650), a
+  // little less than it thickens, so it still looks a bit bigger on the screen
   const h = CP.me.segs[0], z = Math.min(CP.W, 520) / 390 * Math.pow(cpRad(CP_LEN0) / cpRad(CP.me.segs.length), 0.8);
   if (CP.me.alive) { CP.cam.x = h.x; CP.cam.y = h.y; }
   CP.cam.z += (z - CP.cam.z) * (dt < 0 ? 1 : 1 - Math.exp(-dt * 2));
@@ -6355,16 +6361,20 @@ function cpThink(w, dt) {
   w.aim = inside ? w.a : Math.atan2(ty - h.y, tx - h.x);
   w.why = (prey ? 'hunt' : 'leaf') + (inside ? '-straight' : '');
 }
+// k segments more to grow, at 50 a second or fast enough for all that is left to come within a second
+function cpFeed(w, k) { w.grow += k; w.rate = Math.max(50, w.grow); }
 // turn toward its aim, go on, grow at the tail, the body following the head round its bends
 function cpMove(w, dt) {
   const turn = (w.me ? CP_TURN : CP_TURN_BOT) * dt, d = cpAng(w.aim - w.a);
   w.a = cpAng(w.a + Math.max(-turn, Math.min(turn, d)));
   const n = w.segs.length, v = CP_SPEED * w.speed * (1 - Math.min(0.18, (n - CP_LEN0) * 0.0015)), h = w.segs[0];
   h.x += Math.cos(w.a) * v * dt; h.y += Math.sin(w.a) * v * dt;
-  if (w.grow > 0 && (w.gt += dt) >= 0.02) {   // a segment every 0.02 s: an eaten one's half in about a second
-    w.gt = 0; w.grow--;
-    if (w.segs.length < CP_MAX) { const t = w.segs[w.segs.length - 1]; w.segs.push({ x: t.x, y: t.y }); }
-  }
+  if (w.grow > 0) {   // 50 segments a second, or a big meal all within about a second (cpFeed sets the pace)
+    w.gt += dt * (w.rate || 50);
+    const k = Math.min(w.grow, Math.floor(w.gt)), t = w.segs[w.segs.length - 1];
+    w.gt -= k; w.grow -= k;
+    for (let i = 0; i < k; i++) w.segs.push({ x: t.x, y: t.y });
+  } else w.gt = 0;
   const gap = cpRad(w.segs.length) * CP_GAP;
   for (let i = 1; i < w.segs.length; i++) {
     const p = w.segs[i - 1], s = w.segs[i], dx = s.x - p.x, dy = s.y - p.y, L = Math.hypot(dx, dy);
@@ -6382,7 +6392,7 @@ function cpEatLeaves() {
     for (let i = CP.leaves.length - 1; i >= 0; i--) {
       const l = CP.leaves[i];
       if (Math.abs(l.x - h.x) > reach || Math.abs(l.y - h.y) > reach || Math.hypot(l.x - h.x, l.y - h.y) > reach) continue;
-      CP.leaves.splice(i, 1); w.grow++;
+      CP.leaves.splice(i, 1); cpFeed(w, 1);
       if (w.me) {
         CP.score += CP_PTS; cpHud();
         CP.pops.push({ text: '+' + CP_PTS, x: l.x, y: l.y - 22, t: 0, life: 0.55, size: 17, look: SCORE_LOOK });
@@ -6415,7 +6425,7 @@ function cpMeet() {
 function cpGulp(eater, food) {
   food.alive = false;
   const gain = Math.ceil(food.segs.length / 2), pal = CP_COLORS[food.col], h = food.segs[0], e = eater.segs[0];
-  eater.grow += gain;
+  cpFeed(eater, gain);
   CP.ghosts.push({ segs: food.segs.map(q => ({ x: q.x, y: q.y })), a: food.a, col: food.col, n: food.segs.length, t: 0, eater, at: { x: e.x, y: e.y } });
   cpBurst(e.x, e.y, 8, 140, pal[1], '#fff6c8', 3.4);
   if (eater.me) {
@@ -6489,11 +6499,13 @@ function cpUpdate(dt) {
     CP.worms = CP.worms.filter(w => w.alive || w.me);
     if (live) {   // what is far behind goes; new leaves and caterpillars come in out of sight
       const h = CP.me.segs[0], far = (o, d) => Math.abs(o.x - h.x) > d || Math.abs(o.y - h.y) > d || Math.hypot(o.x - h.x, o.y - h.y) > d;
-      CP.leaves = CP.leaves.filter(l => !far(l, CP_NEAR + 300));
-      while (CP.leaves.length < CP_LEAVES) CP.leaves.push(cpLeafNew(false));
-      CP.worms = CP.worms.filter(w => w.me || !far(w.segs[0], CP_FAR));
-      const want = CP_BOTS + Math.min(5, Math.floor(CP.t / 40));   // one more every 40 s, up to 14
-      const short = want - (CP.worms.length - 1);
+      const N = cpNear(), F = cpFar(), S = cpSight() + 200, want = cpLeafWant();
+      CP.leaves = CP.leaves.filter(l => !far(l, N + 300));
+      while (CP.leaves.length < want) CP.leaves.push(cpLeafNew(false));
+      // one goes once its head is far and none of its body is in sight any more (a long one's body may still cross it)
+      CP.worms = CP.worms.filter(w => w.me || !far(w.segs[0], F) || w.segs.some((s, i) => i % 4 === 0 && !far(s, S)));
+      const bots = CP_BOTS + Math.min(5, Math.floor(CP.t / 40));   // one more every 40 s, up to 14
+      const short = bots - (CP.worms.length - 1);
       if ((CP.next -= dt) <= 0 && short > 0) { cpSpawnBot(); CP.next = short > 2 ? 0.4 : 1.5; }   // quicker when many are missing
     }
   }
@@ -6608,7 +6620,7 @@ function cpDraw(now) {
     if (l.x < view[0] - 20 || l.x > view[2] + 20 || l.y < view[1] - 20 || l.y > view[3] + 20) continue;
     const im = cpArt['food' + l.kind];
     if (!im) { cpLeaf(c, l.x, l.y, 12 * ease(l.s), now, l.rot); continue; }
-    const k = 34 * ease(l.s) / Math.max(im.naturalWidth, im.naturalHeight);   // about 34 units across
+    const k = Math.max(34, 15 / z) * ease(l.s) / Math.max(im.naturalWidth, im.naturalHeight);   // about 34 units across (at least 15 px on the screen)
     c.save(); c.translate(l.x, l.y); c.rotate(Math.sin(now / 500 + l.x) * 0.12 + (l.rot % 0.6) - 0.3);
     c.drawImage(im, -im.naturalWidth * k / 2, -im.naturalHeight * k / 2, im.naturalWidth * k, im.naturalHeight * k); c.restore();
   }
@@ -6624,6 +6636,15 @@ function cpDraw(now) {
   c.globalAlpha = 1;
   // points over where they came from, at screen size
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (me.alive) {   // how many the player's has eaten, on its body just behind the face
+    const r = cpRad(me.segs.length), want = r * 2.4;
+    let p = me.segs[0], d = 0;
+    for (let i = 1; i < me.segs.length && d < want; i++) { d += Math.hypot(me.segs[i].x - p.x, me.segs[i].y - p.y); p = me.segs[i]; }
+    if (d < want) { const a = me.a; p = { x: me.segs[0].x - Math.cos(a) * want, y: me.segs[0].y - Math.sin(a) * want }; }
+    c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
+    miniText(c, Math.round(CP.score / CP_PTS).toLocaleString(), (p.x - cam.x) * z + W / 2 + sx, (p.y - cam.y) * z + H / 2, 17, SUB_LOOK, now);
+    c.restore();
+  }
   for (const p of CP.pops) {
     const q = p.t / p.life, x = (p.x - cam.x) * z + W / 2 + sx, y = (p.y - cam.y) * z + H / 2;
     c.save(); c.globalAlpha = q > 0.7 ? (1 - q) / 0.3 : 1;
