@@ -288,7 +288,6 @@ body {
 .btn.primary:active, .btn.ghost:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--ol); }
 .btn.ghost { background: #45c0ff; color: #fff; margin-bottom: 6px; }
 .btn:focus-visible, .opt:focus-visible { outline: none; }   /* the menus open with a button focused; on a phone the ring only looks like a stray border */
-#btn-menu { background: #fff; color: var(--ol); -webkit-text-stroke: 0; font-family: 'Black Han Sans', sans-serif; font-size: 17px; padding: 10px 16px; }
 .bigscore { flex-direction: column; align-items: center; gap: 2px; background: #6a4cff; border: 3px solid var(--ol); border-radius: 16px; box-shadow: 0 4px 0 var(--ol); padding: 10px 14px 12px; }
 .bigscore .num { font-size: 46px; color: #fff; -webkit-text-stroke: 9px var(--ol); line-height: 1.1; }
 .reason { color: #6a5a9a; font-family: 'Black Han Sans', sans-serif; text-align: center; margin: -6px 0 0; }
@@ -338,7 +337,6 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 .opt[aria-pressed="true"] { background: #a8e47a; }
 .btn.primary { background: linear-gradient(#7fdc5a, #4fb83f); }
 .btn.ghost { background: var(--wood); }
-#btn-menu { background: #fffaf0; }
 .bigscore { background: var(--wood); }
 .bigscore .label { color: #fff3c4; }
 .gap { background: var(--mush); }
@@ -477,21 +475,13 @@ html[lang="en"] #st-turn b { font-size: 15px; }
 /* the lobby's top row: my nickname, my items, the ranking */
 .lb-top { position: absolute; top: max(12px, env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px));
   display: flex; align-items: center; gap: 6px; }
-.lb-me, .lb-items, .lb-rank { box-sizing: border-box; height: 42px; background: var(--cream); border: 3px solid var(--ol); border-radius: 16px; box-shadow: 0 3px 0 var(--ol); }
+.lb-me, .lb-rank { box-sizing: border-box; height: 42px; background: var(--cream); border: 3px solid var(--ol); border-radius: 16px; box-shadow: 0 3px 0 var(--ol); }
 .lb-me { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 4px; padding: 0 10px 0 4px; }
 .lb-me svg { flex: none; width: 26px; height: 26px; }
 .lb-me b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 15px; color: var(--ol); }
-.lb-items { flex: none; display: flex; align-items: center; gap: 1px; padding: 0 7px 0 2px; }
-.lb-top .lb-it img { width: 27px; height: 27px; }
-.lb-top .lb-it b { font-size: 15px; min-width: 10px; }
-.lb-top .lb-it + .lb-it { margin-left: 3px; }
 .lb-rank { flex: none; appearance: none; width: 42px; display: grid; place-items: center; padding: 0; cursor: pointer; }   /* the trophy: the ranking */
 .lb-rank svg { width: 27px; height: 27px; }
 .lb-rank:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
-.lb-it { display: flex; align-items: center; gap: 1px; }
-.lb-it img { width: 30px; height: 30px; display: block; }
-.lb-it b { font-family: var(--num); font-weight: 400; font-size: 17px; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; min-width: 14px; }
-.lb-it + .lb-it { margin-left: 6px; }
 .lb-card { position: absolute; left: 50%; transform: translateX(-50%); bottom: max(14px, env(safe-area-inset-bottom, 0px)); width: min(calc(100% - 24px), 400px); box-sizing: border-box;
   display: flex; flex-direction: column; gap: 10px; padding: 40px 14px 14px; background: var(--cream); border: 4px solid var(--ol); border-radius: 26px; box-shadow: 0 8px 0 var(--ol);
   animation: sheetIn 0.45s cubic-bezier(.25, 1.4, .5, 1) both; }
@@ -521,13 +511,12 @@ html[lang="en"] #st-turn b { font-size: 15px; }
 .lb-start svg { width: 30px; height: 30px; flex: none; filter: drop-shadow(0 2px 0 var(--ol)); }
 .lb-start::after { content: ''; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent); transform: skewX(-18deg); animation: shine 3.2s ease-in-out infinite; pointer-events: none; }
 @keyframes shine { 0%, 62% { left: -40%; } 100% { left: 120%; } }
-.lb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lb-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
 .lb-sub { appearance: none; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 10px; border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 4px 0 var(--ol);
   font-family: var(--num); font-size: 18px; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; cursor: pointer; margin-bottom: 4px; }
 .lb-sub svg { width: 24px; height: 24px; flex: none; }
 .lb-sub:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ol); }
 .lb-sub:focus-visible { outline: none; }
-#btn-shop { background: linear-gradient(#f2604f, #d63a2e); }
 #btn-settings { background: var(--wood); }
 /* pause menu and result: smaller plain buttons in a row */
 .btn.plain { background: #fffaf0; color: var(--ol); -webkit-text-stroke: 0; font-family: 'Black Han Sans', sans-serif; font-size: 17px; padding: 10px 12px; }
@@ -580,6 +569,19 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 #rkintro { z-index: 33; }
 .screen.rk-wait > * { visibility: hidden; }   /* the game waits behind its start card: only its background shows */
 #rkb { z-index: 37; }
+/* a game's end: the continue card, the stand-in ad, the result */
+#cont, #result { z-index: 34; }
+#adfake { z-index: 38; background: rgba(10, 16, 10, 0.95); }
+.ic-btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.ic-btn svg { width: 28px; height: 28px; flex: none; }
+.cont-n { flex: none; min-width: 28px; height: 28px; box-sizing: border-box; padding: 0 6px; display: grid; place-items: center; border-radius: 14px; background: #ff4d6d; border: 3px solid var(--ol); font-family: var(--num); font-weight: 400; font-size: 16px; line-height: 1; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; }
+.ad-box { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.ad-tag { font-family: 'Black Han Sans', sans-serif; font-size: 15px; color: #2b1a0e; background: #ffd84a; border: 3px solid var(--ol); border-radius: 10px; padding: 3px 12px; }
+.ad-box .num { font-size: 64px; color: #fff; -webkit-text-stroke: 10px var(--ol); paint-order: stroke fill; line-height: 1; }
+.res-ranks { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.res-ranks .rk-rec { padding: 7px 10px; }
+.rk-rec .res-place { font-family: 'Black Han Sans', sans-serif; font-size: 18px; color: var(--ol); white-space: nowrap; }
+@media (max-height: 700px) { #cont .rk-pic, #result .rk-pic { width: 80px; height: 80px; } }
 #rkb .rank-tabs { grid-template-columns: 1fr 1fr; }
 #rkb #rkb-sizes[hidden] { display: none; }
 .rkb-game { margin: -2px 0 0; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 17px; color: var(--ol); }
@@ -693,18 +695,6 @@ html.tall-art .scr-box .ext { display: none; }
       </div>
     </section>
 
-    <section id="over" class="overlay" hidden>
-      <div class="card">
-        <div class="ribbon"><h2 data-t="over">게임 오버</h2></div>
-        <p id="over-reason" class="reason"></p>
-        <div class="bigscore"><span class="label" data-t="score">점수</span><span id="over-score" class="num">0</span></div>
-        <p id="over-best" class="gap"></p>
-        <button class="btn primary" id="btn-continue" type="button">아래 5줄 지우고 이어하기</button>
-        <button class="btn primary" id="btn-again" type="button" data-t="again">다시 하기</button>
-        <button class="btn ghost" id="btn-menu" type="button" data-t="toLobby">로비로</button>
-      </div>
-    </section>
-
     <section id="vsover" class="overlay" hidden aria-label="대결 결과" data-ta="vsResult">
       <div class="card">
         <div class="ribbon"><h2 id="vs-title">승리!</h2></div>
@@ -726,11 +716,6 @@ html.tall-art .scr-box .ext { display: none; }
   <div class="flies" aria-hidden="true"><i style="left:12%;top:58%;animation-delay:-1s"></i><i style="left:84%;top:46%;animation-delay:-3.4s"></i><i style="left:30%;top:36%;animation-delay:-5.2s;animation-duration:8s"></i><i style="left:68%;top:30%;animation-delay:-2.2s;animation-duration:6.4s"></i><i style="left:50%;top:52%;animation-delay:-4.4s"></i><i style="left:6%;top:30%;animation-delay:-6s;animation-duration:7.6s"></i></div>
   <div class="lb-top">
     <div class="lb-me" aria-label="내 닉네임" data-ta="myName"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#6ccf4f" stroke="#2b1a0e" stroke-width="2.2"/><circle cx="12" cy="9.6" r="3.6" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8"/><path d="M5.6 18.6c1.3-2.9 3.7-4.3 6.4-4.3s5.1 1.4 6.4 4.3" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8" stroke-linecap="round"/></svg><b id="lb-name"></b></div>
-    <div class="lb-items" aria-label="내 아이템" data-ta="myItems">
-      <span class="lb-it"><img id="lb-bomb-ic" alt="폭탄" data-talt="bomb"><b id="lb-bomb">0</b></span>
-      <span class="lb-it"><img id="lb-drill-ic" alt="드릴" data-talt="drill"><b id="lb-drill">0</b></span>
-      <span class="lb-it"><img id="lb-bell-ic" alt="골든벨" data-talt="bell"><b id="lb-bell">0</b></span>
-    </div>
     <button class="lb-rank" id="btn-rank" type="button" aria-label="순위표" data-ta="rank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10v5.2a5 5 0 0 1-10 0z" fill="#ffd84a" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><path d="M7 5.2H4.2v1.6a3.2 3.2 0 0 0 3.3 3.2M17 5.2h2.8v1.6a3.2 3.2 0 0 1-3.3 3.2" fill="none" stroke="#2b1a0e" stroke-width="2" stroke-linecap="round"/><path d="M10.6 13.4h2.8v3.4h-2.8z" fill="#f2b630" stroke="#2b1a0e" stroke-width="1.8"/><path d="M7.4 20.5h9.2v-1.4a2.3 2.3 0 0 0-2.3-2.3H9.7a2.3 2.3 0 0 0-2.3 2.3z" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/></svg></button>
   </div>
   <div class="lb-card">
@@ -745,7 +730,6 @@ html.tall-art .scr-box .ext { display: none; }
     </div>
     <button class="btn primary lb-start" id="btn-new" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13.5" fill="#fff" stroke="#2b1a0e" stroke-width="3"/><path d="M13 10.2v11.6l9.4-5.8z" fill="#4fb83f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg><span data-t="start">게임 시작</span></button>
     <div class="lb-row">
-      <button class="lb-sub" id="btn-shop" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 9h15l-1.6 10.2a2 2 0 0 1-2 1.8H8.1a2 2 0 0 1-2-1.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2.2" stroke-linejoin="round"/><path d="M8 9.5 11 3.5M16 9.5 13 3.5" stroke="#2b1a0e" stroke-width="2.2" stroke-linecap="round"/><path d="M3 9h18" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round"/><path d="M9.5 13v4.5M14.5 13v4.5" stroke="#c98f4f" stroke-width="2" stroke-linecap="round"/></svg><span data-t="shop">상점</span></button>
       <button class="lb-sub" id="btn-settings" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg><span data-t="settings">설정</span></button>
     </div>
   </div>
@@ -800,15 +784,6 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="btn plain" id="btn-mini-quit" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
-  <section id="mini-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="acorn">도토리 받기</h2></div>
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="mini-final" class="num">0</span></div>
-      <p id="mini-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-mini-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-mini-lobby" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
 </section>
 
 <section id="stairs" class="screen" hidden aria-label="토끼 계단" data-ta="stairs">
@@ -829,16 +804,6 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="btn plain" id="btn-st-quit" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
-  <section id="st-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="stairs">토끼 계단</h2></div>
-      <img id="st-cheer" class="st-cheer" src="rabbit-cheer.webp" alt="" hidden>
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="st-final" class="num">0</span></div>
-      <p id="st-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-st-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-st-lobby" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
 </section>
 
 <section id="merge" class="screen" hidden aria-label="과일 합치기" data-ta="merge">
@@ -855,16 +820,6 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="btn plain" id="btn-fm-quit" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
-  <section id="fm-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="merge">과일 합치기</h2></div>
-      <img id="fm-face" class="st-cheer" src="raccoon-cry.webp" alt="">
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="fm-final" class="num">0</span></div>
-      <p id="fm-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-fm-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-fm-lobby" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
 </section>
 
 <section id="pebble" class="screen" hidden aria-label="조약돌 깨기" data-ta="pebble">
@@ -879,16 +834,6 @@ html.tall-art .scr-box .ext { display: none; }
       <div class="ribbon"><h2 data-t="paused">일시정지</h2></div>
       <button class="btn primary" id="btn-pb-resume" type="button" data-t="resume">이어서 하기</button>
       <button class="btn plain" id="btn-pb-quit" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
-  <section id="pb-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="pebble">조약돌 깨기</h2></div>
-      <img id="pb-face" class="st-cheer" src="otter-cry.webp" alt="">
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="pb-final" class="num">0</span></div>
-      <p id="pb-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-pb-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-pb-lobby" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
 </section>
@@ -910,15 +855,6 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="btn plain" id="btn-ms-quit" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
-  <section id="ms-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="mushroom">버섯 바구니 정리</h2></div>
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="ms-final" class="num">0</span></div>
-      <p id="ms-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-ms-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-ms-lobby" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
 </section>
 
 <section id="owlpost" class="screen" hidden aria-label="부엉이 우체국" data-ta="owlpost">
@@ -933,16 +869,6 @@ html.tall-art .scr-box .ext { display: none; }
       <div class="ribbon"><h2 data-t="paused">일시정지</h2></div>
       <button class="btn primary" id="btn-op-resume" type="button" data-t="resume">이어서 하기</button>
       <button class="btn plain" id="btn-op-quit" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
-  <section id="op-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="owlpost">부엉이 우체국</h2></div>
-      <img id="op-face" class="st-cheer" src="owl-oops.webp" alt="">
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="op-final" class="num">0</span></div>
-      <p id="op-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-op-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-op-lobby" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
 </section>
@@ -961,16 +887,6 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="btn plain" id="btn-cm-quit" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
-  <section id="cm-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="chameleon">카멜레온 찾기</h2></div>
-      <img id="cm-face" class="st-cheer" src="cham-sad.webp" alt="">
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="cm-final" class="num">0</span></div>
-      <p id="cm-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-cm-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-cm-lobby" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
 </section>
 
 <section id="beaver" class="screen" hidden aria-label="비버 다리 놓기" data-ta="beaver">
@@ -985,16 +901,6 @@ html.tall-art .scr-box .ext { display: none; }
       <div class="ribbon"><h2 data-t="paused">일시정지</h2></div>
       <button class="btn primary" id="btn-bv-resume" type="button" data-t="resume">이어서 하기</button>
       <button class="btn plain" id="btn-bv-quit" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
-  <section id="bv-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="beaver">비버 다리 놓기</h2></div>
-      <img id="bv-face" class="st-cheer" src="beaver-idle.webp" alt="">
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="bv-final" class="num">0</span></div>
-      <p id="bv-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-bv-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-bv-lobby" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
 </section>
@@ -1012,16 +918,6 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="btn plain" id="btn-hh-quit" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
-  <section id="hh-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="hedgehog">고슴도치 가시 꽂기</h2></div>
-      <img id="hh-face" class="st-cheer" src="hh-cry.webp" alt="">
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="hh-final" class="num">0</span></div>
-      <p id="hh-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-hh-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-hh-lobby" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
 </section>
 <section id="caterpillar" class="screen" hidden aria-label="애벌레 잎 먹기" data-ta="caterpillar">
   <header class="hud mini-hud">
@@ -1037,16 +933,6 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="btn plain" id="btn-cp-quit" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
-  <section id="cp-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="caterpillar">애벌레 잎 먹기</h2></div>
-      <img id="cp-face" class="st-cheer" src="" alt="">
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="cp-final" class="num">0</span></div>
-      <p id="cp-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-cp-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-cp-lobby" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
 </section>
 <section id="cups" class="screen" hidden aria-label="도토리 컵 찾기" data-ta="cups">
   <header class="hud mini-hud">
@@ -1060,16 +946,6 @@ html.tall-art .scr-box .ext { display: none; }
       <div class="ribbon"><h2 data-t="paused">일시정지</h2></div>
       <button class="btn primary" id="btn-cu-resume" type="button" data-t="resume">이어서 하기</button>
       <button class="btn plain" id="btn-cu-quit" type="button" data-t="toList">목록으로</button>
-    </div>
-  </section>
-  <section id="cu-over" class="overlay" hidden>
-    <div class="card">
-      <div class="ribbon"><h2 data-t="cups">도토리 컵 찾기</h2></div>
-      <img id="cu-face" class="st-cheer" src="" alt="">
-      <div class="bigscore"><span class="label" data-t="score">점수</span><span id="cu-final" class="num">0</span></div>
-      <p id="cu-note" class="gap" hidden></p>
-      <button class="btn primary" id="btn-cu-again" type="button" data-t="again">다시 하기</button>
-      <button class="btn plain" id="btn-cu-lobby" type="button" data-t="toList">목록으로</button>
     </div>
   </section>
 </section>
@@ -1161,6 +1037,39 @@ html.tall-art .scr-box .ext { display: none; }
   </div>
 </section>
 
+<section id="cont" class="overlay" hidden aria-label="이어하기" data-ta="contTitle">
+  <div class="card">
+    <div class="ribbon"><h2 data-t="contTitle">이어하기</h2></div>
+    <div class="rk-pic" id="cont-pic" aria-hidden="true"></div>
+    <div class="bigscore"><span class="label" data-t="score">점수</span><span id="cont-score" class="num">0</span></div>
+    <button class="btn primary ic-btn" id="btn-cont-ad" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="26" height="20" rx="5" fill="#fff" stroke="#2b1a0e" stroke-width="3"/><path d="M13.2 11.2v9.6l8-4.8z" fill="#4fb83f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg><span data-t="contAd">광고 보고 이어하기</span></button>
+    <button class="btn ghost ic-btn" id="btn-cont-item" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9.5A3.5 3.5 0 0 1 7.5 6h17A3.5 3.5 0 0 1 28 9.5v3a3.5 3.5 0 0 0 0 7v3a3.5 3.5 0 0 1-3.5 3.5h-17A3.5 3.5 0 0 1 4 22.5v-3a3.5 3.5 0 0 0 0-7z" fill="#ffd84a" stroke="#2b1a0e" stroke-width="3" stroke-linejoin="round"/><path d="M20.5 16a4.5 4.5 0 1 1-1.6-3.45" fill="none" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round"/><path d="M19.6 10.4l.2 3.4-3.4.2" fill="none" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="contItem">이어하기 아이템</span><b class="cont-n" id="cont-n">3</b></button>
+    <button class="btn plain" id="btn-cont-no" type="button" data-t="contNo">그만하기</button>
+  </div>
+</section>
+
+<section id="adfake" class="overlay" hidden aria-label="광고" data-ta="ad">
+  <div class="ad-box"><span class="ad-tag" data-t="ad">광고</span><b id="ad-n" class="num">3</b></div>
+</section>
+
+<section id="result" class="overlay" hidden aria-label="결과" data-ta="result">
+  <div class="card">
+    <div class="ribbon"><h2 id="res-name"></h2></div>
+    <div class="rk-pic" id="res-pic" aria-hidden="true"></div>
+    <div class="bigscore"><span class="label" data-t="score">점수</span><span id="res-score" class="num">0</span></div>
+    <p id="res-new" class="gap hot" hidden data-t="newBest">새 최고 기록!</p>
+    <div class="rk-recs">
+      <div class="rk-rec me"><span class="lab" data-t="rkMine">내 최고</span><b class="nm"></b><span class="sc num" id="res-best">0</span></div>
+      <div class="res-ranks">
+        <div class="rk-rec top"><span class="lab" data-t="rkAll">전체</span><b class="nm"></b><span class="sc res-place" id="res-all"></span></div>
+        <div class="rk-rec"><span class="lab" data-t="rkWeek">주간</span><b class="nm"></b><span class="sc res-place" id="res-wk"></span></div>
+      </div>
+    </div>
+    <button class="btn primary" id="btn-res-again" type="button" data-t="again">다시 하기</button>
+    <div class="btn-row"><button class="btn plain" id="btn-res-rank" type="button" data-t="rank">순위표</button><button class="btn plain" id="btn-res-list" type="button" data-t="toList">목록으로</button></div>
+  </div>
+</section>
+
 <section id="vspick" class="overlay" hidden aria-label="대결" data-ta="versus">
   <div class="card pick">
     <div class="ribbon"><h2 data-t="versus">대결</h2></div>
@@ -1194,14 +1103,14 @@ const STR = {
     colors: ['빨강', '초록', '파랑', '보라'],
     goalColor: (c, n) => `${c} 큐브 ${n}개 터뜨리기`, goalRows: n => `줄 ${n}개 깨기`, goalCombo: n => `콤보 ${n} 만들기`, goalBig: n => `한 번에 큐브 ${n}개 터뜨리기`,
     lineColor: (c, h, n) => `${c} 큐브 ${h}/${n}`, lineRows: (h, n) => `줄 깨기 ${h}/${n}`, lineCombo: (h, n) => `콤보 ${h}/${n}`, lineBig: (h, n) => `한 번에 ${h}/${n}개`,
-    stuck: '놓을 곳이 없어요', stuckSub: '아이템으로 자리를 만들어 보세요',
-    fireBomb: '폭탄!', fireBolt: '번개!', fireDrill: '드릴!', fireBell: '골든벨!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
+   
+    fireBomb: '폭탄!', fireBolt: '번개!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
     paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '목록으로',
-    over: '게임 오버', overTop: '꼭대기를 넘었어요', overNoFit: '더 놓을 곳이 없어요', newBest: '새 최고 기록!', cont: n => `아래 ${n}줄 지우고 이어하기`, again: '다시 하기',
+    over: '게임 오버', contTitle: '이어하기', contAd: '광고 보고 이어하기', contItem: '이어하기 아이템', contNo: '그만하기', ad: '광고', result: '결과', overTop: '꼭대기를 넘었어요', overNoFit: '더 놓을 곳이 없어요', newBest: '새 최고 기록!', again: '다시 하기',
     versus: '대결', vsSub: '5분 점수 대결', blank: '빈 칸',
     vsStart: '대결 시작!', vsOpp: n => `상대 ${n}`, vsWin: '승리!', vsLose: '패배', vsDraw: '무승부', vsTimeUp: '시간 종료!', vsQuit: '대결에서 나갔어요',
-    vsMe: '나', vsAgain: '다시 대결', vsNoItems: '대결에서는 아이템을 쓸 수 없어요', vsResult: '대결 결과',
-    lobby: '로비', myItems: '내 아이템', bomb: '폭탄', drill: '드릴', bell: '골든벨', bestOf: n => `최고 점수 · ${n}칸`, bestAll: '최고 점수', pickSize: '판 크기를 먼저 골라 주세요', start: '게임 시작', shop: '상점', shopSoon: '상점은 곧 열려요', backExit: '한 번 더 누르면 나가요',
+    vsMe: '나', vsAgain: '다시 대결', vsResult: '대결 결과',
+    lobby: '로비', bestOf: n => `최고 점수 · ${n}칸`, bestAll: '최고 점수', pickSize: '판 크기를 먼저 골라 주세요', start: '게임 시작', backExit: '한 번 더 누르면 나가요',
     splash: '시작 화면', touch: '화면을 터치하세요',
     login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…', loginAsk: '게임별 최고 점수와 순위를 계정에 저장해요',
     loginErr: '연결할 수 없어요. 인터넷 연결을 확인해 주세요.', loginBlocked: '로그인 창이 막혔어요. 다시 눌러 주세요.',
@@ -1210,7 +1119,7 @@ const STR = {
     pickOpp: '상대 고르기', inbox: '받은 도전', loading: '불러오는 중…', bestN: n => `최고 ${n}`, challenge: '도전', inboxEmpty: '아직 받은 도전이 없어요',
     inboxLine: (a, b) => `도전자 ${a} : 나 ${b}`, tagWin: '승', tagLose: '패', tagDraw: '무', offlineList: '연결이 안 돼서 일부 상대만 보여요',
     account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', pbHint: '던질 쪽을 눌렀다 떼면 던져요', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '고슴도치 가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cpHint: '끌어서 방향을 바꿔요', cpRule: '머리끼리 닿으면 긴 애벌레가 먹어요', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', cuPick: '도토리는 어디?', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkAllTop: '전체 1위', rkWeekTop: '주간 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '전체', rkWeek: '주간', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '고슴도치 가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', cuPick: '도토리는 어디?', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', acornTab: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkAllTop: '전체 1위', rkWeekTop: '주간 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '전체', rkWeek: '주간', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', minisSub: '작은 게임 모음', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -1223,14 +1132,14 @@ const STR = {
     colors: ['Red', 'Green', 'Blue', 'Purple'],
     goalColor: (c, n) => `Pop ${n} ${c.toLowerCase()} cubes`, goalRows: n => `Clear ${n} lines`, goalCombo: n => `Reach a ${n} combo`, goalBig: n => `Pop ${n} cubes at once`,
     lineColor: (c, h, n) => `${c} ${h}/${n}`, lineRows: (h, n) => `Lines ${h}/${n}`, lineCombo: (h, n) => `Combo ${h}/${n}`, lineBig: (h, n) => `At once ${h}/${n}`,
-    stuck: 'NO ROOM!', stuckSub: 'Use an item to make room',
-    fireBomb: 'BOMB!', fireBolt: 'ZAP!', fireDrill: 'DRILL!', fireBell: 'GOLDEN BELL!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
+   
+    fireBomb: 'BOMB!', fireBolt: 'ZAP!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
     paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Game list',
-    over: 'Game Over', overTop: 'The blocks reached the top', overNoFit: 'No room left', newBest: 'New Best!', cont: n => `Continue (-${n} Rows)`, again: 'Play Again',
+    over: 'Game Over', contTitle: 'Continue?', contAd: 'Watch an ad', contItem: 'Continue item', contNo: 'No thanks', ad: 'Ad', result: 'Result', overTop: 'The blocks reached the top', overNoFit: 'No room left', newBest: 'New Best!', again: 'Play Again',
     versus: 'Versus', vsSub: '5-min duel', blank: 'Empty slot',
     vsStart: 'Versus!', vsOpp: n => `vs ${n}`, vsWin: 'You Win!', vsLose: 'You Lose', vsDraw: 'Draw', vsTimeUp: "Time's up!", vsQuit: 'You left the match',
-    vsMe: 'You', vsAgain: 'Play again', vsNoItems: "Items can't be used in versus", vsResult: 'Versus result',
-    lobby: 'Lobby', myItems: 'My items', bomb: 'Bomb', drill: 'Drill', bell: 'Golden Bell', bestOf: n => `Best · ${n} Wide`, bestAll: 'Best', pickSize: 'Pick a board size first', start: 'Play', shop: 'Shop', shopSoon: 'The shop opens soon', backExit: 'Press back again to leave',
+    vsMe: 'You', vsAgain: 'Play again', vsResult: 'Versus result',
+    lobby: 'Lobby', bestOf: n => `Best · ${n} Wide`, bestAll: 'Best', pickSize: 'Pick a board size first', start: 'Play', backExit: 'Press back again to leave',
     splash: 'Title screen', touch: 'Touch to Start',
     login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…', loginAsk: 'Your bests and rankings are saved to your account',
     loginErr: "Can't connect. Check your internet connection.", loginBlocked: 'The sign-in window was blocked. Tap again.',
@@ -1239,7 +1148,7 @@ const STR = {
     pickOpp: 'Opponents', inbox: 'Challenges', loading: 'Loading…', bestN: n => `Best ${n}`, challenge: 'Play', inboxEmpty: 'No challenges yet',
     inboxLine: (a, b) => `Them ${a} : You ${b}`, tagWin: 'W', tagLose: 'L', tagDraw: 'D', offlineList: 'Offline: only some opponents are shown',
     account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', pbHint: 'Touch where to throw, let go', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Caterpillar Munch', caterpillarShort: 'Munch', cpHint: 'Drag to steer', cpRule: 'Heads meet: the longer one eats', cups: 'Acorn Cups', cupsShort: 'Cups', cuPick: 'Where is the acorn?', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkAllTop: 'Overall 1st', rkWeekTop: 'Weekly 1st', rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'Overall', rkWeek: 'Weekly', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Caterpillar Munch', caterpillarShort: 'Munch', cups: 'Acorn Cups', cupsShort: 'Cups', cuPick: 'Where is the acorn?', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', acornTab: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkAllTop: 'Overall 1st', rkWeekTop: 'Weekly 1st', rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'Overall', rkWeek: 'Weekly', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', minisSub: 'Quick games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -1342,9 +1251,8 @@ const G = {
 let menuMode = 'moves', menuSize = null;   // no board size is picked until the player taps one
 let drag = null;      // {i, x, y, x0, y0, t0, id, ghost}
 let pending = null;   // a drop released while the board was still settling
+const END = {}, END_BEST = {};   // each game's end (see gameEnd) and its best before the game
 let anim = null;      // current settling step: {type: 'drop'|'item'|'burst'|'fall', t0, dur, cells | marks}
-let idrag = null;     // an item held by the thumb: {k, x, y, x0, y0, id, col, home, hist, trail}
-let pendingItem = null;   // an item let go while the board was still settling
 let chain = 0, dropBurst = false;
 const fx = { shift: null, cubes: [], pops: [], combo: null, spin: null, sparks: [], orbs: [], banners: [], shake: null, flash: null, stageFade: null, scoreGate: 0 };
 let lastDrop = null, shownScore = 0;
@@ -1891,6 +1799,7 @@ function newGame(mode, size, vs) {
   G.vs = vs ? { seed: vs.seed >>> 0, opp: vs.opp, left: VS_MS, count: VS_COUNT, shown: '' } : null;
   G.dealt = 0; G.missionN = 0; G.level = 1; G.drops = 0;
   setSize(G.size);
+  if (!vs) endBest('block' + G.size);
   layout();
   G.grid = withSeed(RNG_BOARD, 0, startBoard);
   G.specialDue = 0;
@@ -1899,13 +1808,12 @@ function newGame(mode, size, vs) {
   shownScore = 0;
   G.score = 0; G.combo = 0; G.riseAcc = 0; G.timeAcc = 0; G.rises = 0; G.drops = 0; G.lines = 0; G.level = 1;
   G.reason = null; G.phase = 'idle'; G.specialDue = 0; G.continues = 0; G.rotLeft = ROT_PER_GAME;
-  G.fever = 0; G.feverLeft = 0; G.feverDrop = false; G.mission = null; G.stage = 0; G.bellRise = 0;
+  G.fever = 0; G.feverLeft = 0; G.feverDrop = false; G.mission = null; G.stage = 0;
   G.best = loadBest();
   G.state = 'play'; G.started = true;
   fx.shift = null; fx.cubes = []; fx.pops = []; fx.combo = null; fx.spin = null;
-  fx.sparks = []; fx.orbs = []; fx.banners = []; fx.shake = null; fx.flash = null; fx.stageFade = null; fx.drill = null; fx.bell = null;
-  drag = null; pending = null; anim = null; idrag = null; pendingItem = null;
-  G.stuck = false; G.itemMove = false;
+  fx.sparks = []; fx.orbs = []; fx.banners = []; fx.shake = null; fx.flash = null; fx.stageFade = null;
+  drag = null; pending = null; anim = null;
   applyTheme(0, true);
   touchGrid();
   hud(); feverUI(); rotUI();
@@ -1958,14 +1866,13 @@ function scoreFor(cubes, chainStep, combo) {
 }
 function stepDone(a) {
   if (a.type === 'drop') sfx('land');
-  if (a.type === 'item') { breakNow({ marks: a.tg.marks, rows: 0 }, [a.kind], null, a); return; }   // the item reached its spot
   if (a.type === 'drop' || a.type === 'fall') {
     const b = findBursts(G.grid);
     const spx = a.type === 'drop' ? specialMarks(G.grid, a.cells) : null;
     if (spx) spx.extra.forEach((v, k) => b.marks.set(k, v));
     const fired = spx ? [...new Set(spx.fired)] : [];
     if (!b.marks.size) { endSettle(); return; }
-    breakNow(b, fired, spx, null);
+    breakNow(b, fired, spx);
     return;
   }
   if (a.type === 'burst') {
@@ -1978,33 +1885,26 @@ function stepDone(a) {
     else stepDone({ type: 'fall' });
   }
 }
-const FIRE_KEY = { bomb: 'fireBomb', bolt: 'fireBolt', drill: 'fireDrill', bell: 'fireBell' };
+const FIRE_KEY = { bomb: 'fireBomb', bolt: 'fireBolt' };
 // One break: score, effects, missions and the fever gauge, then the cubes start popping off.
-// item: the bomb / drill being used (its own popping order), or null for a block's break.
-function breakNow(b, fired, spx, item) {
+function breakNow(b, fired, spx) {
     chain++;
-    dropBurst = true; G.combo++;   // each break is a combo, including the ones falling cubes and items set off
-    const bell = !!item && item.kind === 'bell';
-    const pts = (bell ? b.marks.size * BELL_PTS : scoreFor(b.marks.size, chain, G.combo)) * (G.feverDrop ? 2 : 1);
+    dropBurst = true; G.combo++;   // each break is a combo, including the ones falling cubes set off
+    const pts = scoreFor(b.marks.size, chain, G.combo) * (G.feverDrop ? 2 : 1);
     G.lines = (G.lines || 0) + b.rows;
     addScore(pts);
     const label = fired.length ? fired.map(k => tr(FIRE_KEY[k])).join(' ') : b.rows ? tr('rows', b.rows) : '';
-    if (bell) banner(tr('fireBell'), tr('pts', pts.toLocaleString()), GOLD_LOOK, 1900);   // one big sign instead of a pop
-    else popAt(b.marks, '+' + pts.toLocaleString(), label, chain >= 2 || fired.length > 0, pts);
+    popAt(b.marks, '+' + pts.toLocaleString(), label, chain >= 2 || fired.length > 0, pts);
     if (G.combo >= 2) fx.combo = { n: G.combo, t0: performance.now() };
     if (G.combo % 5 === 0) G.specialDue = (G.specialDue || 0) + 1;   // reward: a rainbow cube in the next block
     if (fired.includes('bomb')) sfx('bomb');
     if (fired.includes('bolt')) sfx('bolt');
-    if (fired.includes('drill')) sfx('drill');
-    if (bell) sfx('bomb');
     if (b.rows) sfx('line', { rows: b.rows, chain }); else if (!fired.length) sfx('burst', { chain });
     if (G.combo >= 2) sfx('combo', { combo: G.combo });
-    buzz(bell ? [90, 40, 140] : fired.includes('bomb') ? [60, 30, 40] : fired.includes('drill') ? [25, 20, 25, 20, 25, 20, 40] : G.combo >= 2 ? [25, 40, 35] : b.rows ? 30 : 18);
+    buzz(fired.includes('bomb') ? [60, 30, 40] : G.combo >= 2 ? [25, 40, 35] : b.rows ? 30 : 18);
     // screen kick for the big moments
     if (fired.includes('bomb')) { shake(u * 0.75, 380); flash('255,226,170', 0.42); }
     else if (fired.includes('bolt')) { shake(u * 0.45, 300); flash('255,250,190', 0.34); }
-    else if (fired.includes('drill')) { shake(u * 0.4, 460); flash('255,244,214', 0.2); }
-    else if (bell) { shake(u * 1.1, 650); flash('255,224,120', 0.55, 460); }
     if (b.rows >= 2) shake(u * (0.2 + 0.12 * Math.min(4, b.rows)), 300);
     if (G.combo >= 3) shake(u * (0.18 + 0.06 * Math.min(8, G.combo)), 280);
     if (chain >= 2) shake(u * 0.3 * Math.min(3, chain - 1), 260);
@@ -2012,25 +1912,6 @@ function breakNow(b, fired, spx, item) {
     // every cube that breaks outside fever counts toward the next one
     if (!G.feverDrop && !feverOn()) G.fever = Math.min(feverGoal(), (G.fever || 0) + b.marks.size);
     feverUI();
-    if (item) {
-      // the bomb blows outward from the middle of its square; the drill eats down its column from the top;
-      // the bell's ring sweeps down the whole board from where it hangs
-      const delays = new Map(), dirs = new Map(), tg = item.tg;
-      let maxD = 0;
-      const step = (380 / ROWS) * ANIM, rc = tg.rc, cc = tg.cc;
-      b.marks.forEach((v, k) => {
-        const r = (k / COLS) | 0, c = k % COLS;
-        let d, dir;
-        if (item.kind === 'drill') { d = (r - tg.hit) * step; dir = r % 2 ? 1 : -1; }
-        else if (bell) { d = Math.hypot(r - rc, (c - cc) * (ROWS / COLS)) * (700 / (ROWS + 2)) * ANIM; dir = Math.sign(c - cc) || (Math.random() < 0.5 ? -1 : 1); }
-        else { d = Math.hypot(r - rc, c - cc) * 32 * ANIM; dir = Math.sign(c - cc) || (Math.random() < 0.5 ? -1 : 1); }
-        delays.set(k, d); dirs.set(k, dir); maxD = Math.max(maxD, d);
-      });
-      if (item.kind === 'drill') fx.drill = { col: item.col, t0: performance.now(), r0: tg.hit, r1: tg.r1, step };
-      // a whole board of flying cubes is too many to draw on a phone: past ~320, the rest just pop into sparks
-      anim = { type: 'burst', t0: performance.now(), dur: maxD + 200 * ANIM, marks: b.marks, delays, dirs, spawned: new Set(), lite: Math.min(1, 320 / b.marks.size) };
-      return;
-    }
     const delays = new Map(), dirs = new Map();
     const full = new Set();
     for (let r = 0; r < ROWS; r++) if (G.grid[r].every(v => v)) full.add(r);
@@ -2063,18 +1944,11 @@ function endSettle() {
   anim = null;
   if (!dropBurst) G.combo = 0;
   G.phase = 'idle';
-  // using an item is not a move: no row comes up and the mission keeps its moves
-  const itemMove = G.itemMove; G.itemMove = false;
   if (G.vs) { const lv = 1 + Math.floor(G.drops / VS_LEVEL_DROPS); if (lv > (G.level || 1)) levelUp(lv); }   // before this drop's row and block
-  if (!itemMove) missionTick();
+  missionTick();
   if (!feverOn() && (G.fever || 0) >= feverGoal()) startFever();   // the gauge filled during this drop: fever from the next one
   feverUI();
-  if (G.bellRise) {   // after the golden bell: the board starts over with a few rows from the bottom
-    const n = G.bellRise; G.bellRise = 0;
-    for (let i = 0; i < n; i++) if (!rise(i > 0)) return;
-    fx.shift = { t0: performance.now(), dur: 320 * ANIM, rows: n };
-  }
-  if (G.mode === 'moves' && !itemMove) {
+  if (G.mode === 'moves') {
     G.riseAcc++;
     if (G.riseAcc >= moveIv()) {
       G.riseAcc = 0;
@@ -2088,81 +1962,7 @@ function endSettle() {
   if (pending && G.state === 'play') {
     const q = pending; pending = null;
     dropPiece(q.i, q.c);
-  } else if (pendingItem && G.state === 'play') {
-    const q = pendingItem; pendingItem = null;
-    useItem(q.k, q.col, q.row);
   }
-}
-
-/* ---------- items: a bomb (5x5) and a drill (one whole column). They are kept between games and will be
-   bought in the shop (missions only pay points). Held and slid left / right like a block, the item falls down the column
-   under the thumb and goes off where it lands; before letting go the area it will break shows faintly. ---------- */
-// The golden bell rings over the whole board: every cube breaks (BELL_PTS a cube, doubled in fever), then the board
-// starts over with BELL_ROWS rows coming up from the bottom.
-const ITEM_KINDS = ['bomb', 'drill', 'bell'];
-const ITEM_NAME = { bomb: '폭탄', drill: '드릴', bell: '골든벨' };
-const ITEM_START = 3;   // the first game on a device starts with a few of each, to try them (a kind added later too)
-const BELL_PTS = 50, BELL_ROWS = 3;
-let ITEMS = loadItems();
-function loadItems() {
-  let s = null;
-  try { s = JSON.parse(localStorage.getItem('rise-items')); } catch (e) { /* storage unavailable */ }
-  const out = {};
-  for (const k of ITEM_KINDS) out[k] = s && typeof s === 'object' && typeof s[k] === 'number' ? Math.max(0, s[k] | 0) : ITEM_START;
-  return out;
-}
-function saveItems() { try { localStorage.setItem('rise-items', JSON.stringify(ITEMS)); } catch (e) { /* storage unavailable */ } }
-function addItem(k, n = 1) { ITEMS[k] = (ITEMS[k] || 0) + n; saveItems(); fx.itemBump = { k, t0: performance.now() }; }
-const hasItems = () => !G.vs && ITEM_KINDS.some(k => (ITEMS[k] || 0) > 0);   // none in versus
-// what an item breaks.
-// The drill falls down column col and takes every cube of it (hit: the row of its first cube, ROWS when it is empty).
-// The bomb goes off on any cell (row, col), on top of the stack or inside it: the 5x5 square around that cell,
-// moved in to stay on the board.
-function itemTargets(kind, col, row) {
-  const marks = new Map();
-  if (kind === 'bell') {   // every cube on the board; the bell hangs over the middle of the top
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (G.grid[r][c]) marks.set(r * COLS + c, G.grid[r][c]);
-    return { marks, hit: 0, r0: 0, r1: ROWS - 1, c0: 0, c1: COLS - 1, rc: -2, cc: (COLS - 1) / 2 };
-  }
-  let hit = 0;
-  while (hit < ROWS && !G.grid[hit][col]) hit++;
-  if (kind === 'drill') {
-    for (let r = hit; r < ROWS; r++) if (G.grid[r][col]) marks.set(r * COLS + col, G.grid[r][col]);
-    return { marks, hit, r0: hit, r1: ROWS - 1, c0: col, c1: col, rc: hit, cc: col };
-  }
-  const rc = Math.max(0, Math.min(ROWS - 1, row == null ? hit : row));
-  const r0 = Math.max(0, Math.min(rc - 2, ROWS - 5)), c0 = Math.max(0, Math.min(col - 2, COLS - 5));
-  for (let r = r0; r < r0 + 5; r++) for (let c = c0; c < c0 + 5; c++) if (G.grid[r][c]) marks.set(r * COLS + c, G.grid[r][c]);
-  return { marks, hit, r0, r1: r0 + 4, c0, c1: c0 + 4, rc, cc: col };
-}
-function useItem(k, col, row) {
-  if (G.vs || G.state !== 'play' || (ITEMS[k] || 0) <= 0) return false;
-  if (G.phase !== 'idle' || anim) { pendingItem = { k, col, row }; return true; }   // goes as soon as the board has settled
-  const tg = itemTargets(k, col, row);
-  if (!tg.marks.size) { sfx('back'); return false; }   // nothing to break there: the item is kept
-  ITEMS[k]--; saveItems();
-  G.stuck = false;
-  G.itemMove = true;
-  G.feverDrop = feverOn();
-  if (G.mission) G.mission.drop = 0;
-  chain = 0; dropBurst = false; lastDrop = null;
-  G.phase = 'settling';
-  if (k === 'bomb') anim = { type: 'item', kind: k, col, tg, t0: performance.now(), dur: 170 * ANIM };   // slammed down on its cell
-  else if (k === 'bell') {   // it rings first (the bell swings over the board), then everything goes
-    const ring = 950 * ANIM;
-    anim = { type: 'item', kind: k, col, tg, t0: performance.now(), dur: ring };
-    fx.bell = { t0: performance.now(), ring };
-    G.bellRise = BELL_ROWS;
-    sfx('bell'); buzz([20, 60, 20]);
-    touchGrid();
-    return true;
-  } else {
-    const land = Math.max(0, tg.hit - 1), from = -2;   // the drill drops down its column onto the first cube
-    anim = { type: 'item', kind: k, col, tg, from, land, t0: performance.now(), dur: (90 + 38 * Math.sqrt(land - from)) * ANIM };
-  }
-  sfx('pick');
-  touchGrid();
-  return true;
 }
 
 function rise(quiet) {
@@ -2190,13 +1990,7 @@ function checkNoFit() {
     for (let k = 0, q = p; k < 3 && G.rotLeft > 0; k++) { q = turned(q); if (q && canDropAnywhere(shapeOf(q))) return true; }
     return false;
   };
-  if (G.tray.some(p => p && fitsSomehow(p))) { G.stuck = false; return; }
-  // no block fits, but an item can still make room: wait for it
-  if (hasItems()) {
-    if (!G.stuck) { G.stuck = true; banner(tr('stuck'), tr('stuckSub'), COMBO_LOOK[1], 2200); sfx('missionFail'); }
-    return;
-  }
-  G.stuck = false;
+  if (G.tray.some(p => p && fitsSomehow(p))) return;
   die('nofit');
 }
 
@@ -2375,51 +2169,39 @@ function die(reason) {
   musicStop();
   sfx('over');
   if (drag) { try { cv.releasePointerCapture(drag.id); } catch (e) { /* already released */ } }
-  if (idrag) { try { cv.releasePointerCapture(idrag.id); } catch (e) { /* already released */ } }
-  drag = null; pending = null; idrag = null; pendingItem = null; G.stuck = false;
+  drag = null; pending = null;
   buzz([90, 60, 160]);
   setTimeout(() => { if (G.state === 'dying') finish(); }, Math.max(150, 700 * ANIM));
 }
 
-// Continue once per game: the bottom rows go away and play goes on with the same score.
-// The 16-wide board loses 5 rows, the 32-wide one 10 (the same height on screen).
+// Going on after the end: the bottom rows go away and play goes on with the same score (no block fitting: three new
+// ones too). The 16-wide board loses 5 rows, the 32-wide one 10 (the same height on screen).
 const continueRows = () => (COLS >= 32 ? 10 : 5);
-function showRewardedAd(done) { done(); }   // the rewarded ad goes here later; for now the reward comes straight away
-function continueGame() {
-  if (G.vs || G.state !== 'over' || G.continues >= 1) return;
-  showRewardedAd(() => {
-    const n = continueRows();
-    G.continues++;
-    G.grid.splice(ROWS - n, n);
-    for (let k = 0; k < n; k++) G.grid.unshift(Array(COLS).fill(0));
-    if (G.reason === 'nofit') G.tray = [dealPiece(), dealPiece(), dealPiece()];
-    G.reason = null; G.state = 'play'; G.phase = 'idle';
-    anim = null; pending = null; fx.shift = null; pendingItem = null; G.itemMove = false;
-    touchGrid(); hud(); showOnly(null);
-    musicStart(false);
-    checkNoFit();
-  });
+function blockRevive() {
+  const n = continueRows();
+  G.continues = (G.continues || 0) + 1;
+  G.grid.splice(ROWS - n, n);
+  for (let k = 0; k < n; k++) G.grid.unshift(Array(COLS).fill(0));
+  if (G.reason === 'nofit') G.tray = [dealPiece(), dealPiece(), dealPiece()];
+  G.reason = null; G.state = 'play'; G.phase = 'idle';
+  anim = null; pending = null; fx.shift = null;
+  touchGrid(); hud(); showOnly(null);
+  checkNoFit();
 }
+for (const n of [16, 32]) END['block' + n] = { score: () => G.score, on: () => G.state === 'over' && !G.vs && G.size === n, revive: blockRevive, used: () => G.continues || 0,
+  again: () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); }, list: () => { G.started = false; G.state = 'menu'; openLobby(); } };
 
 function finish() {
   G.state = 'over';
   shownScore = G.score;
   if (G.vs) { vsResult(); return; }
-  const prev = G.best, isBest = G.score > prev;
-  if (isBest) { G.best = G.score; saveBest(G.score); }
-  rkScore('block' + G.size, G.score);
-  $('#over-reason').textContent = G.reason === 'top' ? tr('overTop') : tr('overNoFit');
-  $('#over-score').textContent = G.score.toLocaleString();
-  const ob = $('#over-best');
-  ob.textContent = isBest ? tr('newBest') : '';
-  ob.hidden = !isBest;
-  ob.classList.toggle('hot', isBest);
-  const canGo = (G.continues || 0) < 1;
-  const bc = $('#btn-continue');
-  bc.hidden = !canGo; bc.textContent = tr('cont', continueRows());
-  $('#btn-again').className = canGo ? 'btn ghost' : 'btn primary';
+  const key = 'block' + G.size;
+  if (END_BEST[key] === undefined) END_BEST[key] = G.best;   // a game from before a reload
+  if (G.score > G.best) { G.best = G.score; saveBest(G.score); }
+  rkScore(key, G.score);
   hud();
-  showOnly('over');
+  showOnly(null);
+  gameEnd(key);
 }
 
 /* ---------- sound: everything is synthesized in the browser, nothing is downloaded ---------- */
@@ -2517,13 +2299,16 @@ const MUSIC = {
   chameleon: [{ url: 'bgm-chameleon.mp3', loop: [13230, 1473092] }],
   beaver: [{ url: 'bgm-beaver.mp3', loop: [13230, 1473092] }],
   mushroom: [{ url: 'bgm-mushroom.mp3', loop: [13230, 1473092] }],
+  hedgehog: [{ url: 'bgm-hedgehog.mp3', loop: [13230, 1525230] }],
+  caterpillar: [{ url: 'bgm-caterpillar.mp3', loop: [13230, 1641538] }],
+  cups: [{ url: 'bgm-cups.mp3', loop: [13230, 1853926] }],
 };
 const MUSIC_VOL = 0.45;
 SND.track = 'main'; SND.lvl = 0; SND.bufs = {}; SND.loads = {}; SND.posOf = {};
 const musVar = () => MUSIC[SND.track][SND.lvl];
 const musLoop = v => ({ start: v.loop[0] / 44100, end: v.loop[1] / 44100 });
 // which tune: the game being played
-function musicFor() { return G.state === 'play' ? 'main' : MG.st === 'play' ? 'acorn' : ST.st === 'play' ? 'stairs' : FM.st === 'play' ? 'merge' : PB.st === 'play' ? 'pebble' : MS.st === 'play' ? 'mushroom' : OP.st === 'play' ? 'owlpost' : CM.st === 'play' ? 'chameleon' : BV.st === 'play' ? 'beaver' : null; }
+function musicFor() { return G.state === 'play' ? 'main' : MG.st === 'play' ? 'acorn' : ST.st === 'play' ? 'stairs' : FM.st === 'play' ? 'merge' : PB.st === 'play' ? 'pebble' : MS.st === 'play' ? 'mushroom' : OP.st === 'play' ? 'owlpost' : CM.st === 'play' ? 'chameleon' : BV.st === 'play' ? 'beaver' : HH.st === 'play' ? 'hedgehog' : CP.st === 'play' ? 'caterpillar' : CU.st === 'play' ? 'cups' : null; }
 function loadTune(url) {
   if (SND.bufs[url] || SND.loads[url] || !SND.ctx) return;
   SND.loads[url] = fetch(url)
@@ -2619,7 +2404,7 @@ function musicStop() {
 // Sound effects: recorded instruments from the same sound bank (plus a little synthesis for noises), cut and levelled,
 // all in one file (sfx.mp3). SFX_AT: where each one sits in it, [start, length] in seconds.
 const SFX_URL = 'sfx.mp3';
-const SFX_AT = { pick: [0.12, 0.2895], move: [0.5295, 0.12], back: [0.7695, 0.45], land: [1.3395, 0.4], rise: [1.8595, 0.3], line: [2.2795, 1.0], burst: [3.3995, 0.6999], combo: [4.2193, 0.8], fever: [5.1393, 1.6], feverEnd: [6.8593, 0.8], missionNew: [7.7793, 0.7], mission: [8.5993, 1.3], missionFail: [10.0193, 0.65], stage: [10.7893, 1.4], rot: [12.3093, 0.3], bell: [12.7293, 2.4], bomb: [15.2493, 1.1], bolt: [16.4693, 0.4], drill: [16.9893, 0.55], over: [17.6593, 2.4], catch: [20.1793, 0.3999], catchGold: [20.6992, 0.9], catchCube: [21.7192, 0.45], heart: [22.2892, 0.8], hit: [23.2092, 0.45], acCatch: [23.7792, 0.304], acGold: [24.2032, 1.0], acCube: [25.3232, 0.45], acHeart: [25.8932, 0.95], acHit: [26.9632, 0.45], acCombo: [27.5332, 0.6], acOver: [28.2532, 1.8], acBest: [30.1732, 1.5997], stHop: [31.8929, 0.1999], stTurn: [32.2128, 0.1385], stTick: [32.4714, 0.22], stGo: [32.8114, 0.9], stFall: [33.8314, 1.0], stTheme: [34.9514, 1.3], stOver: [36.3714, 2.4], stBest: [38.8914, 1.8], fmDrop: [40.8114, 0.2677], fmPop: [41.199, 0.3862], fmBig: [41.7052, 1.0], fmMelon: [42.8252, 1.9], fmOver: [44.8452, 2.2], fmBest: [47.1652, 1.5022], pbThrow: [48.7874, 0.0852], pbHit: [48.9926, 0.2123], pbBreak: [49.325, 0.231], pbPlus: [49.676, 0.7], pbShift: [50.496, 0.45], pbOver: [51.066, 2.2], pbBest: [53.386, 1.7], msPick: [55.206, 0.238], msDrop: [55.564, 0.3], msWrong: [55.984, 0.4], msDone: [56.504, 0.8], msClear: [57.424, 1.3], msTick: [58.844, 0.1012], msOver: [59.0651, 2.0], msBest: [61.1851, 1.5993], opSend: [62.9044, 0.1576], opRight: [63.182, 0.7], opWrong: [64.002, 0.5], opShuffle: [64.622, 0.6], opOver: [65.342, 2.2], opBest: [67.662, 1.7], cmFind: [69.482, 0.75], cmWrong: [70.352, 0.26], cmOver: [70.732, 2.1], cmBest: [72.952, 1.5344], bvLay: [74.6063, 0.2998], bvLand: [75.0261, 0.35], bvStep: [75.4961, 0.6], bvPerfect: [76.2161, 0.9], bvFall: [77.2361, 0.5], bvSplash: [77.8561, 0.6298], bvBest: [78.6059, 1.7] };
+const SFX_AT = { pick: [0.12, 0.2895], move: [0.5295, 0.12], back: [0.7695, 0.45], land: [1.3395, 0.4], rise: [1.8595, 0.3], line: [2.2795, 1.0], burst: [3.3995, 0.6999], combo: [4.2193, 0.8], fever: [5.1393, 1.6], feverEnd: [6.8593, 0.8], missionNew: [7.7793, 0.7], mission: [8.5993, 1.3], missionFail: [10.0193, 0.65], stage: [10.7893, 1.4], rot: [12.3093, 0.3], bomb: [12.7293, 1.1], bolt: [13.9493, 0.4], over: [14.4693, 2.4], catch: [16.9893, 0.3999], catchGold: [17.5092, 0.9], catchCube: [18.5292, 0.45], heart: [19.0992, 0.8], hit: [20.0192, 0.45], acCatch: [20.5892, 0.304], acGold: [21.0132, 1.0], acCube: [22.1332, 0.45], acHeart: [22.7032, 0.95], acHit: [23.7732, 0.45], acCombo: [24.3432, 0.6], acOver: [25.0632, 1.8], acBest: [26.9832, 1.5997], stHop: [28.7029, 0.1999], stTurn: [29.0228, 0.1388], stTick: [29.2816, 0.22], stGo: [29.6216, 0.9], stFall: [30.6416, 1.0], stTheme: [31.7616, 1.3], stOver: [33.1816, 2.4], stBest: [35.7016, 1.8], fmDrop: [37.6216, 0.2677], fmPop: [38.0093, 0.3862], fmBig: [38.5155, 1.0], fmMelon: [39.6355, 1.9], fmOver: [41.6555, 2.2], fmBest: [43.9755, 1.5022], pbThrow: [45.5977, 0.0851], pbHit: [45.8027, 0.2123], pbBreak: [46.1351, 0.2323], pbPlus: [46.4873, 0.7], pbShift: [47.3073, 0.45], pbOver: [47.8773, 2.2], pbBest: [50.1973, 1.7], msPick: [52.0173, 0.238], msDrop: [52.3754, 0.3], msWrong: [52.7954, 0.4], msDone: [53.3154, 0.8], msClear: [54.2354, 1.3], msTick: [55.6554, 0.1012], msOver: [55.8765, 2.0], msBest: [57.9965, 1.5993], opSend: [59.7158, 0.1577], opRight: [59.9935, 0.7], opWrong: [60.8135, 0.5], opShuffle: [61.4335, 0.6], opOver: [62.1535, 2.2], opBest: [64.4735, 1.7], cmFind: [66.2934, 0.75], cmWrong: [67.1634, 0.26], cmOver: [67.5434, 2.1], cmBest: [69.7634, 1.5344], bvLay: [71.4178, 0.2998], bvLand: [71.8376, 0.35], bvStep: [72.3076, 0.6], bvPerfect: [73.0276, 0.9], bvFall: [74.0476, 0.5], bvSplash: [74.6676, 0.6393], bvBest: [75.4269, 1.7], hhThrow: [77.2468, 0.1293], hhStick: [77.4962, 0.2999], hhBerry: [77.9161, 0.5], hhClear: [78.536, 1.2], hhFail: [79.856, 1.6], hhBest: [81.576, 1.5329], cpEat: [83.2289, 0.25], cpBump: [83.5989, 0.2], cpGulp: [83.9189, 0.9], cpOver: [84.9389, 2.2], cpBest: [87.2589, 1.7], cuSwap: [89.0789, 0.1592], cuRight: [89.3581, 0.9], cuWrong: [90.3781, 0.8], cuOver: [91.2981, 2.1], cuBest: [93.5181, 1.7] };
 const SFXB = { bytes: null, buf: null, fetching: false, decoding: false };
 function fetchSfx() {   // the bytes come in at start; they are decoded once there is an audio context
   if (SFXB.bytes || SFXB.fetching) return;
@@ -2795,7 +2580,7 @@ function fitNum(el) {
   if (room > 0 && w > room) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * room / w * 0.97).toFixed(1) + 'px';
 }
 function showOnly(id) {
-  for (const k of ['menu', 'over', 'vsover']) $('#' + k).hidden = k !== id;
+  for (const k of ['menu', 'vsover']) $('#' + k).hidden = k !== id;
   if (id) { const b = $('#' + id).querySelector('.btn.primary:not([hidden])'); if (b) b.focus({ preventScroll: true }); }
 }
 function setMenu(mode, size) {
@@ -2899,10 +2684,6 @@ function lobbyInfo() {
   $('#lb-best-label').textContent = menuSize ? tr('bestOf', menuSize) : tr('bestAll');   // nothing picked yet: the best of both
   $('#lb-best').textContent = (menuSize ? bestFor(menuSize) : Math.max(bestFor(16), bestFor(32))).toLocaleString();
   minisInfo();
-  for (const k of ITEM_KINDS) {
-    $(`#lb-${k}`).textContent = ITEMS[k] || 0;
-    $(`#lb-${k}-ic`).src = itemIcon(k, 30).toDataURL();
-  }
 }
 // leaving a game ends it: the score so far is the final one (a new best is kept)
 function quitGame() {
@@ -3095,8 +2876,9 @@ function openMini() {
   Promise.race([loadSquirrelArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && MG.st === 'off') rkGate('acorn', go); });
 }
 function miniStart() {
-  $('#mini-menu').hidden = true; $('#mini-over').hidden = true;
+  $('#mini-menu').hidden = true;
   miniResize();
+  endBest('acorn');
   Object.assign(MG, { st: 'play', t: 0, items: [], pops: [], puffs: [], sparks: [], squash: 0, score: 0, best: miniBest(), hearts: 3, combo: 0, x: MG.W / 2, tx: MG.W / 2,
     face: 1, hurt: 0, flash: 0, next: 0.7, drag: null, key: 0, end: 0 });
   miniHud();
@@ -3141,13 +2923,19 @@ function miniFinish() {
   return isBest;
 }
 function miniGameOver() {
-  const isBest = miniFinish();
+  miniFinish();
   musicStop();
-  gsfx(isBest ? 'acBest' : 'acOver', 1, 'over');
-  $('#mini-final').textContent = MG.score.toLocaleString();
-  const note = $('#mini-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  setTimeout(() => { if (MG.st === 'over') $('#mini-over').hidden = false; }, 900);
+  gsfx('acOver', 1, 'over');
+  setTimeout(() => gameEnd('acorn'), 900);
 }
+// going on: hearts full again, the sky cleared
+function miniRevive() {
+  Object.assign(MG, { st: 'play', hearts: 3, items: [], combo: 0, hurt: 0, flash: 0, next: 0.9, drag: null, key: 0, end: 0 });
+  miniHud();
+  MG.pops.push({ text: tr('go'), x: MG.W / 2, y: MG.H * 0.36, t: 0, look: GOLD_LOOK, size: Math.min(64, MG.W * 0.15), life: 0.9 });
+}
+END.acorn = { score: () => MG.score, on: () => MG.st === 'over', revive: miniRevive, again: () => { miniStart(); musicStart(true); }, list: () => closeMini(),
+  pics: () => ['mini-squirrel.webp', 'mini-squirrel-hurt.webp'], best: ['acBest', 'stage'] };
 // what falls next, more of it and faster as time goes on
 function miniSpawn() {
   const g = miniGeo(), t = MG.t, rnd = Math.random();
@@ -3510,11 +3298,99 @@ for (const k of ['32', '16']) $('#rkb-' + k).addEventListener('click', () => { i
 $('#rkb-all').addEventListener('click', () => { if (!rkbAll) { sfx('pick'); rkbAll = true; rkbFill(); } });
 $('#rkb-week').addEventListener('click', () => { if (rkbAll) { sfx('pick'); rkbAll = false; rkbFill(); } });
 $('#btn-rkb-close').addEventListener('click', () => { sfx('pick'); $('#rkb').hidden = true; });
+/* ---------- a game's end. First the continue card: go on after a rewarded ad, or with a continue item (3 to begin with,
+   kept on the phone), once a game; or stop. Then the result: the score, the best, my places on the
+   boards. The score is kept (best, boards) as soon as the game ends, so leaving from the card loses nothing. Each game
+   puts in END what this needs of it: { score(), on() (it has ended and is on screen), revive(), again(), list(),
+   pics() [good, sad] or none (its picture in the list), best: [sound, stand-in] for a new best, used() (how often this
+   game has gone on, when the game keeps that itself) }. ---------- */
+const CONT_KEY = 'forest-cont', CONT_START = 3;
+let contN = (() => { try { const v = localStorage.getItem(CONT_KEY); return v === null ? CONT_START : Math.max(0, parseInt(v, 10) || 0); } catch (e) { return CONT_START; } })();
+function contPut(n) { contN = Math.max(0, n | 0); try { localStorage.setItem(CONT_KEY, String(contN)); } catch (e) { /* storage unavailable */ } }
+const CONT_PER_GAME = 1, END_CONT = {};   // going on: once a game
+const endBest = game => { END_BEST[game] = RK_LOCAL[game](); END_CONT[game] = 0; };   // a game starts: its best before it (for "new best")
+const endUsed = game => (END[game].used ? END[game].used() : END_CONT[game] || 0);
+let endGame = null, resN = 0;   // the game whose continue card or result is up
+function endPic(box, game, good) {
+  const p = END[game].pics && END[game].pics(), src = p && p[good ? 0 : 1];
+  if (src) { const im = new Image(); im.alt = ''; im.decoding = 'async'; im.src = src; box.replaceChildren(im); return; }
+  const ic = $('#mg-' + (game.startsWith('block') ? 'block' : game) + ' .mg-ic');
+  box.replaceChildren(...(ic ? [ic.cloneNode(true)] : []));
+}
+// the game's end has played out (its score is kept already): the continue card, or once it has gone on, the result
+function gameEnd(game) {
+  const e = END[game];
+  if (!e || !e.on()) return;
+  if (endUsed(game) >= CONT_PER_GAME) { showResult(game); return; }
+  endGame = game;
+  endPic($('#cont-pic'), game, false);
+  $('#cont-score').textContent = e.score().toLocaleString();
+  contUI();
+  $('#cont').hidden = false;
+}
+function contUI() { $('#cont-n').textContent = contN; $('#btn-cont-item').disabled = contN <= 0; }
+function contGo(how) {
+  const game = endGame, e = END[game];
+  if (!e || !e.on() || $('#cont').hidden || !$('#adfake').hidden) return;
+  const go = () => {
+    if (endGame !== game || !e.on() || endUsed(game) >= CONT_PER_GAME) return;
+    if (how === 'item') { if (contN <= 0) return; contPut(contN - 1); }
+    $('#cont').hidden = true; endGame = null;
+    END_CONT[game] = (END_CONT[game] || 0) + 1;
+    e.revive();
+    musicStart(false);
+  };
+  if (how === 'ad') showRewardedAd(go, () => {}); else go();
+}
+// The rewarded ad. In the app the ad SDK's rewarded ad goes here: done() once it has been watched, fail() when it is
+// closed early or there is none to show. Until then a 3 second stand-in.
+function showRewardedAd(done, fail) {
+  const el = $('#adfake');
+  let n = 3;
+  $('#ad-n').textContent = n; el.hidden = false;
+  clearTimeout(el._t);
+  const tick = () => { if (--n > 0) { $('#ad-n').textContent = n; el._t = setTimeout(tick, 1000); } else { el.hidden = true; done(); } };
+  el._t = setTimeout(tick, 1000);
+}
+function contStop() {
+  const game = endGame;
+  if (!game || $('#cont').hidden || !$('#adfake').hidden) return;
+  $('#cont').hidden = true;
+  showResult(game);
+}
+function showResult(game) {
+  const e = END[game], score = e.score(), b0 = END_BEST[game], isBest = score > 0 && b0 !== undefined && score > b0;
+  endGame = game;
+  $('#res-name').textContent = game.startsWith('block') ? tr('blockGame') : tr(game);
+  endPic($('#res-pic'), game, isBest);
+  $('#res-score').textContent = score.toLocaleString();
+  $('#res-new').hidden = !isBest;
+  $('#res-best').textContent = Math.max(RK_LOCAL[game](), score).toLocaleString();
+  $('#res-all').textContent = $('#res-wk').textContent = rkOnline() ? '…' : '-';
+  $('#result').hidden = false;
+  if (isBest && e.best) gsfx(e.best[0], 1, e.best[1]);
+  resRanks(game);
+}
+// my places on the boards, once this game's score has gone onto them
+async function resRanks(game) {
+  const n = ++resN, put = (id, me) => { $('#res-' + id).textContent = me ? tr('rkPlace', me.rank) : '-'; };
+  if (!rkOnline()) return;
+  for (let i = 0; i < 80 && rkBusy; i++) await new Promise(r => setTimeout(r, 100));
+  const one = p => rkList(game, p).then(l => rkMe(game, p, l)).catch(() => null);
+  const [all, wk] = await Promise.all([one('all'), one('w' + rkWeek())]);
+  if (n !== resN || $('#result').hidden) return;
+  put('all', all); put('wk', wk);
+}
+function resClose() { $('#result').hidden = true; resN++; const g = endGame; endGame = null; return g; }
+$('#btn-cont-ad').addEventListener('click', () => { sfx('pick'); contGo('ad'); });
+$('#btn-cont-item').addEventListener('click', () => { sfx('pick'); contGo('item'); });
+$('#btn-cont-no').addEventListener('click', () => { sfx('pick'); contStop(); });
+$('#btn-res-again').addEventListener('click', () => { sfx('pick'); const g = resClose(); if (g) END[g].again(); });
+$('#btn-res-rank').addEventListener('click', () => { sfx('pick'); if (endGame) rkBoard(endGame); });
+$('#btn-res-list').addEventListener('click', () => { sfx('pick'); const g = resClose(); if (g) END[g].list(); });
 $('#btn-mini-pause').addEventListener('click', () => { sfx('pick'); miniPause(); });
 $('#btn-mini-resume').addEventListener('click', () => { sfx('pick'); $('#mini-menu').hidden = true; MG.st = 'play'; MG.last = performance.now(); musicStart(false); });
 $('#btn-mini-quit').addEventListener('click', () => { sfx('pick'); miniFinish(); closeMini(); });
-$('#btn-mini-again').addEventListener('click', () => { sfx('pick'); miniStart(); musicStart(true); });
-$('#btn-mini-lobby').addEventListener('click', () => { sfx('pick'); closeMini(); });
 
 /* ---------- mini game: 토끼 계단 (Bunny Stairs). After a 3 second countdown the rabbit hops up the zigzag steps on its
    own, faster and faster; the one button only turns it round. Each hop goes the way it faces: with no step that way it hops
@@ -3791,8 +3667,9 @@ function openStairs() {
   Promise.race([loadRabbitArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && ST.st === 'off') rkGate('stairs', go); });
 }
 function stStart() {
-  $('#st-menu').hidden = true; $('#st-over').hidden = true;
+  $('#st-menu').hidden = true;
   stResize();
+  endBest('stairs');
   Object.assign(ST, { st: 'play', phase: 'count', cd: ST_COUNT, cdT: 0, goT: 9, t: 0, xs: [0], way: 1, left: 4, idx: 0, dir: 1, score: 0, best: stBest(),
     pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, fall: null, end: 0 });
   Object.assign(stBg, { from: 0, to: 0, k: 1, dirty: true });   // back to the forest at once
@@ -3833,14 +3710,20 @@ function stFinish() {
   return isBest;
 }
 function stGameOver() {
-  const isBest = stFinish();
+  stFinish();
   musicStop();
-  gsfx(isBest ? 'stBest' : 'stOver', 1, isBest ? 'stage' : 'over');
-  $('#st-final').textContent = ST.score.toLocaleString();
-  const note = $('#st-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  $('#st-cheer').hidden = !isBest;
-  setTimeout(() => { if (ST.st === 'over') $('#st-over').hidden = false; }, 500);
+  gsfx('stOver', 1, 'over');
+  setTimeout(() => gameEnd('stairs'), 500);
 }
+// going on: back on the step it hopped off, facing the next one, and the countdown again (the speed stays)
+function stRevive() {
+  const i = ST.idx, d = ST.xs[i + 1] - ST.xs[i];
+  Object.assign(ST, { st: 'play', phase: 'count', cd: ST_COUNT, cdT: 0, goT: 9, dir: d === 1 || d === -1 ? d : ST.dir, pos: { x: ST.xs[i], y: i }, hop: null, fall: null, end: 0 });
+  gsfx('stTick', 1, 'pick');
+  stHud();
+}
+END.stairs = { score: () => ST.score, on: () => ST.st === 'over', revive: stRevive, again: () => { stStart(); musicStart(true); }, list: () => closeStairs(),
+  pics: () => ['rabbit-cheer.webp', 'rabbit-fall.webp'], best: ['stBest', 'stage'] };
 function closeStairs() {
   cancelAnimationFrame(ST.raf); ST.st = 'off';
   musicStop();
@@ -3945,8 +3828,6 @@ $('#mg-stairs').addEventListener('click', () => { sfx('pick'); openStairs(); });
 $('#btn-st-pause').addEventListener('click', () => { sfx('pick'); stPause(); });
 $('#btn-st-resume').addEventListener('click', () => { sfx('pick'); $('#st-menu').hidden = true; ST.st = 'play'; ST.last = performance.now(); musicStart(false); });
 $('#btn-st-quit').addEventListener('click', () => { sfx('pick'); stFinish(); closeStairs(); });
-$('#btn-st-again').addEventListener('click', () => { sfx('pick'); stStart(); musicStart(true); });
-$('#btn-st-lobby').addEventListener('click', () => { sfx('pick'); closeStairs(); });
 
 /* ---------- mini game: 과일 합치기 (Fruit Merge), after Suika. Drag anywhere to move the raccoon along the top, let go to
    drop the fruit it holds. Two of the same fruit that touch become the next fruit up (blueberry ... watermelon); two
@@ -4046,8 +3927,9 @@ function openMerge() {
   Promise.race([loadMergeArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && FM.st === 'off') rkGate('merge', go); });
 }
 function fmStart() {
-  $('#fm-menu').hidden = true; $('#fm-over').hidden = true;
+  $('#fm-menu').hidden = true;
   fmResize();
+  endBest('merge');
   Object.assign(FM, { st: 'play', fruits: [], held: fmPick(), next: fmPick(), aim: 0.5, rx: 0.5, cool: 0, aiming: false, score: 0, best: fmBest(), overT: 0,
     face: 'hold', sparks: [], pops: [] });
   fmHud();
@@ -4146,15 +4028,22 @@ function fmFinish() {
   return isBest;
 }
 function fmGameOver() {
-  const isBest = fmFinish();
+  fmFinish();
   FM.face = 'cry';
   musicStop();
-  gsfx(isBest ? 'fmBest' : 'fmOver', 1, isBest ? 'stage' : 'over'); buzz(40);
-  $('#fm-final').textContent = FM.score.toLocaleString();
-  const note = $('#fm-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  $('#fm-face').src = isBest ? FM_ART.joy : FM_ART.cry;
-  setTimeout(() => { if (FM.st === 'over') $('#fm-over').hidden = false; }, 900);
+  gsfx('fmOver', 1, 'over'); buzz(40);
+  setTimeout(() => gameEnd('merge'), 900);
 }
+// going on: every fruit reaching into the top 45% of the box pops (no points)
+function fmRevive() {
+  const g = fmGeo(), cut = FM_HB * 0.45;
+  for (const f of FM.fruits) if (f.y - f.r < cut) { f.gone = true; fmBurst(fmX(g, f.x), fmY(g, f.y), f.k, 8); }
+  FM.fruits = FM.fruits.filter(f => !f.gone);
+  Object.assign(FM, { st: 'play', overT: 0, face: 'hold', aiming: false });
+  gsfx('fmPop', 1, 'catch', { n: 1 });
+}
+END.merge = { score: () => FM.score, on: () => FM.st === 'over', revive: fmRevive, again: () => { fmStart(); musicStart(true); }, list: () => closeMerge(),
+  pics: () => [FM_ART.joy, FM_ART.cry], best: ['fmBest', 'stage'] };
 function closeMerge() {
   cancelAnimationFrame(FM.raf); FM.st = 'off';
   musicStop();
@@ -4258,8 +4147,6 @@ $('#mg-merge').addEventListener('click', () => { sfx('pick'); openMerge(); });
 $('#btn-fm-pause').addEventListener('click', () => { sfx('pick'); fmPause(); });
 $('#btn-fm-resume').addEventListener('click', () => { sfx('pick'); $('#fm-menu').hidden = true; FM.st = 'play'; FM.last = performance.now(); musicStart(false); });
 $('#btn-fm-quit').addEventListener('click', () => { sfx('pick'); fmFinish(); closeMerge(); });
-$('#btn-fm-again').addEventListener('click', () => { sfx('pick'); fmStart(); musicStart(true); });
-$('#btn-fm-lobby').addEventListener('click', () => { sfx('pick'); closeMerge(); });
 /* ---------- mini game: 조약돌 깨기 (Pebble Break), after Ballz. Touch where to throw and let go: the otter throws all its
    pebbles one after another that way. They bounce off the walls and the numbered blocks (each hit takes one off the
    number, at 0 the block breaks) and come back down to the bank; the first one down is where the otter throws from next.
@@ -4386,14 +4273,15 @@ function openPebble() {
   const el = $('#pebble');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   const go = () => { pbStart(); musicRate(1); musicStart(true); };
-  // the hint's letters may sit in a part of the font not loaded yet: load it, then draw the lettering again
-  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('pbHint') + '×0123456789').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  // the lettering's letters may sit in a part of the font not loaded yet: load it, then draw the lettering again
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, '×0123456789').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   if (Object.keys(PB_ART).every(k => pbArt[k])) return rkGate('pebble', go);
   Promise.race([loadPebbleArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && PB.st === 'off') rkGate('pebble', go); });
 }
 function pbStart() {
-  $('#pb-menu').hidden = true; $('#pb-over').hidden = true;
+  $('#pb-menu').hidden = true;
   pbResize();
+  endBest('pebble');
   Object.assign(PB, { st: 'play', phase: 'aim', turn: 1, count: 1, gained: 0, x0: 3.5, nextX: null, blocks: [], items: [], balls: [], drops: [],
     launched: 0, launchT: 0, flyT: 0, shiftT: 0, aim: null, keyAim: false, th: Math.PI / 2, face: 1, ox: 3.5, throwT: 0,
     score: 0, best: pbBest(), sparks: [], hudDirty: false });
@@ -4565,15 +4453,20 @@ function pbFinish() {
   return isBest;
 }
 function pbGameOver() {
-  const isBest = pbFinish();
+  pbFinish();
   PB.phase = 'dying'; PB.aim = null;
   musicStop();
-  gsfx(isBest ? 'pbBest' : 'pbOver', 1, isBest ? 'stage' : 'over'); buzz(40);
-  $('#pb-final').textContent = PB.score.toLocaleString();
-  const note = $('#pb-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  $('#pb-face').src = isBest ? PB_ART.joy : PB_ART.cry;
-  setTimeout(() => { if (PB.st === 'over') $('#pb-over').hidden = false; }, 900);
+  gsfx('pbOver', 1, 'over'); buzz(40);
+  setTimeout(() => gameEnd('pebble'), 900);
 }
+// going on: the blocks in the bottom four rows break (no points)
+function pbRevive() {
+  for (const b of PB.blocks) if (!b.dead && b.row >= PB_R - 4) pbBreak(b);
+  pbGrid();
+  Object.assign(PB, { st: 'play', phase: 'aim', aim: null });
+}
+END.pebble = { score: () => PB.score, on: () => PB.st === 'over', revive: pbRevive, again: () => { pbStart(); musicStart(true); }, list: () => closePebble(),
+  pics: () => [PB_ART.joy, PB_ART.cry], best: ['pbBest', 'stage'] };
 function closePebble() {
   cancelAnimationFrame(PB.raf); PB.st = 'off';
   musicStop();
@@ -4719,7 +4612,6 @@ function pbDraw(now) {
     miniText(c, '×' + left, lx, py - s * 0.42, Math.max(14, s * 0.3), SUB_LOOK, now);
   }
   if (PB.st === 'play' && PB.phase === 'aim' && ((PB.aim && PB.aim.ok) || PB.keyAim)) pbAimLine(c, g, P);
-  else if (PB.st === 'play' && PB.phase === 'aim' && PB.turn === 1) miniText(c, tr('pbHint'), PB.W / 2, pbY(g, 6.5), Math.max(15, s * 0.32), SUB_LOOK, now);
   // chips and sparkles
   for (const p of PB.sparks) {
     c.globalAlpha = Math.max(0, 1 - p.t / p.life);
@@ -4756,8 +4648,6 @@ $('#mg-pebble').addEventListener('click', () => { sfx('pick'); openPebble(); });
 $('#btn-pb-pause').addEventListener('click', () => { sfx('pick'); pbPause(); });
 $('#btn-pb-resume').addEventListener('click', () => { sfx('pick'); $('#pb-menu').hidden = true; PB.st = 'play'; PB.last = performance.now(); musicStart(false); });
 $('#btn-pb-quit').addEventListener('click', () => { sfx('pick'); pbFinish(); closePebble(); });
-$('#btn-pb-again').addEventListener('click', () => { sfx('pick'); pbStart(); musicStart(true); });
-$('#btn-pb-lobby').addEventListener('click', () => { sfx('pick'); closePebble(); });
 /* ---------- mini game: 버섯 바구니 정리 (Mushroom Sort), after the colour-sort puzzles. Tap a basket to lift the
    mushrooms of one colour on its top, tap another to put them there: onto an empty basket or onto the same colour, as
    many as fit (4 to a basket). Every basket one colour (or empty) clears the round; the next one has more colours (up to 6). A
@@ -4768,8 +4658,8 @@ const MS_CAP = 4;   // mushrooms to a basket
 const MS_T0 = 60, MS_TMAX = 99;   // s on the clock to start, the most it can hold
 const MS_K = lv => lv <= 2 ? 3 : lv <= 4 ? 4 : lv <= 6 ? 5 : 6;   // colours in round lv (2 empty baskets more; all in one row, so 6 at most)
 const MS_BONUS = k => 6 + 2 * k;   // s back for clearing a round of k colours
-const MS_BASKET = 100;   // points for each colour gathered (once a round)
-const MS_ROUND = lv => 100 * lv;   // points for clearing round lv
+const MS_BASKET = 1000;   // points for each colour gathered (once a round)
+const MS_ROUND = lv => 1000 * lv;   // points for clearing round lv
 // the mushrooms: cap colour, its pattern (so colours also differ by shape), the pattern's colour
 const MS_SHROOM = [['#ef3b36', 'dots', '#fff7ee'], ['#ffa31f', 'band', '#fff3c8'], ['#ffd83a', 'speck', '#8a5a1e'], ['#5ccb4b', 'dots', '#effff0'],
   ['#3f8cff', 'speck', '#e8f2ff'], ['#a65cff', 'band', '#f3e6ff'], ['#ff7eb6', 'dots', '#ffffff'], ['#9a5b2e', 'plain', '#f1d2a6']];
@@ -4938,8 +4828,9 @@ function openMushroom() {
   rkGate('mushroom', () => { msStart(); musicRate(1); musicStart(true); });
 }
 function msStart() {
-  $('#ms-menu').hidden = true; $('#ms-over').hidden = true;
+  $('#ms-menu').hidden = true;
   msResize();
+  endBest('mushroom');
   Object.assign(MS, { st: 'play', lv: 1, time: MS_T0, score: 0, best: msBest(), sparks: [], pops: [], clearT: 0, tickAt: 0 });
   msRound(1, true);
   msHud();
@@ -4991,7 +4882,7 @@ function msTap(i) {
     MS.done.add(c); MS.score += MS_BASKET; msHud();
     const g = msGeo(), sp = g.spots[i];
     msBurst(sp.x + sp.w / 2, sp.bottom - g.bh * 0.6, MS_SHROOM[c][0], 14);
-    MS.pops.push({ text: '+' + MS_BASKET, x: sp.x + sp.w / 2, y: sp.top - g.sh * 0.2, t: 0, life: 0.8, size: 20, look: SCORE_LOOK });
+    MS.pops.push({ text: '+' + MS_BASKET.toLocaleString(), x: sp.x + sp.w / 2, y: sp.top - g.sh * 0.2, t: 0, life: 0.8, size: 20, look: SCORE_LOOK });
     gsfx('msDone', 1, 'catchGold');
   }
   if (T.every(t => !t.length || msFull(t))) msCleared();
@@ -5029,14 +4920,17 @@ function msFinish() {
   return isBest;
 }
 function msGameOver() {
-  const isBest = msFinish();
+  msFinish();
   MS.sel = -1;
   musicStop();
-  gsfx(isBest ? 'msBest' : 'msOver', 1, isBest ? 'stage' : 'over'); buzz(40);
-  $('#ms-final').textContent = MS.score.toLocaleString();
-  const note = $('#ms-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  setTimeout(() => { if (MS.st === 'over') $('#ms-over').hidden = false; }, 700);
+  gsfx('msOver', 1, 'over'); buzz(40);
+  setTimeout(() => gameEnd('mushroom'), 700);
 }
+// going on: 20 s more on the clock
+const END_TIME = 20;
+function msRevive() { Object.assign(MS, { st: 'play', time: END_TIME, tickAt: 0, sel: -1 }); msHud(); }
+END.mushroom = { score: () => MS.score, on: () => MS.st === 'over', revive: msRevive, again: () => { msStart(); musicStart(true); }, list: () => closeMushroom(),
+  best: ['msBest', 'stage'] };
 function closeMushroom() {
   cancelAnimationFrame(MS.raf); MS.st = 'off';
   musicStop();
@@ -5137,21 +5031,19 @@ $('#mg-mushroom').addEventListener('click', () => { sfx('pick'); openMushroom();
 $('#btn-ms-pause').addEventListener('click', () => { sfx('pick'); msPause(); });
 $('#btn-ms-resume').addEventListener('click', () => { sfx('pick'); $('#ms-menu').hidden = true; MS.st = 'play'; MS.last = performance.now(); musicStart(false); });
 $('#btn-ms-quit').addEventListener('click', () => { sfx('pick'); msFinish(); closeMushroom(); });
-$('#btn-ms-again').addEventListener('click', () => { sfx('pick'); msStart(); musicStart(true); });
-$('#btn-ms-lobby').addEventListener('click', () => { sfx('pick'); closeMushroom(); });
 $('#ms-undo').addEventListener('click', () => msUndo());
 /* ---------- mini game: 부엉이 우체국 (Owl Post). Things wait in a column that comes down out of the owl's post box:
    honey, grapes, apples and clovers, the next ones in sight behind the front one. The four friends stand in a row under
    it, each waiting for its own thing (the bear honey, the fox grapes, the hedgehog an apple, the deer a clover; each has
    it on a badge over its head). Tap a friend and the front thing flies out to it; the column comes down one. Right:
-   100 and the streak goes on. Wrong: time off the clock and the streak gone. Once a game, when the clock gets to 30 s,
+   1000 and the streak goes on. Wrong: time off the clock and the streak gone. Once a game, when the clock gets to 30 s,
    the friends change places (the clock waits). The game ends when the clock runs out. ---------- */
 const OP_BEST = 'rise7-best-owlpost';
 const OP_PALS = ['bear', 'fox', 'hedgehog', 'deer'];
 const OP_GIFTS = ['honey', 'grape', 'apple', 'clover'];
 const OP_T0 = 60;   // s on the clock
 const OP_LOSE = 3;   // s off the clock for a wrong one
-const OP_PTS = 100;   // a thing delivered
+const OP_PTS = 1000;   // a thing delivered
 const OP_SWAP_AT = 30;   // the friends change places once, when the clock gets down to this
 const OP_FLY = 0.16;   // s a thing takes to fly to a friend
 const OP_SHOW = 6;   // things in the column (the front one and the ones behind it)
@@ -5247,8 +5139,9 @@ function openOwlPost() {
 }
 const opRand = () => Math.floor(Math.random() * 4);
 function opStart() {
-  $('#op-menu').hidden = true; $('#op-over').hidden = true;
+  $('#op-menu').hidden = true;
   opResize();
+  endBest('owlpost');
   Object.assign(OP, { st: 'play', pos: [0, 1, 2, 3], from: null, swapT: 0, swapIn: 0, swapped: false, queue: Array.from({ length: OP_SHOW + 1 }, opRand), drop: 0,
     time: OP_T0, done: 0, streak: 0, score: 0, best: opBest(), owl: 'hold', owlT: 0, joyT: [0, 0, 0, 0], shakeT: [0, 0, 0, 0], tapT: [0, 0, 0, 0],
     flying: [], falling: [], pops: [], sparks: [], shake: 0 });
@@ -5267,7 +5160,7 @@ function opSend(place) {
   if (ok) {
     OP.streak++; OP.done++;
     OP.score += OP_PTS; opHud();
-    OP.pops.push({ text: '+' + OP_PTS, x: g.slots[place], y: g.badgeY, t: 0, life: 0.55, size: 20, look: SCORE_LOOK });
+    OP.pops.push({ text: '+' + OP_PTS.toLocaleString(), x: g.slots[place], y: g.badgeY, t: 0, life: 0.55, size: 20, look: SCORE_LOOK });
     if (OP.streak % 10 === 0) { opSidePop(g, tr('comboN', OP.streak), 26, GOLD_LOOK, g.frontY - g.sp * 1.6, 1); OP.owl = 'joy'; OP.owlT = 0.4; }
     gsfx('opRight', semi(Math.min(12, Math.floor(OP.streak / 5) * 2)), 'catch');
   } else {
@@ -5301,15 +5194,16 @@ function opFinish() {
   return isBest;
 }
 function opGameOver() {
-  const isBest = opFinish();
+  opFinish();
   OP.owl = 'oops'; OP.owlT = 99;
   musicStop();
-  gsfx(isBest ? 'opBest' : 'opOver', 1, isBest ? 'stage' : 'over'); buzz(40);
-  $('#op-final').textContent = OP.score.toLocaleString();
-  const note = $('#op-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  $('#op-face').src = isBest ? OP_ART.joy : OP_ART.oops;
-  setTimeout(() => { if (OP.st === 'over') $('#op-over').hidden = false; }, 900);
+  gsfx('opOver', 1, 'over'); buzz(40);
+  setTimeout(() => gameEnd('owlpost'), 900);
 }
+// going on: 20 s more on the clock
+function opRevive() { Object.assign(OP, { st: 'play', time: END_TIME, owl: 'hold', owlT: 0 }); opHud(); }
+END.owlpost = { score: () => OP.score, on: () => OP.st === 'over', revive: opRevive, again: () => { opStart(); musicStart(true); }, list: () => closeOwlPost(),
+  pics: () => [OP_ART.joy, OP_ART.oops], best: ['opBest', 'stage'] };
 function closeOwlPost() {
   cancelAnimationFrame(OP.raf); OP.st = 'off';
   musicStop();
@@ -5480,14 +5374,12 @@ $('#mg-owlpost').addEventListener('click', () => { sfx('pick'); openOwlPost(); }
 $('#btn-op-pause').addEventListener('click', () => { sfx('pick'); opPause(); });
 $('#btn-op-resume').addEventListener('click', () => { sfx('pick'); $('#op-menu').hidden = true; OP.st = 'play'; OP.last = performance.now(); musicStart(false); });
 $('#btn-op-quit').addEventListener('click', () => { sfx('pick'); opFinish(); closeOwlPost(); });
-$('#btn-op-again').addEventListener('click', () => { sfx('pick'); opStart(); musicStart(true); });
-$('#btn-op-lobby').addEventListener('click', () => { sfx('pick'); closeOwlPost(); });
 /* ---------- mini game: 카멜레온 찾기 (Chameleon Hunt). A board of the same leaf, and one of them is the chameleon: like a
    spot-the-difference, a tiny bite is nibbled out of its edge (top, bottom or a side).
-   Tap it: it jumps out, 100, and the next board comes, bigger (more leaves every time), with a smaller difference. A wrong leaf takes 3 s
+   Tap it: it jumps out, 1000, and the next board comes, bigger (more leaves every time), with a smaller difference. A wrong leaf takes 3 s
    off the clock. 60 s on the clock; the clock waits while the chameleon jumps out. ---------- */
 const CM_BEST = 'rise7-best-chameleon';
-const CM_T0 = 60, CM_LOSE = 3, CM_PTS = 100;   // s on the clock, s off for a wrong leaf, a find
+const CM_T0 = 60, CM_LOSE = 3, CM_PTS = 1000;   // s on the clock, s off for a wrong leaf, a find
 const CM_CELL = 30, CM_CELL_LAST = 26;   // a leaf's cell: smallest while the boards grow a row at a time; smallest at all
 // the boards of a game on this screen: squares (2x2, 3x3 ...) while a cell stays 30px or more; then one row more each board
 // until the screen's height is full; then one column more each board (cells smaller, down to 26px) with the rows filling
@@ -5584,9 +5476,10 @@ function openChameleon() {
   Promise.race([loadChamArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && CM.st === 'off') rkGate('chameleon', go); });
 }
 function cmStart() {
-  $('#cm-menu').hidden = true; $('#cm-over').hidden = true;
+  $('#cm-menu').hidden = true;
   cmResize();
   CM.seq = cmSizes(CM.W, CM.H);
+  endBest('chameleon');
   Object.assign(CM, { st: 'play', time: CM_T0, score: 0, best: cmBest(), found: 0, shake: -1, shakeT: 0, pops: [], sparks: [] });
   cmRound(1);
   cmHud();
@@ -5605,7 +5498,7 @@ function cmTap(i) {
   if (i === CM.odd) {
     CM.score += CM_PTS; cmHud();
     CM.found = CM_REVEAL; CM.foundAt = i;
-    CM.pops.push({ text: '+' + CM_PTS, x: cx, y: cy - g.cell * 0.6, t: 0, life: 0.6, size: 22, look: SCORE_LOOK });
+    CM.pops.push({ text: '+' + CM_PTS.toLocaleString(), x: cx, y: cy - g.cell * 0.6, t: 0, life: 0.6, size: 22, look: SCORE_LOOK });
     for (let k = 0; k < 10; k++) { const a = k * Math.PI / 5; CM.sparks.push({ x: cx, y: cy, vx: Math.cos(a) * 170, vy: Math.sin(a) * 170 - 50, t: 0, life: 0.5, c: k % 2 ? '#fff6c8' : '#9be15d', s: 3 }); }
     gsfx('cmFind', semi(Math.min(7, Math.floor((CM.round - 1) / 4))), 'catch');
   } else {
@@ -5625,14 +5518,15 @@ function cmFinish() {
   return isBest;
 }
 function cmGameOver() {
-  const isBest = cmFinish();
+  cmFinish();
   musicStop();
-  gsfx(isBest ? 'cmBest' : 'cmOver', 1, isBest ? 'stage' : 'over'); buzz(40);
-  $('#cm-final').textContent = CM.score.toLocaleString();
-  const note = $('#cm-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  $('#cm-face').src = isBest ? CM_ART.joy : CM_ART.sad;
-  setTimeout(() => { if (CM.st === 'over') $('#cm-over').hidden = false; }, 800);
+  gsfx('cmOver', 1, 'over'); buzz(40);
+  setTimeout(() => gameEnd('chameleon'), 800);
 }
+// going on: 20 s more on the clock
+function cmRevive() { Object.assign(CM, { st: 'play', time: END_TIME }); cmHud(); }
+END.chameleon = { score: () => CM.score, on: () => CM.st === 'over', revive: cmRevive, again: () => { cmStart(); musicStart(true); }, list: () => closeChameleon(),
+  pics: () => [CM_ART.joy, CM_ART.sad], best: ['cmBest', 'stage'] };
 function closeChameleon() {
   cancelAnimationFrame(CM.raf); CM.st = 'off';
   musicStop();
@@ -5722,14 +5616,12 @@ $('#mg-chameleon').addEventListener('click', () => { sfx('pick'); openChameleon(
 $('#btn-cm-pause').addEventListener('click', () => { sfx('pick'); cmPause(); });
 $('#btn-cm-resume').addEventListener('click', () => { sfx('pick'); $('#cm-menu').hidden = true; CM.st = 'play'; CM.last = performance.now(); musicStart(false); });
 $('#btn-cm-quit').addEventListener('click', () => { sfx('pick'); cmFinish(); closeChameleon(); });
-$('#btn-cm-again').addEventListener('click', () => { sfx('pick'); cmStart(); musicStart(true); });
-$('#btn-cm-lobby').addEventListener('click', () => { sfx('pick'); closeChameleon(); });
 /* ---------- mini game: 비버 다리 놓기 (Beaver Bridge). The beaver stands on the edge of a stump in the river. Hold the
    screen: a log grows up from the edge. Let go: it falls across to the next stump. Long enough and not too long, the
-   beaver walks over (100; the log's end on the stump's mark, 200) and the next stump comes; too short or too long, it
+   beaver walks over (1000; the log's end on the stump's mark, 2000) and the next stump comes; too short or too long, it
    walks off the end into the river and the game is over. Stumps get narrower as the score grows. ---------- */
 const BV_BEST = 'rise7-best-beaver';
-const BV_PTS = 100;   // a crossing; the mark doubles it
+const BV_PTS = 1000;   // a crossing; the mark doubles it
 const BV_GROW = 0.85;   // the log grows this many screen widths a second
 const BV_FALL = 0.32, BV_WALK = 0.9, BV_PAN = 0.35;   // s the log takes to fall; walking speed (screen widths a second); s the view takes to move on
 const BV_PARA = 0.3;   // the picture behind moves this much of the way the view does
@@ -5880,8 +5772,9 @@ function openBeaver() {
   Promise.race([loadBeaverArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && BV.st === 'off') rkGate('beaver', go); });
 }
 function bvStart() {
-  $('#bv-menu').hidden = true; $('#bv-over').hidden = true;
+  $('#bv-menu').hidden = true;
   bvResize();
+  endBest('beaver');
   const g = bvGeo(), w0 = g.W * 0.24;
   Object.assign(BV, { st: 'play', stumps: [{ x: g.stand - w0, w: w0 }], cur: 0, log: 0, lean: 0, logs: [], cam: 0, camTo: 0, t: 0, phase: 'idle', n: 0, score: 0,
     best: bvBest(), pops: [], drops: [], rings: [], spin: 0, held: false, by: 0, vy: 0, splashed: false });
@@ -5911,7 +5804,7 @@ function bvCrossed() {
   const pts = BV.perfect ? BV_PTS * 2 : BV_PTS;
   BV.score += pts; BV.n++; bvHud();
   const x = b.x + b.w / 2 - BV.cam;
-  BV.pops.push({ text: BV.perfect ? tr('bvPerfect') + ' +' + pts : '+' + pts, x, y: g.top - g.bh - 30 * g.s, t: 0, life: 0.8, size: BV.perfect ? 24 : 20, look: BV.perfect ? GOLD_LOOK : SCORE_LOOK });
+  BV.pops.push({ text: BV.perfect ? tr('bvPerfect') + ' +' + pts.toLocaleString() : '+' + pts.toLocaleString(), x, y: g.top - g.bh - 30 * g.s, t: 0, life: 0.8, size: BV.perfect ? 24 : 20, look: BV.perfect ? GOLD_LOOK : SCORE_LOOK });
   BV.logs.push({ x: BV.stumps[BV.cur].x + BV.stumps[BV.cur].w, L: BV.log });   // the bridge stays where it lies
   BV.cur++; BV.log = 0; BV.lean = 0;
   bvNext();
@@ -5932,14 +5825,18 @@ function bvFinish() {
   return isBest;
 }
 function bvGameOver() {
-  const isBest = bvFinish();
+  bvFinish();
   musicStop();
-  if (isBest) gsfx('bvBest', 1, 'stage');
-  $('#bv-final').textContent = BV.score.toLocaleString();
-  const note = $('#bv-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  $('#bv-face').src = isBest ? BV_ART.joy2 : BV_ART.idle;
-  setTimeout(() => { if (BV.st === 'over') $('#bv-over').hidden = false; }, 500);
+  setTimeout(() => gameEnd('beaver'), 500);
 }
+// going on: back on the stump it set off from, the same gap to cross again
+function bvRevive() {
+  const g = bvGeo(), a = BV.stumps[BV.cur];
+  Object.assign(BV, { st: 'play', phase: 'idle', log: 0, lean: 0, held: false, bx: a.x + a.w - g.bh * 0.35, by: 0, vy: 0, spin: 0, splashed: false, t: 0 });
+  BV.cam = BV.camTo = a.x + a.w - g.stand;
+}
+END.beaver = { score: () => BV.score, on: () => BV.st === 'over', revive: bvRevive, again: () => { bvStart(); musicStart(true); }, list: () => closeBeaver(),
+  pics: () => [BV_ART.joy2, BV_ART.idle], best: ['bvBest', 'stage'] };
 function closeBeaver() {
   cancelAnimationFrame(BV.raf); BV.st = 'off';
   musicStop();
@@ -6068,13 +5965,11 @@ $('#mg-beaver').addEventListener('click', () => { sfx('pick'); openBeaver(); });
 $('#btn-bv-pause').addEventListener('click', () => { sfx('pick'); bvPause(); });
 $('#btn-bv-resume').addEventListener('click', () => { sfx('pick'); $('#bv-menu').hidden = true; BV.st = 'play'; BV.last = performance.now(); musicStart(false); });
 $('#btn-bv-quit').addEventListener('click', () => { sfx('pick'); bvFinish(); closeBeaver(); });
-$('#btn-bv-again').addEventListener('click', () => { sfx('pick'); bvStart(); musicStart(true); });
-$('#btn-bv-lobby').addEventListener('click', () => { sfx('pick'); closeBeaver(); });
 /* ---------- mini game: 고슴도치 가시 꽂기 (Quill Toss). A log turns over the hedgehog. Tap: it flings one of its quills up
    into the log. Each round needs so many quills; all in, the log splits and the next one comes, turning another way. A
    quill that hits one already in bounces off and the game is over. A berry on the log's edge, hit, is a bonus. ---------- */
 const HH_BEST = 'rise7-best-hedgehog';
-const HH_PTS = 100, HH_BERRY = 200, HH_CLEAR = 500;   // a quill in; a berry hit as well; a log split
+const HH_PTS = 1000, HH_BERRY = 2000, HH_CLEAR = 5000;   // a quill in; a berry hit as well; a log split
 const HH_FLY = 0.11;   // s a quill takes to reach the log
 const HH_TAU = Math.PI * 2;
 const hhAng = a => ((a % HH_TAU) + HH_TAU) % HH_TAU;
@@ -6243,11 +6138,12 @@ function openHedgehog() {
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('hhClear') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   loadHedgehogArt();
-  rkGate('hedgehog', hhStart);
+  rkGate('hedgehog', () => { hhStart(); musicRate(1); musicStart(true); });
 }
 function hhStart() {
-  $('#hh-menu').hidden = true; $('#hh-over').hidden = true;
+  $('#hh-menu').hidden = true;
   hhResize();
+  endBest('hedgehog');
   Object.assign(HH, { st: 'play', score: 0, best: hhBest(), rot: 0, falls: [], pieces: [], chips: [], pops: [], sparks: [], kick: 0, shake: 0, flash: 0, throwT: 0 });
   hhRound(1);
   hhHud();
@@ -6271,7 +6167,7 @@ function hhHit() {
     HH.berries.splice(bi, 1); pts += HH_BERRY; berry = true;
     const bx = g.cx, by = g.cy + g.R + g.br * 0.7;
     for (let k = 0; k < 10; k++) { const t = k * HH_TAU / 10; HH.sparks.push({ x: bx, y: by, vx: Math.cos(t) * 190, vy: Math.sin(t) * 190 - 40, t: 0, life: 0.5, c: k % 2 ? '#ffd0d8' : '#ff4d6a', s: 3 }); }
-    HH.pops.push({ text: '+' + (HH_PTS + HH_BERRY), x: bx + g.R * 0.7, y: by + 6, t: 0, life: 0.7, size: 22, look: GOLD_LOOK });
+    HH.pops.push({ text: '+' + (HH_PTS + HH_BERRY).toLocaleString(), x: bx + g.R * 0.7, y: by + 6, t: 0, life: 0.7, size: 22, look: GOLD_LOOK });
   }
   HH.score += pts; hhHud();
   if (HH.left === 0) hhClear();
@@ -6284,7 +6180,7 @@ function hhClear() {
   for (let k = 0; k < 4; k++) { const a = HH.rot + k * Math.PI / 2 + Math.PI / 4; HH.pieces.push({ a0: HH.rot + k * Math.PI / 2, rot0: HH.rot, x: g.cx, y: g.cy, vx: Math.cos(a) * 260 * g.s, vy: Math.sin(a) * 260 * g.s - 120 * g.s, r: 0, vr: (k % 2 ? 1 : -1) * 4, t: 0 }); }
   for (const q of HH.quills) { const w = q.a + HH.rot, r = g.R - g.dig + g.q * 0.5; HH.falls.push({ x: g.cx + Math.cos(w) * r, y: g.cy + Math.sin(w) * r, a: w, vx: Math.cos(w) * 320 * g.s, vy: Math.sin(w) * 320 * g.s - 150 * g.s, vr: (Math.random() - 0.5) * 14, t: 0 }); }
   HH.quills = []; HH.berries = [];
-  HH.pops.push({ text: tr('hhClear') + ' +' + HH_CLEAR, x: g.cx, y: g.cy, t: 0, life: 0.9, size: 26, look: GOLD_LOOK });
+  HH.pops.push({ text: tr('hhClear') + ' +' + HH_CLEAR.toLocaleString(), x: g.cx, y: g.cy, t: 0, life: 0.9, size: 26, look: GOLD_LOOK });
 }
 function hhBounce(tipY) {
   const g = hhGeo();
@@ -6302,21 +6198,22 @@ function hhFinish() {
   return isBest;
 }
 function hhGameOver() {
-  const isBest = hhFinish();
+  hhFinish();
   musicStop();
-  $('#hh-final').textContent = HH.score.toLocaleString();
-  const note = $('#hh-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  $('#hh-face').src = isBest ? HH_FACE.joy : HH_FACE.sad;
-  setTimeout(() => { if (HH.st === 'over') $('#hh-over').hidden = false; }, 900);
-  gsfx(isBest ? 'hhBest' : 'hhFail', 1, isBest ? 'stage' : 'over');
+  setTimeout(() => gameEnd('hedgehog'), 900);
+  gsfx('hhFail', 1, 'over');
 }
+// going on: the quill that bounced off comes back to be thrown again
+function hhRevive() { HH.left++; HH.st = 'play'; hhHud(); }
+END.hedgehog = { score: () => HH.score, on: () => HH.st === 'over', revive: hhRevive, again: () => { hhStart(); musicStart(true); }, list: () => closeHedgehog(),
+  pics: () => [HH_FACE.joy, HH_FACE.sad], best: ['hhBest', 'stage'] };
 function closeHedgehog() {
   cancelAnimationFrame(HH.raf); HH.st = 'off';
   musicStop();
   hideScreen('hedgehog');
   lobbyInfo();
 }
-function hhPause() { if (HH.st !== 'play') return; HH.st = 'pause'; $('#hh-menu').hidden = false; }
+function hhPause() { if (HH.st !== 'play') return; HH.st = 'pause'; musicStop(); $('#hh-menu').hidden = false; }
 function hhFrame(now) {
   HH.raf = requestAnimationFrame(hhFrame);
   const dt = Math.min(0.05, Math.max(0, (now - HH.last) / 1000)); HH.last = now;
@@ -6412,19 +6309,17 @@ addEventListener('resize', () => { if (HH.st !== 'off') hhResize(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && HH.st === 'play') hhPause(); });
 $('#mg-hedgehog').addEventListener('click', () => { sfx('pick'); openHedgehog(); });
 $('#btn-hh-pause').addEventListener('click', () => { sfx('pick'); hhPause(); });
-$('#btn-hh-resume').addEventListener('click', () => { sfx('pick'); $('#hh-menu').hidden = true; HH.st = 'play'; HH.last = performance.now(); });
+$('#btn-hh-resume').addEventListener('click', () => { sfx('pick'); $('#hh-menu').hidden = true; HH.st = 'play'; HH.last = performance.now(); musicStart(false); });
 $('#btn-hh-quit').addEventListener('click', () => { sfx('pick'); hhFinish(); closeHedgehog(); });
-$('#btn-hh-again').addEventListener('click', () => { sfx('pick'); hhStart(); });
-$('#btn-hh-lobby').addEventListener('click', () => { sfx('pick'); closeHedgehog(); });
 /* ---------- mini game: 애벌레 잎 먹기 (Caterpillar Munch). Caterpillars crawl a meadow that goes on for ever, bending as
    they go. The player's always sits in the middle of the screen; a thumb drags it round like a stick (put it down
-   anywhere, drag the way to go; let go, it keeps on that way). Each leaf eaten makes a caterpillar a segment longer (10
+   anywhere, drag the way to go; let go, it keeps on that way). Each leaf eaten makes a caterpillar a segment longer (100
    points for the player's). Only heads count: when two heads meet, the longer eats the shorter and grows by half of it
-   (10 a segment); of the same length, they bounce off. A head passes over a body. The others look for leaves, go after
+   (100 a segment); of the same length, they bounce off. A head passes over a body. The others look for leaves, go after
    shorter ones' heads and keep away from longer ones' heads; new ones keep coming round the player, some longer (they
    frown; shorter ones look worried), and the ones left far behind go. Eaten, the game is over. ---------- */
 const CP_BEST = 'rise7-best-caterpillar';
-const CP_PTS = 10;                     // a segment the player's grows
+const CP_PTS = 100;                    // a segment the player's grows
 // world units (the screen is about 390 wide). Leaves are kept within CP_NEAR of the player's head and the others within
 // CP_FAR; past those they go, and new ones come in out of sight
 const CP_NEAR = 1300, CP_FAR = 2400;
@@ -6578,13 +6473,14 @@ function cpCamera(dt) {
 function openCaterpillar() {
   const el = $('#caterpillar');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
-  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('cpHint') + tr('cpRule') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
-  rkGate('caterpillar', cpStart);
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  rkGate('caterpillar', () => { cpStart(); musicRate(1); musicStart(true); });
 }
 function cpStart() {
-  $('#cp-menu').hidden = true; $('#cp-over').hidden = true;
+  $('#cp-menu').hidden = true;
   cpResize();
-  Object.assign(CP, { st: 'play', worms: [], leaves: [], started: false, score: 0, best: cpBest(), t: 0, next: 0, pops: [], sparks: [], ghosts: [], shake: 0, dead: 0 });
+  endBest('caterpillar');
+  Object.assign(CP, { st: 'play', worms: [], leaves: [], started: false, score: 0, best: cpBest(), t: 0, next: 0, pops: [], sparks: [], ghosts: [], shake: 0, dead: 0, safe: 0 });
   CP.me = cpWormNew(0, 0, -Math.PI / 2, CP_LEN0, 0, true, true);
   CP.worms.push(CP.me);
   cpCamera(-1);
@@ -6675,7 +6571,7 @@ function cpMeet() {
   for (let i = 0; i < ws.length; i++) for (let j = i + 1; j < ws.length; j++) {
     if (CP.st !== 'play') return;
     const a = ws[i], b = ws[j];
-    if (!a.alive || !b.alive) continue;
+    if (!a.alive || !b.alive || (CP.safe > 0 && (a.me || b.me))) continue;
     const p = a.segs[0], q = b.segs[0], reach = (cpRad(a.segs.length) * 1.12 + cpRad(b.segs.length) * 1.12) * 0.9;
     if (Math.abs(p.x - q.x) > reach || Math.abs(p.y - q.y) > reach || Math.hypot(p.x - q.x, p.y - q.y) > reach) continue;
     const na = cpLen(a), nb = cpLen(b);
@@ -6716,21 +6612,41 @@ function cpFinish() {
   return isBest;
 }
 function cpGameOver() {
-  const isBest = cpFinish();
+  cpFinish();
   musicStop();
-  $('#cp-final').textContent = CP.score.toLocaleString();
-  const note = $('#cp-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  $('#cp-face').src = isBest ? CP_FACE.joy : CP_FACE.sad;
-  setTimeout(() => { if (CP.st === 'over') $('#cp-over').hidden = false; }, 1100);
-  gsfx(isBest ? 'cpBest' : 'cpOver', 1, isBest ? 'stage' : 'over');
+  setTimeout(() => gameEnd('caterpillar'), 1100);
+  gsfx('cpOver', 1, 'over');
 }
+// going on: as long as it was, somewhere near with no longer one's head close, pointing away from the nearest of them;
+// for CP_SAFE s it cannot eat or be eaten (it blinks)
+const CP_SAFE = 3;
+function cpRevive() {
+  const old = CP.me, n = Math.max(CP_LEN0, old.segs.length), h = old.segs[0];
+  const heads = CP.worms.filter(w => w.alive && !w.me && cpLen(w) >= n).map(w => w.segs[0]);
+  const near = p => heads.reduce((m, q) => Math.min(m, Math.hypot(q.x - p.x, q.y - p.y)), Infinity);
+  let at = { x: h.x, y: h.y }, far = near(at);
+  for (let k = 0; k < 40; k++) {
+    const r = 300 + Math.random() * 700, t = Math.random() * Math.PI * 2, p = { x: h.x + Math.cos(t) * r, y: h.y + Math.sin(t) * r }, d = near(p);
+    if (d > far) { far = d; at = p; }
+  }
+  const q = heads.reduce((m, s) => (!m || Math.hypot(s.x - at.x, s.y - at.y) < Math.hypot(m.x - at.x, m.y - at.y) ? s : m), null);
+  const a = q ? Math.atan2(at.y - q.y, at.x - q.x) : old.a;
+  CP.me = cpWormNew(at.x, at.y, a, n, old.col, true, true);
+  CP.worms = CP.worms.filter(w => w !== old); CP.worms.push(CP.me);
+  Object.assign(CP, { st: 'play', dead: 0, shake: 0, safe: CP_SAFE });
+  cpTouch = null;
+  cpCamera(-1);
+  cpHud();
+}
+END.caterpillar = { score: () => CP.score, on: () => CP.st === 'over', revive: cpRevive, again: () => { cpStart(); musicStart(true); }, list: () => closeCaterpillar(),
+  pics: () => [CP_FACE.joy, CP_FACE.sad], best: ['cpBest', 'stage'] };
 function closeCaterpillar() {
   cancelAnimationFrame(CP.raf); CP.st = 'off';
   musicStop();
   hideScreen('caterpillar');
   lobbyInfo();
 }
-function cpPause() { if (CP.st !== 'play') return; CP.st = 'pause'; cpTouch = null; $('#cp-menu').hidden = false; }
+function cpPause() { if (CP.st !== 'play') return; CP.st = 'pause'; cpTouch = null; musicStop(); $('#cp-menu').hidden = false; }
 function cpFrame(now) {
   CP.raf = requestAnimationFrame(cpFrame);
   const dt = Math.min(0.05, Math.max(0, (now - CP.last) / 1000)); CP.last = now;
@@ -6740,7 +6656,7 @@ function cpFrame(now) {
 function cpUpdate(dt) {
   const live = CP.st === 'play' && CP.started;
   if (live || CP.st === 'over') {   // after the player's is eaten the others go on crawling
-    if (live) CP.t += dt;
+    if (live) { CP.t += dt; if (CP.safe > 0) CP.safe = Math.max(0, CP.safe - dt); }
     for (const w of CP.worms) if (w.alive) { if (!w.me) cpThink(w, dt); cpMove(w, dt); }
     if (live) { cpEatLeaves(); cpMeet(); }
     CP.worms = CP.worms.filter(w => w.alive || w.me);
@@ -6872,7 +6788,10 @@ function cpDraw(now) {
   // the others, shorter first (so a longer one passes over), then the player's
   const me = CP.me, mine = cpLen(me), others = CP.worms.filter(w => !w.me && w.alive).sort((a, b) => a.segs.length - b.segs.length);
   for (const w of others) cpDrawWorm(c, w, cpLen(w) > mine ? 'mad' : cpLen(w) < mine ? 'shy' : '', view);
-  if (me.alive) cpDrawWorm(c, me, '', view);
+  if (me.alive) {   // blinking while it cannot be eaten
+    c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
+    cpDrawWorm(c, me, '', view); c.restore();
+  }
   for (const gh of CP.ghosts) { c.save(); c.globalAlpha = Math.max(0, 1 - gh.t / CP_GULP); cpDrawWorm(c, gh, 'dead', view); c.restore(); }
   for (const p of CP.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
   c.globalAlpha = 1;
@@ -6892,13 +6811,6 @@ function cpDraw(now) {
     c.lineWidth = 3; c.strokeStyle = 'rgba(255,255,255,0.45)'; c.stroke();
     c.beginPath(); c.arc(cpTouch.bx + dx * k, cpTouch.by + dy * k, 24, 0, Math.PI * 2); c.fillStyle = 'rgba(255,255,255,0.55)'; c.fill();
     c.lineWidth = 3; c.strokeStyle = 'rgba(43,26,14,0.5)'; c.stroke();
-  }
-  if (!CP.started && CP.st === 'play') {   // how to play, until the first touch
-    const a = 0.65 + 0.35 * Math.sin(now / 260);
-    c.save(); c.globalAlpha = a;
-    miniText(c, tr('cpHint'), W / 2, H * 0.72, 24, SUB_LOOK, now);
-    miniText(c, tr('cpRule'), W / 2, H * 0.72 + 34, 18, SUB_LOOK, now);
-    c.restore();
   }
 }
 // its picture for the games list and the end card (until the drawn art comes): a caterpillar curled round a leaf
@@ -6920,7 +6832,7 @@ function cpPortrait(sad) {
   return cv.toDataURL('image/png');
 }
 const CP_FACE = {};
-function cpFaces() { CP_FACE.joy = cpPortrait(false); CP_FACE.sad = cpPortrait(true); $('#mg-caterpillar img').src = CP_FACE.joy; $('#cp-face').src = CP_FACE.sad; }
+function cpFaces() { CP_FACE.joy = cpPortrait(false); CP_FACE.sad = cpPortrait(true); $('#mg-caterpillar img').src = CP_FACE.joy; }
 try { cpFaces(); } catch (e) { /* no canvas */ }
 loadCaterpillarArt();   // small: in now, for the games list's picture
 // the thumb: a stick from where it went down (bx, by); dragged past its reach the stick comes along, so turning back is
@@ -6953,16 +6865,14 @@ addEventListener('resize', () => { if (CP.st !== 'off') cpResize(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && CP.st === 'play') cpPause(); });
 $('#mg-caterpillar').addEventListener('click', () => { sfx('pick'); openCaterpillar(); });
 $('#btn-cp-pause').addEventListener('click', () => { sfx('pick'); cpPause(); });
-$('#btn-cp-resume').addEventListener('click', () => { sfx('pick'); $('#cp-menu').hidden = true; CP.st = 'play'; CP.last = performance.now(); });
+$('#btn-cp-resume').addEventListener('click', () => { sfx('pick'); $('#cp-menu').hidden = true; CP.st = 'play'; CP.last = performance.now(); musicStart(false); });
 $('#btn-cp-quit').addEventListener('click', () => { sfx('pick'); cpFinish(); closeCaterpillar(); });
-$('#btn-cp-again').addEventListener('click', () => { sfx('pick'); cpStart(); });
-$('#btn-cp-lobby').addEventListener('click', () => { sfx('pick'); closeCaterpillar(); });
 /* ---------- mini game: 도토리 컵 찾기 (Acorn Cups). The acorn is shown under one of the cups, the cup goes down, the cups
-   are shuffled; tap the one it is under. Right: 100 (10 more each round) and the next round, shuffled more and faster
+   are shuffled; tap the one it is under. Right: 1000 (100 more each round) and the next round, shuffled more and faster
    (four cups from round 5, five from round 10, two pairs at once from round 8). Wrong: a heart gone (the cup it was under
    is lifted too); all three gone, the game is over. ---------- */
 const CU_BEST = 'rise7-best-cups';
-const CU_PTS = 100, CU_HEARTS = 3;
+const CU_PTS = 1000, CU_HEARTS = 3;
 const CU_LIFT = 0.22, CU_SHOW = 0.9, CU_REVEAL = 1.2;   // s a cup takes to lift or drop; s the acorn is shown; s an answer shows
 // cups: where each stands in the row (slot), and the swap it is in; ac: the cup the acorn is under; ph: 'show' (the
 // acorn's cup lifts and drops), 'shuffle', 'pick', 'reveal'; moves: the swaps still to do (one pair or two at once)
@@ -7063,12 +6973,13 @@ function openCups() {
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('cuPick') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   loadCupsArt();
-  rkGate('cups', cuStart);
+  rkGate('cups', () => { cuStart(); musicRate(1); musicStart(true); });
 }
 function cuStart() {
   loadCupsArt();
-  $('#cu-menu').hidden = true; $('#cu-over').hidden = true;
+  $('#cu-menu').hidden = true;
   cuResize();
+  endBest('cups');
   Object.assign(CU, { st: 'play', hearts: CU_HEARTS, score: 0, best: cuBest(), pops: [], sparks: [] });
   cuRound(1);
   cuHud();
@@ -7080,9 +6991,9 @@ function cuPick(k) {
   const g = cuGeo(), x = cuSlotX(g, CU.cups[k].slot);
   CU.picked = k; CU.right = k === CU.ac; CU.ph = 'reveal'; CU.t = 0;
   if (CU.right) {
-    const pts = CU_PTS + 10 * (CU.round - 1);
+    const pts = CU_PTS + 100 * (CU.round - 1);
     CU.score += pts; cuHud();
-    CU.pops.push({ text: '+' + pts, x, y: g.y - g.ch * 1.9, t: 0, life: 0.8, size: 24, look: SCORE_LOOK });
+    CU.pops.push({ text: '+' + pts.toLocaleString(), x, y: g.y - g.ch * 1.9, t: 0, life: 0.8, size: 24, look: SCORE_LOOK });
     for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5; CU.sparks.push({ x, y: g.y - g.ar, vx: Math.cos(a) * 180, vy: Math.sin(a) * 180 - 60, t: 0, life: 0.5, c: i % 2 ? '#fff6c8' : '#ffd84a', s: 3 }); }
     gsfx('cuRight', semi(Math.min(7, (CU.round - 1) % 8)), 'pick');
   } else {
@@ -7100,21 +7011,22 @@ function cuFinish() {
   return isBest;
 }
 function cuGameOver() {
-  const isBest = cuFinish();
+  cuFinish();
   musicStop();
-  $('#cu-final').textContent = CU.score.toLocaleString();
-  const note = $('#cu-note'); note.hidden = !isBest; note.textContent = tr('newBest');
-  const face = cuFaces()[isBest ? 'joy' : 'sad']; if (face) $('#cu-face').src = face;
-  setTimeout(() => { if (CU.st === 'over') $('#cu-over').hidden = false; }, 400);
-  gsfx(isBest ? 'cuBest' : 'cuOver', 1, isBest ? 'stage' : 'over');
+  setTimeout(() => gameEnd('cups'), 400);
+  gsfx('cuOver', 1, 'over');
 }
+// going on: the hearts full again, the same round again, shuffled anew
+function cuRevive() { CU.hearts = CU_HEARTS; CU.st = 'play'; cuRound(CU.round, true); cuHud(); }
+END.cups = { score: () => CU.score, on: () => CU.st === 'over', revive: cuRevive, again: () => { cuStart(); musicStart(true); }, list: () => closeCups(),
+  pics: () => { const f = cuFaces(); return [f.joy, f.sad]; }, best: ['cuBest', 'stage'] };
 function closeCups() {
   cancelAnimationFrame(CU.raf); CU.st = 'off';
   musicStop();
   hideScreen('cups');
   lobbyInfo();
 }
-function cuPause() { if (CU.st !== 'play') return; CU.st = 'pause'; $('#cu-menu').hidden = false; }
+function cuPause() { if (CU.st !== 'play') return; CU.st = 'pause'; musicStop(); $('#cu-menu').hidden = false; }
 function cuFrame(now) {
   CU.raf = requestAnimationFrame(cuFrame);
   const dt = Math.min(0.05, Math.max(0, (now - CU.last) / 1000)); CU.last = now;
@@ -7242,7 +7154,7 @@ function cuPortrait(found) {
 // made the first time the list shows (the acorn picture needs the screen's pixel density, set later at start-up)
 const CU_FACE = {};
 function cuFaces() {
-  if (!CU_FACE.joy) try { CU_FACE.joy = cuPortrait(true); CU_FACE.sad = cuPortrait(false); $('#mg-cups img').src = CU_FACE.joy; $('#cu-face').src = CU_FACE.sad; } catch (e) { /* no canvas */ }
+  if (!CU_FACE.joy) try { CU_FACE.joy = cuPortrait(true); CU_FACE.sad = cuPortrait(false); $('#mg-cups img').src = CU_FACE.joy; } catch (e) { /* no canvas */ }
   return CU_FACE;
 }
 loadCupsArt();   // small: in now, for the games list's picture
@@ -7260,10 +7172,8 @@ addEventListener('resize', () => { if (CU.st !== 'off') cuResize(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && CU.st === 'play') cuPause(); });
 $('#mg-cups').addEventListener('click', () => { sfx('pick'); openCups(); });
 $('#btn-cu-pause').addEventListener('click', () => { sfx('pick'); cuPause(); });
-$('#btn-cu-resume').addEventListener('click', () => { sfx('pick'); $('#cu-menu').hidden = true; CU.st = 'play'; CU.last = performance.now(); });
+$('#btn-cu-resume').addEventListener('click', () => { sfx('pick'); $('#cu-menu').hidden = true; CU.st = 'play'; CU.last = performance.now(); musicStart(false); });
 $('#btn-cu-quit').addEventListener('click', () => { sfx('pick'); cuFinish(); closeCups(); });
-$('#btn-cu-again').addEventListener('click', () => { sfx('pick'); cuStart(); });
-$('#btn-cu-lobby').addEventListener('click', () => { sfx('pick'); closeCups(); });
 
 
 
@@ -7306,7 +7216,6 @@ $('#btn-new').addEventListener('click', () => {
   if (!menuSize) { sfx('back'); toast(tr('pickSize')); return; }
   newGame(menuMode, menuSize); showOnly(null); leaveLobby(); musicStart(true);
 });
-$('#btn-shop').addEventListener('click', () => { sfx('pick'); toast(tr('shopSoon')); });
 $('#opt-versus').addEventListener('click', () => { sfx('pick'); openPicker(); });   // always the 16-wide board, whatever is picked above
 $('#btn-vs-again').addEventListener('click', () => { sfx('pick'); openPicker(); });
 $('#btn-vs-lobby').addEventListener('click', () => openLobby());
@@ -7317,52 +7226,18 @@ $('#btn-unpause').addEventListener('click', resumeGame);
 $('#btn-restart').addEventListener('click', () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); });
 $('#btn-psettings').addEventListener('click', () => { sfx('pick'); openSettings('menu'); });
 $('#btn-plobby').addEventListener('click', () => { if (G.vs && G.started) vsQuit(); else openLobby(); });   // leaving a duel ends it with that score
-$('#btn-continue').addEventListener('click', () => continueGame());
-$('#btn-again').addEventListener('click', () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); });
-$('#btn-menu').addEventListener('click', () => { G.started = false; G.state = 'menu'; openLobby(); });
 
 /* ---------- drawing ---------- */
 let W = 0, H = 0, dpr = 1, cu = 12, u = 12, bx = 0, by = 0, BW = 384, BH = 480;
-let trayY = 0, trayH = 140, slotW = 128, sideX = 0, sideW = 0, itemY = 0, itemH = 40;
-// the item row sits between the board and the pockets: one box with four square slots (bomb, drill, two for later)
-const ITEM_U = 4.6, ITEM_SLOTS = 4;   // the row's height, in cubes of the 32-wide board
+let trayY = 0, trayH = 140, slotW = 128, sideX = 0, sideW = 0;
 let FR = 10;   // the cartoon frame round the board: dark outline, yellow band, dark inner line (8 on short screens)
 const OL = '#2b1a0e', TOON = { yellow: '#ffe14d', purple: '#3f9a38', board: '#1f4a29', orange: '#6ccf4f', red: '#e9483b', sky: '#e6f7d6', lilac: 'rgba(255,246,220,0.6)', cream: '#fff6dc', bark: '#8a5a2c', woodHi: '#e0a463', woodLo: '#b97540' };
 // the leaf cluster on the corners of the board frame (the same drawing as on the title sign)
 const LEAF = new Image();
 LEAF.onload = () => { planks = null; };
 LEAF.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg stroke='%232b1a0e' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M30 32 C10 30 4 14 8 4 C22 6 32 18 30 32 Z' fill='%236ccf4f'/%3E%3Cpath d='M30 32 C34 14 48 6 58 10 C56 24 44 34 30 32 Z' fill='%2391e063'/%3E%3Cpath d='M30 32 C24 46 30 56 40 58 C46 46 40 36 30 32 Z' fill='%234fb043'/%3E%3C/g%3E%3Cg stroke='%23ffffff' stroke-opacity='.45' stroke-width='2' fill='none' stroke-linecap='round'%3E%3Cpath d='M12 8 C18 16 24 24 29 30'/%3E%3Cpath d='M54 13 C46 18 38 24 32 30'/%3E%3C/g%3E%3C/svg%3E";
-function itemBox() {
-  const s = itemH - 8, gap = 6, w = ITEM_SLOTS * s + (ITEM_SLOTS - 1) * gap + 8;
-  return { x: Math.round(bx + (BW - w) / 2), y: itemY, w, h: itemH, s, gap };
-}
-function itemSlot(i) { const b = itemBox(); return { x: b.x + 4 + i * (b.s + b.gap), y: b.y + 4, w: b.s, h: b.s }; }
-function itemAt(x, y) {
-  for (let i = 0; i < ITEM_KINDS.length; i++) {
-    const b = itemSlot(i);
-    if (x >= b.x - 3 && x <= b.x + b.w + 3 && y >= b.y - 4 && y <= b.y + b.h + 4) return ITEM_KINDS[i];
-  }
-  return null;
-}
 let C = {};
 const cache = new Map();
-// The item pictures (drawn art, square, transparent). Until they have loaded - or if they cannot - the icons drawn in code
-// below are used. ART_GEO: where things sit on each picture, as fractions of its side (measured on the art).
-const ITEM_ART = { bomb: 'item-bomb.webp', drill: 'item-drill.webp', bell: 'item-bell.webp' };
-const ART_GEO = { bomb: { cx: 0.4682, cy: 0.6281, d: 0.6941 }, drill: { tipx: 0.0217, tipy: 0.5405 }, bell: { ring: 0.115, mouth: 0.8 } };
-const itemArt = {};
-function loadItemArt() {
-  for (const k of Object.keys(ITEM_ART)) {
-    const im = new Image();
-    im.onload = () => {
-      itemArt[k] = im;
-      for (const key of [...cache.keys()]) if (key.startsWith('item|')) cache.delete(key);
-      const pill = document.getElementById('lb-' + k + '-ic');
-      if (pill) pill.src = itemIcon(k, 30).toDataURL();
-    };
-    im.src = ITEM_ART[k];
-  }
-}
 let planks = null, planksPrev = null;
 
 function readColors() {
@@ -7381,18 +7256,17 @@ function layout() {
   // measured in u, the cube size of the 32-wide board; both boards take the same space on screen
   const k = 32 / COLS;
   FR = H < 600 ? 8 : 10;
-  const units = ROWS * k + 9 + ITEM_U, fixed = 2 + FR * 2 + 4 + 8 + 4;   // frame round the board, its shadow, gaps
+  const units = ROWS * k + 9, fixed = 2 + FR * 2 + 4 + 8 + 4;   // frame round the board, its shadow, gaps
   let c = Math.min((W - 2 - FR * 2) / 32, (H - fixed) / units, 16);
   c = Math.max(6, Math.floor(c * k * dpr) / (k * dpr));
   u = c; cu = u * k;
   BW = cu * COLS; BH = cu * ROWS;
-  const spare = Math.max(0, H - units * u - fixed);
+  // the room to spare: the tray grows by up to 6 cubes (15 in all); what is left goes half above the board, half under the tray
+  const spare = Math.max(0, H - units * u - fixed), grow = Math.min(spare * 0.8, 6 * u), left = spare - grow;
   bx = Math.round((W - BW) / 2 * dpr) / dpr;
-  by = Math.round((2 + FR + spare * 0.2) * dpr) / dpr;
-  itemY = by + BH + FR + 4 + 6;
-  itemH = Math.round(Math.max(42, Math.min(56, u * (ITEM_U - 0.5) + spare * 0.12)));   // taller phones get bigger slots
-  trayY = itemY + itemH + 8;
-  trayH = H - trayY - 4;
+  by = Math.round((2 + FR + left * 0.5) * dpr) / dpr;
+  trayY = by + BH + FR + 4 + 8;
+  trayH = H - trayY - 4 - left * 0.5;
   slotW = BW * 0.82 / 3;   // three pockets, then a narrow column showing the next block
   sideX = bx + slotW * 3; sideW = BW - slotW * 3;
   cache.clear(); textCache.clear();
@@ -7503,128 +7377,6 @@ function sprite(v, s, glow) {
   }
   cache.set(key, sp);
   return sp;
-}
-// on the board the bomb's ball is one cube across (the ball is 0.64 of its picture, centred at 0.45, 0.59)
-// the bomb's ball on its picture (centre, diameter): it is drawn one cube across, on the aimed cell
-const bombGeo = () => (itemArt.bomb ? ART_GEO.bomb : { cx: 0.45, cy: 0.59, d: 0.64 }), bombSize = () => cu / bombGeo().d;
-// the drill's tip on the turned picture (pointing down)
-const drillTip = () => (itemArt.drill ? [ART_GEO.drill.tipy, 1 - ART_GEO.drill.tipx] : [0.5, 0.96]);
-// item pictures (drawn once per size): a round black bomb with a lit fuse, a steel drill bit pointing down
-function itemIcon(kind, s) {
-  const sz = Math.round(s * 2) / 2, key = 'item|' + kind + '|' + sz;
-  let c = cache.get(key);
-  if (c) return c;
-  const px = Math.max(1, Math.ceil(sz * dpr));
-  c = document.createElement('canvas');
-  c.width = c.height = px;
-  const x = c.getContext('2d');
-  x.scale(px / sz, px / sz);
-  s = sz;
-  x.lineJoin = 'round'; x.lineCap = 'round';
-  const art = itemArt[kind === 'drillDown' ? 'drill' : kind];
-  if (art) {
-    if (kind === 'drillDown') { x.translate(0, s); x.rotate(-Math.PI / 2); }   // the drill on the board: tip pointing down
-    x.imageSmoothingQuality = 'high';
-    x.drawImage(art, 0, 0, s, s);
-    cache.set(key, c);
-    return c;
-  }
-  if (kind === 'bomb') {
-    const cx = s * 0.45, cy = s * 0.59, R = s * 0.32;
-    x.fillStyle = 'rgba(0,0,0,0.35)'; x.beginPath(); x.ellipse(cx, s * 0.93, R * 0.85, s * 0.05, 0, 0, Math.PI * 2); x.fill();
-    let g = x.createRadialGradient(cx - R * 0.35, cy - R * 0.4, R * 0.08, cx, cy, R);
-    g.addColorStop(0, '#7a7f99'); g.addColorStop(0.42, '#2b2d3c'); g.addColorStop(1, '#09090f');
-    x.fillStyle = g; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.fill();
-    x.strokeStyle = 'rgba(130,150,220,0.45)'; x.lineWidth = s * 0.03;
-    x.beginPath(); x.arc(cx, cy, R - s * 0.025, Math.PI * 0.05, Math.PI * 0.6); x.stroke();
-    x.fillStyle = 'rgba(255,255,255,0.8)'; x.beginPath(); x.ellipse(cx - R * 0.4, cy - R * 0.42, R * 0.22, R * 0.12, -0.7, 0, Math.PI * 2); x.fill();
-    x.strokeStyle = 'rgba(0,0,0,0.75)'; x.lineWidth = s * 0.025; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.stroke();
-    // the cap the fuse comes out of
-    x.save(); x.translate(cx + R * 0.62, cy - R * 0.66); x.rotate(0.75);
-    g = x.createLinearGradient(-s * 0.08, 0, s * 0.08, 0); g.addColorStop(0, '#5d6177'); g.addColorStop(0.5, '#c9cde0'); g.addColorStop(1, '#4a4d60');
-    rr(x, -s * 0.085, -s * 0.07, s * 0.17, s * 0.12, s * 0.03); x.fillStyle = g; x.fill();
-    x.strokeStyle = '#15151d'; x.lineWidth = s * 0.02; x.stroke();
-    x.restore();
-    // fuse and spark
-    const fx0 = cx + R * 0.78, fy0 = cy - R * 0.86, fx1 = s * 0.8, fy1 = s * 0.16;
-    x.strokeStyle = '#3b2a18'; x.lineWidth = s * 0.07; x.beginPath(); x.moveTo(fx0, fy0); x.quadraticCurveTo(s * 0.74, s * 0.2, fx1, fy1); x.stroke();
-    x.strokeStyle = '#e2c08f'; x.lineWidth = s * 0.04; x.beginPath(); x.moveTo(fx0, fy0); x.quadraticCurveTo(s * 0.74, s * 0.2, fx1, fy1); x.stroke();
-    const star = (r, col) => {
-      x.fillStyle = col; x.beginPath();
-      for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, rr2 = i % 2 ? r * 0.42 : r; x.lineTo(fx1 + Math.cos(a) * rr2, fy1 + Math.sin(a) * rr2); }
-      x.closePath(); x.fill();
-    };
-    star(s * 0.15, '#ff7a00'); star(s * 0.1, '#ffd84a');
-    x.fillStyle = '#fffbe6'; x.beginPath(); x.arc(fx1, fy1, s * 0.035, 0, Math.PI * 2); x.fill();
-  } else if (kind === 'bell') {
-    // a golden bell: a dome flaring out to a lip, a ring on top, the clapper peeking out under the mouth
-    const cx = s * 0.5, top = s * 0.17, lip = s * 0.78, hw = s * 0.37, ol = '#4a2600';
-    x.fillStyle = 'rgba(0,0,0,0.28)'; x.beginPath(); x.ellipse(cx, s * 0.95, s * 0.3, s * 0.035, 0, 0, Math.PI * 2); x.fill();
-    // clapper
-    let g = x.createRadialGradient(cx - s * 0.02, lip + s * 0.05, s * 0.01, cx, lip + s * 0.07, s * 0.09);
-    g.addColorStop(0, '#fff2b8'); g.addColorStop(1, '#b97a10');
-    x.fillStyle = g; x.beginPath(); x.arc(cx, lip + s * 0.075, s * 0.075, 0, Math.PI * 2); x.fill();
-    x.strokeStyle = ol; x.lineWidth = s * 0.028; x.stroke();
-    // the ring it hangs from
-    x.strokeStyle = ol; x.lineWidth = s * 0.075; x.beginPath(); x.arc(cx, top - s * 0.035, s * 0.06, Math.PI * 0.9, Math.PI * 2.1); x.stroke();
-    x.strokeStyle = '#f2b928'; x.lineWidth = s * 0.035; x.beginPath(); x.arc(cx, top - s * 0.035, s * 0.06, Math.PI * 0.9, Math.PI * 2.1); x.stroke();
-    const body = () => {
-      x.beginPath();
-      x.moveTo(cx - hw, lip);
-      x.bezierCurveTo(cx - hw * 0.82, lip - s * 0.07, cx - hw * 0.7, lip - s * 0.18, cx - hw * 0.66, s * 0.47);
-      x.bezierCurveTo(cx - hw * 0.62, s * 0.26, cx - hw * 0.4, top, cx, top);
-      x.bezierCurveTo(cx + hw * 0.4, top, cx + hw * 0.62, s * 0.26, cx + hw * 0.66, s * 0.47);
-      x.bezierCurveTo(cx + hw * 0.7, lip - s * 0.18, cx + hw * 0.82, lip - s * 0.07, cx + hw, lip);
-      x.closePath();
-    };
-    g = x.createLinearGradient(cx - hw, 0, cx + hw, 0);
-    g.addColorStop(0, '#a5600a'); g.addColorStop(0.25, '#ffe78a'); g.addColorStop(0.45, '#ffd23a'); g.addColorStop(0.78, '#e79a12'); g.addColorStop(1, '#8f5205');
-    body(); x.fillStyle = g; x.fill();
-    // a soft shine down the left side and a band round the waist
-    x.save(); body(); x.clip();
-    x.fillStyle = 'rgba(255,255,255,0.55)'; x.beginPath(); x.ellipse(cx - hw * 0.42, s * 0.42, s * 0.05, s * 0.17, 0.12, 0, Math.PI * 2); x.fill();
-    x.strokeStyle = 'rgba(120,64,0,0.55)'; x.lineWidth = s * 0.03; x.beginPath(); x.ellipse(cx, s * 0.62, hw * 0.72, s * 0.035, 0, 0, Math.PI); x.stroke();
-    x.restore();
-    body(); x.strokeStyle = ol; x.lineWidth = s * 0.03; x.stroke();
-    // the lip
-    g = x.createLinearGradient(cx - hw, 0, cx + hw, 0);
-    g.addColorStop(0, '#8a4d05'); g.addColorStop(0.3, '#ffd65a'); g.addColorStop(1, '#8a4d05');
-    x.fillStyle = g; x.beginPath(); x.ellipse(cx, lip, hw * 1.02, s * 0.055, 0, 0, Math.PI * 2); x.fill();
-    x.strokeStyle = ol; x.lineWidth = s * 0.028; x.stroke();
-    // two little glints
-    const glint = (gx, gy, r) => { x.fillStyle = '#fffbe0'; x.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, q = i % 2 ? r * 0.3 : r; x.lineTo(gx + Math.cos(a) * q, gy + Math.sin(a) * q); } x.closePath(); x.fill(); };
-    glint(s * 0.83, s * 0.22, s * 0.09); glint(s * 0.15, s * 0.3, s * 0.06);
-  } else {
-    const cx = s * 0.5;
-    x.fillStyle = 'rgba(0,0,0,0.3)'; x.beginPath(); x.ellipse(cx + s * 0.02, s * 0.95, s * 0.12, s * 0.03, 0, 0, Math.PI * 2); x.fill();
-    // chuck: a ridged gold collar at the top
-    const cw = s * 0.42, ct = s * 0.04, ch = s * 0.28;
-    let g = x.createLinearGradient(cx - cw / 2, 0, cx + cw / 2, 0);
-    g.addColorStop(0, '#6b3d00'); g.addColorStop(0.35, '#ffd36b'); g.addColorStop(0.6, '#e09a1a'); g.addColorStop(1, '#5c3300');
-    rr(x, cx - cw / 2, ct, cw, ch, s * 0.06); x.fillStyle = g; x.fill();
-    x.strokeStyle = 'rgba(70,35,0,0.55)'; x.lineWidth = s * 0.025;
-    for (let i = 1; i <= 3; i++) { const yy = ct + (ch * i) / 4; x.beginPath(); x.moveTo(cx - cw / 2 + s * 0.04, yy); x.lineTo(cx + cw / 2 - s * 0.04, yy); x.stroke(); }
-    x.strokeStyle = '#2a1600'; x.lineWidth = s * 0.025; rr(x, cx - cw / 2, ct, cw, ch, s * 0.06); x.stroke();
-    // the steel bit: straight, then a point
-    const bw = s * 0.27, b0 = ct + ch - s * 0.01, b1 = s * 0.76, tip = s * 0.96;
-    const bit = () => { x.beginPath(); x.moveTo(cx - bw / 2, b0); x.lineTo(cx + bw / 2, b0); x.lineTo(cx + bw / 2, b1); x.lineTo(cx, tip); x.lineTo(cx - bw / 2, b1); x.closePath(); };
-    g = x.createLinearGradient(cx - bw / 2, 0, cx + bw / 2, 0);
-    g.addColorStop(0, '#4a5462'); g.addColorStop(0.35, '#f2f6fb'); g.addColorStop(0.62, '#a9b4c2'); g.addColorStop(1, '#3f4855');
-    bit(); x.fillStyle = g; x.fill();
-    x.save(); bit(); x.clip();
-    // spiral flutes: slanted dark grooves with a light edge
-    const pitch = s * 0.13;
-    for (let yy = b0 - pitch; yy < tip; yy += pitch) {
-      x.strokeStyle = 'rgba(25,32,44,0.6)'; x.lineWidth = s * 0.05;
-      x.beginPath(); x.moveTo(cx - bw / 2 - s * 0.02, yy); x.lineTo(cx + bw / 2 + s * 0.02, yy + pitch * 0.75); x.stroke();
-      x.strokeStyle = 'rgba(255,255,255,0.55)'; x.lineWidth = s * 0.018;
-      x.beginPath(); x.moveTo(cx - bw / 2 - s * 0.02, yy + s * 0.035); x.lineTo(cx + bw / 2 + s * 0.02, yy + pitch * 0.75 + s * 0.035); x.stroke();
-    }
-    x.restore();
-    bit(); x.strokeStyle = '#1b2029'; x.lineWidth = s * 0.025; x.stroke();
-  }
-  cache.set(key, c);
-  return c;
 }
 // four-point white glint
 function sparkle(x, cx, cy, r) {
@@ -7862,20 +7614,6 @@ function releaseOn(d, hist, cur, now) {
   }
   return cA;
 }
-// the bomb aims at the cell a little above the thumb, so the thumb never hides the spot
-const bombLift = () => Math.max(60, cu * 3.2);
-function moveRowFor(d, now) {
-  const f = (d.y - bombLift() - by) / cu - 0.5;
-  const clampR = r => Math.max(0, Math.min(ROWS - 1, r));
-  if (d.row == null) { d.row = clampR(Math.round(f)); d.rhist = [{ t: now, c: d.row }]; return; }
-  if (Math.abs(f - d.row) <= 0.5 + Math.max(STICK, STICK_PX / cu)) return;
-  const r = clampR(Math.round(f));
-  if (r === d.row) return;
-  d.row = r;
-  if (!d.home) sfx('move');
-  d.rhist.push({ t: now, c: r });
-  if (d.rhist.length > 24) d.rhist.shift();
-}
 // let go this close to where the block was picked up and it goes back to the tray
 const homeR = () => Math.max(18, u * 1.6);
 function updateGhost() {
@@ -7897,101 +7635,6 @@ function drawBlock(p, X, Y, size, alpha) {
   if (alpha !== undefined) ctx.globalAlpha = alpha;
   shapeOf(p).cells.forEach(([dr, dc], j) => ctx.drawImage(sprite(pieceCell(p, j), size), X + dc * size, Y + dr * size, size, size));
   ctx.globalAlpha = 1;
-}
-
-// The aim of a held item, drawn over the board:
-//  bomb  - a heat glow spreading from the aimed cell, a target grid of dots on its empty cells, a shock ring pulsing out
-//          from the middle and four gold corner brackets that breathe around the 5x5 square;
-//  drill - a pale beam down the column from its first cube, chevrons running down it, brackets capping both ends.
-// Cubes that will break are lit and pulse. With nothing to break, all of it turns a muted red and stops moving.
-const AIM_LOOK = {
-  bomb: { glow: [255, 150, 70], line: '#ffd98a', ring: '255,226,160' },
-  bell: { glow: [255, 210, 80], line: '#ffe27a', ring: '255,236,160' },
-  drill: { glow: [175, 225, 255], line: '#d6f1ff', ring: '220,244,255' },
-  none: { glow: [255, 90, 80], line: '#ff8a7a', ring: '255,140,130' },
-};
-function drawAim(tg, kind, none, t, pulse) {
-  const bell = kind === 'bell', bomb = kind === 'bomb' || bell, L = none ? AIM_LOOK.none : AIM_LOOK[kind];   // the bell's zone is drawn like a board-sized bomb square
-  const r0 = none && !bomb ? 0 : tg.r0, r1 = none && !bomb ? ROWS - 1 : tg.r1;
-  const x0 = bx + tg.c0 * cu, y0 = by + r0 * cu, w = (tg.c1 - tg.c0 + 1) * cu, h = (r1 - r0 + 1) * cu;
-  const cx = bx + (tg.cc + 0.5) * cu, cy = bomb ? by + (tg.rc + 0.5) * cu : y0 + h / 2;
-  const breath = none ? 0 : 0.5 + 0.5 * Math.sin(t / 230);
-  const [gr, gg, gb] = L.glow, rad = Math.min(cu * 0.35, w / 2);
-  ctx.save();
-  // 1) the zone
-  rr(ctx, x0, y0, w, h, rad);
-  let g;
-  if (bomb) {
-    g = ctx.createRadialGradient(cx, cy, cu * 0.2, cx, cy, Math.max(w, h) * 0.75);
-    g.addColorStop(0, `rgba(${gr},${gg},${gb},0.34)`); g.addColorStop(0.55, `rgba(${gr},${gg},${gb},0.16)`); g.addColorStop(1, `rgba(${gr},${gg},${gb},0.05)`);
-  } else {
-    g = ctx.createLinearGradient(0, y0, 0, y0 + h);
-    g.addColorStop(0, `rgba(${gr},${gg},${gb},0.32)`); g.addColorStop(1, `rgba(${gr},${gg},${gb},0.08)`);
-  }
-  ctx.fillStyle = g; ctx.fill();
-  ctx.save(); rr(ctx, x0, y0, w, h, rad); ctx.clip();
-  // 2) cubes that break: lit, pulsing; empty cells of the bomb's square get a small target dot
-  ctx.globalAlpha = none ? 0 : 0.22 + 0.26 * pulse;
-  tg.marks.forEach((v, k) => ctx.drawImage(sprite(v, cu, true), bx + (k % COLS) * cu, by + ((k / COLS) | 0) * cu, cu, cu));
-  ctx.globalAlpha = 1;
-  if (bomb && !bell) {
-    ctx.fillStyle = `rgba(${gr},${gg},${gb},0.55)`;
-    for (let r = tg.r0; r <= tg.r1; r++) for (let c = tg.c0; c <= tg.c1; c++) {
-      if (G.grid[r][c]) continue;
-      ctx.beginPath(); ctx.arc(bx + (c + 0.5) * cu, by + (r + 0.5) * cu, Math.max(1.2, cu * 0.07), 0, Math.PI * 2); ctx.fill();
-    }
-  }
-  // 3) motion: a shock ring from the aimed cell (bomb), chevrons running down the column (drill)
-  if (!none && bomb) {
-    for (let j = 0; j < (bell ? 3 : 2); j++) {
-      const p = ((t / (bell ? 1300 : 900)) + j / (bell ? 3 : 2)) % 1, rr2 = cu * 0.5 + p * Math.max(w, h) * (bell ? 1.05 : 0.62);
-      ctx.strokeStyle = `rgba(${L.ring},${0.55 * (1 - p)})`; ctx.lineWidth = Math.max(1.5, u * 0.22) * (1 - p * 0.5);
-      ctx.beginPath(); ctx.arc(cx, cy, rr2, 0, Math.PI * 2); ctx.stroke();
-    }
-  } else if (!none) {
-    // chevrons pointing down, sliding down the beam and fading in at the top
-    const cw = Math.max(3.5, cu * 0.3), ch = Math.max(2.2, cu * 0.17), step = Math.max(cw * 3.2, cu * 1.5), off = (t / 7) % step;
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    for (let yy = y0 - step + off; yy < y0 + h + step; yy += step) {
-      const a = 0.9 * clamp01((yy - y0) / Math.max(1, step * 1.2));
-      if (a <= 0) continue;
-      ctx.beginPath(); ctx.moveTo(cx - cw, yy - ch); ctx.lineTo(cx, yy + ch); ctx.lineTo(cx + cw, yy - ch);
-      ctx.strokeStyle = `rgba(16,26,40,${a * 0.75})`; ctx.lineWidth = Math.max(3, cu * 0.17); ctx.stroke();
-      ctx.strokeStyle = `rgba(${L.ring},${a})`; ctx.lineWidth = Math.max(1.6, cu * 0.09); ctx.stroke();
-    }
-  }
-  ctx.restore();
-  // 4) the frame. Bomb: a faint outline joined by four corner brackets with a dark edge, breathing a little outward.
-  //    Drill: two rails down the sides of the column, capped top and bottom.
-  const o = 1.5 + breath * Math.max(1.5, u * 0.22), lw = Math.max(2, u * 0.3), m = lw / 2 + 1.5;
-  // kept inside the board, so a square on the edge keeps whole brackets
-  const bxl = Math.max(bx + m, x0 - o), byt = Math.max(by + m, y0 - o), bxr = Math.min(bx + BW - m, x0 + w + o), byb = Math.min(by + BH - m, y0 + h + o);
-  const ink = (path, width) => {
-    path(); ctx.strokeStyle = 'rgba(28,10,2,0.75)'; ctx.lineWidth = width + 2.5; ctx.stroke();
-    path(); ctx.strokeStyle = L.line; ctx.lineWidth = width; ctx.stroke();
-  };
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  if (bomb) {
-    rr(ctx, x0 + 0.5, y0 + 0.5, w - 1, h - 1, rad);
-    ctx.strokeStyle = `rgba(${L.ring},0.28)`; ctx.lineWidth = 1; ctx.stroke();
-    const lx = Math.max(cu * 0.9, w * 0.24), ly = lx, kr = Math.min(cu * 0.3, 6);
-    for (const [x, y, sx, sy] of [[bxl, byt, 1, 1], [bxr, byt, -1, 1], [bxl, byb, 1, -1], [bxr, byb, -1, -1]]) {
-      ink(() => { ctx.beginPath(); ctx.moveTo(x + sx * lx, y); ctx.lineTo(x + sx * kr, y); ctx.quadraticCurveTo(x, y, x, y + sy * kr); ctx.lineTo(x, y + sy * ly); }, lw);
-    }
-  } else {
-    const rl = bxl, rrt = bxr;
-    ctx.globalAlpha = 0.7;
-    ink(() => { ctx.beginPath(); ctx.moveTo(rl, byt); ctx.lineTo(rl, byb); ctx.moveTo(rrt, byt); ctx.lineTo(rrt, byb); }, Math.max(1.2, lw * 0.45));
-    ctx.globalAlpha = 1;
-    const leg = Math.max(cu * 0.45, 4), kr = Math.min((rrt - rl) * 0.3, 5);
-    // a cap: a bar across the column bending into short legs along the rails
-    const cap = (y, sy) => () => {
-      ctx.beginPath(); ctx.moveTo(rl, y + sy * leg); ctx.lineTo(rl, y + sy * kr); ctx.quadraticCurveTo(rl, y, rl + kr, y);
-      ctx.lineTo(rrt - kr, y); ctx.quadraticCurveTo(rrt, y, rrt, y + sy * kr); ctx.lineTo(rrt, y + sy * leg);
-    };
-    ink(cap(byt, 1), lw); ink(cap(byb, -1), lw);
-  }
-  ctx.restore();
 }
 
 let lastDraw = performance.now();
@@ -8066,66 +7709,6 @@ function draw(t) {
     ctx.globalAlpha = hold ? 0.5 + 0.4 * pulse : 0.5;
     drag.ghost.cells.forEach((e, j) => ctx.drawImage(sprite(pieceCell(p, j), cu, !!hold), bx + e.c * cu, by + e.r * cu, cu, cu));
     ctx.globalAlpha = 1;
-  }
-  // a held item: its aim (see drawAim), and the item itself, see-through, where it will go off:
-  // the bomb on the cell it aims at, the drill on top of its column
-  if (idrag && !idrag.home && idrag.col != null && G.state === 'play') {
-    const bomb = idrag.k === 'bomb', tg = itemTargets(idrag.k, idrag.col, bomb ? idrag.row : null), none = !tg.marks.size;
-    drawAim(tg, idrag.k, none, t, pulse);
-    const gs = Math.max(cu * 1.5, u * 2.6);
-    ctx.globalAlpha = none ? 0.4 : 0.85;
-    if (idrag.k === 'bell') drawBell(t, 0.05 * Math.sin(t / 260), 1);
-    else if (bomb) {
-      // the ball is one cube across, sitting right on the aimed cell (kept whole on the board)
-      const bs = bombSize(), bg = bombGeo(), gx = Math.max(bx, Math.min(bx + BW - bs, bx + (tg.cc + 0.5) * cu - bs * bg.cx)), gy = Math.max(by, Math.min(by + BH - bs, by + (tg.rc + 0.5) * cu - bs * bg.cy));
-      ctx.drawImage(itemIcon('bomb', bs), gx, gy, bs, bs);
-    }
-    else { const [tx, ty] = drillTip(); ctx.drawImage(itemIcon('drillDown', gs), bx + (idrag.col + 0.5) * cu - gs * tx, by + Math.min(tg.hit, ROWS) * cu - gs * ty, gs, gs); }
-    ctx.globalAlpha = 1;
-  }
-  // an item on its way: the bomb slams down onto its cell, the drill drops down its column
-  const itemSize = Math.max(cu * 1.5, u * 2.6);
-  if (anim && anim.type === 'item') {
-    const p = clamp01((t - anim.t0) / anim.dur);
-    if (anim.kind === 'bomb') {
-      const sc = 1.7 - 0.7 * ease(p), sz = bombSize() * sc;
-      ctx.globalAlpha = 0.55 + 0.45 * p;
-      ctx.drawImage(itemIcon('bomb', sz), bx + (anim.tg.cc + 0.5) * cu - sz * bombGeo().cx, by + (anim.tg.rc + 0.5) * cu - sz * bombGeo().cy, sz, sz);
-      ctx.globalAlpha = 1;
-    } else if (anim.kind === 'drill') {   // (the bell is drawn by fx.bell)
-      const r = anim.from + (anim.land - anim.from) * p * p;
-      const [tx, ty] = drillTip();
-      ctx.drawImage(itemIcon('drillDown', itemSize), bx + (anim.col + 0.5) * cu - itemSize * tx, by + (r + 1) * cu - itemSize * ty, itemSize, itemSize);
-    }
-  }
-  // the golden bell: swings and rings over the board, then floats up and fades while the board breaks
-  if (fx.bell) {
-    const e = t - fx.bell.t0, ring = fx.bell.ring, fade = 650;
-    if (e > ring + fade || G.state !== 'play') fx.bell = null;
-    else {
-      const p = Math.min(1, e / ring), sw = e < ring ? 0.42 * Math.sin(p * Math.PI * 5) * (1 - 0.55 * p) : 0;
-      const pop = e < 160 ? 1.35 - 0.35 * ease(e / 160) : 1, out = e > ring ? (e - ring) / fade : 0;
-      // golden sound rings from its mouth while it rings
-      if (e < ring + 200) {
-        const [mx, my] = bellMouth();
-        for (let j = 0; j < 3; j++) {
-          const q = ((e / 520) + j / 3) % 1;
-          ctx.strokeStyle = `rgba(255,226,120,${0.6 * (1 - q) * (1 - out)})`; ctx.lineWidth = Math.max(2, u * 0.45) * (1 - q * 0.6);
-          ctx.beginPath(); ctx.ellipse(mx, my, cu + q * BW * 0.55, (cu + q * BW * 0.55) * 0.55, 0, 0, Math.PI * 2); ctx.stroke();
-        }
-      }
-      drawBell(t, sw, pop, 1 - out, -out * u * 6);
-    }
-  }
-  // the drill grinding down through its column, shaking a little
-  if (fx.drill) {
-    const d = fx.drill, r = d.r0 + (t - d.t0) / Math.max(1, d.step);
-    if (r > d.r1 + 3 || G.state !== 'play') fx.drill = null;
-    else {
-      const jx = Math.sin(t / 16) * u * 0.14;
-      const [tx, ty] = drillTip();
-      ctx.drawImage(itemIcon('drillDown', itemSize), bx + (d.col + 0.5) * cu - itemSize * tx + jx, by + r * cu - itemSize * ty, itemSize, itemSize);
-    }
   }
   ctx.restore();
 
@@ -8263,40 +7846,6 @@ function draw(t) {
       drawBlock(G.next, nb.x + (nb.w - s.wd * ts) / 2, nb.y + lh + 12 + (room - s.h * ts) / 2, ts, 0.9);
     }
   }
-  // the item box between the board and the pockets: four square slots, a picture and a count in each filled one.
-  // They glow when no block fits and an item can help.
-  {
-    const box = itemBox(), cp = 0.5 + 0.5 * Math.sin(t / 140);
-    toon(ctx, box.x, box.y, box.w, box.h, 14, woodFill(ctx, box.y, box.y + box.h)); woodGrain(ctx, box.x + 3, box.y + 3, box.w - 6, box.h - 6, 11);
-    for (let i = 0; i < ITEM_SLOTS; i++) {
-      const b = itemSlot(i), k = ITEM_KINDS[i], n = k && !G.vs ? ITEMS[k] || 0 : 0;   // versus: shown dim, no count
-      const held = k && idrag && idrag.k === k, out = held && !idrag.home, call = k && G.stuck && n > 0 && G.state === 'play';
-      if (call) { ctx.strokeStyle = `rgba(255,120,60,${0.35 + 0.45 * cp})`; ctx.lineWidth = 6; rr(ctx, b.x - 2, b.y - 2, b.w + 4, b.h + 4, 10); ctx.stroke(); }
-      if (k) toon(ctx, b.x, b.y, b.w, b.h, 9, held ? '#fff6c2' : call ? '#ffe2cf' : TOON.sky, 2.5, 0);
-      else {   // an empty slot, for an item to come
-        rr(ctx, b.x, b.y, b.w, b.h, 9); ctx.fillStyle = TOON.lilac; ctx.fill();
-        ctx.setLineDash([4, 3]); ctx.strokeStyle = TOON.bark; ctx.lineWidth = 2; rr(ctx, b.x + 1, b.y + 1, b.w - 2, b.h - 2, 8); ctx.stroke(); ctx.setLineDash([]);
-      }
-      if (held) { ctx.strokeStyle = TOON.purple; ctx.lineWidth = 3; rr(ctx, b.x + 1.5, b.y + 1.5, b.w - 3, b.h - 3, 8); ctx.stroke(); }
-      if (!k) continue;   // an empty slot, for an item to come
-      // a little hop when one is earned
-      const bp = fx.itemBump && fx.itemBump.k === k ? (t - fx.itemBump.t0) / 520 : 1;
-      if (bp >= 1 && fx.itemBump && fx.itemBump.k === k) fx.itemBump = null;
-      const hop = bp < 1 ? Math.sin(bp * Math.PI) : 0;
-      const is = b.w * 0.8 * (1 + 0.25 * hop);
-      ctx.globalAlpha = n <= 0 ? 0.3 : out ? 0.35 : 1;
-      ctx.drawImage(itemIcon(k, is), b.x + (b.w - is) / 2, b.y + (b.h - is) / 2 - hop * b.h * 0.12, is, is);
-      ctx.globalAlpha = 1;
-      if (G.vs) continue;
-      // how many: a small badge in the lower right corner
-      const br = Math.max(8.5, b.w * 0.22), bxc = b.x + b.w - br * 0.55, byc = b.y + b.h - br * 0.55;
-      ctx.fillStyle = OL; ctx.beginPath(); ctx.arc(bxc, byc, br, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = n > 0 ? TOON.red : '#b9b2cc'; ctx.beginPath(); ctx.arc(bxc, byc, br - 2.2, 0, Math.PI * 2); ctx.fill();
-      ctx.font = `${Math.round(br * 1.15)}px ${FANCY}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = OL; ctx.strokeText(String(Math.min(99, n)), bxc, byc + 0.5);
-      ctx.fillStyle = '#ffffff'; ctx.fillText(String(Math.min(99, n)), bxc, byc + 0.5);
-    }
-  }
   // held block, floating just above the thumb so it stays visible
   if (drag && G.tray[drag.i] && !drag.home) {
     const p = G.tray[drag.i], s = shapeOf(p);
@@ -8389,18 +7938,6 @@ function draw(t) {
     ctx.restore();
   }
   drawOrbs(t);
-}
-// the big golden bell over the middle of the top of the board (held, ringing, fading), swinging from its ring
-const bellSize = () => (itemArt.bell ? Math.min(BW * 0.44, BH * 0.3) : Math.min(BW * 0.34, BH * 0.24));
-const bellGeo = () => (itemArt.bell ? ART_GEO.bell : { ring: 0.1, mouth: 0.9 });
-function bellMouth() { const s = bellSize(), g = bellGeo(); return [bx + BW / 2, by + BH * 0.035 + s * (g.mouth - g.ring)]; }
-function drawBell(t, swing, scale = 1, alpha = 1, dy = 0) {
-  const s = bellSize() * scale, px = bx + BW / 2, py = by + BH * 0.035 + dy;   // the pivot: the ring on top
-  ctx.save();
-  ctx.globalAlpha *= alpha;
-  ctx.translate(px, py); ctx.rotate(swing);
-  ctx.drawImage(itemIcon('bell', s), -s / 2, -s * bellGeo().ring, s, s);
-  ctx.restore();
 }
 // a frame round the board with a soft halo: wide faint strokes under the bright one (cheaper than a blur)
 function glowFrame(lw, halo, alpha) {
@@ -8500,7 +8037,7 @@ function drawOrbs(t) {
 /* ---------- input: one thumb, bottom of the screen ---------- */
 function pt(e) { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
 cv.addEventListener('pointerdown', e => {
-  if (G.state !== 'play' || drag || idrag || (G.vs && G.vs.count > 0)) return;   // nothing is picked up during the versus countdown
+  if (G.state !== 'play' || drag || (G.vs && G.vs.count > 0)) return;   // nothing is picked up during the versus countdown
   const { x, y } = pt(e);
   for (let k = 0; k < 3; k++) {
     const b = rotBtn(k);
@@ -8511,21 +8048,7 @@ cv.addEventListener('pointerdown', e => {
       return;
     }
   }
-  if (pending || pendingItem) return;
-  // an item chip: held like a block
-  const ik = itemAt(x, y);
-  if (ik) {
-    if (!SND.playing) musicStart(false);
-    if (G.vs) { sfx('back'); toast(tr('vsNoItems')); e.preventDefault(); return; }
-    if ((ITEMS[ik] || 0) <= 0) { sfx('back'); e.preventDefault(); return; }   // none left (later: this opens the shop)
-    idrag = { k: ik, x, y, x0: x, y0: y, id: e.pointerId, col: null, row: null, home: true, hist: null, rhist: null, trail: null };
-    try { cv.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
-    sfx('pick');
-    moveColFor(idrag, 1, performance.now());
-    if (ik === 'bomb') moveRowFor(idrag, performance.now());
-    e.preventDefault();
-    return;
-  }
+  if (pending) return;
   if (y < trayY - u || x < bx - u || x > bx + BW + u) return;
   if (x >= sideX) return;   // the next-block column cannot be picked from
   const i = Math.max(0, Math.min(2, Math.floor((x - bx) / slotW)));
@@ -8539,13 +8062,6 @@ cv.addEventListener('pointerdown', e => {
   e.preventDefault();
 });
 cv.addEventListener('pointermove', e => {
-  if (idrag && e.pointerId === idrag.id) {
-    const p = pt(e); idrag.x = p.x; idrag.y = p.y;
-    idrag.home = Math.hypot(idrag.x - idrag.x0, idrag.y - idrag.y0) < homeR();
-    moveColFor(idrag, 1, performance.now());
-    if (idrag.k === 'bomb') moveRowFor(idrag, performance.now());
-    return;
-  }
   if (!drag || e.pointerId !== drag.id) return;
   const p = pt(e); drag.x = p.x; drag.y = p.y;
   drag.home = Math.hypot(drag.x - drag.x0, drag.y - drag.y0) < homeR();
@@ -8553,15 +8069,6 @@ cv.addEventListener('pointermove', e => {
   updateGhost();
 });
 function endDrag(e, commit) {
-  if (idrag && e.pointerId === idrag.id) {
-    const d = idrag;
-    idrag = null;
-    if (!commit || G.state !== 'play') return;
-    if (d.home) { sfx('back'); return; }   // let go where it was picked up: kept
-    const now = performance.now();
-    useItem(d.k, releaseCol(d, now), d.k === 'bomb' ? releaseOn(d, d.rhist, d.row, now) : null);
-    return;
-  }
   if (!drag || e.pointerId !== drag.id) return;
   // the lift position itself is not used: the thumb rolls a little as it comes off the glass
   const d = drag;
@@ -8608,7 +8115,7 @@ new ResizeObserver(() => layout()).observe(stage);
 function snapshot() { return { G: JSON.parse(JSON.stringify(G)), menuMode, menuSize }; }
 function start(data) {
   readColors();
-  loadItemArt(); loadSquirrelArt(); loadRabbitArt(); loadMergeArt(); loadPebbleArt(); loadOwlArt(); loadChamArt(); loadBeaverArt(); fetchSfx();
+  loadSquirrelArt(); loadRabbitArt(); loadMergeArt(); loadPebbleArt(); loadOwlArt(); loadChamArt(); loadBeaverArt(); fetchSfx();
   try { document.fonts.load(`40px ${FANCY}`); } catch (e) { /* the fallback font is used until it loads */ }
   layout();
   if (data && data.G && data.G.grid && data.G.size && data.G.phase !== undefined) {
@@ -8619,7 +8126,7 @@ function start(data) {
     if (!G.next) G.next = dealPiece();
     menuMode = data.menuMode || 'moves'; menuSize = data.menuSize || null;
     if (G.phase !== 'idle') G.phase = 'idle';
-    G.itemMove = false; G.stuck = false;
+    delete G.itemMove; delete G.stuck; delete G.bellRise;   // left in a game saved before the items went
     G.stage = 0; applyTheme(0, true);
     touchGrid();
     hud(); feverUI(); missionUI(); rotUI();
@@ -8654,9 +8161,10 @@ const bkVis = id => { const el = $('#' + id); return !!el && !el.hidden && !el.c
 const BK_MINI = [['mini', 'mini'], ['stairs', 'st'], ['merge', 'fm'], ['pebble', 'pb'], ['mushroom', 'ms'], ['owlpost', 'op'], ['chameleon', 'cm'], ['beaver', 'bv'], ['hedgehog', 'hh'], ['caterpillar', 'cp'], ['cups', 'cu']];
 function bkWant() {
   if (bkVis('splash')) return 0;
-  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || bkVis(k + '-over') || bkVis('rkintro')) ? 4 + (bkVis('rkb') ? 1 : 0) : 3;   // over the home
+  const end = bkVis('cont') || bkVis('result');   // a game's end (any game)
+  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro')) ? 4 + (bkVis('rkb') ? 1 : 0) : 3;   // over the home
   if (bkVis('minis')) return (bkVis('settings') || bkVis('rank') || bkVis('bfpick') || bkVis('rkb')) ? 2 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) : 1;
-  return 2 + ((bkVis('menu') || bkVis('over') || bkVis('vsover')) ? 1 : 0) + (bkVis('settings') ? 1 : 0);
+  return 2 + ((bkVis('menu') || end || bkVis('vsover')) ? 1 : 0) + (bkVis('settings') || (end && bkVis('rkb')) ? 1 : 0);
 }
 function bkSync() {
   if (!BK.act || BK.ignore) return;
@@ -8669,9 +8177,11 @@ function bkBack() {
   if (bkVis('rank')) return press('btn-rank-close');
   if (bkVis('rkb')) return press('btn-rkb-close');
   if (bkVis('vspick')) return press('btn-pick-close');
+  if (bkVis('adfake')) return;   // the ad plays to its end
+  if (bkVis('cont')) return press('btn-cont-no');
+  if (bkVis('result')) return press('btn-res-list');
   for (const [scr, k] of BK_MINI) if (bkVis(scr)) {
     if (bkVis('rkintro')) return press('btn-rki-close');
-    if (bkVis(k + '-over')) return press(`btn-${k}-lobby`);
     if (bkVis(k + '-menu')) return press(`btn-${k}-resume`);
     return press(`btn-${k}-pause`);
   }
@@ -8683,7 +8193,6 @@ function bkBack() {
     if (h > 0) { BK.ignore++; history.go(-h); }   // back to the page's first entry: the next press leaves
     return;
   }
-  if (bkVis('over')) return press('btn-menu');
   if (bkVis('vsover')) return press('btn-vs-lobby');
   if (bkVis('menu')) return press('btn-unpause');
   press('btn-pause');
@@ -8699,15 +8208,17 @@ for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener
 setInterval(bkSync, 300);   // cards that open by themselves (a game ending) get their entry too
 
 // read-only hooks for automated checks
-window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY, itemH }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
-                  busy: () => G.phase !== 'idle' || !!anim || !!pending || !!pendingItem, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
-                  items: { get: () => ITEMS, set: (k, n) => { ITEMS[k] = n; saveItems(); }, itemSlot, itemBox, itemTargets, useItem, held: () => idrag && { k: idrag.k, col: idrag.col, row: idrag.row, home: idrag.home } }, bombLift, deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), startVersus, VS_BOTS, mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
+window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
+                  busy: () => G.phase !== 'idle' || !!anim || !!pending, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
+                  deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), startVersus, VS_BOTS, mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, gsfx, scoreFor, wireAudio, MUSIC, SFXB, SFX_AT, musicStart, musicStop, musicTempo, musicPos },
                   merge: { FM, geo: fmGeo, drop: fmDrop, add: fmAddFruit, R: fmR, HB: FM_HB, pts: FM_PTS, phys: fmPhys, open: openMerge },
                   owlpost: { OP, geo: opGeo, open: openOwlPost, send: opSend, PALS: OP_PALS, GIFTS: OP_GIFTS, T0: OP_T0, LOSE: OP_LOSE, SWAP_AT: OP_SWAP_AT },
                   mushroom: { MS, geo: msGeo, start: msStart, open: openMushroom, tap: msTap, undo: msUndo, solve: msSolve, deal: msDeal, round: msRound, K: MS_K, can: msCan, full: msFull },
                   pebble: { PB, geo: pbGeo, open: openPebble, shoot: pbShoot, aimAt: pbAimAt, step: pbStep, grid: pbGrid, newRow: pbNewRow, fly: pbFly, end: pbEndTurn, col: pbCol, BR: PB_BR, C: PB_C, R: PB_R },
                   back: { BK, want: bkWant, have: bkHave, back: bkBack },
+                  end: { END, END_BEST, gameEnd, showResult, cont: () => contN, contPut, ad: showRewardedAd,
+                         over: { acorn: miniGameOver, stairs: stGameOver, merge: fmGameOver, pebble: pbGameOver, mushroom: msGameOver, owlpost: opGameOver, chameleon: cmGameOver, beaver: bvGameOver, hedgehog: hhGameOver, caterpillar: cpGameOver, cups: cuGameOver } },
                   beaver: { BV, geo: bvGeo, open: openBeaver, press: bvPress, release: bvRelease, pose: bvPose, art: bvArt },
                   hedgehog: { HH, geo: hhGeo, open: openHedgehog, throw: hhThrow, round: hhRound, spin: hhSpin, art: hhArt },
                   caterpillar: { CP, art: cpArt, tints: cpTints, tintCanvases: cpTintCanvases, open: openCaterpillar, spawn: cpSpawnBot, worm: cpWormNew, gulp: cpGulp, len: cpLen, meet: cpMeet },
