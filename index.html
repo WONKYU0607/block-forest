@@ -583,7 +583,7 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .rank-row.r3 .no { background: linear-gradient(#f0b27a, #c2793d); }
 .rank-row .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Black Han Sans', sans-serif; font-size: 16px; color: var(--ol); }
 .rank-row .sc { flex: none; font-family: var(--num); font-size: 18px; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; }
-.acct-msg { margin: 0; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 16px; line-height: 1.45; color: var(--bark); text-wrap: balance; }
+.acct-msg { margin: 0; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 16px; line-height: 1.45; color: var(--bark); text-wrap: balance; word-break: keep-all; }
 .nick-in { width: 100%; box-sizing: border-box; padding: 11px 14px; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 20px; color: var(--ol);
   background: #fffaf0; border: 3px solid var(--ol); border-radius: 14px; box-shadow: inset 0 3px 0 rgba(43, 26, 14, 0.1); outline: none; }
 .nick-in:focus { border-color: #3f9c34; box-shadow: inset 0 3px 0 rgba(43, 26, 14, 0.1), 0 0 0 3px rgba(108, 207, 79, 0.45); }
@@ -596,6 +596,18 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .acct-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
 .acct-row b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 18px; }
 #btn-logout { flex: none; width: auto; padding: 8px 14px; font-size: 15px; }
+/* deleting the account: a quiet link under the account line, then a card to make sure */
+.acct-del { align-self: flex-end; margin: -2px 0 0; padding: 4px 2px; background: none; border: 0; cursor: pointer;
+  font-family: 'Black Han Sans', sans-serif; font-size: 14px; color: #a8452f; text-decoration: underline; text-underline-offset: 3px; }
+#delacct { z-index: 46; }
+.btn.danger { background: linear-gradient(#ff8f73, #e2483a); color: #fff; margin-bottom: 6px; }
+.btn.danger:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--ol); }
+a.btn { display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
+/* the privacy policy and terms (pages on the site) */
+.legal { margin: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 8px; font-family: 'Black Han Sans', sans-serif; font-size: 13px; color: var(--muted); }
+.legal a { color: #6b4426; text-decoration: underline; text-underline-offset: 3px; }
+/* on the web the games are not played: the title picture, and this card where the touch line would be */
+#webonly { z-index: 60; place-items: end center; padding-bottom: max(10vh, 40px); background: rgba(14, 36, 16, 0.25); }
 html[lang="en"] .opts.three .opt b { font-size: 15px; }
 /* English words are wider: the top bar puts 'Score' / 'Best' small above the number, so the number keeps the whole side */
 html[lang="en"] .stat { flex-direction: column; align-items: flex-start; gap: 0; }
@@ -890,8 +902,28 @@ html.tall-art .scr-box .ext { display: none; }
     <div id="acct" class="acct" hidden>
       <p class="group-label" data-t="account">계정</p>
       <div class="acct-row"><b id="acct-name"></b><button class="btn plain" id="btn-logout" type="button" data-t="logout">로그아웃</button></div>
+      <button class="acct-del" id="btn-delacct" type="button" data-t="delAcct">계정 삭제</button>
     </div>
+    <p class="legal"><a href="https://block-forest.vercel.app/privacy.html" target="_blank" rel="noopener" data-t="privacy">개인정보처리방침</a><span aria-hidden="true">·</span><a href="https://block-forest.vercel.app/terms.html" target="_blank" rel="noopener" data-t="terms">이용약관</a></p>
     <button class="btn primary" id="btn-settings-close" type="button" data-t="close">닫기</button>
+  </div>
+</section>
+
+<section id="delacct" class="overlay" hidden aria-label="계정 삭제" data-ta="delAcct">
+  <div class="card">
+    <div class="ribbon"><h2 data-t="delAcct">계정 삭제</h2></div>
+    <p id="del-msg" class="acct-msg"></p>
+    <button class="btn danger" id="btn-del-go" type="button" data-t="delGo">지우기</button>
+    <button class="btn plain" id="btn-del-no" type="button" data-t="cancel">취소</button>
+  </div>
+</section>
+
+<section id="webonly" class="overlay" hidden aria-label="앱에서 만나요" data-ta="webOnly">
+  <div class="card">
+    <div class="ribbon"><h2 data-t="webOnly">앱에서 만나요</h2></div>
+    <p class="acct-msg" data-t="webOnlyText">미니게임 포레스트는 안드로이드 앱으로 즐길 수 있어요.</p>
+    <a class="btn primary" id="btn-store" href="https://play.google.com/store/apps/details?id=com.wonkyu.minigameforest" target="_blank" rel="noopener" data-t="webOnlyGo">Google Play에서 받기</a>
+    <p class="legal"><a href="https://block-forest.vercel.app/privacy.html" target="_blank" rel="noopener" data-t="privacy">개인정보처리방침</a><span aria-hidden="true">·</span><a href="https://block-forest.vercel.app/terms.html" target="_blank" rel="noopener" data-t="terms">이용약관</a><span aria-hidden="true">·</span><a href="https://block-forest.vercel.app/delete.html" target="_blank" rel="noopener" data-t="delAcct">계정 삭제</a></p>
   </div>
 </section>
 
@@ -1014,7 +1046,12 @@ const STR = {
     nickTitle: '닉네임', nickAsk: '랭킹에 보일 이름을 정해 주세요', nickRule: '2~10자 · 한글, 영문, 숫자, _', nickTaken: '이미 사용 중인 닉네임이에요',
     nickBad: '2~10자, 한글·영문·숫자·_만 쓸 수 있어요', ok: '확인',
     loading: '불러오는 중…', 
-    account: '계정', logout: '로그아웃', rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
+    account: '계정', logout: '로그아웃', delAcct: '계정 삭제', delGo: '지우기', cancel: '취소',
+    delText: '닉네임과 모든 순위 기록이 지워지고 되돌릴 수 없어요. 산 아이템과 광고 제거는 그대로예요.',
+    delAsk: '본인 확인을 위해 구글 계정을 한 번 더 골라 주세요', delWait: '지우는 중…', delDone: '계정을 지웠어요',
+    delFail: '지우지 못했어요. 다시 해 주세요', delOff: '인터넷 연결을 확인하고 다시 해 주세요', privacy: '개인정보처리방침', terms: '이용약관',
+    webOnly: '앱에서 만나요', webOnlyText: '미니게임 포레스트는 안드로이드 앱으로 즐길 수 있어요.', webOnlyGo: 'Google Play에서 받기',
+     rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
     merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', mushroom: '버섯 바구니 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '고슴도치 가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkAllTop: '전체 1위', rkWeekTop: '주간 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '전체', rkWeek: '주간', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
@@ -1038,7 +1075,12 @@ const STR = {
     nickTitle: 'Nickname', nickAsk: 'Pick the name others see in the rankings', nickRule: '2-10 letters, numbers or _', nickTaken: 'That nickname is taken',
     nickBad: 'Use 2-10 letters, numbers or _', ok: 'OK',
     loading: 'Loading…', 
-    account: 'Account', logout: 'Sign out', rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
+    account: 'Account', logout: 'Sign out', delAcct: 'Delete account', delGo: 'Delete', cancel: 'Cancel',
+    delText: 'Your nickname and all your ranking records will be deleted. This cannot be undone. Items and ad removal you bought stay.',
+    delAsk: 'Choose your Google account once more to confirm it is you', delWait: 'Deleting…', delDone: 'Account deleted',
+    delFail: 'Could not delete. Please try again', delOff: 'Check your connection and try again', privacy: 'Privacy policy', terms: 'Terms',
+    webOnly: 'See you in the app', webOnlyText: 'Mini Game Forest is played in the Android app.', webOnlyGo: 'Get it on Google Play',
+     rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
     merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon Hunt', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Caterpillar Munch', caterpillarShort: 'Munch', cups: 'Acorn Cups', cupsShort: 'Cups', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkAllTop: 'Overall 1st', rkWeekTop: 'Weekly 1st', rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'Overall', rkWeek: 'Weekly', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
@@ -6356,18 +6398,25 @@ function cpThink(w, dt) {
     if (!leaf) { w.aim = w.a + (Math.random() - 0.5) * 1.2; w.why = 'wander'; return; }
     tx = leaf.x; ty = leaf.y;
   }
-  const R = CP_SPEED * w.speed / CP_TURN_BOT, px = -Math.sin(w.a), py = Math.cos(w.a);
+  const pc = cpPace(w), R = pc.v / pc.turn, px = -Math.sin(w.a), py = Math.cos(w.a);   // its turning circles
   const inside = [-1, 1].some(k => Math.hypot(tx - (h.x + px * R * k), ty - (h.y + py * R * k)) < R);
   w.aim = inside ? w.a : Math.atan2(ty - h.y, tx - h.x);
   w.why = (prey ? 'hunt' : 'leaf') + (inside ? '-straight' : '');
+}
+// how fast it goes and turns: a bigger one goes quicker over the ground (else, the view drawing back, it would crawl on
+// the screen: 150 px a second at the start, about 100 from 130 long on) and turns wider (else a thick one would fold
+// onto itself: its turning circle stays about as wide as its body), both by how much thicker than at the start it is
+function cpPace(w) {
+  const n = w.segs.length, big = cpRad(n) / cpRad(CP_LEN0);
+  return { v: CP_SPEED * w.speed * (1 - Math.min(0.18, (n - CP_LEN0) * 0.0015)) * Math.pow(big, 0.65), turn: (w.me ? CP_TURN : CP_TURN_BOT) * Math.pow(big, -0.35) };
 }
 // k segments more to grow, at 50 a second or fast enough for all that is left to come within a second
 function cpFeed(w, k) { w.grow += k; w.rate = Math.max(50, w.grow); }
 // turn toward its aim, go on, grow at the tail, the body following the head round its bends
 function cpMove(w, dt) {
-  const turn = (w.me ? CP_TURN : CP_TURN_BOT) * dt, d = cpAng(w.aim - w.a);
+  const pc = cpPace(w), turn = pc.turn * dt, d = cpAng(w.aim - w.a);
   w.a = cpAng(w.a + Math.max(-turn, Math.min(turn, d)));
-  const n = w.segs.length, v = CP_SPEED * w.speed * (1 - Math.min(0.18, (n - CP_LEN0) * 0.0015)), h = w.segs[0];
+  const v = pc.v, h = w.segs[0];
   h.x += Math.cos(w.a) * v * dt; h.y += Math.sin(w.a) * v * dt;
   if (w.grow > 0) {   // 50 segments a second, or a big meal all within about a second (cpFeed sets the pace)
     w.gt += dt * (w.rate || 50);
@@ -6538,7 +6587,7 @@ function cpLeaf(c, x, y, r, t, rot = -0.6) {
 // a caterpillar: one outline round the whole body first, then the segments tail to head (two colours, a shine), the head
 // with feelers and eyes toward where it goes. face: '' (the player's), 'mad' (longer than the player's), 'shy' (shorter),
 // 'dead'. view: [x0, y0, x1, y1] to leave out what is off screen
-function cpDrawWorm(c, w, face, view) {
+function cpDrawWorm(c, w, face, view, under) {   // under: drawn after the body, before the head
   const T = cpTinted(w.col);
   if (T) {   // the pictures, upright: the segments from the top of the screen down (a lower one in front, as they are
     // drawn from a little above, so each shows its green back), then the head over them, a little bigger than the body
@@ -6553,6 +6602,7 @@ function cpDrawWorm(c, w, face, view) {
     }
     const h = segs[0], key = face === 'dead' || face === 'mad' || face === 'shy' ? face : 'head', im = T[key], [ax, ay, ar] = CP_HEAD_AT[key];
     const iw = r * 1.3 / ar, ih = iw * im.height / im.width;
+    if (under) under();
     if (seen(h, iw)) c.drawImage(im, h.x - ax * iw, h.y - ay * ih, iw, ih);
     return;
   }
@@ -6568,6 +6618,7 @@ function cpDrawWorm(c, w, face, view) {
     c.beginPath(); c.arc(s.x - q * 0.25, s.y - q * 0.3, q * 0.32, 0, Math.PI * 2); c.fillStyle = 'rgba(255,255,255,0.28)'; c.fill();
   }
   const h = segs[0];
+  if (under) under();
   if (!seen(h, r * 3)) return;
   const hr = rad(0), dx = Math.cos(w.a), dy = Math.sin(w.a);
   for (const s of [-1, 1]) {   // the feelers, behind the head, toward where it goes
@@ -6595,6 +6646,24 @@ function cpDrawWorm(c, w, face, view) {
 }
 // a little random number for a grass tuft at (i, j), the same every frame
 const cpHash = (i, j) => { const v = Math.sin(i * 127.1 + j * 311.7) * 43758.5453; return v - Math.floor(v); };
+// how many the player's has eaten, on its body just behind the face (at screen size: the view's scale undone), drawn
+// over the body and under the head, so when a hard turn curls the body round beside the head, the face stays on top
+function cpTag(c, me, cam, z, W, H, sx, dpr, now) {
+  // the point exactly 2.4 radii back along the body, between two segments (snapping to the nearest segment made it
+  // jump a segment back and forth whenever the distance fell right on one)
+  const r = cpRad(me.segs.length), want = r * 2.4, sg = me.segs;
+  let p = null, d = 0;
+  for (let i = 1; i < sg.length; i++) {
+    const L = Math.hypot(sg[i].x - sg[i - 1].x, sg[i].y - sg[i - 1].y);
+    if (d + L >= want) { const t = L > 0 ? (want - d) / L : 0; p = { x: sg[i - 1].x + (sg[i].x - sg[i - 1].x) * t, y: sg[i - 1].y + (sg[i].y - sg[i - 1].y) * t }; break; }
+    d += L;
+  }
+  if (!p) { const a = me.a; p = { x: sg[0].x - Math.cos(a) * want, y: sg[0].y - Math.sin(a) * want }; }
+  CP.tag = { x: (p.x - cam.x) * z + W / 2 + sx, y: (p.y - cam.y) * z + H / 2 };
+  c.save(); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  miniText(c, Math.round(CP.score / CP_PTS).toLocaleString(), CP.tag.x, CP.tag.y, 17, SUB_LOOK, now);
+  c.restore();
+}
 function cpDraw(now) {
   const c = cpctx, W = CP.W, H = CP.H, cam = CP.cam, z = cam.z, dpr = CP.k || 1;
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -6627,31 +6696,15 @@ function cpDraw(now) {
   // the others, shorter first (so a longer one passes over), then the player's
   const me = CP.me, mine = cpLen(me), others = CP.worms.filter(w => !w.me && w.alive).sort((a, b) => a.segs.length - b.segs.length);
   for (const w of others) cpDrawWorm(c, w, cpLen(w) > mine ? 'mad' : cpLen(w) < mine ? 'shy' : '', view);
-  if (me.alive) {   // blinking while it cannot be eaten
+  if (me.alive) {   // blinking while it cannot be eaten; the number on its body, under the head
     c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
-    cpDrawWorm(c, me, '', view); c.restore();
+    cpDrawWorm(c, me, '', view, () => cpTag(c, me, cam, z, W, H, sx, dpr, now)); c.restore();
   }
   for (const gh of CP.ghosts) { c.save(); c.globalAlpha = Math.max(0, 1 - gh.t / CP_GULP); cpDrawWorm(c, gh, 'dead', view); c.restore(); }
   for (const p of CP.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
   c.globalAlpha = 1;
   // points over where they came from, at screen size
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  if (me.alive) {   // how many the player's has eaten, on its body just behind the face
-    // the point exactly 2.4 radii back along the body, between two segments (snapping to the nearest segment made it
-    // jump a segment back and forth whenever the distance fell right on one)
-    const r = cpRad(me.segs.length), want = r * 2.4, sg = me.segs;
-    let p = null, d = 0;
-    for (let i = 1; i < sg.length; i++) {
-      const L = Math.hypot(sg[i].x - sg[i - 1].x, sg[i].y - sg[i - 1].y);
-      if (d + L >= want) { const t = L > 0 ? (want - d) / L : 0; p = { x: sg[i - 1].x + (sg[i].x - sg[i - 1].x) * t, y: sg[i - 1].y + (sg[i].y - sg[i - 1].y) * t }; break; }
-      d += L;
-    }
-    if (!p) { const a = me.a; p = { x: sg[0].x - Math.cos(a) * want, y: sg[0].y - Math.sin(a) * want }; }
-    c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
-    CP.tag = { x: (p.x - cam.x) * z + W / 2 + sx, y: (p.y - cam.y) * z + H / 2 };
-    miniText(c, Math.round(CP.score / CP_PTS).toLocaleString(), CP.tag.x, CP.tag.y, 17, SUB_LOOK, now);
-    c.restore();
-  }
   for (const p of CP.pops) {
     const q = p.t / p.life, x = (p.x - cam.x) * z + W / 2 + sx, y = (p.y - cam.y) * z + H / 2;
     c.save(); c.globalAlpha = q > 0.7 ? (1 - q) / 0.3 : 1;
@@ -7028,8 +7081,18 @@ $('#btn-cu-quit').addEventListener('click', () => { sfx('pick'); cuFinish(); clo
 
 
 
+// On the web the games are not played (the app only): the title picture with a card that points to the store. A tester
+// opens the site once with ?play=forest and that browser plays as before. The app has ForestNative (its native.js).
+const WEB_ONLY = (() => {
+  if (window.ForestNative) return false;
+  try {
+    if (new URLSearchParams(location.search).get('play') === 'forest') { localStorage.setItem('forest-web', '1'); history.replaceState(null, '', location.pathname); }
+    return localStorage.getItem('forest-web') !== '1';
+  } catch (e) { return true; }
+})();
+if (WEB_ONLY) { $('#webonly').hidden = false; $('#splash-touch').hidden = true; }
 $('#splash').addEventListener('click', e => {
-  if ($('#splash').classList.contains('out') || !$('#login').hidden || !$('#nick').hidden) return;
+  if (WEB_ONLY || $('#splash').classList.contains('out') || !$('#login').hidden || !$('#nick').hidden) return;
   sfx('pick');   // the first touch also wakes the audio
   if (ME) { openLobby(false); hideScreen('splash'); } else enter();
 });
@@ -7049,6 +7112,35 @@ $('#btn-logout').addEventListener('click', async () => {
   closeSettings();
   $('#minis').hidden = true;
   openSplash();
+});
+// Deleting the account (settings, signed in): a card to make sure; Google is asked once more, then the nickname, the
+// profile and every ranking record go, and this phone's own records with them (else they would go up again under the
+// next account). Bought items and ad removal stay: they belong to the Google Play purchase, not to this account.
+function delUI(st) {
+  $('#del-msg').textContent = tr(st === 'ask' ? 'delText' : st === 'auth' ? 'delAsk' : st === 'wait' ? 'delWait' : st === 'off' ? 'delOff' : 'delFail');
+  const busy = st === 'auth' || st === 'wait';
+  $('#btn-del-go').disabled = busy; $('#btn-del-no').disabled = busy;
+}
+function wipeLocal() {
+  try {
+    for (const k of Object.keys(localStorage)) if (k.startsWith('rise7-best-')) localStorage.removeItem(k);
+    localStorage.removeItem(RK_SENT); localStorage.removeItem(RK_WEEK);
+  } catch (e) { /* storage unavailable */ }
+  for (const k of Object.keys(rkSeen)) delete rkSeen[k];
+  for (const k of Object.keys(rkSeenRank)) delete rkSeenRank[k];
+}
+$('#btn-delacct').addEventListener('click', () => { sfx('pick'); delUI('ask'); $('#delacct').hidden = false; });
+$('#btn-del-no').addEventListener('click', () => { sfx('pick'); $('#delacct').hidden = true; });
+$('#btn-del-go').addEventListener('click', async () => {
+  sfx('pick'); delUI('auth');
+  try { await loadNet(); await NET.deleteAccount(() => delUI('wait')); }
+  catch (e) { delUI(e.code === 'closed' ? 'ask' : e.code === 'offline' ? 'off' : 'fail'); return; }
+  wipeLocal(); ME = null;
+  $('#delacct').hidden = true;
+  closeSettings();
+  $('#minis').hidden = true;
+  openSplash();
+  toast(tr('delDone'), 2200);
 });
 $('#opt-music').addEventListener('click', () => { SND.musicOn = !SND.musicOn; if (!SND.musicOn) musicStop(); saveSound(); soundButtons(); });
 $('#opt-vib').addEventListener('click', () => { SND.vibOn = !SND.vibOn; saveSound(); soundButtons(); buzz(30); });
@@ -7987,7 +8079,7 @@ function bkWant() {
   if (bkVis('splash')) return 0;
   const end = bkVis('cont') || bkVis('result');   // a game's end (any game)
   for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro')) ? 4 + (bkVis('rkb') ? 1 : 0) : 3;   // over the home
-  if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 2 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) : 1;
+  if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 2 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) + (bkVis('delacct') ? 1 : 0) : 1;
   return 2 + ((bkVis('menu') || end) ? 1 : 0) + (bkVis('settings') || (end && bkVis('rkb')) ? 1 : 0);
 }
 function bkSync() {
@@ -7997,6 +8089,7 @@ function bkSync() {
 }
 function bkBack() {
   const press = id => { const b = $('#' + id); if (b && !b.hidden) b.click(); };
+  if (bkVis('delacct')) return press('btn-del-no');
   if (bkVis('settings')) return press('btn-settings-close');
   if (bkVis('rkb')) return press('btn-rkb-close');
   if (bkVis('shop')) return press('btn-shop-close');
