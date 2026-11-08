@@ -6969,12 +6969,37 @@ const CU_LIFT = 0.22, CU_SHOW = 0.9, CU_REVEAL = 1.2;   // s a cup takes to lift
 const CU = { st: 'off', W: 0, H: 0, round: 1, n: 3, cups: [], ac: 0, ph: 'show', t: 0, moves: [], swap: null, dur: 0.4, hearts: CU_HEARTS,
   picked: -1, right: false, score: 0, best: 0, pops: [], sparks: [], raf: 0, last: 0, img: null };
 const cucv = $('#cu-cv'), cuctx = cucv.getContext('2d');
+// the drawn pictures (until they load, the shapes drawn in code stand in): the picture behind, the table, a cup, the acorn
+const CU_ART = { bg: 'cu-bg.webp', table: 'cu-table.webp', cup: 'cu-cup.webp', acorn: 'cu-acorn.webp' };
+const CU_BG_CUT = 0.8, CU_BG_AR = 1086 / (1448 * CU_BG_CUT);   // the picture behind without its bottom fifth (the stump); its shape then
+// the table picture: its round top's middle line and half-width, as parts of the picture (height, width); its shape
+const CU_TABLE = { top: 0.32, rx: 0.45, ar: 291 / 900 };
+const CU_CUP_RIM = 0.79;   // the cup picture: where its rim's middle is (part of its height); it is drawn 1.1 times the cup's width
+const cuArt = {};
+let cuReady = null;
+function loadCupsArt() {
+  if (!cuReady) {
+    cuReady = Promise.all(Object.keys(CU_ART).map(k => cuArt[k] ? true : new Promise(res => {
+      const im = new Image();
+      im.onload = () => { cuArt[k] = im; res(true); };
+      im.onerror = () => res(false);
+      im.src = CU_ART[k];
+    })));
+    cuReady.then(ok => {
+      if (!ok.every(Boolean)) { cuReady = null; return; }
+      if (CU_FACE.joy) { delete CU_FACE.joy; cuFaces(); }   // the list's picture again, from the pictures
+    });
+  }
+  return cuReady;
+}
 function cuBest() { try { return parseInt(localStorage.getItem(CU_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
-// sizes on screen: the row of cups a little under the middle on a round wooden table; y: where their rims sit
+// sizes on screen: the round table almost the screen's width a little under the middle, the row of cups along its top's
+// middle with the outer cups' edges inside its top; y: where their rims sit
 function cuGeo() {
-  const W = CU.W, H = CU.H, n = CU.n, span = Math.min(W - 28, 500), sp = span / n;
+  const W = CU.W, H = CU.H, n = CU.n, tw = Math.min(W * 0.98, 600), rx = tw * CU_TABLE.rx;
+  const sp = Math.min(rx * 0.92 / ((n - 1) / 2 + 0.4), 140), span = sp * n;
   const cw = Math.min(sp * 0.8, 112), ch = cw * 1.08;
-  return { W, H, n, span, sp, cw, ch, y: Math.round(H * 0.58), x0: W / 2 - span / 2 + sp / 2, ar: cw * 0.22, s: Math.min(W, 520) / 390 };
+  return { W, H, n, span, sp, cw, ch, tw, y: Math.round(H * 0.58), x0: W / 2 - span / 2 + sp / 2, ar: cw * 0.22, s: Math.min(W, 520) / 390 };
 }
 const cuSlotX = (g, i) => g.x0 + i * g.sp;
 // a cup at rest or in a swap: where it is, how much nearer (front, +) or further (back, -) it passes
@@ -7037,9 +7062,11 @@ function openCups() {
   const el = $('#cups');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('cuPick') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  loadCupsArt();
   rkGate('cups', cuStart);
 }
 function cuStart() {
+  loadCupsArt();
   $('#cu-menu').hidden = true; $('#cu-over').hidden = true;
   cuResize();
   Object.assign(CU, { st: 'play', hearts: CU_HEARTS, score: 0, best: cuBest(), pops: [], sparks: [] });
@@ -7142,10 +7169,17 @@ function cuDraw(now) {
   const c = cuctx, g = cuGeo(), P = cuPics();
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   c.clearRect(0, 0, CU.W, CU.H);
+  if (cuArt.bg) {   // its top four fifths covering the screen, cut at the sides (a little more on the left, to keep the waterfall)
+    const im = cuArt.bg, sw = im.naturalWidth, sh = im.naturalHeight * CU_BG_CUT, bw = Math.max(CU.W, CU.H * CU_BG_AR), bh = bw / CU_BG_AR;
+    const x = Math.min(0, Math.max(CU.W - bw, CU.W / 2 - bw * 0.56));
+    c.drawImage(im, 0, 0, sw, sh, x, CU.H - bh + (bh - CU.H) * 0.15, bw, bh);
+  }
   const lab = textImg(tr('msLevel', CU.round), 18, SUB_LOOK, false);
   miniText(c, tr('msLevel', CU.round), 16 + lab.w / 2, 22, 18, SUB_LOOK, now);
   for (let k = 0; k < CU_HEARTS; k++) { const im = k < CU.hearts ? P.heart : P.heartOff; c.drawImage(im, CU.W - 16 - (CU_HEARTS - k) * 32, 7, 30, 30); }
-  // the table: a round slab of wood, its edge showing in front
+  // the table: the picture, its top's middle line under the row; or a round slab of wood, its edge showing in front
+  if (cuArt.table) { const th = g.tw * CU_TABLE.ar; c.drawImage(cuArt.table, CU.W / 2 - g.tw / 2, g.y - th * CU_TABLE.top, g.tw, th); }
+  else {
   const tx = CU.W / 2, ty = g.y + 6, trx = g.span / 2 + 18, try_ = Math.max(36, g.ch * 0.55), th = 16 * g.s;
   c.beginPath(); c.ellipse(tx, ty + th, trx, try_, 0, 0, Math.PI); c.lineTo(tx - trx, ty); c.ellipse(tx, ty, trx, try_, 0, Math.PI, 0, true); c.closePath();
   c.fillStyle = '#9a6034'; c.fill(); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
@@ -7154,14 +7188,19 @@ function cuDraw(now) {
   c.fillStyle = tg; c.fill(); c.lineWidth = 3; c.stroke();
   c.strokeStyle = 'rgba(160,100,45,0.35)'; c.lineWidth = 2;
   for (const f of [0.75, 0.5, 0.25]) { c.beginPath(); c.ellipse(tx, ty, trx * f, try_ * f, 0, 0, Math.PI * 2); c.stroke(); }
+  }
   // the acorn on the table, then the cups over it, the further ones first
   const order = CU.cups.map((cup, k) => ({ k, p: cuPos(g, k) })).sort((a, b) => a.p.y - b.p.y);
   const ap = cuPos(g, CU.ac), aw = P.acorn.width / dpr, ah = P.acorn.height / dpr;
   for (const { k, p } of order) {
     const sc = 1 + 0.07 * p.z, w = g.cw * sc, h = g.ch * sc, lift = cuLift(k) * h * 0.8;
     c.beginPath(); c.ellipse(p.x, p.y + 2, w * 0.5 * (1 - 0.25 * lift / h), w * 0.12, 0, 0, Math.PI * 2); c.fillStyle = 'rgba(60,30,10,0.25)'; c.fill();   // its shadow
-    if (k === CU.ac) c.drawImage(P.acorn, ap.x - aw / 2, ap.y - ah + 2, aw, ah);
-    cuCup(c, p.x, p.y - lift, w, h);
+    if (k === CU.ac) {
+      if (cuArt.acorn) { const im = cuArt.acorn, ih = g.cw * 0.62, iw = ih * im.naturalWidth / im.naturalHeight; c.drawImage(im, ap.x - iw / 2, ap.y - ih + ih * 0.08, iw, ih); }
+      else c.drawImage(P.acorn, ap.x - aw / 2, ap.y - ah + 2, aw, ah);
+    }
+    if (cuArt.cup) { const im = cuArt.cup, iw = w * 1.1, ih = iw * im.naturalHeight / im.naturalWidth; c.drawImage(im, p.x - iw / 2, p.y - lift - ih * CU_CUP_RIM, iw, ih); }
+    else cuCup(c, p.x, p.y - lift, w, h);
   }
   if (CU.ph === 'pick' && CU.st === 'play') {
     const a = 0.7 + 0.3 * Math.sin(now / 240);
@@ -7190,6 +7229,12 @@ function cuPortrait(found) {
   const cv = document.createElement('canvas'), k = 3; cv.width = 120 * k; cv.height = 120 * k;
   const c = cv.getContext('2d'); c.scale(k, k);
   c.beginPath(); c.ellipse(60, 108, 52, 10, 0, 0, Math.PI * 2); c.fillStyle = 'rgba(60,30,10,0.25)'; c.fill();
+  if (cuArt.cup && cuArt.acorn) {   // from the pictures: the cup tipped up off the acorn, or off nothing
+    if (found) { const a = cuArt.acorn, ah = 56, aw = ah * a.naturalWidth / a.naturalHeight; c.drawImage(a, 60 - aw / 2, 110 - ah, aw, ah); }
+    const u = cuArt.cup, uw = 86, uh = uw * u.naturalHeight / u.naturalWidth;
+    c.save(); c.translate(60, found ? 62 : 70); c.rotate(found ? -0.22 : 0.12); c.drawImage(u, -uw / 2, -uh * CU_CUP_RIM, uw, uh); c.restore();
+    return cv.toDataURL('image/png');
+  }
   if (found) { const a = acornPic(22, false); c.drawImage(a, 60 - 22, 108 - 50.6, 44, 50.6); }
   c.save(); c.translate(60, 70); c.rotate(found ? -0.2 : 0.12); cuCup(c, 0, 0, 78, 70); c.restore();
   return cv.toDataURL('image/png');
@@ -7200,6 +7245,7 @@ function cuFaces() {
   if (!CU_FACE.joy) try { CU_FACE.joy = cuPortrait(true); CU_FACE.sad = cuPortrait(false); $('#mg-cups img').src = CU_FACE.joy; $('#cu-face').src = CU_FACE.sad; } catch (e) { /* no canvas */ }
   return CU_FACE;
 }
+loadCupsArt();   // small: in now, for the games list's picture
 // a tap: the nearest cup along the row, if the tap is round the cups
 cucv.addEventListener('pointerdown', e => {
   if (CU.st !== 'play' || CU.ph !== 'pick') return;
@@ -8665,7 +8711,7 @@ window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, s
                   beaver: { BV, geo: bvGeo, open: openBeaver, press: bvPress, release: bvRelease, pose: bvPose, art: bvArt },
                   hedgehog: { HH, geo: hhGeo, open: openHedgehog, throw: hhThrow, round: hhRound, spin: hhSpin, art: hhArt },
                   caterpillar: { CP, art: cpArt, tints: cpTints, tintCanvases: cpTintCanvases, open: openCaterpillar, spawn: cpSpawnBot, worm: cpWormNew, gulp: cpGulp, len: cpLen, meet: cpMeet },
-                  cups: { CU, geo: cuGeo, open: openCups, pick: cuPick, round: cuRound, pos: cuPos },
+                  cups: { CU, geo: cuGeo, open: openCups, pick: cuPick, round: cuRound, pos: cuPos, art: cuArt },
                   chameleon: { CM, geo: cmGeo, open: openChameleon, tap: cmTap, round: cmRound, sizes: cmSizes, SIZE: CM_SIZE, EDGES: CM_EDGES, T0: CM_T0, LOSE: CM_LOSE },
                   stairs: { ST, bg: stBg, theme: stTheme, turn: d => stTurn(d), geo: stGeo, more: stMore, open: openStairs, speed: stSpeed, look: stLook } };
 })();
