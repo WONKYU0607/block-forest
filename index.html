@@ -525,24 +525,52 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .hm-shop svg { width: 25px; height: 25px; flex: none; }
 .hm-shop:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
 .hm-shop + .hm-set { margin-left: 8px; }
-#shop { z-index: 35; }
-.shop-have { display: flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Black Han Sans', sans-serif; font-size: 17px; color: var(--bark); }
-.shop-have svg { width: 30px; height: 30px; flex: none; }
-.shop-have .num { font-size: 26px; color: #fff; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; line-height: 1; }
-.shop-list { display: flex; flex-direction: column; gap: 8px; }
-.shop-row { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 10px; background: #fffaf0; border: 3px solid var(--ol); border-radius: 16px; box-shadow: 0 3px 0 var(--ol); }
-.shop-ic { flex: none; position: relative; width: 50px; height: 42px; }
-.shop-ic svg { position: absolute; left: 5px; top: 1px; width: 40px; height: 40px; }
-.shop-ic svg.t2 { left: 1px; top: -3px; transform: rotate(-12deg); }
-.shop-ic svg.t3 { left: 9px; top: -6px; transform: rotate(10deg); }
-.shop-nm { flex: 1 1 0; width: 0; min-width: 0; display: flex; flex-direction: column; gap: 1px; }   /* width 0: long names shrink, never widen the card */
-.shop-nm b { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 19px; color: var(--ol); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.shop-nm span { font-family: 'Black Han Sans', sans-serif; font-size: 12.5px; color: var(--bark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.shop-buy { flex: none; appearance: none; min-width: 82px; box-sizing: border-box; padding: 7px 10px 8px; border: 3px solid var(--ol); border-radius: 13px; background: linear-gradient(#7ee05a, #4fb83f); box-shadow: 0 3px 0 var(--ol); font-family: 'Black Han Sans', sans-serif; font-size: 16px; color: #fff; -webkit-text-stroke: 4.5px var(--ol); paint-order: stroke fill; cursor: pointer; white-space: nowrap; }
-.shop-buy:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
-.shop-buy.off { background: #d8ccb2; }
-.shop-buy.owned { background: var(--wood); }
-.shop-buy[disabled] { pointer-events: none; }
+/* the shop's own screen: the stall picture (941 x 1672) laid out by shopFit() as a stage, sized so its sign and its
+   counter are both on the screen; everything on it measured in the picture's pixels (--k: one of them on the screen) */
+#shop { position: fixed; inset: 0; z-index: 35; overflow: hidden; background: #8fd36a; }
+#shop[hidden] { display: none; }
+.sh-stage { position: absolute; --k: 0.5px; --cl: 105; background: url(shop-bg.webp) center / 100% 100% no-repeat; }
+.sh-title { position: absolute; left: 50.2%; top: 26.3%; transform: translate(-50%, -50%); margin: 0; white-space: nowrap; font-family: var(--num); font-weight: 400;
+  font-size: calc(var(--k) * 104); line-height: 1; color: #fff; -webkit-text-stroke: calc(var(--k) * 20) var(--ol); paint-order: stroke fill; letter-spacing: 0.04em;
+  text-shadow: 0 calc(var(--k) * 8) 0 var(--ol); }
+/* the three packs stand on the counter: the picture (bigger for more), how many on the counter's edge, the price below */
+.sh-pack { position: absolute; left: calc(var(--k) * (var(--x) - 116)); top: calc(var(--k) * 812); width: calc(var(--k) * 232); height: calc(var(--k) * 392);
+  appearance: none; border: 0; padding: 0; margin: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; }
+.sh-pic { flex: none; width: 100%; height: calc(var(--k) * 236); display: flex; align-items: flex-end; justify-content: center; }
+.sh-pic img { display: block; width: auto; max-width: 100%; filter: drop-shadow(0 calc(var(--k) * 6) 0 rgba(60, 30, 10, 0.35)); transition: transform 0.12s ease; }
+.sh-pack:active .sh-pic img { transform: translateY(calc(var(--k) * 6)) scale(0.97); }
+.sh-n { flex: none; height: calc(var(--k) * 62); display: grid; place-items: center; font-family: var(--num); font-weight: 400; font-size: calc(var(--k) * 46); line-height: 1;
+  color: #fff; -webkit-text-stroke: calc(var(--k) * 12) var(--ol); paint-order: stroke fill; white-space: nowrap; }
+.sh-price, .sh-buy { flex: none; box-sizing: border-box; min-width: calc(var(--k) * 200); height: calc(var(--k) * 88); padding: 0 calc(var(--k) * 16); display: grid; place-items: center;
+  border: calc(var(--k) * 6) solid var(--ol); border-radius: calc(var(--k) * 26); background: linear-gradient(#7ee05a, #4fb83f); box-shadow: 0 calc(var(--k) * 7) 0 var(--ol);
+  font-family: var(--num); font-weight: 400; font-size: calc(var(--k) * 34); line-height: 1; color: #fff; -webkit-text-stroke: calc(var(--k) * 10) var(--ol); paint-order: stroke fill; white-space: nowrap; }
+.sh-price { margin-top: calc(var(--k) * 12); }
+.sh-pack:active .sh-price, .sh-buy:active { transform: translateY(calc(var(--k) * 5)); box-shadow: 0 calc(var(--k) * 2) 0 var(--ol); }
+.sh-pack.off .sh-price, .sh-buy.off { background: #d8ccb2; }
+.sh-buy.owned { background: var(--wood); }
+.sh-buy[disabled] { pointer-events: none; }
+/* below them on the counter's front: watching an ad for one, and ad removal */
+.sh-cards { position: absolute; left: calc(var(--k) * var(--cl)); right: calc(var(--k) * var(--cl)); top: calc(var(--k) * 1236); display: flex; flex-direction: column; gap: calc(var(--k) * 26); }
+.sh-card { box-sizing: border-box; height: calc(var(--k) * 150); display: flex; align-items: center; gap: calc(var(--k) * 14); padding: 0 calc(var(--k) * 18) 0 calc(var(--k) * 8);
+  background: #fff8e4; border: calc(var(--k) * 6) solid var(--ol); border-radius: calc(var(--k) * 34); box-shadow: 0 calc(var(--k) * 8) 0 var(--ol); }
+.sh-card > img { flex: none; width: calc(var(--k) * 150); height: calc(var(--k) * 150); margin-top: calc(var(--k) * -10); object-fit: contain; }
+.sh-nm { flex: 1 1 0; width: 0; min-width: 0; display: flex; flex-direction: column; gap: calc(var(--k) * 4); }
+.sh-nm b { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: calc(var(--k) * 40); line-height: 1.1; color: var(--ol); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sh-nm span { font-family: 'Black Han Sans', sans-serif; font-size: calc(var(--k) * 31); line-height: 1.15; color: var(--bark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sh-buy { appearance: none; margin: 0; cursor: pointer; }
+/* the top: back, and how many golden acorns I have */
+.sh-top { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px));
+  display: flex; align-items: center; justify-content: space-between; pointer-events: none; }
+.sh-top > * { pointer-events: auto; }
+.sh-back { appearance: none; box-sizing: border-box; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; cursor: pointer; background: var(--cream);
+  border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); }
+.sh-back svg { width: 24px; height: 24px; }
+.sh-back:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.sh-have { box-sizing: border-box; height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 14px 0 8px; background: var(--cream); border: 3px solid var(--ol);
+  border-radius: 22px; box-shadow: 0 3px 0 var(--ol); }
+.sh-have img { width: 30px; height: 30px; display: block; }
+.sh-have .num { font-family: var(--num); font-weight: 400; font-size: 22px; line-height: 1; color: #fff; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; }
+.ic-btn img.gold-ic { width: 30px; height: 30px; flex: none; display: block; }
 /* a game's end: the continue card, the stand-in ad, the result */
 #cont, #result { z-index: 34; }
 #adfake { z-index: 38; background: rgba(10, 16, 10, 0.95); }
@@ -972,12 +1000,15 @@ html.tall-art .scr-box .ext { display: none; }
   </div>
 </section>
 
-<section id="shop" class="overlay" hidden aria-label="상점" data-ta="shop">
-  <div class="card">
-    <div class="ribbon"><h2 data-t="shop">상점</h2></div>
-    <div class="shop-have"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9.5A3.5 3.5 0 0 1 7.5 6h17A3.5 3.5 0 0 1 28 9.5v3a3.5 3.5 0 0 0 0 7v3a3.5 3.5 0 0 1-3.5 3.5h-17A3.5 3.5 0 0 1 4 22.5v-3a3.5 3.5 0 0 0 0-7z" fill="#ffd84a" stroke="#2b1a0e" stroke-width="3" stroke-linejoin="round"/><path d="M20.5 16a4.5 4.5 0 1 1-1.6-3.45" fill="none" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round"/><path d="M19.6 10.4l.2 3.4-3.4.2" fill="none" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="shopHave">내 이어하기 아이템</span><b id="shop-n" class="num">0</b></div>
-    <div class="shop-list" id="shop-list"></div>
-    <button class="btn plain" id="btn-shop-close" type="button" data-t="close">닫기</button>
+<section id="shop" class="shopscr" hidden aria-label="상점" data-ta="shop">
+  <div class="sh-stage" id="sh-stage">
+    <h2 class="sh-title" data-t="shop">상점</h2>
+    <div id="sh-packs"></div>
+    <div class="sh-cards" id="sh-cards"></div>
+  </div>
+  <div class="sh-top">
+    <button class="sh-back" id="btn-shop-close" type="button" aria-label="닫기" data-ta="close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="sh-have" aria-label="내 황금 도토리" data-ta="shopHave"><img src="gold-icon.webp" alt=""><b class="num" id="shop-n">0</b></div>
   </div>
 </section>
 
@@ -987,7 +1018,7 @@ html.tall-art .scr-box .ext { display: none; }
     <div class="rk-pic" id="cont-pic" aria-hidden="true"></div>
     <div class="bigscore"><span class="label" data-t="score">점수</span><span id="cont-score" class="num">0</span></div>
     <button class="btn primary ic-btn" id="btn-cont-ad" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="26" height="20" rx="5" fill="#fff" stroke="#2b1a0e" stroke-width="3"/><path d="M13.2 11.2v9.6l8-4.8z" fill="#4fb83f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg><span data-t="contAd">광고 보고 이어하기</span></button>
-    <button class="btn ghost ic-btn" id="btn-cont-item" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9.5A3.5 3.5 0 0 1 7.5 6h17A3.5 3.5 0 0 1 28 9.5v3a3.5 3.5 0 0 0 0 7v3a3.5 3.5 0 0 1-3.5 3.5h-17A3.5 3.5 0 0 1 4 22.5v-3a3.5 3.5 0 0 0 0-7z" fill="#ffd84a" stroke="#2b1a0e" stroke-width="3" stroke-linejoin="round"/><path d="M20.5 16a4.5 4.5 0 1 1-1.6-3.45" fill="none" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round"/><path d="M19.6 10.4l.2 3.4-3.4.2" fill="none" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="contItem">이어하기 아이템</span><b class="cont-n" id="cont-n">3</b></button>
+    <button class="btn ghost ic-btn" id="btn-cont-item" type="button"><img class="gold-ic" src="gold-icon.webp" alt=""><span data-t="contItem">이어하기 아이템</span><b class="cont-n" id="cont-n">3</b></button>
     <button class="btn plain" id="btn-cont-no" type="button" data-t="contNo">그만하기</button>
   </div>
 </section>
@@ -1038,7 +1069,7 @@ const STR = {
     lineColor: (c, h, n) => `${c} 큐브 ${h}/${n}`, lineRows: (h, n) => `줄 깨기 ${h}/${n}`, lineCombo: (h, n) => `콤보 ${h}/${n}`, lineBig: (h, n) => `한 번에 ${h}/${n}개`,
     fireBomb: '폭탄!', fireBolt: '번개!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
     paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '목록으로',
-    over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', shop: '상점', shopHave: '내 이어하기 아이템', packN: n => `${n}개`, packSub: '이어하기 아이템', noads: '광고 제거', noadsSub: '모든 광고가 사라져요', owned: '보유 중', inApp: '앱 전용', shopApp: '앱에서 살 수 있어요', shopDone: '구매했어요', shopPending: '결제가 확인되면 들어와요', shopFail: '구매하지 못했어요', adNone: '지금은 광고를 볼 수 없어요', adSkipped: '광고를 끝까지 보면 이어할 수 있어요', contAd: '광고 보고 이어하기', contItem: '이어하기 아이템', contNo: '그만하기', ad: '광고', result: '결과', newBest: '새 최고 기록!', again: '다시 하기',
+    over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', shop: '상점', shopHave: '내 황금 도토리', packN: n => `${n}개`, adGift: '광고 보고 받기', adGiftSub: n => `오늘 ${n}번 남음`, adGiftGo: '받기', adGiftNone: '내일 다시', adGiftDone: '황금 도토리 1개를 받았어요', noads: '광고 제거', noadsSub: '모든 광고가 사라져요', owned: '보유 중', inApp: '앱 전용', shopApp: '앱에서 살 수 있어요', shopDone: '구매했어요', shopPending: '결제가 확인되면 들어와요', shopFail: '구매하지 못했어요', adNone: '지금은 광고를 볼 수 없어요', adSkipped: '광고를 끝까지 보면 이어할 수 있어요', contAd: '광고 보고 이어하기', contItem: '황금 도토리 쓰기', contNo: '그만하기', ad: '광고', result: '결과', newBest: '새 최고 기록!', again: '다시 하기',
     lobby: '로비', start: '게임 시작', backExit: '한 번 더 누르면 나가요',
     splash: '시작 화면', touch: '화면을 터치하세요',
     login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…', loginAsk: '게임별 최고 점수와 순위를 계정에 저장해요',
@@ -1067,7 +1098,7 @@ const STR = {
     lineColor: (c, h, n) => `${c} ${h}/${n}`, lineRows: (h, n) => `Lines ${h}/${n}`, lineCombo: (h, n) => `Combo ${h}/${n}`, lineBig: (h, n) => `At once ${h}/${n}`,
     fireBomb: 'BOMB!', fireBolt: 'ZAP!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
     paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Game list',
-    over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', shop: 'Shop', shopHave: 'My continue items', packN: n => `×${n}`, packSub: 'Continue items', noads: 'Remove ads', noadsSub: 'No more ads', owned: 'Owned', inApp: 'In app', shopApp: 'Available in the app', shopDone: 'Purchased', shopPending: 'It arrives once the payment clears', shopFail: 'Purchase failed', adNone: 'No ad right now', adSkipped: 'Watch the whole ad to continue', contAd: 'Watch an ad', contItem: 'Continue item', contNo: 'No thanks', ad: 'Ad', result: 'Result', newBest: 'New Best!', again: 'Play Again',
+    over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', shop: 'Shop', shopHave: 'My golden acorns', packN: n => `×${n}`, adGift: 'Watch an ad', adGiftSub: n => `${n} left today`, adGiftGo: 'Get', adGiftNone: 'Tomorrow', adGiftDone: 'You got a golden acorn', noads: 'Remove ads', noadsSub: 'No more ads', owned: 'Owned', inApp: 'In app', shopApp: 'Available in the app', shopDone: 'Purchased', shopPending: 'It arrives once the payment clears', shopFail: 'Purchase failed', adNone: 'No ad right now', adSkipped: 'Watch the whole ad to continue', contAd: 'Watch an ad', contItem: 'Golden acorn', contNo: 'No thanks', ad: 'Ad', result: 'Result', newBest: 'New Best!', again: 'Play Again',
     lobby: 'Lobby', start: 'Play', backExit: 'Press back again to leave',
     splash: 'Title screen', touch: 'Touch to Start',
     login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…', loginAsk: 'Your bests and rankings are saved to your account',
@@ -3148,7 +3179,8 @@ async function resRanks(game) {
   put('all', all); put('wk', wk);
 }
 function resClose() { $('#result').hidden = true; resN++; const g = endGame; endGame = null; return g; }
-/* ---------- the shop: continue items (5, 15, 40) and ad removal, bought with Google Play in the app (the product
+/* ---------- the shop (a screen of its own): golden acorns (the continue items: 5, 15, 40) and ad removal, bought with
+   Google Play in the app, and a golden acorn for watching an ad (5 a day) (the product
    numbers are the Play Console's; the prices are Google's). Given on the phone, with no server checking the payment
    (decided 2026-11-08): a pack once per payment (its token is kept, then the payment is consumed so the pack can be
    bought again), ad removal for as long as Google Play lists it (read again whenever the app opens or comes back).
@@ -3159,38 +3191,83 @@ const GRANTED_KEY = 'forest-granted';
 let shopPrices = {}, shopBusy = false, shopBuilt = false;
 const shopGranted = () => { try { return JSON.parse(localStorage.getItem(GRANTED_KEY) || '[]'); } catch (e) { return []; } };
 function shopMark(tok) { const g = shopGranted(); g.push(tok); try { localStorage.setItem(GRANTED_KEY, JSON.stringify(g.slice(-100))); } catch (e) { /* storage unavailable */ } }
+// the stall picture as a stage: as big as the screen allows while its sign (from y 180) and its counter (to y 1610)
+// both show; when it is wider than the screen, the cards stay inside the screen (--cl, in the picture's pixels)
+const SH_W = 941, SH_H = 1672, SH_TOP = 180, SH_BOT = 1610;
+function shopFit() {
+  const el = $('#shop'), st = $('#sh-stage');
+  if (el.hidden) return;
+  const W = el.clientWidth, H = el.clientHeight;
+  const k = Math.min(Math.max(W / SH_W, H / SH_H), H / (SH_BOT - SH_TOP));
+  const w = SH_W * k, h = SH_H * k, left = (W - w) / 2;
+  const top = Math.min(Math.max((H - h) / 2, -SH_TOP * k), H - SH_BOT * k);
+  Object.assign(st.style, { width: w + 'px', height: h + 'px', left: left + 'px', top: top + 'px' });
+  st.style.setProperty('--k', k + 'px');
+  st.style.setProperty('--cl', Math.max(105, (12 - left) / k).toFixed(1));
+}
+addEventListener('resize', shopFit);
+// watching an ad in the shop: a golden acorn each time, 5 times a day (a new day at midnight, the phone's time)
+const ADGIFT_KEY = 'forest-adgift', ADGIFT_DAY = 5;
+let adGiftBusy = false;
+const adGiftToday = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+function adGiftLeft() {
+  try { const g = JSON.parse(localStorage.getItem(ADGIFT_KEY) || '{}'); return Math.max(0, ADGIFT_DAY - (g.d === adGiftToday() ? g.n || 0 : 0)); } catch (e) { return ADGIFT_DAY; }
+}
+function adGiftGo() {
+  if (adGiftBusy || adGiftLeft() <= 0 || !$('#adfake').hidden) return;
+  adGiftBusy = true; shopUI();
+  showRewardedAd(() => {
+    adGiftBusy = false;
+    const used = ADGIFT_DAY - adGiftLeft() + 1;
+    try { localStorage.setItem(ADGIFT_KEY, JSON.stringify({ d: adGiftToday(), n: used })); } catch (e) { /* storage unavailable */ }
+    contPut(contN + 1); contUI(); shopUI();
+    sfx('mission'); toast(tr('adGiftDone'));
+  }, () => { adGiftBusy = false; shopUI(); });
+}
 function shopBuild() {
   if (shopBuilt) return;
   shopBuilt = true;
-  const list = $('#shop-list');
-  const row = (id, ic, name, sub) => {
-    const r = document.createElement('div'), i = document.createElement('span'), nm = document.createElement('span'), b = document.createElement('button');
-    r.className = 'shop-row'; i.className = 'shop-ic'; i.innerHTML = ic; nm.className = 'shop-nm';
-    const t = document.createElement('b'); t.dataset.name = name; nm.append(t);
-    if (sub) { const u = document.createElement('span'); u.dataset.t = sub; nm.append(u); }
-    b.className = 'shop-buy'; b.type = 'button'; b.dataset.id = id;
-    b.addEventListener('click', () => { sfx('pick'); shopBuy(id); });
-    r.append(i, nm, b); list.append(r);
+  // the packs, bigger for more: 5, 15, 40
+  SHOP.forEach((p, k) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sh-pack'; b.dataset.id = p.id; b.style.setProperty('--x', [238, 471, 704][k]);
+    b.innerHTML = `<span class="sh-pic"><img src="gold-${p.n}.webp" alt="" style="height:${[76, 88, 100][k]}%"></span><b class="sh-n" data-name="pack:${p.n}"></b><span class="sh-price"></span>`;
+    b.addEventListener('click', () => { sfx('pick'); shopBuy(p.id); });
+    $('#sh-packs').append(b);
+  });
+  const card = (id, pic, name, go) => {
+    const c = document.createElement('div');
+    c.className = 'sh-card';
+    c.innerHTML = `<img src="${pic}" alt=""><span class="sh-nm"><b data-name="${name}"></b><span class="sh-sub"></span></span><button class="sh-buy" type="button" data-id="${id}"></button>`;
+    c.querySelector('button').addEventListener('click', () => { sfx('pick'); go(); });
+    $('#sh-cards').append(c);
   };
-  const TK = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 9.5A3.5 3.5 0 0 1 7.5 6h17A3.5 3.5 0 0 1 28 9.5v3a3.5 3.5 0 0 0 0 7v3a3.5 3.5 0 0 1-3.5 3.5h-17A3.5 3.5 0 0 1 4 22.5v-3a3.5 3.5 0 0 0 0-7z" fill="#ffd84a" stroke="#2b1a0e" stroke-width="3" stroke-linejoin="round"/><path d="M20.5 16a4.5 4.5 0 1 1-1.6-3.45" fill="none" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round"/><path d="M19.6 10.4l.2 3.4-3.4.2" fill="none" stroke="#2b1a0e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  const tk = c => TK.replace('<svg ', `<svg class="${c}" `);
-  SHOP.forEach((p, k) => row(p.id, (k > 1 ? tk('t3') : '') + (k ? tk('t2') : '') + TK, 'pack:' + p.n, 'packSub'));   // 1, 2, 3 tickets fanned out
-  row(NOADS_ID, '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="26" height="20" rx="5" fill="#fff" stroke="#2b1a0e" stroke-width="3"/><path d="M13.2 11.2v9.6l8-4.8z" fill="#4fb83f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="16" r="12.5" fill="none" stroke="#2b1a0e" stroke-width="5.2"/><circle cx="16" cy="16" r="12.5" fill="none" stroke="#ff4d6d" stroke-width="3"/><path d="M7.2 7.2l17.6 17.6" stroke="#2b1a0e" stroke-width="5.2" stroke-linecap="round"/><path d="M7.2 7.2l17.6 17.6" stroke="#ff4d6d" stroke-width="3" stroke-linecap="round"/></svg>', 'noads', 'noadsSub');
+  card('adgift', 'tv-gift.webp', 'adGift', adGiftGo);
+  card(NOADS_ID, 'tv-noads.webp', 'noads', () => shopBuy(NOADS_ID));
 }
 function shopUI() {
   if (!shopBuilt) return;
   $('#shop-n').textContent = contN;
-  const nat = NATIVE();
-  for (const e of $('#shop-list').querySelectorAll('[data-name]')) { const k = e.dataset.name; e.textContent = k.startsWith('pack:') ? tr('packN', +k.slice(5)) : tr(k); }
-  for (const e of $('#shop-list').querySelectorAll('.shop-nm [data-t]')) e.textContent = tr(e.dataset.t);
-  for (const b of $('#shop-list').querySelectorAll('.shop-buy')) {
-    const id = b.dataset.id, own = id === NOADS_ID && noAds;
-    b.textContent = own ? tr('owned') : !nat ? tr('inApp') : shopPrices[id] || '…';
-    b.classList.toggle('owned', own); b.classList.toggle('off', !own && (!nat || shopBusy));
-    b.disabled = own;
+  const nat = NATIVE(), left = adGiftLeft();
+  for (const e of $('#shop').querySelectorAll('[data-name]')) { const k = e.dataset.name; e.textContent = k.startsWith('pack:') ? tr('packN', +k.slice(5)) : tr(k); }
+  for (const b of $('#sh-packs').querySelectorAll('.sh-pack')) {
+    b.querySelector('.sh-price').textContent = !nat ? tr('inApp') : shopPrices[b.dataset.id] || '…';
+    b.classList.toggle('off', !nat || shopBusy);
   }
+  const gift = $('#sh-cards [data-id="adgift"]');
+  gift.closest('.sh-card').querySelector('.sh-sub').textContent = tr('adGiftSub', left);
+  gift.textContent = left > 0 ? tr('adGiftGo') : tr('adGiftNone');
+  gift.classList.toggle('off', left <= 0 || adGiftBusy); gift.disabled = left <= 0;
+  const na = $('#sh-cards [data-id="' + NOADS_ID + '"]');
+  na.closest('.sh-card').querySelector('.sh-sub').textContent = tr('noadsSub');
+  na.textContent = noAds ? tr('owned') : !nat ? tr('inApp') : shopPrices[NOADS_ID] || '…';
+  na.classList.toggle('owned', noAds); na.classList.toggle('off', !noAds && (!nat || shopBusy)); na.disabled = noAds;
 }
-function openShop() { shopBuild(); $('#shop').hidden = false; shopUI(); shopLoad(); }
+function openShop() {
+  shopBuild(); $('#shop').hidden = false; shopFit(); shopUI(); shopLoad();
+  const nat = NATIVE();
+  if (nat && adGiftLeft() > 0) { try { nat.ads.preloadRewarded(); } catch (e) { /* no ad */ } }   // ready for "watch an ad"
+}
 // the prices (once they have come), and anything paid for but not given yet
 async function shopLoad() {
   const nat = NATIVE();
@@ -7083,8 +7160,10 @@ $('#btn-cu-quit').addEventListener('click', () => { sfx('pick'); cuFinish(); clo
 
 // On the web the games are not played (the app only): the title picture with a card that points to the store. A tester
 // opens the site once with ?play=forest and that browser plays as before. The app has ForestNative (its native.js).
+// WEB_BLOCK: off while the games are still being tried out on the web; turned on at the store launch.
+const WEB_BLOCK = false;
 const WEB_ONLY = (() => {
-  if (window.ForestNative) return false;
+  if (!WEB_BLOCK || window.ForestNative) return false;
   try {
     if (new URLSearchParams(location.search).get('play') === 'forest') { localStorage.setItem('forest-web', '1'); history.replaceState(null, '', location.pathname); }
     return localStorage.getItem('forest-web') !== '1';
