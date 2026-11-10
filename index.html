@@ -1309,7 +1309,7 @@ const STR = {
     coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', attGet: '오늘 받기', attGot: '오늘은 받았어요',
     attSub: () => `${new Date().getMonth() + 1}월 · 날짜마다 정해진 보상, 지난 날은 못 받아요`, misSub: t => `0시에 새 미션 5개 · 남은 시간 ${t}`,
     misAny: n => `아무 게임 ${n}판 하기`, misPlay: g => `${g} 1판 하기`, misScore: (g, s) => `${g} ${s}점 넘기`, misAll: '5개 모두 깨기', misGot: '받음',
-    gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: '황금 도토리 1개를 받았어요', noCoins: '코인이 모자라요',
+    gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, noCoins: '코인이 모자라요',
     heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`,
     heroBonus: p => `캐릭터 보너스 +${p}%`, prev: '이전', next: '다음',
     heroName: g => ({ block: '곰', acorn: '다람쥐', stairs: '토끼', merge: '너구리', pebble: '수달', mushroom: '두더지', owlpost: '부엉이', chameleon: '카멜레온', beaver: '비버', hedgehog: '고슴도치', caterpillar: '애벌레', cups: '여우' })[g],
@@ -1360,7 +1360,7 @@ const STR = {
     coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', attGet: 'Claim today', attGot: 'Claimed today',
     attSub: () => `${new Date().toLocaleString('en', { month: 'long' })} · a reward for each date`, misSub: t => `5 new at midnight · ${t} left`,
     misAny: n => `Play any ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: 'Clear all 5', misGot: 'Got',
-    gotCoins: n => `+${n} coins`, gotGold: '+1 golden acorn', noCoins: 'Not enough coins',
+    gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, noCoins: 'Not enough coins',
     heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`,
     heroBonus: p => `Hero bonus +${p}%`, prev: 'Previous', next: 'Next',
     heroName: g => ({ block: 'Bear', acorn: 'Squirrel', stairs: 'Rabbit', merge: 'Raccoon', pebble: 'Otter', mushroom: 'Mole', owlpost: 'Owl', chameleon: 'Chameleon', beaver: 'Beaver', hedgehog: 'Hedgehog', caterpillar: 'Caterpillar', cups: 'Fox' })[g],
@@ -3753,7 +3753,7 @@ const WALLET_KEY = 'forest-wallet';
 const HERO_LIST = ['block', 'acorn', 'stairs', 'merge', 'pebble', 'mushroom', 'owlpost', 'chameleon', 'beaver', 'hedgehog', 'caterpillar', 'cups'];
 const HERO_MAX = 500, HERO_STEP = 100, HERO_PCT = 0.05;   // five stages of 100 upgrades; each upgrade +0.05% on that game's score
 const heroCost = L => 50 * heroStage(L);   // coins for the next upgrade (for now: 50 a stage)
-const ATT_COINS = 100, MIS_COINS = 50, MIS_N = 5;
+const ATT_COINS = 500, MIS_COINS = 100, MIS_N = 5, MIS_ALL_GOLD = 3;   // check-in a day; a mission; all five: golden acorns
 // the score a "score" mission asks for, game by game (a first guess, to be tuned)
 const MIS_SCORE = { block: 20000, acorn: 3000, stairs: 3000, merge: 1000, pebble: 1000, mushroom: 5000, owlpost: 10000, chameleon: 5000, beaver: 5000, hedgehog: 5000, caterpillar: 2000, cups: 5000 };
 let WAL = { coins: 0, daily: {}, heroes: {} }, walOwner = null, walDirty = false, walT = 0;
@@ -3852,7 +3852,7 @@ function misClaim(i) {
   if (i === MIS_N) {   // all five: a golden acorn
     if ((st.got & 31) !== 31 || st.got & misAllBit) return;
     walletPut(w => { w.daily.day = st.day; w.daily.prog = st.prog; w.daily.got = st.got | misAllBit; });
-    contPut(contN + 1); sfx('pick'); toast(tr('gotGold'));
+    contPut(contN + MIS_ALL_GOLD); sfx('pick'); toast(tr('gotGold', MIS_ALL_GOLD));
     return;
   }
   if (!misDone(st, L, i) || st.got & (1 << i)) return;
@@ -3942,7 +3942,7 @@ function dailyUI() {
     const state = st.got & (1 << i) ? 'done' : misDone(st, L, i) ? 'go' : '';
     return row(ic, text, st.prog[i], m.n, state, `<img src="coin-1.webp" alt=""><b>${MIS_COINS}</b>`, i, false);
   }).join('') + row('<img src="gold-icon.webp" alt="">', tr('misAll'), [0, 1, 2, 3, 4].filter(i => st.got & (1 << i)).length, MIS_N,
-    st.got & misAllBit ? 'done' : (st.got & 31) === 31 ? 'go' : '', '<img src="gold-icon.webp" alt=""><b>1</b>', MIS_N, true);
+    st.got & misAllBit ? 'done' : (st.got & 31) === 31 ? 'go' : '', `<img src="gold-icon.webp" alt=""><b>${MIS_ALL_GOLD}</b>`, MIS_N, true);
   list.dataset.day = st.day;
   dailyClock();
 }
@@ -5851,7 +5851,7 @@ let opReady = null;
 function loadOwlArt() {
   if (!opReady) {
     const src = { ...OP_ART };
-    for (const p of OP_PALS) { src[p] = `pal-${p}.webp`; src[p + '-joy'] = `pal-${p}-joy.webp`; }
+    for (const p of OP_PALS) { src[p] = `pal-${p}.webp`; src[p + '-joy'] = `pal-${p}-joy-plain.webp`; }   // glad: without the yellow marks (they would cover the next friend)
     for (const g of OP_GIFTS) src['gift-' + g] = `gift-${g}.webp`;
     opReady = Promise.all(Object.keys(src).map(k => opArt[k] ? true : new Promise(res => {
       const im = new Image();
@@ -6198,7 +6198,7 @@ const CM_OL = 0.05;
 const CM_EDGES = [[0.453, 0.934, 0, 1], [0.738, 0.844, 0.56, 0.83], [0.86, 0.715, 0.83, 0.56], [0.942, 0.553, 0.94, 0.34], [0.991, 0.208, 1, 0],
   [0.775, 0.048, 0, -1], [0.608, 0.034, 0, -1], [0.386, 0.072, -0.38, -0.92], [0.198, 0.194, -0.7, -0.72], [0.062, 0.395, -0.94, -0.35], [0.058, 0.655, -0.93, 0.36]];
 const CM_REVEAL = 0.5;   // s the found chameleon shows (the clock waits)
-const CM_ART = { found: 'cham-found.webp', joy: 'cham-joy.webp', sad: 'cham-sad.webp', leaf: 'leaf.webp' };
+const CM_ART = { found: 'cham-found-plain.webp', joy: 'cham-joy.webp', sad: 'cham-sad.webp', leaf: 'leaf.webp' };
 const cmArt = {};
 let cmReady = null;
 function loadChamArt() {
@@ -7725,6 +7725,10 @@ const CU_ART = { bg: 'cu-bg.webp', table: 'cu-table.webp', cup: 'cu-cup.webp', a
 const CU_BG_CUT = 0.8, CU_BG_AR = 1086 / (1448 * CU_BG_CUT);   // the picture behind without its bottom fifth (the stump); its shape then
 // the table picture: its round top's middle line and half-width, as parts of the picture (height, width); its shape
 const CU_TABLE = { top: 0.32, rx: 0.45, ar: 291 / 900 };
+// the fox behind the table, its legs hidden by it: its cup while the round goes, glad at a right cup, sad at a wrong one
+// and when the game ends. [picture, its sheet's height (the three at one scale), its head's middle across]
+const CU_FOX = { idle: ['fox-idle.webp', 532, 0.432], joy: ['fox-joy.webp', 530, 0.46], sad: ['fox-sad.webp', 487, 0.546] }, cuFox = {};
+for (const k of Object.keys(CU_FOX)) { const im = new Image(); im.onload = () => { cuFox[k] = im; }; im.src = CU_FOX[k][0]; }
 const CU_CUP_RIM = 0.79;   // the cup picture: where its rim's middle is (part of its height); it is drawn 1.1 times the cup's width
 const cuArt = {};
 let cuReady = null;
@@ -7928,6 +7932,20 @@ function cuDraw(now) {
   const lab = textImg(tr('msLevel', CU.round), 18, SUB_LOOK, false);
   miniText(c, tr('msLevel', CU.round), 16 + lab.w / 2, 22, 18, SUB_LOOK, now);
   for (let k = 0; k < CU_HEARTS; k++) { const im = k < CU.hearts ? P.heart : P.heartOff; c.drawImage(im, CU.W - 16 - (CU_HEARTS - k) * 32, 7, 30, 30); }
+  const pose = CU.st === 'over' ? 'sad' : CU.ph === 'reveal' ? (CU.right ? 'joy' : 'sad') : 'idle', fox = cuFox[pose];
+  if (fox) {   // standing behind the table, its legs under the table's edge, its head (the top half) above a lifted cup;
+    // under the level and hearts
+    const edge = cuArt.table ? g.y - g.tw * CU_TABLE.ar * CU_TABLE.top : g.y - 20;
+    const ih = cuArt.cup ? g.cw * 1.1 * cuArt.cup.naturalHeight / cuArt.cup.naturalWidth : g.ch, lifted = g.y - ih * CU_CUP_RIM - g.ch * 0.8;
+    const soleAt = F => Math.min(edge + F * 0.32, lifted + F * 0.5 - 4);
+    let F = Math.min(CU.H * 0.34, 270 * g.s);
+    for (let i = 0; i < 12 && soleAt(F) - F < 46; i++) F *= 0.93;
+    const sole = soleAt(F);
+    if (F > 60) {
+      const ph = F / 0.969 * CU_FOX[pose][1] / CU_FOX.idle[1], pw = ph * fox.naturalWidth / fox.naturalHeight;
+      c.drawImage(fox, CU.W / 2 - pw * CU_FOX[pose][2], sole - ph * 0.969, pw, ph);
+    }
+  }
   // the table: the picture, its top's middle line under the row; or a round slab of wood, its edge showing in front
   if (cuArt.table) { const th = g.tw * CU_TABLE.ar; c.drawImage(cuArt.table, CU.W / 2 - g.tw / 2, g.y - th * CU_TABLE.top, g.tw, th); }
   else {
