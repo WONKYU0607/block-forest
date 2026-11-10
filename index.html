@@ -5105,13 +5105,15 @@ function msGeo() {
   const bw = Math.floor(Math.min(92, (W - 2 * pad - gapX * (n - 1)) / n, (H - top - 16) / perRow));
   const sh = bw * 0.74, bh = sh * MS_CAP + bw * 0.22;   // a mushroom's slot, the basket's inside height
   const rowH = bh + sh * lift + bw * 0.3;
-  const y0 = top + Math.max(0, (H - top - 16 - rowH) / 2);
+  // the mole stands under the row (not on screens too short for it), the two together in the middle
+  const free = H - top - 16 - rowH, mh = free * 0.6 >= 60 ? Math.min(170, free * 0.6) : 0, gap = mh ? 8 : 0;
+  const y0 = top + Math.max(0, (free - mh - gap) / 2);
   const rowW = n * bw + (n - 1) * gapX, spots = [];
   for (let i = 0; i < n; i++) {
     const bottom = y0 + sh * lift + bh;   // the basket's inside floor
     spots.push({ x: (W - rowW) / 2 + i * (bw + gapX), w: bw, bottom, top: bottom - bh });
   }
-  return { bw, sh, bh, spots, top, lift, gapX };
+  return { bw, sh, bh, spots, top, lift, gapX, mole: mh ? { x: W / 2, sole: y0 + rowH + gap + mh, h: mh } : null };
 }
 // where mushroom slot s of basket t sits (its middle), and over the basket when lifted
 function msSlot(g, t, s, lifted) {
@@ -5120,16 +5122,15 @@ function msSlot(g, t, s, lifted) {
 }
 // a mushroom drawn once per colour at the slot's size: a round cap with its pattern on a short cream stem
 // the drawn mushrooms (ms-shroom0-5, the same order as MS_SHROOM); until they have come, the mushroom drawn in code
-const MS_ART = { joy: 'mole-joy.webp', sad: 'mole-sad.webp' }, msArt = [];
+// the mole: its poses drawn at one scale on a sheet as tall as MS_MOLE[0], its feet's middle across at [1], soles at MS_SOLE
+const MS_ART = { idle: 'mole-idle.webp', joy: 'mole-joy.webp', sad: 'mole-sad.webp' }, msArt = [], msMole = {};
+const MS_MOLE = { idle: [685, 0.512], joy: [732, 0.501], sad: [678, 0.524] }, MS_SOLE = 0.969;
 let msArtReady = null;
 function loadMushroomArt() {
   if (!msArtReady) {
-    msArtReady = Promise.all([0, 1, 2, 3, 4, 5].map(i => msArt[i] ? true : new Promise(res => {
-      const im = new Image();
-      im.onload = () => { msArt[i] = im; MS.img = null; res(true); };
-      im.onerror = () => res(false);
-      im.src = `ms-shroom${i}.webp`;
-    })));
+    const one = (src, put) => new Promise(res => { const im = new Image(); im.onload = () => { put(im); MS.img = null; res(true); }; im.onerror = () => res(false); im.src = src; });
+    msArtReady = Promise.all([...[0, 1, 2, 3, 4, 5].map(i => msArt[i] ? true : one(`ms-shroom${i}.webp`, im => { msArt[i] = im; })),
+      ...Object.keys(MS_ART).map(k => msMole[k] ? true : one(MS_ART[k], im => { msMole[k] = im; }))]);
     msArtReady.then(ok => { if (!ok.every(Boolean)) msArtReady = null; });
   }
   return msArtReady;
@@ -5197,6 +5198,11 @@ function msPics() {
   const P = { key, sh: [] };
   for (let c = 0; c < MS_SHROOM.length; c++) P.sh[c] = msShroomPic(c, g.bw * 0.96, g.sh * 1.08);
   P.basket = msBasketPic(g.bw, g.bh);
+  P.mole = {};
+  if (g.mole) for (const k of Object.keys(MS_MOLE)) {   // each pose at the idle one's scale
+    const im = msMole[k], h = g.mole.h / MS_SOLE * MS_MOLE[k][0] / MS_MOLE.idle[0];
+    if (im) P.mole[k] = artPic(im, h * im.naturalWidth / im.naturalHeight, h);
+  }
   return (MS.img = P);
 }
 function msResize() {
@@ -5220,7 +5226,7 @@ function msStart() {
   $('#ms-menu').hidden = true;
   msResize();
   endBest('mushroom');
-  Object.assign(MS, { st: 'play', lv: 1, time: MS_T0, score: 0, best: msBest(), sparks: [], pops: [], clearT: 0, tickAt: 0 });
+  Object.assign(MS, { st: 'play', lv: 1, time: MS_T0, score: 0, best: msBest(), sparks: [], pops: [], clearT: 0, tickAt: 0, joyT: 0 });
   msRound(1, true);
   msHud();
   cancelAnimationFrame(MS.raf); MS.last = performance.now(); MS.raf = requestAnimationFrame(msFrame);
@@ -5268,7 +5274,7 @@ function msTap(i) {
   gsfx('msDrop', semi(n - 1), 'land');
   const c = T[i][T[i].length - 1];
   if (msFull(T[i]) && !MS.done.has(c)) {   // a colour gathered: points once a round
-    MS.done.add(c); MS.score += MS_BASKET; msHud();
+    MS.done.add(c); MS.score += MS_BASKET; msHud(); MS.joyT = 0.9;
     const g = msGeo(), sp = g.spots[i];
     msBurst(sp.x + sp.w / 2, sp.bottom - g.bh * 0.6, MS_SHROOM[c][0], 14);
     MS.pops.push({ text: '+' + MS_BASKET.toLocaleString(), x: sp.x + sp.w / 2, y: sp.top - g.sh * 0.2, t: 0, life: 0.8, size: 20, look: SCORE_LOOK });
@@ -5316,7 +5322,7 @@ function msGameOver() {
   setTimeout(() => gameEnd('mushroom'), 700);
 }
 // going on: where it stopped, with the clock full again (the minute it starts with)
-function msRevive() { Object.assign(MS, { st: 'play', time: MS_T0, tickAt: 0, sel: -1 }); msHud(); }
+function msRevive() { Object.assign(MS, { st: 'play', time: MS_T0, tickAt: 0, sel: -1, joyT: 0 }); msHud(); }
 END.mushroom = { score: () => MS.score, on: () => MS.st === 'over', revive: msRevive, again: () => { msStart(); musicStart(true); }, list: () => closeMushroom(),
   pics: () => [MS_ART.joy, MS_ART.sad], best: ['msBest', 'stage'] };
 function closeMushroom() {
@@ -5354,6 +5360,7 @@ function msUpdate(dt) {
   MS.sparks = MS.sparks.filter(p => p.t < p.life);
   for (const p of MS.pops) p.t += dt;
   MS.pops = MS.pops.filter(p => p.t < p.life);
+  if (MS.joyT > 0) MS.joyT = Math.max(0, MS.joyT - dt);
 }
 function msDraw(now) {
   const c = msctx, g = msGeo(), P = msPics();
@@ -5383,6 +5390,8 @@ function msDraw(now) {
     const sx = MS.shake[p.t] > 0 ? Math.sin(MS.shake[p.t] * 60) * 5 * (MS.shake[p.t] / 0.3) : 0;
     c.drawImage(P.sh[p.c], p.x - sw / 2 + sx, p.y - shh / 2, sw, shh);
   }
+  const pose = MS.st === 'over' ? 'sad' : MS.joyT > 0 || MS.clearT > 0 ? 'joy' : 'idle', mp = g.mole && P.mole[pose];
+  if (mp) { const mw = mp.width / dpr, mhh = mp.height / dpr; c.drawImage(mp, g.mole.x - mw * MS_MOLE[pose][1], g.mole.sole - mhh * MS_SOLE, mw, mhh); }
   for (const p of MS.sparks) {
     c.globalAlpha = Math.max(0, 1 - p.t / p.life);
     if (p.star) miniStar(c, p.x, p.y, p.s * 1.6, p.c);
