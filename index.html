@@ -564,8 +564,8 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
 .fs-cal .d.blank { visibility: hidden; }
 .ms-row { display: flex; align-items: center; gap: 9px; background: #fffaf0; border: 3px solid var(--ol); border-radius: 16px; padding: 7px 8px; margin-bottom: 8px; }
 .ms-row.all { background: #fff0b8; }
-.ms-row .ic { width: 44px; height: 44px; flex: none; display: grid; place-items: center; }
-.ms-row .ic img, .ms-row .ic svg { max-width: 100%; max-height: 100%; display: block; }
+.ms-row .ic { width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center; }
+.ms-row .ic img, .ms-row .ic svg { width: 100%; height: 100%; object-fit: contain; display: block; }
 .ms-row .tx { flex: 1; min-width: 0; }
 .ms-row .tx p { margin: 0 0 5px; font-size: clamp(12px, 3.6vw, 14px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fs-bar { position: relative; height: 15px; box-sizing: border-box; border: 2.5px solid var(--ol); border-radius: 8px; background: rgba(60, 30, 10, 0.18); overflow: hidden; }
@@ -861,7 +861,7 @@ html.tall-art .scr-box .ext { display: none; }
   <div class="scr-box" id="hub-box"><i class="ext top"></i><i class="ext bot"></i><img class="scr-art" id="hub-art" alt="미니게임 포레스트" data-talt="title" decoding="async"></div>
   <div class="flies" aria-hidden="true"><i style="left:12%;top:30%;animation-delay:-1.4s"></i><i style="left:84%;top:24%;animation-delay:-3.8s"></i><i style="left:62%;top:12%;animation-delay:-5.6s;animation-duration:8s"></i></div>
   <div class="hub-hero" id="hub-hero">
-    <div class="hub-chars" aria-hidden="true"><img class="hc-mid" src="rabbit-cheer.webp" alt=""><img class="hc-l" src="raccoon-joy.webp" alt=""><img class="hc-r" src="owl-joy.webp" alt=""></div>
+    <div class="hub-chars" aria-hidden="true"><img class="hc-mid" src="hub-rabbit.webp" alt=""><img class="hc-l" src="hub-raccoon.webp" alt=""><img class="hc-r" src="hub-owl.webp" alt=""></div>
     <h2 class="hub-title" data-t="miniGames">미니게임</h2>
     <p class="hub-sub" data-t="hubSub">게임 12개, 순위에 도전해 보세요</p>
     <button class="hub-go" id="btn-hub-play" type="button" data-t="hubPlay">게임 시작</button>
@@ -891,7 +891,7 @@ html.tall-art .scr-box .ext { display: none; }
         <button class="opt mg-row" id="mg-pebble" type="button"><img class="mg-ic mg-img" src="otter-aim.webp" alt=""><div><b data-t="pebble">조약돌 깨기</b><span id="mg-pebble-best"></span></div></button>
         <button class="opt mg-row" id="mg-mushroom" type="button"><img class="mg-ic mg-img" src="mole-idle.webp" alt=""><div><b data-t="mushroom">버섯 바구니 정리</b><span id="mg-mushroom-best"></span></div></button>
         <button class="opt mg-row" id="mg-owlpost" type="button"><img class="mg-ic mg-img" src="owl-hold.webp" alt=""><div><b data-t="owlpost">부엉이 우체국</b><span id="mg-owlpost-best"></span></div></button>
-        <button class="opt mg-row" id="mg-chameleon" type="button"><img class="mg-ic mg-img" src="cham-joy.webp" alt=""><div><b data-t="chameleon">카멜레온 찾기</b><span id="mg-chameleon-best"></span></div></button>
+        <button class="opt mg-row" id="mg-chameleon" type="button"><img class="mg-ic mg-img" src="cham-icon.webp" alt=""><div><b data-t="chameleon">카멜레온 찾기</b><span id="mg-chameleon-best"></span></div></button>
         <button class="opt mg-row" id="mg-beaver" type="button"><img class="mg-ic mg-img" src="beaver-idle.webp" alt=""><div><b data-t="beaver">비버 다리 놓기</b><span id="mg-beaver-best"></span></div></button>
         <button class="opt mg-row" id="mg-hedgehog" type="button"><img class="mg-ic mg-img" src="hh-face.webp" alt=""><div><b data-t="hedgehog">고슴도치 가시 꽂기</b><span id="mg-hedgehog-best"></span></div></button>
         <button class="opt mg-row" id="mg-caterpillar" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="caterpillar">애벌레 잎 먹기</b><span id="mg-caterpillar-best"></span></div></button>
@@ -3936,7 +3936,9 @@ function dailyUI() {
     <button type="button" class="ms-get ${state}" data-i="${i}" ${state === 'go' ? '' : 'disabled'}>${state === 'done' ? `<b>${tr('misGot')}</b>` : prize}</button></div>`;
   list.innerHTML = L.map((m, i) => {
     const text = m.t === 'any' ? tr('misAny', m.n) : m.t === 'play' ? tr('misPlay', heroName(m.g)) : tr('misScore', heroName(m.g), m.s.toLocaleString());
-    const ic = m.t === 'any' ? anyIc : (($('#mg-' + m.g + ' .mg-ic') || {}).outerHTML || '');
+    const src = m.t === 'any' ? null : $('#mg-' + m.g + ' .mg-ic'), cl = src && src.cloneNode(true);
+    if (cl) cl.removeAttribute('class');   // its picture only, not the games list's sizes
+    const ic = m.t === 'any' ? anyIc : (cl ? cl.outerHTML : '');
     const state = st.got & (1 << i) ? 'done' : misDone(st, L, i) ? 'go' : '';
     return row(ic, text, st.prog[i], m.n, state, `<img src="coin-1.webp" alt=""><b>${MIS_COINS}</b>`, i, false);
   }).join('') + row('<img src="gold-icon.webp" alt="">', tr('misAll'), [0, 1, 2, 3, 4].filter(i => st.got & (1 << i)).length, MIS_N,
@@ -3970,7 +3972,7 @@ function heroUI() {
   $('#hero-bar i').style.width = inn + '%'; $('#hero-bar span').textContent = tr('heroStage', st, inn);
   $('#hero-buff').innerHTML = `${tr('heroBuff', heroName(g))} <b>+${heroPctTxt(g)}%</b>`;
   const max = L >= HERO_MAX, btn = $('#btn-hero-up');
-  btn.disabled = max; btn.querySelector('[data-t]').textContent = tr(max ? 'heroMax' : 'heroUp');
+  btn.disabled = max || WAL.coins < heroCost(L);   // off at the top, and without the coins btn.querySelector('[data-t]').textContent = tr(max ? 'heroMax' : 'heroUp');
   btn.querySelector('img').hidden = max; $('#hero-cost').hidden = max; $('#hero-cost').textContent = heroCost(L).toLocaleString();
   $('#hero-count').textContent = `${heroI + 1} / ${HERO_LIST.length}`;
 }
