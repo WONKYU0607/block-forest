@@ -793,7 +793,7 @@ html.tall-art .scr-box .ext { display: none; }
         <button class="opt mg-row" id="mg-stairs" type="button"><img class="mg-ic mg-img" src="rabbit-idle.webp" alt=""><div><b data-t="stairs">토끼 계단</b><span id="mg-stairs-best"></span></div></button>
         <button class="opt mg-row" id="mg-merge" type="button"><img class="mg-ic mg-img" src="raccoon-hold.webp" alt=""><div><b data-t="merge">과일 합치기</b><span id="mg-merge-best"></span></div></button>
         <button class="opt mg-row" id="mg-pebble" type="button"><img class="mg-ic mg-img" src="otter-aim.webp" alt=""><div><b data-t="pebble">조약돌 깨기</b><span id="mg-pebble-best"></span></div></button>
-        <button class="opt mg-row" id="mg-mushroom" type="button"><svg class="mg-ic" viewBox="0 0 34 34" aria-hidden="true"><path d="M13.5 20h7v8.5c0 1.6-1.3 2.5-3.5 2.5s-3.5-.9-3.5-2.5z" fill="#fff3dc" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 20.5C4 11.5 9.8 5 17 5s13 6.5 13 15.5c0 1-.8 1.5-1.8 1.5H5.8C4.8 22 4 21.5 4 20.5z" fill="#ef3b36" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/><circle cx="11" cy="14" r="2.6" fill="#fff7ee"/><circle cx="19.5" cy="10.5" r="3" fill="#fff7ee"/><circle cx="24" cy="17" r="2" fill="#fff7ee"/></svg><div><b data-t="mushroom">버섯 바구니 정리</b><span id="mg-mushroom-best"></span></div></button>
+        <button class="opt mg-row" id="mg-mushroom" type="button"><img class="mg-ic mg-img" src="mole-idle.webp" alt=""><div><b data-t="mushroom">버섯 바구니 정리</b><span id="mg-mushroom-best"></span></div></button>
         <button class="opt mg-row" id="mg-owlpost" type="button"><img class="mg-ic mg-img" src="owl-hold.webp" alt=""><div><b data-t="owlpost">부엉이 우체국</b><span id="mg-owlpost-best"></span></div></button>
         <button class="opt mg-row" id="mg-chameleon" type="button"><img class="mg-ic mg-img" src="cham-joy.webp" alt=""><div><b data-t="chameleon">카멜레온 찾기</b><span id="mg-chameleon-best"></span></div></button>
         <button class="opt mg-row" id="mg-beaver" type="button"><img class="mg-ic mg-img" src="beaver-idle.webp" alt=""><div><b data-t="beaver">비버 다리 놓기</b><span id="mg-beaver-best"></span></div></button>
@@ -1286,7 +1286,7 @@ function setSize(size) {
 // the board's look: plank colours, cube colours and bar colours (one look for the whole game)
 const THEMES = [
   { name: '나무 공방', at: 0, paint: 'wood', planks: ['#5e2c17', '#69341c', '#532614'], gap: '#2a120a',
-    cubes: ['#ff4d6d', '#2ed47a', '#3d8bff', '#b45cff'],
+    cubes: ['#fa1f55', '#55d40a', '#1a7cfd', '#a417ed'],   // the drawn cubes' colours (sparks, the mission dot)
     css: { '--frame': '#2a1b10', '--bar': '#24170d', '--bar-line': '#6e4c2f', '--panel': '#3b2819', '--panel-2': '#4b331f', '--panel-line': '#7d5837' } },
 ];
 let COLORS = THEMES[0].cubes;
@@ -5037,7 +5037,7 @@ function msBest() { try { return parseInt(localStorage.getItem(MS_BEST) || '0', 
 // a round: k colours of 4 shuffled into k baskets, 2 empty; none full of one colour at the start; the solver must finish it
 function msDeal(k) {
   for (let tries = 0; tries < 60; tries++) {
-    const pal = [0, 1, 2, 3, 4, 5, 6, 7];
+    const pal = [0, 1, 2, 3, 4, 5];   // the six drawn mushrooms (a round has six colours at most)
     for (let i = pal.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pal[i], pal[j]] = [pal[j], pal[i]]; }
     const all = [];
     for (let c = 0; c < k; c++) for (let n = 0; n < MS_CAP; n++) all.push(pal[c]);
@@ -5119,7 +5119,28 @@ function msSlot(g, t, s, lifted) {
   return { x: sp.x + sp.w / 2, y: sp.bottom - g.bw * 0.11 - (s + 0.5) * g.sh - (lifted ? g.sh * g.lift + g.bw * 0.12 : 0) };
 }
 // a mushroom drawn once per colour at the slot's size: a round cap with its pattern on a short cream stem
+// the drawn mushrooms (ms-shroom0-5, the same order as MS_SHROOM); until they have come, the mushroom drawn in code
+const MS_ART = { joy: 'mole-joy.webp', sad: 'mole-sad.webp' }, msArt = [];
+let msArtReady = null;
+function loadMushroomArt() {
+  if (!msArtReady) {
+    msArtReady = Promise.all([0, 1, 2, 3, 4, 5].map(i => msArt[i] ? true : new Promise(res => {
+      const im = new Image();
+      im.onload = () => { msArt[i] = im; MS.img = null; res(true); };
+      im.onerror = () => res(false);
+      im.src = `ms-shroom${i}.webp`;
+    })));
+    msArtReady.then(ok => { if (!ok.every(Boolean)) msArtReady = null; });
+  }
+  return msArtReady;
+}
 function msShroomPic(c, w, h) {
+  const art = msArt[c];
+  if (art) return miniPic(w, h, x => {   // square picture, as tall as the slot box allows, standing on its bottom
+    const side = Math.min(w, h);
+    x.imageSmoothingQuality = 'high';
+    x.drawImage(art, (w - side) / 2, h - side, side, side);
+  });
   const [cap, pat, pc] = MS_SHROOM[c];
   return miniPic(w, h, x => {
     const cx = w / 2, cw = w * 0.88, capH = h * 0.6, capY = h * 0.08;
@@ -5192,6 +5213,7 @@ function openMushroom() {
   const el = $('#mushroom');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
   try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('msClear') + '0123456789+초s').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  loadMushroomArt();
   rkGate('mushroom', () => { msStart(); musicRate(1); musicStart(true); });
 }
 function msStart() {
@@ -5296,7 +5318,7 @@ function msGameOver() {
 // going on: where it stopped, with the clock full again (the minute it starts with)
 function msRevive() { Object.assign(MS, { st: 'play', time: MS_T0, tickAt: 0, sel: -1 }); msHud(); }
 END.mushroom = { score: () => MS.score, on: () => MS.st === 'over', revive: msRevive, again: () => { msStart(); musicStart(true); }, list: () => closeMushroom(),
-  best: ['msBest', 'stage'] };
+  pics: () => [MS_ART.joy, MS_ART.sad], best: ['msBest', 'stage'] };
 function closeMushroom() {
   cancelAnimationFrame(MS.raf); MS.st = 'off';
   musicStop();
@@ -7671,6 +7693,21 @@ LEAF.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox
 let C = {};
 const cache = new Map();
 let planks = null, planksPrev = null;
+// the drawn cubes: the four colours, stone, rainbow (until they have come, the cube drawn in code)
+const TILE_ART = { 1: 'tile-1.webp', 2: 'tile-2.webp', 3: 'tile-3.webp', 4: 'tile-4.webp', [STONE]: 'tile-stone.webp', [WILD]: 'tile-wild.webp' }, tileArt = {};
+for (const k of Object.keys(TILE_ART)) { const im = new Image(); im.onload = () => { tileArt[k] = im; cache.clear(); }; im.src = TILE_ART[k]; }
+// a picture brought down to about px by halving first (one big step down to a few pixels blurs or shimmers)
+function tileDown(im, px) {
+  px = Math.max(1, Math.round(px));
+  let src = im, n = im.naturalWidth || im.width;
+  while (n / 2 >= px * 1.4) {
+    n = Math.round(n / 2);
+    const c = document.createElement('canvas'); c.width = c.height = n;
+    const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(src, 0, 0, n, n);
+    src = c;
+  }
+  return src;
+}
 
 function readColors() {
   const cs = getComputedStyle(document.documentElement);
@@ -7750,6 +7787,23 @@ function sprite(v, s, glow) {
   sp.width = sp.height = px;
   const x = sp.getContext('2d');
   x.scale(px / s, px / s);
+  const art = !spc && tileArt[color];
+  if (art) {
+    // the drawn cube, on the same soft shadow as the code's; lit (glow): a white wash over the cube only
+    const m = s * 0.05, w = s - m * 2, r = s * 0.28, side = w / 0.94, o = (s - side) / 2;
+    rr(x, m, m + s * 0.05, w, w, r); x.fillStyle = 'rgba(0,0,0,0.42)'; x.fill();
+    let pic = tileDown(art, side * px / s);
+    if (glow) {
+      const c2 = document.createElement('canvas'); c2.width = pic.width; c2.height = pic.height;
+      const y = c2.getContext('2d'); y.drawImage(pic, 0, 0);
+      y.globalCompositeOperation = 'source-atop'; y.fillStyle = 'rgba(255,255,255,0.4)'; y.fillRect(0, 0, c2.width, c2.height);
+      pic = c2;
+    }
+    x.imageSmoothingQuality = 'high';
+    x.drawImage(pic, o, o, side, side);
+    cache.set(key, sp);
+    return sp;
+  }
   if (color === STONE) {
     const m = s * 0.05, w = s - m * 2, r = s * 0.2, rnd2 = seeded(grain * 131 + 17), bs = glow ? [170, 166, 176] : [118, 114, 124];
     rr(x, m, m + s * 0.05, w, w, r); x.fillStyle = 'rgba(0,0,0,0.42)'; x.fill();
@@ -8633,7 +8687,7 @@ for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener
 setInterval(bkSync, 300);   // cards that open by themselves (a game ending) get their entry too
 
 // read-only hooks for automated checks
-window.__rise = { G, shapeOf, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
+window.__rise = { G, shapeOf, sprite, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
                   deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, gsfx, scoreFor, wireAudio, MUSIC, SFXB, SFX_AT, musicStart, musicStop, musicTempo, musicPos },
