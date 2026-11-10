@@ -510,12 +510,104 @@ html[lang="en"] .rank-tabs .opt b { font-size: 13px; }
   font-family: var(--num); font-size: calc(var(--h, 270px) * 0.1); color: #fff; -webkit-text-stroke: calc(var(--h, 270px) * 0.03) var(--ol); paint-order: stroke fill; }
 .hub-go:active, .hub-d:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--ol); }
 .hub-dock { position: absolute; left: 50%; transform: translateX(-50%); width: min(354px, calc(100vw - 28px)); bottom: max(18px, env(safe-area-inset-bottom, 0px));
-  height: var(--dh, 100px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.hub-d { appearance: none; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: var(--wood);
-  border: 4px solid var(--ol); border-radius: 22px; box-shadow: 0 6px 0 var(--ol); }
+  height: var(--dh, 100px); display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.hub-d { position: relative; appearance: none; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: var(--wood);
+  border: 4px solid var(--ol); border-radius: 18px; box-shadow: 0 6px 0 var(--ol); min-width: 0; }
 .hub-d img, .hub-ic { width: calc(var(--dh, 100px) * 0.48); height: calc(var(--dh, 100px) * 0.48); display: block; object-fit: contain; }
 .hub-ic svg { width: 100%; height: 100%; display: block; }
-.hub-d b { font-family: var(--num); font-weight: 400; font-size: calc(var(--dh, 100px) * 0.19); line-height: 1; color: #fff; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; white-space: nowrap; }
+.hub-d b { font-family: var(--num); font-weight: 400; font-size: min(calc(var(--dh, 100px) * 0.19), 3.9vw); line-height: 1; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; white-space: nowrap; }
+html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw); -webkit-text-stroke: 4px var(--ol); letter-spacing: -0.01em; }
+/* a red mark: something to receive */
+.hub-badge { position: absolute; top: -8px; right: -8px; min-width: 24px; height: 24px; padding: 0 5px; box-sizing: border-box; border-radius: 12px; background: #ff4d3d; border: 3px solid var(--ol);
+  display: grid; place-items: center; font-family: var(--num); font-weight: 400; font-size: 13px; line-height: 1; color: #fff; -webkit-text-stroke: 3px var(--ol); paint-order: stroke fill; pointer-events: none; }
+.hub-badge[hidden] { display: none; }
+/* coins and golden acorns (top left), settings (top right) */
+.hub-chips { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); display: flex; gap: 8px; }
+.hub-chip { box-sizing: border-box; height: 38px; display: flex; align-items: center; gap: 5px; padding: 0 12px 0 4px; background: var(--cream); border: 3px solid var(--ol); border-radius: 20px; box-shadow: 0 3px 0 var(--ol); }
+.hub-chip img { width: 30px; height: 30px; display: block; object-fit: contain; }
+.hub-chip b { font-family: var(--num); font-weight: 400; font-size: 18px; line-height: 1; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; }
+.hub-gear { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); width: 44px; height: 44px; padding: 0; box-sizing: border-box;
+  display: grid; place-items: center; appearance: none; cursor: pointer; background: var(--wood); border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); }
+.hub-gear svg { width: 30px; height: 30px; display: block; }
+.hub-gear:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+/* today's rewards (check-in, missions) and the heroes: screens of their own, the shop's look */
+.fscr { position: fixed; inset: 0; z-index: 35; overflow: hidden; background: linear-gradient(rgba(12, 40, 18, 0.35), rgba(12, 40, 18, 0.15)), url(shop-bg.webp) center / cover, #8fd36a; }
+.fscr[hidden] { display: none; }
+.fs-chips { display: flex; gap: 8px; }
+.fs-sign { position: absolute; z-index: 2; left: 50%; top: calc(max(12px, env(safe-area-inset-top, 0px)) + 58px); transform: translateX(-50%); margin: 0; padding: 8px 28px 10px;
+  background: var(--wood); border: 4px solid var(--ol); border-radius: 18px; box-shadow: 0 6px 0 var(--ol); white-space: nowrap; font-family: var(--num); font-weight: 400; font-size: 28px; line-height: 1.1;
+  color: #fff; -webkit-text-stroke: 7px var(--ol); paint-order: stroke fill; }
+.fs-card { position: absolute; left: 50%; transform: translateX(-50%); width: min(362px, calc(100vw - 28px)); top: calc(max(12px, env(safe-area-inset-top, 0px)) + 128px);
+  max-height: calc(100% - max(12px, env(safe-area-inset-top, 0px)) - 128px - 18px); overflow-y: auto; box-sizing: border-box; background: var(--cream); border: 4px solid var(--ol);
+  border-radius: 26px; box-shadow: 0 7px 0 var(--ol), inset 0 0 0 6px #f0d9a8; padding: 16px 14px; color: var(--ol); font-family: 'Black Han Sans', sans-serif; overscroll-behavior: contain; }
+.fs-sub { margin: 0 0 10px; text-align: center; font-size: 14px; color: var(--bark); }
+.fs-wide { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; min-height: 56px; }
+.fs-wide img { width: 28px; height: 28px; display: block; }
+.fs-wide .num { font-family: var(--num); }
+.fs-wide:disabled { background: #d8cbb0; }
+.fs-tabs { display: flex; gap: 8px; margin: 0 0 12px; }
+.fs-tabs button { position: relative; flex: 1; height: 44px; appearance: none; cursor: pointer; padding: 0; border: 3px solid var(--ol); border-radius: 14px; background: #e3d6bb; color: var(--ol);
+  font-family: 'Black Han Sans', sans-serif; font-size: 17px; }
+.fs-tabs button.on { background: var(--wood); color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; font-family: var(--num); font-size: 19px; }
+.fs-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.fs-cal .wd { text-align: center; font-size: 12px; color: var(--bark); }
+.fs-cal .d { position: relative; aspect-ratio: 0.82; box-sizing: border-box; border: 2.5px solid var(--ol); border-radius: 10px; background: #fffaf0; display: flex; flex-direction: column; align-items: center;
+  justify-content: space-between; padding: 2px 0 3px; min-width: 0; }
+.fs-cal .d i { font-style: normal; font-size: 11px; align-self: flex-start; margin-left: 4px; line-height: 1; }
+.fs-cal .d img { width: 62%; height: 46%; object-fit: contain; display: block; }
+.fs-cal .d b { font-family: var(--num); font-weight: 400; font-size: 11px; color: #fff; -webkit-text-stroke: 3px var(--ol); paint-order: stroke fill; line-height: 1; }
+.fs-cal .d.gold { background: #fff0b8; }
+.fs-cal .d.got > * { opacity: 0.35; }
+.fs-cal .d.got:after { content: ''; position: absolute; inset: 14% 12%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5l5 5L20 6.5' fill='none' stroke='%232b1a0e' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M4 12.5l5 5L20 6.5' fill='none' stroke='%236ccf4f' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+.fs-cal .d.today { background: linear-gradient(#b8f08f, #7ad35a); box-shadow: 0 0 0 3px #fff36b, 0 0 14px 4px rgba(255, 240, 120, 0.9); }
+.fs-cal .d.past:not(.got) > * { opacity: 0.4; }
+.fs-cal .d.blank { visibility: hidden; }
+.ms-row { display: flex; align-items: center; gap: 9px; background: #fffaf0; border: 3px solid var(--ol); border-radius: 16px; padding: 7px 8px; margin-bottom: 8px; }
+.ms-row.all { background: #fff0b8; }
+.ms-row .ic { width: 44px; height: 44px; flex: none; display: grid; place-items: center; }
+.ms-row .ic img, .ms-row .ic svg { max-width: 100%; max-height: 100%; display: block; }
+.ms-row .tx { flex: 1; min-width: 0; }
+.ms-row .tx p { margin: 0 0 5px; font-size: clamp(12px, 3.6vw, 14px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fs-bar { position: relative; height: 15px; box-sizing: border-box; border: 2.5px solid var(--ol); border-radius: 8px; background: rgba(60, 30, 10, 0.18); overflow: hidden; }
+.fs-bar i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(#9cf06f, #56c23f); }
+.fs-bar.gold i { background: linear-gradient(#ffe57a, #f5b22b); }
+.fs-bar span { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--num); font-size: 10px; color: #fff; -webkit-text-stroke: 3px var(--ol); paint-order: stroke fill; line-height: 1; white-space: nowrap; }
+.fs-bar.big { height: 24px; border-width: 3px; border-radius: 10px; } .fs-bar.big span { font-size: 13px; -webkit-text-stroke: 4px var(--ol); }
+.ms-get { flex: none; width: 66px; height: 44px; box-sizing: border-box; appearance: none; padding: 0; border: 3px solid var(--ol); border-radius: 13px; display: flex; align-items: center; justify-content: center;
+  gap: 2px; box-shadow: 0 3px 0 var(--ol); background: #e9dcc2; cursor: default; }
+.ms-get img { width: 22px; height: 22px; display: block; }
+.ms-get b { font-family: var(--num); font-weight: 400; font-size: 14px; color: #fff; -webkit-text-stroke: 4px var(--ol); paint-order: stroke fill; }
+.ms-get.go { background: linear-gradient(#8fe063, #4fb83f); cursor: pointer; }
+.ms-get.go:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.ms-get.done { background: #cfc3a9; box-shadow: none; opacity: 0.8; }
+.ms-get.done b { font-family: 'Black Han Sans', sans-serif; color: var(--ol); -webkit-text-stroke: 0; font-size: 13px; }
+.hero-name { margin: 0; text-align: center; font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hero-name small { font-size: 16px; color: var(--bark); }
+.hero-stage { position: relative; height: clamp(130px, 25vh, 210px); display: flex; align-items: center; justify-content: center; touch-action: pan-y; }
+.hero-pic { height: 92%; width: 64%; }
+.hero-pic img, .hero-pic svg { width: 100%; height: 100%; object-fit: contain; display: block; }
+.hero-arr { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; padding: 0; appearance: none; cursor: pointer; display: grid; place-items: center;
+  background: #fffaf0; border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); }
+.hero-arr.r { left: auto; right: 0; }
+.hero-arr svg { width: 24px; height: 24px; }
+.hero-skins { display: flex; gap: 7px; margin: 4px 0 18px; }
+.hero-skin { position: relative; flex: 1; min-width: 0; height: 62px; box-sizing: border-box; border: 3px solid var(--ol); border-radius: 12px; background: #fffaf0; display: grid; place-items: center; }
+.hero-skin img, .hero-skin svg { max-height: 48px; max-width: 86%; object-fit: contain; display: block; }
+.hero-skin.lock { background: #d9ccb0; }
+.hero-skin.lock img, .hero-skin.lock svg { filter: brightness(0) opacity(0.25); }
+.hero-skin.on { box-shadow: 0 0 0 3px #fff36b; }
+.hero-skin .lk { position: absolute; width: 22px; height: 22px; }
+.hero-skin b { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); font-family: var(--num); font-weight: 400; font-size: 13px; line-height: 1; color: #fff; -webkit-text-stroke: 4px var(--ol); paint-order: stroke fill; }
+.hero-buff { margin: 12px 0 0; text-align: center; font-size: 15px; }
+.hero-buff b { font-family: var(--num); font-weight: 400; font-size: 22px; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; }
+.hero-plus { margin: 6px 0 0; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 14px; color: var(--bark); }
+.hero-plus[hidden] { display: none; }
+@media (max-height: 680px) {
+  .fs-sign { top: calc(max(10px, env(safe-area-inset-top, 0px)) + 52px); font-size: 23px; padding: 6px 22px 8px; }
+  .fs-card { top: calc(max(10px, env(safe-area-inset-top, 0px)) + 108px); max-height: calc(100% - max(10px, env(safe-area-inset-top, 0px)) - 108px - 12px); padding: 12px 12px; }
+  .fs-wide { min-height: 50px; margin-top: 10px; }
+  .hero-skins { margin-bottom: 14px; }
+}
 .hm-back { flex: none; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; cursor: pointer; background: var(--cream); border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); }
 .hm-back svg { width: 24px; height: 24px; }
 .hm-back:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
@@ -774,10 +866,14 @@ html.tall-art .scr-box .ext { display: none; }
     <p class="hub-sub" data-t="hubSub">게임 12개, 순위에 도전해 보세요</p>
     <button class="hub-go" id="btn-hub-play" type="button" data-t="hubPlay">게임 시작</button>
   </div>
+  <div class="hub-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div></div>
+  <button class="hub-gear" id="btn-hub-set" type="button" aria-label="설정" data-ta="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></button>
   <nav class="hub-dock">
+    <button class="hub-d" id="btn-hub-att" type="button"><i class="hub-ic"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="8" width="30" height="27" rx="5" fill="#fff6dc" stroke="#2b1a0e" stroke-width="3"/><path d="M5 13a5 5 0 0 1 5-5h20a5 5 0 0 1 5 5v4H5z" fill="#ff5a4a" stroke="#2b1a0e" stroke-width="3"/><rect x="11" y="4" width="4" height="9" rx="2" fill="#fff" stroke="#2b1a0e" stroke-width="2.5"/><rect x="25" y="4" width="4" height="9" rx="2" fill="#fff" stroke="#2b1a0e" stroke-width="2.5"/><path d="M13 25.5l4 4 9-9" fill="none" stroke="#4fb83f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b data-t="attend">출석</b><span class="hub-badge" id="hub-att-b" hidden>!</span></button>
+    <button class="hub-d" id="btn-hub-mis" type="button"><i class="hub-ic"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="7" y="6" width="26" height="31" rx="4" fill="#f3c27a" stroke="#2b1a0e" stroke-width="3"/><rect x="11" y="10" width="18" height="23" rx="2" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2"/><rect x="14" y="3" width="12" height="7" rx="3" fill="#9aa4b0" stroke="#2b1a0e" stroke-width="2.5"/><path d="M14 17l2 2 3-3M14 25l2 2 3-3" fill="none" stroke="#4fb83f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 18h5M22 26h5" stroke="#2b1a0e" stroke-width="2.4" stroke-linecap="round"/></svg></i><b data-t="missions">미션</b><span class="hub-badge" id="hub-mis-b" hidden></span></button>
+    <button class="hub-d" id="btn-hub-hero" type="button"><img src="rabbit-idle.webp" alt=""><b data-t="heroes">캐릭터</b></button>
     <button class="hub-d" id="btn-hub-shop" type="button"><img src="gold-40.webp" alt=""><b data-t="shop">상점</b></button>
     <button class="hub-d" id="btn-hub-prof" type="button"><i class="hub-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#6ccf4f" stroke="#2b1a0e" stroke-width="2.2"/><circle cx="12" cy="9.6" r="3.6" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8"/><path d="M5.6 18.6c1.3-2.9 3.7-4.3 6.4-4.3s5.1 1.4 6.4 4.3" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8" stroke-linecap="round"/></svg></i><b data-t="profile">프로필</b></button>
-    <button class="hub-d" id="btn-hub-set" type="button"><i class="hub-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></i><b data-t="settings">설정</b></button>
   </nav>
 </section>
 
@@ -788,7 +884,7 @@ html.tall-art .scr-box .ext { display: none; }
     <div class="card minis-card">
       <div class="ribbon"><h2 data-t="title">미니게임 포레스트</h2></div>
       <div class="minis-list">
-        <button class="opt mg-row" id="mg-block" type="button"><svg class="mg-ic" viewBox="0 0 34 34" aria-hidden="true"><g stroke="#2b1a0e" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="17" width="9" height="9" rx="2" fill="#ffd23f"/><rect x="12" y="17" width="9" height="9" rx="2" fill="#e9483b"/><rect x="12" y="8" width="9" height="9" rx="2" fill="#4fa3ff"/><rect x="21" y="17" width="9" height="9" rx="2" fill="#6ccf4f"/><rect x="21" y="8" width="9" height="9" rx="2" fill="#b46cf0"/></g><path d="M5 19.5h4M14 19.5h4M14 10.5h4M23 19.5h4M23 10.5h4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/></svg><div><b data-t="blockGame">블록 포레스트</b><span id="mg-block-best"></span></div></button>
+        <button class="opt mg-row" id="mg-block" type="button"><img class="mg-ic mg-img" src="bear-idle.webp" alt=""><div><b data-t="blockGame">블록 포레스트</b><span id="mg-block-best"></span></div></button>
         <button class="opt mg-row" id="mg-acorn" type="button"><img class="mg-ic mg-img" src="mini-squirrel.webp" alt=""><div><b data-t="acorn">도토리 받기</b><span id="mg-acorn-best"></span></div></button>
         <button class="opt mg-row" id="mg-stairs" type="button"><img class="mg-ic mg-img" src="rabbit-idle.webp" alt=""><div><b data-t="stairs">토끼 계단</b><span id="mg-stairs-best"></span></div></button>
         <button class="opt mg-row" id="mg-merge" type="button"><img class="mg-ic mg-img" src="raccoon-hold.webp" alt=""><div><b data-t="merge">과일 합치기</b><span id="mg-merge-best"></span></div></button>
@@ -799,7 +895,7 @@ html.tall-art .scr-box .ext { display: none; }
         <button class="opt mg-row" id="mg-beaver" type="button"><img class="mg-ic mg-img" src="beaver-idle.webp" alt=""><div><b data-t="beaver">비버 다리 놓기</b><span id="mg-beaver-best"></span></div></button>
         <button class="opt mg-row" id="mg-hedgehog" type="button"><img class="mg-ic mg-img" src="hh-face.webp" alt=""><div><b data-t="hedgehog">고슴도치 가시 꽂기</b><span id="mg-hedgehog-best"></span></div></button>
         <button class="opt mg-row" id="mg-caterpillar" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="caterpillar">애벌레 잎 먹기</b><span id="mg-caterpillar-best"></span></div></button>
-        <button class="opt mg-row" id="mg-cups" type="button"><img class="mg-ic mg-img" src="" alt=""><div><b data-t="cups">도토리 컵 찾기</b><span id="mg-cups-best"></span></div></button>
+        <button class="opt mg-row" id="mg-cups" type="button"><img class="mg-ic mg-img" src="fox-idle.webp" alt=""><div><b data-t="cups">도토리 컵 찾기</b><span id="mg-cups-best"></span></div></button>
       </div>
     </div>
   </div>
@@ -1126,12 +1222,35 @@ html.tall-art .scr-box .ext { display: none; }
     <div class="sh-have" aria-label="내 황금 도토리" data-ta="shopHave"><img src="gold-icon.webp" alt=""><b class="num" id="shop-n">0</b></div>
   </div>
 </section>
+<section id="daily" class="fscr" hidden aria-label="오늘의 보상" data-ta="rewards">
+  <h2 class="fs-sign" data-t="rewards">오늘의 보상</h2>
+  <div class="fs-card" id="daily-card">
+    <div class="fs-tabs"><button type="button" id="tab-att" class="on"><span data-t="attTab">출석</span><span class="hub-badge" id="tab-att-b" hidden>!</span></button><button type="button" id="tab-mis"><span data-t="misTab">일일 미션</span><span class="hub-badge" id="tab-mis-b" hidden></span></button></div>
+    <div id="att-pane"><p class="fs-sub" id="att-sub"></p><div class="fs-cal" id="att-cal"></div><button class="btn primary fs-wide" id="btn-att-get" type="button" data-t="attGet">오늘 받기</button></div>
+    <div id="mis-pane" hidden><p class="fs-sub" id="mis-sub"></p><div id="mis-list"></div></div>
+  </div>
+  <div class="sh-top"><button class="sh-back" id="btn-daily-close" type="button" aria-label="닫기" data-ta="close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="fs-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div></div></div>
+</section>
+<section id="heroes" class="fscr" hidden aria-label="캐릭터" data-ta="heroes">
+  <h2 class="fs-sign" data-t="heroes">캐릭터</h2>
+  <div class="fs-card" id="hero-card">
+    <p class="hero-name"><span id="hero-game"></span> <small id="hero-who"></small></p>
+    <div class="hero-stage" id="hero-stage"><button class="hero-arr" id="hero-prev" type="button" aria-label="이전" data-ta="prev"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="hero-pic" id="hero-pic"></div><button class="hero-arr r" id="hero-next" type="button" aria-label="다음" data-ta="next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5 16.5 12 9 19.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <div class="hero-skins" id="hero-skins"></div>
+    <div class="fs-bar big" id="hero-bar"><i></i><span></span></div>
+    <p class="hero-buff" id="hero-buff"></p>
+    <button class="btn primary fs-wide" id="btn-hero-up" type="button"><span data-t="heroUp">강화</span><img src="coin-1.webp" alt=""><span class="num" id="hero-cost">0</span></button>
+    <p class="fs-sub" id="hero-count"></p>
+  </div>
+  <div class="sh-top"><button class="sh-back" id="btn-heroes-close" type="button" aria-label="닫기" data-ta="close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="fs-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div></div></div>
+</section>
 
 <section id="cont" class="overlay" hidden aria-label="이어하기" data-ta="contTitle">
   <div class="card">
     <div class="ribbon"><h2 data-t="contTitle">이어하기</h2></div>
     <div class="rk-pic" id="cont-pic" aria-hidden="true"></div>
     <div class="bigscore"><span class="label" data-t="score">점수</span><span id="cont-score" class="num">0</span></div>
+    <p class="hero-plus" id="cont-hero" hidden></p>
     <button class="btn primary ic-btn" id="btn-cont-ad" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="26" height="20" rx="5" fill="#fff" stroke="#2b1a0e" stroke-width="3"/><path d="M13.2 11.2v9.6l8-4.8z" fill="#4fb83f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg><span data-t="contAd">광고 보고 이어하기</span></button>
     <button class="btn ghost ic-btn" id="btn-cont-item" type="button"><img class="gold-ic" src="gold-icon.webp" alt=""><span data-t="contItem">이어하기 아이템</span><b class="cont-n" id="cont-n">3</b></button>
     <button class="btn plain" id="btn-cont-no" type="button" data-t="contNo">그만하기</button>
@@ -1147,6 +1266,7 @@ html.tall-art .scr-box .ext { display: none; }
     <div class="ribbon"><h2 id="res-name"></h2></div>
     <div class="rk-pic" id="res-pic" aria-hidden="true"></div>
     <div class="bigscore"><span class="label" data-t="score">점수</span><span id="res-score" class="num">0</span></div>
+    <p class="hero-plus" id="res-hero" hidden></p>
     <p id="res-new" class="gap hot" hidden data-t="newBest">새 최고 기록!</p>
     <div class="rk-recs">
       <div class="rk-rec me"><span class="lab" data-t="rkMine">내 최고</span><b class="nm"></b><span class="sc num" id="res-best">0</span></div>
@@ -1186,6 +1306,13 @@ const STR = {
     paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '목록으로',
     over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', miniGames: '미니게임', hubSub: '게임 12개, 순위에 도전해 보세요', hubPlay: '게임 시작', profile: '프로필', profGold: '황금 도토리', profGames: '한 판 수', profBest: '최고 기록',
     nickChange: '바꾸기', nickNew: '새 닉네임을 정해 주세요', nickDone: '닉네임을 바꿨어요', back: '뒤로',
+    coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', attGet: '오늘 받기', attGot: '오늘은 받았어요',
+    attSub: () => `${new Date().getMonth() + 1}월 · 날짜마다 정해진 보상, 지난 날은 못 받아요`, misSub: t => `0시에 새 미션 5개 · 남은 시간 ${t}`,
+    misAny: n => `아무 게임 ${n}판 하기`, misPlay: g => `${g} 1판 하기`, misScore: (g, s) => `${g} ${s}점 넘기`, misAll: '5개 모두 깨기', misGot: '받음',
+    gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: '황금 도토리 1개를 받았어요', noCoins: '코인이 모자라요',
+    heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`,
+    heroBonus: p => `캐릭터 보너스 +${p}%`, prev: '이전', next: '다음',
+    heroName: g => ({ block: '곰', acorn: '다람쥐', stairs: '토끼', merge: '너구리', pebble: '수달', mushroom: '두더지', owlpost: '부엉이', chameleon: '카멜레온', beaver: '비버', hedgehog: '고슴도치', caterpillar: '애벌레', cups: '여우' })[g],
     tut: '게임 방법', tutGo: '화면을 누르면 시작해요', tutLines: {
       block: ['아래 블록을 끌어다 판 위에 놓아요', '가로 한 줄을 채우면 깨져요'],
       acorn: ['다람쥐를 좌우로 끌어 도토리를 받아요', '돌에 맞으면 하트가 줄어요'],
@@ -1230,6 +1357,13 @@ const STR = {
     paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Game list',
     over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', miniGames: 'Mini Games', hubSub: '12 games. Climb the rankings!', hubPlay: 'Play', profile: 'Profile', profGold: 'Golden acorns', profGames: 'Games played', profBest: 'Best scores',
     nickChange: 'Change', nickNew: 'Pick a new nickname', nickDone: 'Nickname changed', back: 'Back',
+    coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', attGet: 'Claim today', attGot: 'Claimed today',
+    attSub: () => `${new Date().toLocaleString('en', { month: 'long' })} · a reward for each date`, misSub: t => `5 new at midnight · ${t} left`,
+    misAny: n => `Play any ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: 'Clear all 5', misGot: 'Got',
+    gotCoins: n => `+${n} coins`, gotGold: '+1 golden acorn', noCoins: 'Not enough coins',
+    heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`,
+    heroBonus: p => `Hero bonus +${p}%`, prev: 'Previous', next: 'Next',
+    heroName: g => ({ block: 'Bear', acorn: 'Squirrel', stairs: 'Rabbit', merge: 'Raccoon', pebble: 'Otter', mushroom: 'Mole', owlpost: 'Owl', chameleon: 'Chameleon', beaver: 'Beaver', hedgehog: 'Hedgehog', caterpillar: 'Caterpillar', cups: 'Fox' })[g],
     tut: 'How to play', tutGo: 'Tap to start', tutLines: {
       block: ['Drag a block from below onto the board', 'Fill a row to break it'],
       acorn: ['Drag the squirrel left and right to catch acorns', 'A stone costs a heart'],
@@ -1631,7 +1765,7 @@ function signedIn(st) {
   openLobby(false, false); hideScreen('splash');   // the first screen (the games list from its Play)
   lobbyInfo();
 }
-function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); rkSync(); goldOnSignIn(); }
+function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); rkSync(); goldOnSignIn(); walletOnSignIn(); }
 function openNick() {
   $('#nick').hidden = false;
   const err = $('#nick-err'); err.textContent = tr('nickRule'); err.classList.remove('bad');
@@ -2113,12 +2247,14 @@ function blockRevive() {
   checkNoFit();
 }
 for (const n of [16, 32]) END['block' + n] = { score: () => G.score, on: () => G.state === 'over' && G.size === n, revive: blockRevive, used: () => G.continues || 0,
+  pics: () => ['bear-joy.webp', 'bear-sad.webp'],
   again: () => { newGame(G.mode, G.size); showOnly(null); musicStart(true); }, list: () => { G.started = false; G.state = 'menu'; openLobby(); } };
 
 function finish() {
   G.state = 'over';
-  shownScore = G.score;
   const key = 'block' + G.size;
+  heroScore(key, G);
+  shownScore = G.score;
   if (END_BEST[key] === undefined) END_BEST[key] = G.best;   // a game from before a reload
   if (G.score > G.best) { G.best = G.score; saveBest(G.score); }
   rkScore(key, G.score);
@@ -2579,6 +2715,7 @@ function lobbyInfo() {
 }
 // leaving a game ends it: the score so far is the final one (a new best is kept)
 function quitGame() {
+  if (G.started) heroScore('block' + G.size, G);
   if (G.started && G.score > G.best) { G.best = G.score; saveBest(G.score); }
   if (G.started) rkScore('block' + G.size, G.score);
   G.started = false; G.state = 'menu';
@@ -2797,7 +2934,7 @@ function minisInfo() {
   $('#mg-beaver-best').textContent = tr('mgBest', bvBest().toLocaleString());
   $('#mg-hedgehog-best').textContent = tr('mgBest', hhBest().toLocaleString());
   $('#mg-caterpillar-best').textContent = tr('mgBest', cpBest().toLocaleString());
-  $('#mg-cups-best').textContent = tr('mgBest', cuBest().toLocaleString()); cuFaces();
+  $('#mg-cups-best').textContent = tr('mgBest', cuBest().toLocaleString());
 }
 function closeMini() {   // back to the mini games' screen
   cancelAnimationFrame(MG.raf); MG.st = 'off';
@@ -2809,6 +2946,7 @@ function closeMini() {   // back to the mini games' screen
 function miniFinish() {
   if (MG.st === 'over' || MG.st === 'off') return;
   MG.st = 'over';
+  heroScore('acorn', MG);
   const best = miniBest(), isBest = MG.score > best;
   if (isBest) { try { localStorage.setItem(MINI_BEST, String(MG.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('acorn', MG.score);
@@ -3014,7 +3152,7 @@ function openHub() {
   const el = $('#hub');
   setArt($('#hub-art'), artFor(LANG));
   if (el.hidden) { clearTimeout(el._t); el.classList.remove('out'); el.hidden = false; }
-  hubFit();
+  hubFit(); walletUI();
 }
 // the card as tall as it can be (up to 280) between the logo and the row of three, its friends clear of the logo
 function hubFit() {
@@ -3022,7 +3160,7 @@ function hubFit() {
   if (el.hidden) return;
   const H = el.clientHeight, box = $('#hub-box').getBoundingClientRect();
   const logo = box.top + box.height * (document.documentElement.classList.contains('tall-art') ? HUB_LOGO.tall : HUB_LOGO.wide);
-  const dh = Math.round(Math.min(104, Math.max(80, H * 0.12))), dockB = Math.max(18, parseFloat(getComputedStyle($('.hub-dock')).bottom) || 18);
+  const dh = Math.round(Math.min(88, Math.max(70, H * 0.1))), dockB = Math.max(18, parseFloat(getComputedStyle($('.hub-dock')).bottom) || 18);
   const hb = dockB + dh + 24, room = H - hb - (logo + 10);   // the card and its friends (0.22 of it over its top) under the logo
   const h = Math.round(Math.max(196, Math.min(280, room / 1.22)));
   el.style.setProperty('--dh', dh + 'px'); el.style.setProperty('--hb', hb + 'px'); el.style.setProperty('--h', h + 'px');
@@ -3267,12 +3405,14 @@ const CONT_OWNER = 'forest-cont-owner', CONT_DIRTY = 'forest-cont-dirty';
 let goldT = 0;
 function contShow() {
   const hm = document.getElementById('hm-gold'); if (hm) hm.textContent = contN;   // the home's shop button
+  for (const e of document.querySelectorAll('.js-gold')) e.textContent = contN.toLocaleString();   // the first screen's and the rewards'
   if (typeof shopUI === 'function') { try { contUI(); shopUI(); } catch (e) { /* not built yet */ } }
 }
 function contPut(n) {   // a change here: bought, watched, used
   contN = Math.max(0, n | 0);
   try { localStorage.setItem(CONT_KEY, String(contN)); localStorage.setItem(CONT_DIRTY, '1'); } catch (e) { /* storage unavailable */ }
   const hm = document.getElementById('hm-gold'); if (hm) hm.textContent = contN;
+  for (const e of document.querySelectorAll('.js-gold')) e.textContent = contN.toLocaleString();
   goldSave();
 }
 function contFrom(n) {   // the account's count, taken as it is
@@ -3309,7 +3449,7 @@ function goldOnSignIn() {
 }
 const CONT_PER_GAME = 1, END_CONT = {};   // going on: once a game
 // a game starts: its best before it (for "new best"), its continue not used yet; the ad for going on is fetched ahead
-const endBest = game => { END_BEST[game] = RK_LOCAL[game](); END_CONT[game] = 0; adsAhead(); };
+const endBest = game => { END_BEST[game] = RK_LOCAL[game](); END_CONT[game] = 0; HERO_ADD[game] = 0; adsAhead(); };
 const endUsed = game => (END[game].used ? END[game].used() : END_CONT[game] || 0);
 let endGame = null, resN = 0;   // the game whose continue card or result is up
 function endPic(box, game, good) {
@@ -3326,9 +3466,11 @@ function gameEnd(game) {
   endGame = game;
   endPic($('#cont-pic'), game, false);
   $('#cont-score').textContent = e.score().toLocaleString();
+  heroPlus($('#cont-hero'), game);
   contUI();
   $('#cont').hidden = false;
 }
+function heroPlus(el, game) { const g = heroOf(game); el.hidden = !(heroLv(g) > 0); el.textContent = tr('heroBonus', heroPctTxt(g)); }
 function contUI() {
   $('#cont-n').textContent = contN; $('#btn-cont-item').disabled = contN <= 0;
   $('#hm-gold').textContent = contN;   // on the home's shop button
@@ -3583,11 +3725,13 @@ function showResult(game) {
   $('#res-name').textContent = game.startsWith('block') ? tr('blockGame') : tr(game);
   endPic($('#res-pic'), game, isBest);
   $('#res-score').textContent = score.toLocaleString();
+  heroPlus($('#res-hero'), game);
   $('#res-new').hidden = !isBest;
   $('#res-best').textContent = Math.max(RK_LOCAL[game](), score).toLocaleString();
   $('#res-all').textContent = $('#res-wk').textContent = rkOnline() ? '…' : '-';
   $('#result').hidden = false;
   gameCounted();
+  misGame(game, score);
   if (isBest && e.best) gsfx(e.best[0], 1, e.best[1]);
   resRanks(game);
 }
@@ -3602,6 +3746,253 @@ async function resRanks(game) {
   put('all', all); put('wk', wk);
 }
 function resClose() { $('#result').hidden = true; resN++; const g = endGame; endGame = null; return g; }
+/* ---------- coins, today's rewards (check-in by the month's dates, five missions a day) and the heroes' upgrades. Kept with
+   the account like the golden acorns: the phone keeps a copy (whose it is, and whether a change has not gone up yet, which
+   goes up at the next sign-in). Dates are the phone's own (midnight there). ---------- */
+const WALLET_KEY = 'forest-wallet';
+const HERO_LIST = ['block', 'acorn', 'stairs', 'merge', 'pebble', 'mushroom', 'owlpost', 'chameleon', 'beaver', 'hedgehog', 'caterpillar', 'cups'];
+const HERO_MAX = 500, HERO_STEP = 100, HERO_PCT = 0.05;   // five stages of 100 upgrades; each upgrade +0.05% on that game's score
+const heroCost = L => 50 * heroStage(L);   // coins for the next upgrade (for now: 50 a stage)
+const ATT_COINS = 100, MIS_COINS = 50, MIS_N = 5;
+// the score a "score" mission asks for, game by game (a first guess, to be tuned)
+const MIS_SCORE = { block: 20000, acorn: 3000, stairs: 3000, merge: 1000, pebble: 1000, mushroom: 5000, owlpost: 10000, chameleon: 5000, beaver: 5000, hedgehog: 5000, caterpillar: 2000, cups: 5000 };
+let WAL = { coins: 0, daily: {}, heroes: {} }, walOwner = null, walDirty = false, walT = 0;
+(function walletLoad() {
+  try {
+    const o = JSON.parse(localStorage.getItem(WALLET_KEY) || 'null');
+    if (o) { WAL = { coins: Math.max(0, o.coins | 0), daily: o.daily || {}, heroes: o.heroes || {} }; walOwner = o.owner || null; walDirty = !!o.dirty; }
+  } catch (e) { /* storage unavailable */ }
+})();
+function walletStore() { try { localStorage.setItem(WALLET_KEY, JSON.stringify({ ...WAL, owner: walOwner, dirty: walDirty })); } catch (e) { /* storage unavailable */ } }
+function walletPut(fn) {   // a change here: claimed, spent
+  fn(WAL);
+  walDirty = true; walletStore(); walletUI(); walletSave();
+}
+function walletSave() {
+  clearTimeout(walT);
+  if (!ME || !NET || !NET.saveWallet) return;
+  const uid = ME.uid;
+  walT = setTimeout(() => {
+    const sent = JSON.stringify(WAL);
+    NET.saveWallet(JSON.parse(sent)).then(() => {
+      if (!ME || ME.uid !== uid) return;
+      Object.assign(ME, JSON.parse(sent));
+      if (JSON.stringify(WAL) === sent) { walDirty = false; walletStore(); }
+    }).catch(() => {});   // offline, or the rules not yet published: the phone keeps it, it goes up next time
+  }, 700);
+}
+// signed in: the account's, unless this phone holds a change of the same account's not sent yet (that goes up)
+function walletOnSignIn() {
+  if (!ME) return;
+  const has = Number.isInteger(ME.coins) || !!ME.daily || !!ME.heroes;
+  if (has && !(walOwner === ME.uid && walDirty)) {
+    WAL = { coins: Math.max(0, ME.coins | 0), daily: ME.daily || {}, heroes: ME.heroes || {} }; walDirty = false;
+  } else {
+    if (!has && walOwner && walOwner !== ME.uid) WAL = { coins: 0, daily: {}, heroes: {} };   // another account's copy: this one starts empty
+    walDirty = true; walletSave();
+  }
+  walOwner = ME.uid; walletStore(); walletUI();
+}
+function walletWipe() { WAL = { coins: 0, daily: {}, heroes: {} }; walOwner = null; walDirty = false; try { localStorage.removeItem(WALLET_KEY); } catch (e) { /* storage unavailable */ } walletUI(); }
+const pad2 = n => String(n).padStart(2, '0');
+const dayKey = (t = new Date()) => `${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(t.getDate())}`;
+const monKey = (t = new Date()) => `${t.getFullYear()}-${pad2(t.getMonth() + 1)}`;
+
+// check-in: each date of the month has its reward (coins; a golden acorn on the 7th, 14th, 21st, 28th), today's only
+const attGold = d => d % 7 === 0 && d <= 28;
+const attBits = () => (WAL.daily.mon === monKey() ? WAL.daily.att | 0 : 0);
+const attCan = () => !(attBits() & (1 << (new Date().getDate() - 1)));
+function attClaim() {
+  if (!attCan()) return;
+  const d = new Date().getDate(), m = monKey(), gold = attGold(d);
+  walletPut(w => {
+    if (w.daily.mon !== m) { w.daily.mon = m; w.daily.att = 0; }
+    w.daily.att = (w.daily.att | 0) | (1 << (d - 1));
+    if (!gold) w.coins += ATT_COINS;
+  });
+  if (gold) contPut(contN + 1);
+  sfx('pick'); toast(gold ? tr('gotGold') : tr('gotCoins', ATT_COINS));
+}
+
+// the day's five missions: the same on every phone of the account (from the date and the account), new at midnight
+function misList(day) {
+  let h = 2166136261;
+  for (const c of day + '|' + (ME ? ME.uid : '')) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  const rnd = () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const g = HERO_LIST.slice();
+  for (let i = g.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [g[i], g[j]] = [g[j], g[i]]; }
+  return [{ t: 'any', n: 3 }, { t: 'play', g: g[0], n: 1 }, { t: 'play', g: g[1], n: 1 }, { t: 'score', g: g[2], n: 1, s: MIS_SCORE[g[2]] }, { t: 'score', g: g[3], n: 1, s: MIS_SCORE[g[3]] }];
+}
+function misState() {
+  const day = dayKey(), d = WAL.daily;
+  return d.day === day && Array.isArray(d.prog) ? { day, prog: d.prog.slice(0, MIS_N).map(n => n | 0), got: d.got | 0 } : { day, prog: [0, 0, 0, 0, 0], got: 0 };
+}
+const misDone = (st, L, i) => st.prog[i] >= L[i].n;
+const misAllBit = 1 << MIS_N;
+function misReady() {   // how many rewards are waiting
+  const st = misState(), L = misList(st.day);
+  let n = 0;
+  for (let i = 0; i < MIS_N; i++) if (misDone(st, L, i) && !(st.got & (1 << i))) n++;
+  if ((st.got & 31) === 31 && !(st.got & misAllBit)) n++;
+  return n;
+}
+// a game has ended (its result shows): its part in the day's missions
+function misGame(game, score) {
+  const g = heroOf(game), st = misState(), L = misList(st.day);
+  let ch = false;
+  L.forEach((m, i) => {
+    if (misDone(st, L, i)) return;
+    if (m.t === 'any' || (m.t === 'play' && m.g === g)) { st.prog[i]++; ch = true; }
+    else if (m.t === 'score' && m.g === g && score >= m.s) { st.prog[i] = 1; ch = true; }
+  });
+  if (ch) walletPut(w => { w.daily.day = st.day; w.daily.prog = st.prog; w.daily.got = st.got; });
+}
+function misClaim(i) {
+  const st = misState(), L = misList(st.day);
+  if (i === MIS_N) {   // all five: a golden acorn
+    if ((st.got & 31) !== 31 || st.got & misAllBit) return;
+    walletPut(w => { w.daily.day = st.day; w.daily.prog = st.prog; w.daily.got = st.got | misAllBit; });
+    contPut(contN + 1); sfx('pick'); toast(tr('gotGold'));
+    return;
+  }
+  if (!misDone(st, L, i) || st.got & (1 << i)) return;
+  walletPut(w => { w.daily.day = st.day; w.daily.prog = st.prog; w.daily.got = st.got | (1 << i); w.coins += MIS_COINS; });
+  sfx('pick'); toast(tr('gotCoins', MIS_COINS));
+}
+
+// the heroes: one a game, upgraded with coins; every 100 upgrades it evolves (five stages); its game's score gets +0.05% an upgrade
+const heroOf = game => (game.startsWith('block') ? 'block' : game);
+const heroLv = g => Math.max(0, Math.min(HERO_MAX, WAL.heroes[g] | 0));
+const heroStage = L => Math.min(5, Math.floor(L / HERO_STEP) + 1);
+const heroIn = L => (L >= HERO_MAX ? HERO_STEP : L % HERO_STEP);
+const heroPct = g => heroLv(g) * HERO_PCT;
+const heroPctTxt = g => (Math.round(heroPct(g) * 100) / 100).toFixed(2);
+const HERO_SKIN = {};   // the stages' pictures, game by game, once they are drawn (until then the game's own picture)
+const HERO_ADD = {};   // what the hero has added to the score of the game being played (again on top after going on)
+// a game ends: its hero's share added to its score (to the points since the last time, after going on)
+function heroScore(game, X, key = 'score') {
+  const had = HERO_ADD[game] || 0, raw = X[key] - had, add = Math.floor(raw * heroPct(heroOf(game)) / 100);
+  X[key] = raw + add; HERO_ADD[game] = add;
+}
+function heroUp(g) {
+  const L = heroLv(g);
+  if (L >= HERO_MAX) return;
+  const cost = heroCost(L);
+  if (WAL.coins < cost) { sfx('back'); toast(tr('noCoins')); return; }
+  walletPut(w => { w.coins -= cost; w.heroes[g] = L + 1; });
+  sfx('pick');
+  if ((L + 1) % HERO_STEP === 0 && L + 1 < HERO_MAX) toast(tr('heroEvolve', heroStage(L + 1)));
+}
+function heroPic(g, stage) {   // the stage's picture, or the game's own (its picture in the games list)
+  const s = HERO_SKIN[g] && HERO_SKIN[g][stage - 1];
+  if (s) { const im = new Image(); im.alt = ''; im.src = s; return im; }
+  const ic = $('#mg-' + g + ' .mg-ic');
+  if (!ic) return document.createElement('i');
+  const c = ic.cloneNode(true); c.removeAttribute('class'); return c;
+}
+const heroName = g => (g === 'block' ? tr('blockGame') : tr(g));
+
+// what shows coins and the red marks
+function walletUI() {
+  for (const e of document.querySelectorAll('.js-coin')) e.textContent = WAL.coins.toLocaleString();
+  for (const e of document.querySelectorAll('.js-gold')) e.textContent = contN.toLocaleString();
+  const att = attCan(), mis = ME ? misReady() : 0;
+  $('#hub-att-b').hidden = !att; $('#tab-att-b').hidden = !att;
+  for (const id of ['#hub-mis-b', '#tab-mis-b']) { $(id).hidden = !mis; $(id).textContent = mis; }
+  if (!$('#daily').hidden) dailyUI();
+  if (!$('#heroes').hidden) heroUI();
+}
+
+// ---- today's rewards: check-in and missions, two tabs
+let dailyTab = 'att', dailyIv = 0;
+function openDaily(tab) {
+  dailyTab = tab; $('#daily').hidden = false; dailyUI(); $('#daily-card').scrollTop = 0;
+  clearInterval(dailyIv); dailyIv = setInterval(() => { if ($('#daily').hidden) clearInterval(dailyIv); else dailyClock(); }, 1000);
+}
+function closeDaily() { clearInterval(dailyIv); $('#daily').hidden = true; }
+function dailyClock() {
+  const now = new Date(), end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), s = Math.max(0, Math.floor((end - now) / 1000));
+  $('#mis-sub').textContent = tr('misSub', `${pad2(Math.floor(s / 3600))}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`);
+  if ($('#mis-list').dataset.day !== dayKey() || $('#att-cal').dataset.day !== dayKey()) dailyUI();   // midnight passed
+}
+function dailyUI() {
+  $('#tab-att').classList.toggle('on', dailyTab === 'att'); $('#tab-mis').classList.toggle('on', dailyTab === 'mis');
+  $('#att-pane').hidden = dailyTab !== 'att'; $('#mis-pane').hidden = dailyTab !== 'mis';
+  // the month: from its first weekday, each date with its reward, ticked once taken
+  const now = new Date(), y = now.getFullYear(), m = now.getMonth(), today = now.getDate(), first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(), bits = attBits();
+  const wd = LANG === 'en' ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['일', '월', '화', '수', '목', '금', '토'];
+  let h = wd.map(w => `<div class="wd">${w}</div>`).join('') + '<div class="d blank"></div>'.repeat(first);
+  for (let d = 1; d <= days; d++) {
+    const gold = attGold(d), cls = ['d', gold ? 'gold' : '', bits & (1 << (d - 1)) ? 'got' : '', d === today ? 'today' : '', d < today ? 'past' : ''].join(' ');
+    h += `<div class="${cls}"><i>${d}</i><img src="${gold ? 'gold-icon.webp' : 'coin-1.webp'}" alt=""><b>${gold ? 'x1' : ATT_COINS}</b></div>`;
+  }
+  const cal = $('#att-cal'); cal.innerHTML = h; cal.dataset.day = dayKey();
+  $('#att-sub').textContent = tr('attSub');
+  const can = attCan(), btn = $('#btn-att-get'); btn.disabled = !can; btn.textContent = tr(can ? 'attGet' : 'attGot');
+  // the missions
+  const st = misState(), L = misList(st.day), list = $('#mis-list');
+  const anyIc = '<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="11" width="34" height="20" rx="10" fill="#fff6dc" stroke="#2b1a0e" stroke-width="3"/><path d="M12 17v8M8 21h8" stroke="#2b1a0e" stroke-width="3" stroke-linecap="round"/><circle cx="27" cy="18" r="2.6" fill="#ff5a4a" stroke="#2b1a0e" stroke-width="1.6"/><circle cx="31" cy="23" r="2.6" fill="#4fb83f" stroke="#2b1a0e" stroke-width="1.6"/></svg>';
+  const row = (ic, text, a, b, state, prize, i, gold) => `<div class="ms-row${gold ? ' all' : ''}"><div class="ic">${ic}</div><div class="tx"><p>${text}</p><div class="fs-bar${gold ? ' gold' : ''}"><i style="width:${Math.min(100, a / b * 100)}%"></i><span>${Math.min(a, b)} / ${b}</span></div></div>
+    <button type="button" class="ms-get ${state}" data-i="${i}" ${state === 'go' ? '' : 'disabled'}>${state === 'done' ? `<b>${tr('misGot')}</b>` : prize}</button></div>`;
+  list.innerHTML = L.map((m, i) => {
+    const text = m.t === 'any' ? tr('misAny', m.n) : m.t === 'play' ? tr('misPlay', heroName(m.g)) : tr('misScore', heroName(m.g), m.s.toLocaleString());
+    const ic = m.t === 'any' ? anyIc : (($('#mg-' + m.g + ' .mg-ic') || {}).outerHTML || '');
+    const state = st.got & (1 << i) ? 'done' : misDone(st, L, i) ? 'go' : '';
+    return row(ic, text, st.prog[i], m.n, state, `<img src="coin-1.webp" alt=""><b>${MIS_COINS}</b>`, i, false);
+  }).join('') + row('<img src="gold-icon.webp" alt="">', tr('misAll'), [0, 1, 2, 3, 4].filter(i => st.got & (1 << i)).length, MIS_N,
+    st.got & misAllBit ? 'done' : (st.got & 31) === 31 ? 'go' : '', '<img src="gold-icon.webp" alt=""><b>1</b>', MIS_N, true);
+  list.dataset.day = st.day;
+  dailyClock();
+}
+$('#btn-hub-att').addEventListener('click', () => { sfx('pick'); openDaily('att'); });
+$('#btn-hub-mis').addEventListener('click', () => { sfx('pick'); openDaily('mis'); });
+$('#tab-att').addEventListener('click', () => { if (dailyTab !== 'att') { sfx('pick'); dailyTab = 'att'; dailyUI(); } });
+$('#tab-mis').addEventListener('click', () => { if (dailyTab !== 'mis') { sfx('pick'); dailyTab = 'mis'; dailyUI(); } });
+$('#btn-att-get').addEventListener('click', attClaim);
+$('#mis-list').addEventListener('click', e => { const b = e.target.closest('.ms-get.go'); if (b) misClaim(+b.dataset.i); });
+$('#btn-daily-close').addEventListener('click', () => { sfx('back'); closeDaily(); });
+
+// ---- the heroes: one at a time (arrows or a swipe), its five stages, its upgrade
+let heroI = 0;
+try { heroI = Math.max(0, Math.min(HERO_LIST.length - 1, +localStorage.getItem('forest-hero-i') || 0)); } catch (e) { /* storage unavailable */ }
+function openHeroes() { $('#heroes').hidden = false; heroUI(); }
+function heroUI() {
+  const g = HERO_LIST[heroI], L = heroLv(g), st = heroStage(L);
+  $('#hero-game').textContent = heroName(g); $('#hero-who').textContent = '· ' + tr('heroName', g);
+  $('#hero-pic').replaceChildren(heroPic(g, st));
+  const lock = '<svg class="lk" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" fill="#c9b994" stroke="#2b1a0e" stroke-width="2.2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#2b1a0e" stroke-width="2.2"/></svg>';
+  $('#hero-skins').replaceChildren(...[1, 2, 3, 4, 5].map(i => {
+    const d = document.createElement('div'); d.className = 'hero-skin' + (i > st ? ' lock' : '') + (i === st ? ' on' : '');
+    d.append(heroPic(g, i)); if (i > st) d.insertAdjacentHTML('beforeend', lock);
+    const b = document.createElement('b'); b.textContent = i; d.append(b); return d;
+  }));
+  const inn = heroIn(L);
+  $('#hero-bar i').style.width = inn + '%'; $('#hero-bar span').textContent = tr('heroStage', st, inn);
+  $('#hero-buff').innerHTML = `${tr('heroBuff', heroName(g))} <b>+${heroPctTxt(g)}%</b>`;
+  const max = L >= HERO_MAX, btn = $('#btn-hero-up');
+  btn.disabled = max; btn.querySelector('[data-t]').textContent = tr(max ? 'heroMax' : 'heroUp');
+  btn.querySelector('img').hidden = max; $('#hero-cost').hidden = max; $('#hero-cost').textContent = heroCost(L).toLocaleString();
+  $('#hero-count').textContent = `${heroI + 1} / ${HERO_LIST.length}`;
+}
+function heroGo(d) {
+  heroI = (heroI + d + HERO_LIST.length) % HERO_LIST.length;
+  try { localStorage.setItem('forest-hero-i', String(heroI)); } catch (e) { /* storage unavailable */ }
+  sfx('pick'); heroUI();
+}
+$('#btn-hub-hero').addEventListener('click', () => { sfx('pick'); openHeroes(); });
+$('#hero-prev').addEventListener('click', () => heroGo(-1));
+$('#hero-next').addEventListener('click', () => heroGo(1));
+$('#btn-hero-up').addEventListener('click', () => heroUp(HERO_LIST[heroI]));
+$('#btn-heroes-close').addEventListener('click', () => { sfx('back'); $('#heroes').hidden = true; });
+{ let sx = null, sy = 0;
+  $('#hero-stage').addEventListener('pointerdown', e => { if (e.target.closest('.hero-arr')) return; sx = e.clientX; sy = e.clientY; });
+  $('#hero-stage').addEventListener('pointerup', e => {
+    if (sx === null) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) heroGo(dx < 0 ? 1 : -1);
+  });
+  $('#hero-stage').addEventListener('pointercancel', () => { sx = null; });
+}
 /* ---------- the shop (a screen of its own): golden acorns (the continue items: 5, 15, 40) and ad removal, bought with
    Google Play in the app, and a golden acorn for watching an ad (5 a day) (the product
    numbers are the Play Console's; the prices are Google's). Given on the phone, with no server checking the payment
@@ -4071,6 +4462,7 @@ function stFall() {
 function stFinish() {
   if (ST.st === 'over' || ST.st === 'off') return false;
   ST.st = 'over';
+  heroScore('stairs', ST);
   const isBest = ST.score > stBest();
   if (isBest) { try { localStorage.setItem(ST_BEST, String(ST.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('stairs', ST.score);
@@ -4389,6 +4781,7 @@ function fmBurst(x, y, k, n) {
 function fmFinish() {
   if (FM.st === 'over' || FM.st === 'off') return false;
   FM.st = 'over';
+  heroScore('merge', FM);
   const isBest = FM.score > fmBest();
   if (isBest) { try { localStorage.setItem(FM_BEST, String(FM.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('merge', FM.score);
@@ -4814,6 +5207,7 @@ function pbShiftDone() {
 function pbFinish() {
   if (PB.st === 'over' || PB.st === 'off') return false;
   PB.st = 'over';
+  heroScore('pebble', PB);
   const isBest = PB.score > pbBest();
   if (isBest) { try { localStorage.setItem(PB_BEST, String(PB.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('pebble', PB.score);
@@ -5309,6 +5703,7 @@ function msBurst(x, y, col, n) {
 function msFinish() {
   if (MS.st === 'over' || MS.st === 'off') return false;
   MS.st = 'over';
+  heroScore('mushroom', MS);
   const isBest = MS.score > msBest();
   if (isBest) { try { localStorage.setItem(MS_BEST, String(MS.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('mushroom', MS.score);
@@ -5585,6 +5980,7 @@ function opShuffle() {
 function opFinish() {
   if (OP.st === 'over' || OP.st === 'off') return false;
   OP.st = 'over';
+  heroScore('owlpost', OP);
   const isBest = OP.score > opBest();
   if (isBest) { try { localStorage.setItem(OP_BEST, String(OP.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('owlpost', OP.score);
@@ -5909,6 +6305,7 @@ function cmTap(i) {
 function cmFinish() {
   if (CM.st === 'over' || CM.st === 'off') return false;
   CM.st = 'over';
+  heroScore('chameleon', CM);
   const isBest = CM.score > cmBest();
   if (isBest) { try { localStorage.setItem(CM_BEST, String(CM.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('chameleon', CM.score);
@@ -6216,6 +6613,7 @@ function bvFell() {
 function bvFinish() {
   if (BV.st === 'over' || BV.st === 'off') return false;
   BV.st = 'over';
+  heroScore('beaver', BV);
   const isBest = BV.score > bvBest();
   if (isBest) { try { localStorage.setItem(BV_BEST, String(BV.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('beaver', BV.score);
@@ -6589,6 +6987,7 @@ function hhBounce(tipY) {
 function hhFinish() {
   if (HH.st === 'over' || HH.st === 'off') return false;
   HH.st = 'over';
+  heroScore('hedgehog', HH);
   const isBest = HH.score > hhBest();
   if (isBest) { try { localStorage.setItem(HH_BEST, String(HH.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('hedgehog', HH.score);
@@ -7023,6 +7422,7 @@ function cpDie() {
 function cpFinish() {
   if (CP.st === 'over' || CP.st === 'off') return false;
   CP.st = 'over';
+  heroScore('caterpillar', CP);
   const isBest = CP.score > cpBest();
   if (isBest) { try { localStorage.setItem(CP_BEST, String(CP.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('caterpillar', CP.score);
@@ -7334,10 +7734,7 @@ function loadCupsArt() {
       im.onerror = () => res(false);
       im.src = CU_ART[k];
     })));
-    cuReady.then(ok => {
-      if (!ok.every(Boolean)) { cuReady = null; return; }
-      if (CU_FACE.joy) { delete CU_FACE.joy; cuFaces(); }   // the list's picture again, from the pictures
-    });
+    cuReady.then(ok => { if (!ok.every(Boolean)) cuReady = null; });
   }
   return cuReady;
 }
@@ -7444,6 +7841,7 @@ function cuPick(k) {
 function cuFinish() {
   if (CU.st === 'over' || CU.st === 'off') return false;
   CU.st = 'over';
+  heroScore('cups', CU);
   const isBest = CU.score > cuBest();
   if (isBest) { try { localStorage.setItem(CU_BEST, String(CU.score)); } catch (e) { /* storage unavailable */ } }
   rkScore('cups', CU.score);
@@ -7458,7 +7856,7 @@ function cuGameOver() {
 // going on: the hearts full again, the same round again, shuffled anew
 function cuRevive() { CU.hearts = CU_HEARTS; CU.st = 'play'; cuRound(CU.round, true); cuHud(); }
 END.cups = { score: () => CU.score, on: () => CU.st === 'over', revive: cuRevive, again: () => { cuStart(); musicStart(true); }, list: () => closeCups(),
-  pics: () => { const f = cuFaces(); return [f.joy, f.sad]; }, best: ['cuBest', 'stage'] };
+  pics: () => ['fox-joy.webp', 'fox-sad.webp'], best: ['cuBest', 'stage'] };
 function closeCups() {
   cancelAnimationFrame(CU.raf); CU.st = 'off';
   musicStop();
@@ -7570,29 +7968,7 @@ function cuDraw(now) {
     c.restore();
   }
 }
-// its picture for the games list and the end card (until the drawn art comes): a cup lifted off the acorn, or a cup
-// lifted off nothing
-function cuPortrait(found) {
-  const cv = document.createElement('canvas'), k = 3; cv.width = 120 * k; cv.height = 120 * k;
-  const c = cv.getContext('2d'); c.scale(k, k);
-  c.beginPath(); c.ellipse(60, 108, 52, 10, 0, 0, Math.PI * 2); c.fillStyle = 'rgba(60,30,10,0.25)'; c.fill();
-  if (cuArt.cup && cuArt.acorn) {   // from the pictures: the cup tipped up off the acorn, or off nothing
-    if (found) { const a = cuArt.acorn, ah = 56, aw = ah * a.naturalWidth / a.naturalHeight; c.drawImage(a, 60 - aw / 2, 110 - ah, aw, ah); }
-    const u = cuArt.cup, uw = 86, uh = uw * u.naturalHeight / u.naturalWidth;
-    c.save(); c.translate(60, found ? 62 : 70); c.rotate(found ? -0.22 : 0.12); c.drawImage(u, -uw / 2, -uh * CU_CUP_RIM, uw, uh); c.restore();
-    return cv.toDataURL('image/png');
-  }
-  if (found) { const a = acornPic(22, false); c.drawImage(a, 60 - 22, 108 - 50.6, 44, 50.6); }
-  c.save(); c.translate(60, 70); c.rotate(found ? -0.2 : 0.12); cuCup(c, 0, 0, 78, 70); c.restore();
-  return cv.toDataURL('image/png');
-}
-// made the first time the list shows (the acorn picture needs the screen's pixel density, set later at start-up)
-const CU_FACE = {};
-function cuFaces() {
-  if (!CU_FACE.joy) try { CU_FACE.joy = cuPortrait(true); CU_FACE.sad = cuPortrait(false); $('#mg-cups img').src = CU_FACE.joy; } catch (e) { /* no canvas */ }
-  return CU_FACE;
-}
-loadCupsArt();   // small: in now, for the games list's picture
+loadCupsArt();   // small: in now
 // a tap: the nearest cup along the row, if the tap is round the cups
 cucv.addEventListener('pointerdown', e => {
   if (CU.st !== 'play' || CU.ph !== 'pick') return;
@@ -7642,7 +8018,7 @@ $('#btn-logout').addEventListener('click', async () => {
   sfx('pick');
   try { if (NET) await NET.signOut(); } catch (e) { /* signed out here anyway */ }
   ME = null;
-  closeSettings(); $('#profile').hidden = true;
+  closeSettings(); $('#profile').hidden = true; closeDaily(); $('#heroes').hidden = true;
   $('#minis').hidden = true; $('#hub').hidden = true;
   openSplash();
 });
@@ -7662,6 +8038,7 @@ function wipeLocal() {
     localStorage.removeItem(CONT_OWNER); localStorage.removeItem(CONT_DIRTY);
   } catch (e) { /* storage unavailable */ }
   contFrom(CONT_START);   // its golden acorns went with it
+  walletWipe();   // and its coins, rewards and heroes
   for (const k of Object.keys(rkSeen)) delete rkSeen[k];
   for (const k of Object.keys(rkSeenRank)) delete rkSeenRank[k];
 }
@@ -7673,7 +8050,7 @@ $('#btn-del-go').addEventListener('click', async () => {
   catch (e) { delUI(e.code === 'closed' ? 'ask' : e.code === 'offline' ? 'off' : 'fail'); return; }
   wipeLocal(); ME = null;
   $('#delacct').hidden = true;
-  closeSettings(); $('#profile').hidden = true;
+  closeSettings(); $('#profile').hidden = true; closeDaily(); $('#heroes').hidden = true;
   $('#minis').hidden = true; $('#hub').hidden = true;
   openSplash();
   toast(tr('delDone'), 2200);
@@ -8648,7 +9025,7 @@ function bkWant() {
   const end = bkVis('cont') || bkVis('result');   // a game's end (any game)
   for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro') || bkVis('tut')) ? 5 + (bkVis('rkb') ? 1 : 0) : 4;   // over the list
   if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 3 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) : 2;
-  if (bkVis('hub')) return (bkVis('settings') || bkVis('shop') || bkVis('profile')) ? 2 + (bkVis('delacct') || bkVis('nick') ? 1 : 0) : 1;   // the first screen
+  if (bkVis('hub')) return (bkVis('settings') || bkVis('shop') || bkVis('profile') || bkVis('daily') || bkVis('heroes')) ? 2 + (bkVis('delacct') || bkVis('nick') ? 1 : 0) : 1;   // the first screen
   return 3 + ((bkVis('menu') || end || bkVis('tut')) ? 1 : 0) + (bkVis('settings') || (end && bkVis('rkb')) ? 1 : 0);
 }
 function bkSync() {
@@ -8664,6 +9041,8 @@ function bkBack() {
   if (bkVis('settings')) return press('btn-settings-close');
   if (bkVis('rkb')) return press('btn-rkb-close');
   if (bkVis('shop')) return press('btn-shop-close');
+  if (bkVis('daily')) return press('btn-daily-close');
+  if (bkVis('heroes')) return press('btn-heroes-close');
   if (bkVis('adfake')) return;   // the ad plays to its end
   if (bkVis('tut')) return tutClose();
   if (bkVis('cont')) return press('btn-cont-no');
