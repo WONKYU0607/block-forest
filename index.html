@@ -491,6 +491,61 @@ html[lang="en"] .rank-tabs .opt b { font-size: 13px; }
 /* the home: my nickname and the settings on top, then a card of all twelve games (three across, four down) that takes the
    rest of the screen and never scrolls; each game's picture and name sized to its tile (container units) */
 #minis { z-index: 31; }
+/* the first screen: the title picture, the mini games card (its friends standing on it), a row of three; laid out by
+   hubFit() under the logo (--h: the card's height) */
+#hub { z-index: 30; }
+#hub .scr-box { top: 50%; transform: translate(-50%, -50%); }
+.hub-hero { position: absolute; left: 50%; transform: translateX(-50%); width: min(354px, calc(100vw - 36px)); height: var(--h, 270px); box-sizing: border-box;
+  bottom: var(--hb, 150px); background: #fff3d6; border: 5px solid var(--ol); border-radius: 28px; box-shadow: 0 8px 0 var(--ol); }
+.hub-chars { position: absolute; left: 0; right: 0; top: calc(var(--h, 270px) * -0.22); height: calc(var(--h, 270px) * 0.6); pointer-events: none; }
+.hub-chars img { position: absolute; bottom: 0; display: block; }
+.hc-mid { left: 50%; transform: translateX(-50%); height: 100%; }
+.hc-l { left: -2%; height: 62%; }
+.hc-r { right: -2%; height: 66%; }
+.hub-title { position: absolute; left: 0; right: 0; top: calc(var(--h, 270px) * 0.4); margin: 0; text-align: center; font-family: var(--num); font-weight: 400; line-height: 1;
+  font-size: calc(var(--h, 270px) * 0.125); color: #fff; -webkit-text-stroke: calc(var(--h, 270px) * 0.033) var(--ol); paint-order: stroke fill; }
+.hub-sub { position: absolute; left: 8px; right: 8px; top: calc(var(--h, 270px) * 0.57); margin: 0; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: clamp(13px, calc(var(--h, 270px) * 0.056), 16px); color: var(--bark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hub-go { position: absolute; left: 30px; right: 30px; bottom: calc(var(--h, 270px) * 0.075); height: calc(var(--h, 270px) * 0.23); appearance: none; cursor: pointer; padding: 0;
+  border: 4px solid var(--ol); border-radius: 18px; box-shadow: 0 6px 0 var(--ol); background: linear-gradient(#7fdc5a, #4fb83f);
+  font-family: var(--num); font-size: calc(var(--h, 270px) * 0.1); color: #fff; -webkit-text-stroke: calc(var(--h, 270px) * 0.03) var(--ol); paint-order: stroke fill; }
+.hub-go:active, .hub-d:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--ol); }
+.hub-dock { position: absolute; left: 50%; transform: translateX(-50%); width: min(354px, calc(100vw - 28px)); bottom: max(18px, env(safe-area-inset-bottom, 0px));
+  height: var(--dh, 100px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.hub-d { appearance: none; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: var(--wood);
+  border: 4px solid var(--ol); border-radius: 22px; box-shadow: 0 6px 0 var(--ol); }
+.hub-d img, .hub-ic { width: calc(var(--dh, 100px) * 0.48); height: calc(var(--dh, 100px) * 0.48); display: block; object-fit: contain; }
+.hub-ic svg { width: 100%; height: 100%; display: block; }
+.hub-d b { font-family: var(--num); font-weight: 400; font-size: calc(var(--dh, 100px) * 0.19); line-height: 1; color: #fff; -webkit-text-stroke: 6px var(--ol); paint-order: stroke fill; white-space: nowrap; }
+.hm-back { flex: none; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; cursor: pointer; background: var(--cream); border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); }
+.hm-back svg { width: 24px; height: 24px; }
+.hm-back:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.hm-top .hm-back + .hm-shop { margin-left: auto; }
+/* the profile: me, my golden acorns and games, each game's best, the account */
+#profile { z-index: 45; }
+.prof-card { max-height: calc(100dvh - 60px); display: flex; flex-direction: column; }
+.prof-me { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+.prof-av { flex: none; width: 46px; height: 46px; } .prof-av svg { width: 100%; height: 100%; display: block; }
+.prof-me b { flex: 1 1 0; width: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 22px; }
+#btn-prof-nick { flex: none; width: auto; padding: 8px 14px; font-size: 15px; }
+.prof-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.prof-st { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #fffaf0; border: 3px solid var(--ol); border-radius: 14px; }
+.prof-st img, .prof-play { flex: none; width: 32px; height: 32px; display: block; }
+.prof-play { border-radius: 50%; background: #5fb2ff; border: 2.5px solid var(--ol); box-sizing: border-box; position: relative; }
+.prof-play::after { content: ''; position: absolute; left: 10px; top: 7.5px; border-style: solid; border-width: 6.5px 0 6.5px 10px; border-color: transparent transparent transparent #fff; }
+.prof-st span { display: flex; flex-direction: column; min-width: 0; }
+.prof-st small { font-family: 'Black Han Sans', sans-serif; font-size: 12px; color: var(--bark); white-space: nowrap; }
+.prof-st .num { font-family: var(--num); font-weight: 400; font-size: 20px; line-height: 1.1; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; }
+.prof-best { flex: 1 1 auto; min-height: 120px; overflow-y: auto; overscroll-behavior: contain; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 2px 2px 4px; }
+.prof-row { display: flex; align-items: center; gap: 5px; min-width: 0; padding: 4px 6px 4px 3px; background: #fffaf0; border: 2px solid var(--panel-line, #e2cfa8); border-radius: 12px; }
+.prof-row .mg-ic { flex: none; width: 28px; height: 28px; margin: 0; }
+.prof-row .mg-ic svg { width: 100%; height: 100%; }
+.prof-row span { flex: 1 1 0; width: 0; min-width: 0; display: flex; flex-direction: column; }
+.prof-row small { font-family: 'Black Han Sans', sans-serif; font-size: 11px; letter-spacing: -0.01em; color: var(--bark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prof-row b { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 15px; color: var(--ol); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prof-acct { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.prof-acct #btn-logout { flex: none; width: auto; padding: 8px 14px; font-size: 15px; }
+.prof-acct .acct-del { align-self: center; margin: 0; }
+#btn-nick-no { margin-top: 8px; }
 .hm-top { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px));
   display: flex; align-items: center; gap: 8px; }
 .hm-me { flex: 0 1 auto; height: 42px; }
@@ -667,9 +722,9 @@ html[lang="en"] .stat .num.sm { font-size: 17px; }
    (browser bars, the app's own top bar), so this must not depend on the phone's full size. Only background edges go:
    top and bottom on shorter screens (the splash cuts a little more from the bottom, the lobby from the top so the logo
    stays above the card), a sliver of the sides on very long ones. No blurred bands. */
-html.tall-art #splash .scr-box { transform: translateX(-50%);
+html.tall-art #splash .scr-box, html.tall-art #hub .scr-box { transform: translateX(-50%);
   width: max(100vw, 44.973vh); height: max(222.35vw, 100vh); width: max(100vw, 44.973dvh); height: max(222.35vw, 100dvh); }
-html.tall-art #splash .scr-box { top: calc((100vh - max(222.35vw, 100vh)) * 0.4); top: calc((100dvh - max(222.35vw, 100dvh)) * 0.4); }
+html.tall-art #splash .scr-box, html.tall-art #hub .scr-box { top: calc((100vh - max(222.35vw, 100vh)) * 0.4); top: calc((100dvh - max(222.35vw, 100dvh)) * 0.4); }
 html.tall-art .scr-art { -webkit-mask-image: none; mask-image: none; }
 html.tall-art .scr-box .ext { display: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -709,8 +764,25 @@ html.tall-art .scr-box .ext { display: none; }
 </div>
 
 
+<section id="hub" class="screen" hidden aria-label="미니게임 포레스트" data-ta="title">
+  <div class="scr-bg" aria-hidden="true"></div>
+  <div class="scr-box" id="hub-box"><i class="ext top"></i><i class="ext bot"></i><img class="scr-art" id="hub-art" alt="미니게임 포레스트" data-talt="title" decoding="async"></div>
+  <div class="flies" aria-hidden="true"><i style="left:12%;top:30%;animation-delay:-1.4s"></i><i style="left:84%;top:24%;animation-delay:-3.8s"></i><i style="left:62%;top:12%;animation-delay:-5.6s;animation-duration:8s"></i></div>
+  <div class="hub-hero" id="hub-hero">
+    <div class="hub-chars" aria-hidden="true"><img class="hc-mid" src="rabbit-cheer.webp" alt=""><img class="hc-l" src="raccoon-joy.webp" alt=""><img class="hc-r" src="owl-joy.webp" alt=""></div>
+    <h2 class="hub-title" data-t="miniGames">미니게임</h2>
+    <p class="hub-sub" data-t="hubSub">게임 12개, 순위에 도전해 보세요</p>
+    <button class="hub-go" id="btn-hub-play" type="button" data-t="hubPlay">게임 시작</button>
+  </div>
+  <nav class="hub-dock">
+    <button class="hub-d" id="btn-hub-shop" type="button"><img src="gold-40.webp" alt=""><b data-t="shop">상점</b></button>
+    <button class="hub-d" id="btn-hub-prof" type="button"><i class="hub-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#6ccf4f" stroke="#2b1a0e" stroke-width="2.2"/><circle cx="12" cy="9.6" r="3.6" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8"/><path d="M5.6 18.6c1.3-2.9 3.7-4.3 6.4-4.3s5.1 1.4 6.4 4.3" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8" stroke-linecap="round"/></svg></i><b data-t="profile">프로필</b></button>
+    <button class="hub-d" id="btn-hub-set" type="button"><i class="hub-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></i><b data-t="settings">설정</b></button>
+  </nav>
+</section>
+
 <section id="minis" class="screen" hidden aria-label="미니게임 포레스트" data-ta="title">
-  <div class="hm-top"><div class="lb-me hm-me" aria-label="내 닉네임" data-ta="myName"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#6ccf4f" stroke="#2b1a0e" stroke-width="2.2"/><circle cx="12" cy="9.6" r="3.6" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8"/><path d="M5.6 18.6c1.3-2.9 3.7-4.3 6.4-4.3s5.1 1.4 6.4 4.3" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8" stroke-linecap="round"/></svg><b id="hm-name"></b></div><button class="hm-shop" id="btn-home-shop" type="button"><img class="gold-ic" src="gold-icon.webp" alt=""><b class="num" id="hm-gold">0</b><i class="hm-sep" aria-hidden="true"></i><span data-t="shop">상점</span></button><button class="hm-set" id="btn-home-set" type="button" aria-label="설정" data-ta="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></button></div>
+  <div class="hm-top"><button class="hm-back" id="btn-minis-back" type="button" aria-label="뒤로" data-ta="back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="hm-shop" id="btn-home-shop" type="button"><img class="gold-ic" src="gold-icon.webp" alt=""><b class="num" id="hm-gold">0</b><i class="hm-sep" aria-hidden="true"></i><span data-t="shop">상점</span></button><button class="hm-set" id="btn-home-set" type="button" aria-label="설정" data-ta="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></button></div>
   <div class="flies" aria-hidden="true"><i style="left:14%;top:20%;animation-delay:-1s"></i><i style="left:82%;top:30%;animation-delay:-3.4s"></i><i style="left:26%;top:78%;animation-delay:-5.2s;animation-duration:8s"></i><i style="left:70%;top:84%;animation-delay:-2.2s;animation-duration:6.4s"></i><i style="left:50%;top:12%;animation-delay:-4.4s"></i></div>
   <div class="minis-wrap">
     <div class="card minis-card">
@@ -945,13 +1017,24 @@ html.tall-art .scr-box .ext { display: none; }
       <button class="opt" id="opt-ko" type="button" aria-pressed="true"><b>한국어</b></button>
       <button class="opt" id="opt-en" type="button" aria-pressed="false"><b>English</b></button>
     </div>
-    <div id="acct" class="acct" hidden>
-      <p class="group-label" data-t="account">계정</p>
-      <div class="acct-row"><b id="acct-name"></b><button class="btn plain" id="btn-logout" type="button" data-t="logout">로그아웃</button></div>
-      <button class="acct-del" id="btn-delacct" type="button" data-t="delAcct">계정 삭제</button>
-    </div>
     <p class="legal"><a href="https://block-forest.vercel.app/privacy.html" target="_blank" rel="noopener" data-t="privacy">개인정보처리방침</a><span aria-hidden="true">·</span><a href="https://block-forest.vercel.app/terms.html" target="_blank" rel="noopener" data-t="terms">이용약관</a></p>
     <button class="btn primary" id="btn-settings-close" type="button" data-t="close">닫기</button>
+  </div>
+</section>
+
+<section id="profile" class="overlay" hidden aria-label="프로필" data-ta="profile">
+  <div class="card prof-card">
+    <div class="ribbon"><h2 data-t="profile">프로필</h2></div>
+    <div class="prof-me"><i class="prof-av"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#6ccf4f" stroke="#2b1a0e" stroke-width="2.2"/><circle cx="12" cy="9.6" r="3.6" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8"/><path d="M5.6 18.6c1.3-2.9 3.7-4.3 6.4-4.3s5.1 1.4 6.4 4.3" fill="#fff6dc" stroke="#2b1a0e" stroke-width="1.8" stroke-linecap="round"/></svg></i><b id="prof-name"></b><button class="btn plain" id="btn-prof-nick" type="button" data-t="nickChange">바꾸기</button></div>
+    <div class="prof-stats">
+      <div class="prof-st"><img src="gold-icon.webp" alt=""><span><small data-t="profGold">황금 도토리</small><b class="num" id="prof-gold">0</b></span></div>
+      <div class="prof-st"><i class="prof-play" aria-hidden="true"></i><span><small data-t="profGames">한 판 수</small><b class="num" id="prof-games">0</b></span></div>
+    </div>
+    <p class="group-label" data-t="profBest">최고 기록</p>
+    <div class="prof-best" id="prof-best"></div>
+    <p class="group-label" data-t="account">계정</p>
+    <div class="prof-acct"><button class="btn plain" id="btn-logout" type="button" data-t="logout">로그아웃</button><button class="acct-del" id="btn-delacct" type="button" data-t="delAcct">계정 삭제</button></div>
+    <button class="btn primary" id="btn-prof-close" type="button" data-t="close">닫기</button>
   </div>
 </section>
 
@@ -989,6 +1072,7 @@ html.tall-art .scr-box .ext { display: none; }
     <input id="nick-in" class="nick-in" type="text" maxlength="10" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-label="닉네임" data-ta="nickTitle">
     <p id="nick-err" class="nick-err"></p>
     <button class="btn primary" id="btn-nick" type="button" data-t="ok">확인</button>
+    <button class="btn plain" id="btn-nick-no" type="button" data-t="cancel" hidden>취소</button>
   </div>
 </section>
 
@@ -1100,7 +1184,9 @@ const STR = {
     lineColor: (c, h, n) => `${c} 큐브 ${h}/${n}`, lineRows: (h, n) => `줄 깨기 ${h}/${n}`, lineCombo: (h, n) => `콤보 ${h}/${n}`, lineBig: (h, n) => `한 번에 ${h}/${n}개`,
     fireBomb: '폭탄!', fireBolt: '번개!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
     paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '목록으로',
-    over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', tut: '게임 방법', tutGo: '화면을 누르면 시작해요', tutLines: {
+    over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', miniGames: '미니게임', hubSub: '게임 12개, 순위에 도전해 보세요', hubPlay: '게임 시작', profile: '프로필', profGold: '황금 도토리', profGames: '한 판 수', profBest: '최고 기록',
+    nickChange: '바꾸기', nickNew: '새 닉네임을 정해 주세요', nickDone: '닉네임을 바꿨어요', back: '뒤로',
+    tut: '게임 방법', tutGo: '화면을 누르면 시작해요', tutLines: {
       block: ['아래 블록을 끌어다 판 위에 놓아요', '가로 한 줄을 채우면 깨져요'],
       acorn: ['다람쥐를 좌우로 끌어 도토리를 받아요', '돌에 맞으면 하트가 줄어요'],
       stairs: ['버튼을 누르면 토끼가 방향을 바꿔요', '계단이 꺾이는 곳에서 눌러요'],
@@ -1142,7 +1228,9 @@ const STR = {
     lineColor: (c, h, n) => `${c} ${h}/${n}`, lineRows: (h, n) => `Lines ${h}/${n}`, lineCombo: (h, n) => `Combo ${h}/${n}`, lineBig: (h, n) => `At once ${h}/${n}`,
     fireBomb: 'BOMB!', fireBolt: 'ZAP!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
     paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Game list',
-    over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', tut: 'How to play', tutGo: 'Tap to start', tutLines: {
+    over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', miniGames: 'Mini Games', hubSub: '12 games. Climb the rankings!', hubPlay: 'Play', profile: 'Profile', profGold: 'Golden acorns', profGames: 'Games played', profBest: 'Best scores',
+    nickChange: 'Change', nickNew: 'Pick a new nickname', nickDone: 'Nickname changed', back: 'Back',
+    tut: 'How to play', tutGo: 'Tap to start', tutLines: {
       block: ['Drag a block from below onto the board', 'Fill a row to break it'],
       acorn: ['Drag the squirrel left and right to catch acorns', 'A stone costs a heart'],
       stairs: ['Tap the button to turn the bunny', 'Tap where the stairs turn'],
@@ -1540,7 +1628,7 @@ function signedIn(st) {
   if (!st.profile) { openNick(); return; }
   $('#nick').hidden = true;
   setMe(st);
-  openLobby(false); hideScreen('splash');
+  openLobby(false, false); hideScreen('splash');   // the first screen (the games list from its Play)
   lobbyInfo();
 }
 function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); rkSync(); }
@@ -1554,8 +1642,13 @@ async function submitNick() {
   const bad = k => { err.textContent = tr(k); err.classList.add('bad'); sfx('back'); };
   if (btn.disabled) return;
   if (!NET.NAME_RE.test(name)) return bad('nickBad');
+  if (nickChanging && ME && name === ME.name) { nickClose(); return; }   // the same: nothing to change
   btn.disabled = true;
-  try { const prof = await NET.claimName(name, bestFor(16), bestFor(32)); sfx('pick'); signedIn({ uid: NET.me().uid, profile: prof }); }
+  try {
+    const prof = await NET.claimName(name, bestFor(16), bestFor(32)); sfx('pick');
+    if (nickChanging) { setMe({ uid: NET.me().uid, profile: prof }); nickClose(); profileUI(); toast(tr('nickDone')); }
+    else signedIn({ uid: NET.me().uid, profile: prof });
+  }
   catch (e) { bad(e.code === 'taken' ? 'nickTaken' : e.code === 'invalid' ? 'nickBad' : 'loginErr'); }
   finally { btn.disabled = false; }
 }
@@ -2438,7 +2531,7 @@ function artFor(l) {
   document.documentElement.classList.toggle('tall-art', tall);
   return ART[l][tall ? 'tall' : 'wide'];
 }
-const onShape = () => setArt($('#splash-art'), artFor(LANG));
+const onShape = () => { const a = artFor(LANG); setArt($('#splash-art'), a); setArt($('#hub-art'), a); if (typeof hubFit === 'function') setTimeout(hubFit, 0); };
 if (tallMQ.addEventListener) tallMQ.addEventListener('change', onShape); else tallMQ.addListener(onShape);   // turning the phone, resizing a window
 function setArt(img, src) {
   if (img.dataset.src === src) return;
@@ -2462,7 +2555,7 @@ function setLang(l, save = true) {
   for (const n of [16, 32]) { $(`#bf-${n} b`).textContent = tr('size', n); $(`#rkb-${n} b`).textContent = tr('size', n); }   // the board sizes
   if (typeof shopUI === 'function') { shopUI(); contUI(); }
   const src = artFor(l);
-  setArt($('#splash-art'), src);
+  setArt($('#splash-art'), src); setArt($('#hub-art'), src);
   $('#opt-ko').setAttribute('aria-pressed', String(l === 'ko'));
   $('#opt-en').setAttribute('aria-pressed', String(l === 'en'));
   feverShown = '';
@@ -2482,7 +2575,6 @@ function openSplash() {
 }
 const bestFor = n => { try { return Number(localStorage.getItem(`rise7-best-${n}`)) || 0; } catch (e) { return 0; } };
 function lobbyInfo() {
-  $('#hm-name').textContent = ME ? ME.name : '';
   minisInfo();
 }
 // leaving a game ends it: the score so far is the final one (a new best is kept)
@@ -2493,13 +2585,15 @@ function quitGame() {
   shownScore = G.score;
 }
 // the home: every game on one screen (the games' list); it covers the block game's board while a game isn't on
-function openLobby(fade = true) {
+function openLobby(fade = true, list = true) {
   if (G.started) quitGame();
   musicStop();
   drag = null;
   setMenu(menuMode, menuSize);
   lobbyInfo();
   $('#bfpick').hidden = true;
+  openHub();   // the first screen, under the list
+  if (!list) { covered = true; showOnly(null); return; }
   const el = $('#minis');
   clearTimeout(el._t);
   if (fade) {
@@ -2510,12 +2604,10 @@ function openLobby(fade = true) {
     covered = true; showOnly(null);
   }
 }
-function leaveLobby() { covered = false; hideScreen('minis'); }
+function leaveLobby() { covered = false; hideScreen('minis'); $('#hub').hidden = true; }   // the block game draws on the page itself, under them
 let settingsFrom = null;
 function openSettings(from) {
   settingsFrom = from;
-  $('#acct').hidden = !(ME && from === 'lobby');   // signing out is done from the lobby, not in a game
-  if (ME) $('#acct-name').textContent = ME.name;
   soundButtons();
   if (from === 'menu') $('#menu').hidden = true;
   $('#settings').hidden = false;
@@ -2916,6 +3008,66 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && MG.
 function miniPause() { if (MG.st !== 'play') return; MG.st = 'pause'; MG.drag = null; MG.key = 0; musicStop(); $('#mini-menu').hidden = false; }
 $('#mg-acorn').addEventListener('click', () => { sfx('pick'); openMini(); });
 $('#btn-home-set').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
+/* ---------- the first screen: mini games (the list), shop, profile, settings ---------- */
+const HUB_LOGO = { tall: 0.415, wide: 0.475 };   // where the title picture's logo ends (its little sprout), of its height
+function openHub() {
+  const el = $('#hub');
+  setArt($('#hub-art'), artFor(LANG));
+  if (el.hidden) { clearTimeout(el._t); el.classList.remove('out'); el.hidden = false; }
+  hubFit();
+}
+// the card as tall as it can be (up to 280) between the logo and the row of three, its friends clear of the logo
+function hubFit() {
+  const el = $('#hub');
+  if (el.hidden) return;
+  const H = el.clientHeight, box = $('#hub-box').getBoundingClientRect();
+  const logo = box.top + box.height * (document.documentElement.classList.contains('tall-art') ? HUB_LOGO.tall : HUB_LOGO.wide);
+  const dh = Math.round(Math.min(104, Math.max(80, H * 0.12))), dockB = Math.max(18, parseFloat(getComputedStyle($('.hub-dock')).bottom) || 18);
+  const hb = dockB + dh + 24, room = H - hb - (logo + 10);   // the card and its friends (0.22 of it over its top) under the logo
+  const h = Math.round(Math.max(196, Math.min(280, room / 1.22)));
+  el.style.setProperty('--dh', dh + 'px'); el.style.setProperty('--hb', hb + 'px'); el.style.setProperty('--h', h + 'px');
+}
+addEventListener('resize', hubFit);
+$('#btn-hub-play').addEventListener('click', () => { sfx('pick'); openMinis(); });
+$('#btn-hub-shop').addEventListener('click', () => { sfx('pick'); openShop(); });
+$('#btn-hub-prof').addEventListener('click', () => { sfx('pick'); openProfile(); });
+$('#btn-hub-set').addEventListener('click', () => { sfx('pick'); openSettings('lobby'); });
+$('#btn-minis-back').addEventListener('click', () => { sfx('back'); hideScreen('minis'); });
+/* ---------- the profile: my nickname (it can be changed), golden acorns, games played, each game's best, the account ---------- */
+const PROF_GAMES = [['block', () => Math.max(bestFor(16), bestFor(32))], ['acorn', () => miniBest()], ['stairs', () => stBest()], ['merge', () => fmBest()],
+  ['pebble', () => pbBest()], ['mushroom', () => msBest()], ['owlpost', () => opBest()], ['chameleon', () => cmBest()], ['beaver', () => bvBest()],
+  ['hedgehog', () => hhBest()], ['caterpillar', () => cpBest()], ['cups', () => cuBest()]];
+function openProfile() { profileUI(); $('#profile').hidden = false; $('#prof-best').scrollTop = 0; }
+function profileUI() {
+  $('#prof-name').textContent = ME ? ME.name : '';
+  $('#prof-gold').textContent = contN.toLocaleString();
+  $('#prof-games').textContent = gamesN.toLocaleString();
+  const list = $('#prof-best');
+  list.textContent = '';
+  for (const [g, best] of PROF_GAMES) {
+    const row = document.createElement('div');
+    row.className = 'prof-row';
+    const ic = $('#mg-' + g + ' .mg-ic');
+    if (ic) row.append(ic.cloneNode(true));
+    const t = document.createElement('span'), nm = document.createElement('small'), sc = document.createElement('b');
+    nm.textContent = tr(g === 'block' ? 'blockGame' : g); sc.textContent = best().toLocaleString();
+    t.append(nm, sc); row.append(t); list.append(row);
+  }
+}
+$('#btn-prof-close').addEventListener('click', () => { sfx('pick'); $('#profile').hidden = true; });
+// a new nickname: the same card as the first time, with Cancel
+let nickChanging = false;
+$('#btn-prof-nick').addEventListener('click', () => {
+  sfx('pick'); nickChanging = true;
+  $('#nick-in').value = ME ? ME.name : '';
+  $('#nick .acct-msg').textContent = tr('nickNew'); $('#btn-nick-no').hidden = false;
+  openNick();
+});
+function nickClose() {
+  nickChanging = false; $('#nick').hidden = true; $('#btn-nick-no').hidden = true;
+  $('#nick .acct-msg').textContent = tr('nickAsk');
+}
+$('#btn-nick-no').addEventListener('click', () => { sfx('back'); nickClose(); });
 // Block Forest: pick the board, and it starts
 function openBlockPick() {
   for (const n of [16, 32]) { $(`#bf-${n}-best`).textContent = tr('rkMineOf', bestFor(n).toLocaleString()); $(`#bf-${n}-top`).textContent = tr('loading'); }
@@ -7416,8 +7568,8 @@ $('#btn-logout').addEventListener('click', async () => {
   sfx('pick');
   try { if (NET) await NET.signOut(); } catch (e) { /* signed out here anyway */ }
   ME = null;
-  closeSettings();
-  $('#minis').hidden = true;
+  closeSettings(); $('#profile').hidden = true;
+  $('#minis').hidden = true; $('#hub').hidden = true;
   openSplash();
 });
 // Deleting the account (settings, signed in): a card to make sure; Google is asked once more, then the nickname, the
@@ -7445,8 +7597,8 @@ $('#btn-del-go').addEventListener('click', async () => {
   catch (e) { delUI(e.code === 'closed' ? 'ask' : e.code === 'offline' ? 'off' : 'fail'); return; }
   wipeLocal(); ME = null;
   $('#delacct').hidden = true;
-  closeSettings();
-  $('#minis').hidden = true;
+  closeSettings(); $('#profile').hidden = true;
+  $('#minis').hidden = true; $('#hub').hidden = true;
   openSplash();
   toast(tr('delDone'), 2200);
 });
@@ -8386,9 +8538,10 @@ const BK_MINI = [['mini', 'mini'], ['stairs', 'st'], ['merge', 'fm'], ['pebble',
 function bkWant() {
   if (bkVis('splash')) return 0;
   const end = bkVis('cont') || bkVis('result');   // a game's end (any game)
-  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro') || bkVis('tut')) ? 4 + (bkVis('rkb') ? 1 : 0) : 3;   // over the home
-  if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 2 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) + (bkVis('delacct') ? 1 : 0) : 1;
-  return 2 + ((bkVis('menu') || end || bkVis('tut')) ? 1 : 0) + (bkVis('settings') || (end && bkVis('rkb')) ? 1 : 0);
+  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro') || bkVis('tut')) ? 5 + (bkVis('rkb') ? 1 : 0) : 4;   // over the list
+  if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 3 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) : 2;
+  if (bkVis('hub')) return (bkVis('settings') || bkVis('shop') || bkVis('profile')) ? 2 + (bkVis('delacct') || bkVis('nick') ? 1 : 0) : 1;   // the first screen
+  return 3 + ((bkVis('menu') || end || bkVis('tut')) ? 1 : 0) + (bkVis('settings') || (end && bkVis('rkb')) ? 1 : 0);
 }
 function bkSync() {
   if (!BK.act || BK.ignore) return;
@@ -8398,6 +8551,8 @@ function bkSync() {
 function bkBack() {
   const press = id => { const b = $('#' + id); if (b && !b.hidden) b.click(); };
   if (bkVis('delacct')) return press('btn-del-no');
+  if (bkVis('nick') && nickChanging) return press('btn-nick-no');
+  if (bkVis('profile')) return press('btn-prof-close');
   if (bkVis('settings')) return press('btn-settings-close');
   if (bkVis('rkb')) return press('btn-rkb-close');
   if (bkVis('shop')) return press('btn-shop-close');
@@ -8412,7 +8567,8 @@ function bkBack() {
   }
   if (bkVis('bfpick')) return press('btn-bf-close');
   if (bkVis('splash')) return;
-  if (bkVis('minis')) {
+  if (bkVis('minis')) return press('btn-minis-back');
+  if (bkVis('hub')) {
     toast(tr('backExit'));
     const h = bkHave();
     if (h > 0) { BK.ignore++; history.go(-h); }   // back to the page's first entry: the next press leaves
