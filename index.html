@@ -1631,7 +1631,7 @@ function signedIn(st) {
   openLobby(false, false); hideScreen('splash');   // the first screen (the games list from its Play)
   lobbyInfo();
 }
-function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); rkSync(); }
+function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); rkSync(); goldOnSignIn(); }
 function openNick() {
   $('#nick').hidden = false;
   const err = $('#nick-err'); err.textContent = tr('nickRule'); err.classList.remove('bad');
@@ -3259,10 +3259,53 @@ $('#btn-rkb-close').addEventListener('click', () => { sfx('pick'); $('#rkb').hid
    game has gone on, when the game keeps that itself) }. ---------- */
 const CONT_KEY = 'forest-cont', CONT_START = 3;
 let contN = (() => { try { const v = localStorage.getItem(CONT_KEY); return v === null ? CONT_START : Math.max(0, parseInt(v, 10) || 0); } catch (e) { return CONT_START; } })();
-function contPut(n) {
-  contN = Math.max(0, n | 0);
-  try { localStorage.setItem(CONT_KEY, String(contN)); } catch (e) { /* storage unavailable */ }
+// The golden acorns are kept with the account (a new phone or a reinstall has them); the phone keeps a copy, whose
+// account (forest-cont-owner) and unsaved change (forest-cont-dirty: a change the account has not taken yet, offline
+// or refused) it remembers. Signing in: the account's count, unless this phone changed it for this account and could
+// not save it (then the phone's goes up); an account with none yet: the phone's (from before, or its own) or 3.
+const CONT_OWNER = 'forest-cont-owner', CONT_DIRTY = 'forest-cont-dirty';
+let goldT = 0;
+function contShow() {
   const hm = document.getElementById('hm-gold'); if (hm) hm.textContent = contN;   // the home's shop button
+  if (typeof shopUI === 'function') { try { contUI(); shopUI(); } catch (e) { /* not built yet */ } }
+}
+function contPut(n) {   // a change here: bought, watched, used
+  contN = Math.max(0, n | 0);
+  try { localStorage.setItem(CONT_KEY, String(contN)); localStorage.setItem(CONT_DIRTY, '1'); } catch (e) { /* storage unavailable */ }
+  const hm = document.getElementById('hm-gold'); if (hm) hm.textContent = contN;
+  goldSave();
+}
+function contFrom(n) {   // the account's count, taken as it is
+  contN = Math.max(0, n | 0);
+  try { localStorage.setItem(CONT_KEY, String(contN)); localStorage.removeItem(CONT_DIRTY); } catch (e) { /* storage unavailable */ }
+  contShow();
+}
+function goldSave() {
+  clearTimeout(goldT);
+  if (!ME || !NET || !NET.saveGold) return;
+  const uid = ME.uid;
+  goldT = setTimeout(() => {
+    const n = contN;
+    NET.saveGold(n).then(() => {
+      if (!ME || ME.uid !== uid) return;
+      ME.gold = n;
+      if (contN === n) { try { localStorage.removeItem(CONT_DIRTY); } catch (e) { /* storage unavailable */ } }
+    }).catch(() => {});   // offline, or the rules not yet published: the phone keeps it, it goes up next time
+  }, 700);
+}
+function goldOnSignIn() {
+  if (!ME) return;
+  let owner = null, dirty = false;
+  try { owner = localStorage.getItem(CONT_OWNER); dirty = !!localStorage.getItem(CONT_DIRTY); } catch (e) { /* storage unavailable */ }
+  if (Number.isInteger(ME.gold)) {
+    if (owner === ME.uid && dirty) goldSave();   // changed here, not saved yet: the phone's
+    else contFrom(ME.gold);
+  } else {
+    if (owner && owner !== ME.uid) contFrom(CONT_START);   // another account's copy: this one starts with 3
+    try { localStorage.setItem(CONT_DIRTY, '1'); } catch (e) { /* storage unavailable */ }
+    goldSave();   // the first time: the account takes the phone's count
+  }
+  try { localStorage.setItem(CONT_OWNER, ME.uid); } catch (e) { /* storage unavailable */ }
 }
 const CONT_PER_GAME = 1, END_CONT = {};   // going on: once a game
 // a game starts: its best before it (for "new best"), its continue not used yet; the ad for going on is fetched ahead
@@ -7585,7 +7628,9 @@ function wipeLocal() {
     for (const k of Object.keys(localStorage)) if (k.startsWith('rise7-best-')) localStorage.removeItem(k);
     localStorage.removeItem(RK_SENT); localStorage.removeItem(RK_WEEK);
     const tut = tutLocal(); if (ME && tut[ME.uid]) { delete tut[ME.uid]; localStorage.setItem(TUT_KEY, JSON.stringify(tut)); }   // the how-to-plays it saw
+    localStorage.removeItem(CONT_OWNER); localStorage.removeItem(CONT_DIRTY);
   } catch (e) { /* storage unavailable */ }
+  contFrom(CONT_START);   // its golden acorns went with it
   for (const k of Object.keys(rkSeen)) delete rkSeen[k];
   for (const k of Object.keys(rkSeenRank)) delete rkSeenRank[k];
 }
