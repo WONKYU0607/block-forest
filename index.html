@@ -2593,7 +2593,7 @@ function openLobby(fade = true, list = true) {
   lobbyInfo();
   $('#bfpick').hidden = true;
   openHub();   // the first screen, under the list
-  if (!list) { covered = true; showOnly(null); return; }
+  if (!list) { clearTimeout($('#minis')._t); $('#minis').hidden = true; $('#minis').classList.remove('out'); covered = true; showOnly(null); return; }
   const el = $('#minis');
   clearTimeout(el._t);
   if (fade) {
@@ -7553,7 +7553,7 @@ if (WEB_ONLY) { $('#webonly').hidden = false; $('#splash-touch').hidden = true; 
 $('#splash').addEventListener('click', e => {
   if (WEB_ONLY || $('#splash').classList.contains('out') || !$('#login').hidden || !$('#nick').hidden) return;
   sfx('pick');   // the first touch also wakes the audio
-  if (ME) { openLobby(false); hideScreen('splash'); } else enter();
+  if (ME) { openLobby(false, false); hideScreen('splash'); } else enter();   // signed in already: the first screen
 });
 $('#btn-google').addEventListener('click', async () => {
   sfx('pick'); loginUI('wait');
@@ -8507,7 +8507,7 @@ function start(data) {
     touchGrid();
     hud(); feverUI(); missionUI(); rotUI();
     if (G.state === 'dying' || G.state === 'over') finish();
-    else if (G.state === 'menu') { if (G.started) openMenu(); else openLobby(false); }
+    else if (G.state === 'menu') { if (G.started) openMenu(); else openLobby(false, false); }
     else showOnly(null);
   } else {
     newGame('moves', 32);
