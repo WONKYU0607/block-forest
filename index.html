@@ -419,6 +419,7 @@ body { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 #ms-undo b { font-size: 15px; -webkit-text-stroke: 4px var(--ol); }
 html[lang="en"] #ms-undo b { font-size: 15px; }
 .st-pad { flex: none; display: flex; justify-content: center; gap: 12px; padding: 6px 14px max(16px, env(safe-area-inset-bottom, 0px)); }
+#stairs .st-pad { padding-bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 10px); }   /* Bunny Stairs: its button 10px higher */
 .st-btn { flex: 0 0 50%; min-width: 0; height: clamp(38px, 6vh, 52px); border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 4px 0 var(--ol); display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 0; padding: 0 6px; touch-action: none; -webkit-tap-highlight-color: transparent; cursor: pointer;
   font-family: var(--num); color: #fff; background: linear-gradient(#86e85a, #4cc22e); }
@@ -567,7 +568,7 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
 .ms-row .ic { width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center; }
 .ms-row .ic img, .ms-row .ic svg { width: 100%; height: 100%; object-fit: contain; display: block; }
 .ms-row .tx { flex: 1; min-width: 0; }
-.ms-row .tx p { margin: 0 0 5px; font-size: clamp(12px, 3.6vw, 14px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ms-row .tx p { margin: 0 0 5px; font-size: clamp(12px, 3.6vw, 14px); line-height: 1.2; word-break: keep-all; overflow-wrap: anywhere; }   /* a long one on two lines */
 .fs-bar { position: relative; height: 15px; box-sizing: border-box; border: 2.5px solid var(--ol); border-radius: 8px; background: rgba(60, 30, 10, 0.18); overflow: hidden; }
 .fs-bar i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(#9cf06f, #56c23f); }
 .fs-bar.gold i { background: linear-gradient(#ffe57a, #f5b22b); }
@@ -576,6 +577,10 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
 .ms-get { flex: none; width: 66px; height: 44px; box-sizing: border-box; appearance: none; padding: 0; border: 3px solid var(--ol); border-radius: 13px; display: flex; align-items: center; justify-content: center;
   gap: 2px; box-shadow: 0 3px 0 var(--ol); background: #e9dcc2; cursor: default; }
 .ms-get img { width: 22px; height: 22px; display: block; }
+.ms-get .two { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }   /* two prizes, one over the other */
+.ms-get .two span { display: flex; align-items: center; gap: 2px; }
+.ms-get .two img { width: 15px; height: 15px; }
+.ms-get .two b { font-size: 11px; -webkit-text-stroke: 3px var(--ol); }
 .ms-get b { font-family: var(--num); font-weight: 400; font-size: 14px; color: #fff; -webkit-text-stroke: 4px var(--ol); paint-order: stroke fill; }
 .ms-get.go { background: linear-gradient(#8fe063, #4fb83f); cursor: pointer; }
 .ms-get.go:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
@@ -1307,9 +1312,9 @@ const STR = {
     over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', miniGames: '미니게임', hubSub: '게임 12개, 순위에 도전해 보세요', hubPlay: '게임 시작', profile: '프로필', profGold: '황금 도토리', profGames: '한 판 수', profBest: '최고 기록',
     nickChange: '바꾸기', nickNew: '새 닉네임을 정해 주세요', nickDone: '닉네임을 바꿨어요', back: '뒤로',
     coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', attGet: '오늘 받기', attGot: '오늘은 받았어요',
-    attSub: () => `${new Date().getMonth() + 1}월 · 날짜마다 정해진 보상, 지난 날은 못 받아요`, misSub: t => `0시에 새 미션 5개 · 남은 시간 ${t}`,
-    misAny: n => `아무 게임 ${n}판 하기`, misPlay: g => `${g} 1판 하기`, misScore: (g, s) => `${g} ${s}점 넘기`, misAll: '5개 모두 깨기', misGot: '받음',
-    gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, noCoins: '코인이 모자라요',
+    attSub: () => `${new Date().getMonth() + 1}월 · 날짜마다 정해진 보상, 지난 날은 못 받아요`, misSub: (t, n) => `0시에 새 미션 ${n}개 · 남은 시간 ${t}`,
+    misAny: n => `아무 게임 ${n}판 하기`, misPlay: g => `${g} 1판 하기`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음',
+    gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, gotAll: (g, c) => `황금 도토리 ${g}개, 코인 ${c.toLocaleString()}개를 받았어요`, noCoins: '코인이 모자라요',
     heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`,
     heroBonus: p => `캐릭터 보너스 +${p}%`, prev: '이전', next: '다음',
     heroName: g => ({ block: '곰', acorn: '다람쥐', stairs: '토끼', merge: '너구리', pebble: '수달', mushroom: '두더지', owlpost: '부엉이', chameleon: '카멜레온', beaver: '비버', hedgehog: '고슴도치', caterpillar: '애벌레', cups: '여우' })[g],
@@ -1358,9 +1363,9 @@ const STR = {
     over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', miniGames: 'Mini Games', hubSub: '12 games. Climb the rankings!', hubPlay: 'Play', profile: 'Profile', profGold: 'Golden acorns', profGames: 'Games played', profBest: 'Best scores',
     nickChange: 'Change', nickNew: 'Pick a new nickname', nickDone: 'Nickname changed', back: 'Back',
     coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', attGet: 'Claim today', attGot: 'Claimed today',
-    attSub: () => `${new Date().toLocaleString('en', { month: 'long' })} · a reward for each date`, misSub: t => `5 new at midnight · ${t} left`,
-    misAny: n => `Play any ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: 'Clear all 5', misGot: 'Got',
-    gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, noCoins: 'Not enough coins',
+    attSub: () => `${new Date().toLocaleString('en', { month: 'long' })} · a reward for each date`, misSub: (t, n) => `${n} new at midnight · ${t} left`,
+    misAny: n => `Play any ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got',
+    gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, gotAll: (g, c) => `+${g} golden acorns, +${c.toLocaleString()} coins`, noCoins: 'Not enough coins',
     heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`,
     heroBonus: p => `Hero bonus +${p}%`, prev: 'Previous', next: 'Next',
     heroName: g => ({ block: 'Bear', acorn: 'Squirrel', stairs: 'Rabbit', merge: 'Raccoon', pebble: 'Otter', mushroom: 'Mole', owlpost: 'Owl', chameleon: 'Chameleon', beaver: 'Beaver', hedgehog: 'Hedgehog', caterpillar: 'Caterpillar', cups: 'Fox' })[g],
@@ -3752,10 +3757,12 @@ function resClose() { $('#result').hidden = true; resN++; const g = endGame; end
 const WALLET_KEY = 'forest-wallet';
 const HERO_LIST = ['block', 'acorn', 'stairs', 'merge', 'pebble', 'mushroom', 'owlpost', 'chameleon', 'beaver', 'hedgehog', 'caterpillar', 'cups'];
 const HERO_MAX = 500, HERO_STEP = 100, HERO_PCT = 0.05;   // five stages of 100 upgrades; each upgrade +0.05% on that game's score
-const heroCost = L => 50 * heroStage(L);   // coins for the next upgrade (for now: 50 a stage)
-const ATT_COINS = 500, MIS_COINS = 100, MIS_N = 5, MIS_ALL_GOLD = 3;   // check-in a day; a mission; all five: golden acorns
-// the score a "score" mission asks for, game by game (a first guess, to be tuned)
-const MIS_SCORE = { block: 20000, acorn: 3000, stairs: 3000, merge: 1000, pebble: 1000, mushroom: 5000, owlpost: 10000, chameleon: 5000, beaver: 5000, hedgehog: 5000, caterpillar: 2000, cups: 5000 };
+const heroCost = L => 20 * heroStage(L);   // coins for the next upgrade: 20 a stage (20, 40 .. 100; a hero to the top 30 000 coins)
+// check-in a day; a mission; the day's missions (any 3 games, 2 games played, every game's score); all of them: golden acorns and coins
+const ATT_COINS = 500, MIS_COINS = 100, MIS_N = 3 + HERO_LIST.length, MIS_ALL_GOLD = 5, MIS_ALL_COINS = 1000;
+const MIS_V = 2;   // the list's make-up (1: five missions, two scores; 2: every game's score)
+// the score a "score" mission asks for, game by game (the block game's: on 16 wide only)
+const MIS_SCORE = { block: 50000, acorn: 50000, stairs: 10000, merge: 30000, pebble: 30000, mushroom: 30000, owlpost: 100000, chameleon: 7000, beaver: 15000, hedgehog: 70000, caterpillar: 1000000, cups: 10000 };
 let WAL = { coins: 0, daily: {}, heroes: {} }, walOwner = null, walDirty = false, walT = 0;
 (function walletLoad() {
   try {
@@ -3821,19 +3828,23 @@ function misList(day) {
   const rnd = () => { h = (h + 0x6D2B79F5) >>> 0; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   const g = HERO_LIST.slice();
   for (let i = g.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [g[i], g[j]] = [g[j], g[i]]; }
-  return [{ t: 'any', n: 3 }, { t: 'play', g: g[0], n: 1 }, { t: 'play', g: g[1], n: 1 }, { t: 'score', g: g[2], n: 1, s: MIS_SCORE[g[2]] }, { t: 'score', g: g[3], n: 1, s: MIS_SCORE[g[3]] }];
+  return [{ t: 'any', n: 3 }, { t: 'play', g: g[0], n: 1 }, { t: 'play', g: g[1], n: 1 }, ...HERO_LIST.map(x => ({ t: 'score', g: x, n: 1, s: MIS_SCORE[x] }))];
 }
 function misState() {
   const day = dayKey(), d = WAL.daily;
-  return d.day === day && Array.isArray(d.prog) ? { day, prog: d.prog.slice(0, MIS_N).map(n => n | 0), got: d.got | 0 } : { day, prog: [0, 0, 0, 0, 0], got: 0 };
+  if (d.day !== day || !Array.isArray(d.prog)) return { day, prog: new Array(MIS_N).fill(0), got: 0 };
+  // today's from the list before (five missions): its first three (any 3 games, the two games played) are the same
+  const same = d.v === MIS_V, keep = same ? MIS_N : 3;
+  return { day, prog: Array.from({ length: MIS_N }, (_, i) => (i < keep ? d.prog[i] | 0 : 0)), got: same ? d.got | 0 : (d.got | 0) & 7 };
 }
 const misDone = (st, L, i) => st.prog[i] >= L[i].n;
-const misAllBit = 1 << MIS_N;
+const misAllBit = 1 << MIS_N, misFull = misAllBit - 1;
+const misSave = (w, st) => { w.daily.day = st.day; w.daily.v = MIS_V; w.daily.prog = st.prog; w.daily.got = st.got; };
 function misReady() {   // how many rewards are waiting
   const st = misState(), L = misList(st.day);
   let n = 0;
   for (let i = 0; i < MIS_N; i++) if (misDone(st, L, i) && !(st.got & (1 << i))) n++;
-  if ((st.got & 31) === 31 && !(st.got & misAllBit)) n++;
+  if ((st.got & misFull) === misFull && !(st.got & misAllBit)) n++;
   return n;
 }
 // a game has ended (its result shows): its part in the day's missions
@@ -3843,20 +3854,22 @@ function misGame(game, score) {
   L.forEach((m, i) => {
     if (misDone(st, L, i)) return;
     if (m.t === 'any' || (m.t === 'play' && m.g === g)) { st.prog[i]++; ch = true; }
-    else if (m.t === 'score' && m.g === g && score >= m.s) { st.prog[i] = 1; ch = true; }
+    else if (m.t === 'score' && m.g === g && (g !== 'block' || game === 'block16') && score >= m.s) { st.prog[i] = 1; ch = true; }
   });
-  if (ch) walletPut(w => { w.daily.day = st.day; w.daily.prog = st.prog; w.daily.got = st.got; });
+  if (ch) walletPut(w => misSave(w, st));
 }
 function misClaim(i) {
   const st = misState(), L = misList(st.day);
-  if (i === MIS_N) {   // all five: a golden acorn
-    if ((st.got & 31) !== 31 || st.got & misAllBit) return;
-    walletPut(w => { w.daily.day = st.day; w.daily.prog = st.prog; w.daily.got = st.got | misAllBit; });
-    contPut(contN + MIS_ALL_GOLD); sfx('pick'); toast(tr('gotGold', MIS_ALL_GOLD));
+  if (i === MIS_N) {   // all of them: golden acorns and coins
+    if ((st.got & misFull) !== misFull || st.got & misAllBit) return;
+    st.got |= misAllBit;
+    walletPut(w => { misSave(w, st); w.coins += MIS_ALL_COINS; });
+    contPut(contN + MIS_ALL_GOLD); sfx('pick'); toast(tr('gotAll', MIS_ALL_GOLD, MIS_ALL_COINS));
     return;
   }
   if (!misDone(st, L, i) || st.got & (1 << i)) return;
-  walletPut(w => { w.daily.day = st.day; w.daily.prog = st.prog; w.daily.got = st.got | (1 << i); w.coins += MIS_COINS; });
+  st.got |= 1 << i;
+  walletPut(w => { misSave(w, st); w.coins += MIS_COINS; });
   sfx('pick'); toast(tr('gotCoins', MIS_COINS));
 }
 
@@ -3912,7 +3925,7 @@ function openDaily(tab) {
 function closeDaily() { clearInterval(dailyIv); $('#daily').hidden = true; }
 function dailyClock() {
   const now = new Date(), end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), s = Math.max(0, Math.floor((end - now) / 1000));
-  $('#mis-sub').textContent = tr('misSub', `${pad2(Math.floor(s / 3600))}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`);
+  $('#mis-sub').textContent = tr('misSub', `${pad2(Math.floor(s / 3600))}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`, MIS_N);
   if ($('#mis-list').dataset.day !== dayKey() || $('#att-cal').dataset.day !== dayKey()) dailyUI();   // midnight passed
 }
 function dailyUI() {
@@ -3935,14 +3948,14 @@ function dailyUI() {
   const row = (ic, text, a, b, state, prize, i, gold) => `<div class="ms-row${gold ? ' all' : ''}"><div class="ic">${ic}</div><div class="tx"><p>${text}</p><div class="fs-bar${gold ? ' gold' : ''}"><i style="width:${Math.min(100, a / b * 100)}%"></i><span>${Math.min(a, b)} / ${b}</span></div></div>
     <button type="button" class="ms-get ${state}" data-i="${i}" ${state === 'go' ? '' : 'disabled'}>${state === 'done' ? `<b>${tr('misGot')}</b>` : prize}</button></div>`;
   list.innerHTML = L.map((m, i) => {
-    const text = m.t === 'any' ? tr('misAny', m.n) : m.t === 'play' ? tr('misPlay', heroName(m.g)) : tr('misScore', heroName(m.g), m.s.toLocaleString());
+    const text = m.t === 'any' ? tr('misAny', m.n) : m.t === 'play' ? tr('misPlay', heroName(m.g)) : tr('misScore', m.g === 'block' ? heroName('block') + ' ' + tr('size', 16) : heroName(m.g), m.s.toLocaleString());
     const src = m.t === 'any' ? null : $('#mg-' + m.g + ' .mg-ic'), cl = src && src.cloneNode(true);
     if (cl) cl.removeAttribute('class');   // its picture only, not the games list's sizes
     const ic = m.t === 'any' ? anyIc : (cl ? cl.outerHTML : '');
     const state = st.got & (1 << i) ? 'done' : misDone(st, L, i) ? 'go' : '';
     return row(ic, text, st.prog[i], m.n, state, `<img src="coin-1.webp" alt=""><b>${MIS_COINS}</b>`, i, false);
-  }).join('') + row('<img src="gold-icon.webp" alt="">', tr('misAll'), [0, 1, 2, 3, 4].filter(i => st.got & (1 << i)).length, MIS_N,
-    st.got & misAllBit ? 'done' : (st.got & 31) === 31 ? 'go' : '', `<img src="gold-icon.webp" alt=""><b>${MIS_ALL_GOLD}</b>`, MIS_N, true);
+  }).join('') + row('<img src="gold-icon.webp" alt="">', tr('misAll', MIS_N), L.filter((m, i) => st.got & (1 << i)).length, MIS_N,
+    st.got & misAllBit ? 'done' : (st.got & misFull) === misFull ? 'go' : '', `<span class="two"><span><img src="gold-icon.webp" alt=""><b>${MIS_ALL_GOLD}</b></span><span><img src="coin-1.webp" alt=""><b>${MIS_ALL_COINS.toLocaleString()}</b></span></span>`, MIS_N, true);
   list.dataset.day = st.day;
   dailyClock();
 }
@@ -7215,9 +7228,15 @@ function cpBest() { try { return parseInt(localStorage.getItem(CP_BEST) || '0', 
 // a body's radius by its length: thicker as it grows, with no end (13 at the start, 22 at 50, 28 at 100, 42 at 400,
 // 55 at 1000)
 const cpRad = n => 13 * Math.pow(Math.max(CP_LEN0, n) / CP_LEN0, 0.3);
-// a caterpillar's length, as it shows: its segments now (not the ones still to grow), so who eats whom, the faces and
-// what the eye sees agree
-const cpLen = w => w.segs.length;
+// a caterpillar's length, as it shows: n, grown as its segments come in (not the ones still to grow), so who eats whom,
+// the faces and what the eye sees agree. (Something drawn for a picture has no n: its segments.)
+const cpLen = w => w.n || w.segs.length;
+// the points its body is drawn and moved with: one a segment up to 800 long; past that fewer, 800 * (n / 800)^0.35, and
+// never more than 1 200 (from about 2 500 long on; the body is many screens long by then, its end never in sight). Every
+// body point is moved every frame, so however long they all get (the others are spawned near the player's length), the
+// work a frame stays the same: 15 caterpillars at most, 1 200 points each
+const CP_BODY0 = 800, CP_BODY_MAX = 1200;
+const cpBody = n => (n <= CP_BODY0 ? n : Math.min(CP_BODY_MAX, Math.round(CP_BODY0 * Math.pow(n / CP_BODY0, 0.35))));
 const cpAng = d => Math.atan2(Math.sin(d), Math.cos(d));
 function cpResize() {
   const r = cpcv.getBoundingClientRect();
@@ -7231,9 +7250,9 @@ function cpHud() {
 }
 // a caterpillar of n segments with its head at (x, y) going a; stacked (it uncurls as it goes) or laid out straight back
 function cpWormNew(x, y, a, n, col, me, straight) {
-  const w = { me, segs: [], a, aim: a, grow: 0, col, speed: 1, think: Math.random() * 0.3, bump: 0, gt: 0, alive: true };
+  const w = { me, n, segs: [], a, aim: a, grow: 0, col, speed: 1, think: Math.random() * 0.3, bump: 0, gt: 0, alive: true };
   const gap = cpRad(n) * CP_GAP;
-  for (let i = 0; i < n; i++) w.segs.push(straight ? { x: x - Math.cos(a) * gap * i, y: y - Math.sin(a) * gap * i } : { x, y });
+  for (let i = 0, m = cpBody(n); i < m; i++) w.segs.push(straight ? { x: x - Math.cos(a) * gap * i, y: y - Math.sin(a) * gap * i } : { x, y });
   return w;
 }
 // how far from the middle of the screen the view reaches, in world units
@@ -7254,9 +7273,9 @@ function cpSpawnBot(big) {
     if (CP.worms.some(o => o.alive && Math.hypot(x - o.segs[0].x, y - o.segs[0].y) < 200)) continue;
     const w = cpWormNew(x, y, Math.random() * Math.PI * 2, n, 1 + Math.floor(Math.random() * (CP_COLORS.length - 1)), false, false);
     // the bend over the whole body stays gentle (a long one bent a little at every segment would coil up beside the view)
-    const h = CP.me ? CP.me.segs[0] : { x: 0, y: 0 }, gap = cpRad(n) * CP_GAP, bend = (Math.random() - 0.5) * Math.min(0.06, 3 / n);
+    const h = CP.me ? CP.me.segs[0] : { x: 0, y: 0 }, m = w.segs.length, gap = cpRad(n) * CP_GAP, bend = (Math.random() - 0.5) * Math.min(0.06, 3 / m);
     let t = Math.atan2(y - h.y, x - h.x);
-    for (let i = 1; i < n; i++) { t += bend; w.segs[i] = { x: w.segs[i - 1].x + Math.cos(t) * gap, y: w.segs[i - 1].y + Math.sin(t) * gap }; }
+    for (let i = 1; i < m; i++) { t += bend; w.segs[i] = { x: w.segs[i - 1].x + Math.cos(t) * gap, y: w.segs[i - 1].y + Math.sin(t) * gap }; }
     w.a = w.aim = Math.atan2(y - h.y, x - h.x) + Math.PI + (Math.random() - 0.5) * 1.6;   // its head on, away from its body
     w.speed = 0.88 + Math.random() * 0.08;
     CP.worms.push(w);
@@ -7273,7 +7292,7 @@ const cpLeafNew = all => { const N = cpNear(), [x, y] = all ? cpSpot(60, N) : cp
 function cpCamera(dt) {
   // the view draws back as the player's grows, with no end (twice as far at about 160 long, three times at 650), a
   // little less than it thickens, so it still looks a bit bigger on the screen
-  const h = CP.me.segs[0], z = Math.min(CP.W, 520) / 390 * Math.pow(cpRad(CP_LEN0) / cpRad(CP.me.segs.length), 0.8);
+  const h = CP.me.segs[0], z = Math.min(CP.W, 520) / 390 * Math.pow(cpRad(CP_LEN0) / cpRad(cpLen(CP.me)), 0.8);
   if (CP.me.alive) { CP.cam.x = h.x; CP.cam.y = h.y; }
   CP.cam.z += (z - CP.cam.z) * (dt < 0 ? 1 : 1 - Math.exp(-dt * 2));
 }
@@ -7339,7 +7358,7 @@ function cpThink(w, dt) {
 // the screen: 150 px a second at the start, about 100 from 130 long on) and turns wider (else a thick one would fold
 // onto itself: its turning circle stays about as wide as its body), both by how much thicker than at the start it is
 function cpPace(w) {
-  const n = w.segs.length, big = cpRad(n) / cpRad(CP_LEN0);
+  const n = cpLen(w), big = cpRad(n) / cpRad(CP_LEN0);
   return { v: CP_SPEED * w.speed * (1 - Math.min(0.18, (n - CP_LEN0) * 0.0015)) * Math.pow(big, 0.65), turn: (w.me ? CP_TURN : CP_TURN_BOT) * Math.pow(big, -0.35) };
 }
 // k segments more to grow, at 50 a second or fast enough for all that is left to come within a second
@@ -7353,10 +7372,10 @@ function cpMove(w, dt) {
   if (w.grow > 0) {   // 50 segments a second, or a big meal all within about a second (cpFeed sets the pace)
     w.gt += dt * (w.rate || 50);
     const k = Math.min(w.grow, Math.floor(w.gt)), t = w.segs[w.segs.length - 1];
-    w.gt -= k; w.grow -= k;
-    for (let i = 0; i < k; i++) w.segs.push({ x: t.x, y: t.y });
+    w.gt -= k; w.grow -= k; w.n += k;
+    for (let i = w.segs.length, m = cpBody(w.n); i < m; i++) w.segs.push({ x: t.x, y: t.y });
   } else w.gt = 0;
-  const gap = cpRad(w.segs.length) * CP_GAP;
+  const gap = cpRad(w.n) * CP_GAP;
   for (let i = 1; i < w.segs.length; i++) {
     const p = w.segs[i - 1], s = w.segs[i], dx = s.x - p.x, dy = s.y - p.y, L = Math.hypot(dx, dy);
     if (L > gap) { s.x = p.x + dx / L * gap; s.y = p.y + dy / L * gap; }
@@ -7369,7 +7388,7 @@ function cpBurst(x, y, k, sp, c1, c2, s) {
 function cpEatLeaves() {
   for (const w of CP.worms) {
     if (!w.alive) continue;
-    const h = w.segs[0], reach = cpRad(w.segs.length) + 11;
+    const h = w.segs[0], reach = cpRad(cpLen(w)) + 11;
     for (let i = CP.leaves.length - 1; i >= 0; i--) {
       const l = CP.leaves[i];
       if (Math.abs(l.x - h.x) > reach || Math.abs(l.y - h.y) > reach || Math.hypot(l.x - h.x, l.y - h.y) > reach) continue;
@@ -7390,7 +7409,7 @@ function cpMeet() {
     if (CP.st !== 'play') return;
     const a = ws[i], b = ws[j];
     if (!a.alive || !b.alive || (CP.safe > 0 && (a.me || b.me))) continue;
-    const p = a.segs[0], q = b.segs[0], reach = (cpRad(a.segs.length) * 1.12 + cpRad(b.segs.length) * 1.12) * 0.9;
+    const p = a.segs[0], q = b.segs[0], reach = (cpRad(cpLen(a)) * 1.12 + cpRad(cpLen(b)) * 1.12) * 0.9;
     if (Math.abs(p.x - q.x) > reach || Math.abs(p.y - q.y) > reach || Math.hypot(p.x - q.x, p.y - q.y) > reach) continue;
     const na = cpLen(a), nb = cpLen(b);
     if (na > nb) cpGulp(a, b);
@@ -7405,9 +7424,9 @@ function cpMeet() {
 // the eater grows by half the eaten one
 function cpGulp(eater, food) {
   food.alive = false;
-  const gain = Math.ceil(food.segs.length / 2), pal = CP_COLORS[food.col], h = food.segs[0], e = eater.segs[0];
+  const gain = Math.ceil(cpLen(food) / 2), pal = CP_COLORS[food.col], h = food.segs[0], e = eater.segs[0];
   cpFeed(eater, gain);
-  CP.ghosts.push({ segs: food.segs.map(q => ({ x: q.x, y: q.y })), a: food.a, col: food.col, n: food.segs.length, t: 0, eater, at: { x: e.x, y: e.y } });
+  CP.ghosts.push({ segs: food.segs.map(q => ({ x: q.x, y: q.y })), a: food.a, col: food.col, n: cpLen(food), t: 0, eater, at: { x: e.x, y: e.y } });
   cpBurst(e.x, e.y, 8, 140, pal[1], '#fff6c8', 3.4);
   if (eater.me) {
     CP.score += gain * CP_PTS; cpHud();
@@ -7440,7 +7459,7 @@ function cpGameOver() {
 // for CP_SAFE s it cannot eat or be eaten (it blinks)
 const CP_SAFE = 3;
 function cpRevive() {
-  const old = CP.me, n = Math.max(CP_LEN0, old.segs.length), h = old.segs[0];
+  const old = CP.me, n = Math.max(CP_LEN0, cpLen(old)), h = old.segs[0];
   const heads = CP.worms.filter(w => w.alive && !w.me && cpLen(w) >= n).map(w => w.segs[0]);
   const near = p => heads.reduce((m, q) => Math.min(m, Math.hypot(q.x - p.x, q.y - p.y)), Infinity);
   let at = { x: h.x, y: h.y }, far = near(at);
@@ -7524,7 +7543,7 @@ function cpDrawWorm(c, w, face, view, under) {   // under: drawn after the body,
   const T = cpTinted(w.col);
   if (T) {   // the pictures, upright: the segments from the top of the screen down (a lower one in front, as they are
     // drawn from a little above, so each shows its green back), then the head over them, a little bigger than the body
-    const n = w.segs.length, r = cpRad(n), segs = w.segs;
+    const n = w.segs.length, r = cpRad(cpLen(w)), segs = w.segs;
     const seen = (s, q) => !view || (s.x > view[0] - q && s.x < view[2] + q && s.y > view[1] - q && s.y < view[3] + q);
     const sg = T.seg, sa = sg.height / sg.width, R0 = r / CP_SEG_R, order = [];
     for (let i = 1; i < n; i++) if (seen(segs[i], R0)) order.push(i);
@@ -7539,7 +7558,7 @@ function cpDrawWorm(c, w, face, view, under) {   // under: drawn after the body,
     if (seen(h, iw)) c.drawImage(im, h.x - ax * iw, h.y - ay * ih, iw, ih);
     return;
   }
-  const n = w.segs.length, r = cpRad(n), pal = CP_COLORS[w.col], segs = w.segs;
+  const n = w.segs.length, r = cpRad(cpLen(w)), pal = CP_COLORS[w.col], segs = w.segs;
   const rad = i => (i === 0 ? r * 1.12 : r * Math.max(0.55, 0.96 - 0.4 * (i / n) * (i / n)));
   const seen = (s, q) => !view || (s.x > view[0] - q && s.x < view[2] + q && s.y > view[1] - q && s.y < view[3] + q);
   c.fillStyle = MOL;
@@ -7584,7 +7603,7 @@ const cpHash = (i, j) => { const v = Math.sin(i * 127.1 + j * 311.7) * 43758.545
 function cpTag(c, me, cam, z, W, H, sx, dpr, now) {
   // the point exactly 2.4 radii back along the body, between two segments (snapping to the nearest segment made it
   // jump a segment back and forth whenever the distance fell right on one)
-  const r = cpRad(me.segs.length), want = r * 2.4, sg = me.segs;
+  const r = cpRad(cpLen(me)), want = r * 2.4, sg = me.segs;
   let p = null, d = 0;
   for (let i = 1; i < sg.length; i++) {
     const L = Math.hypot(sg[i].x - sg[i - 1].x, sg[i].y - sg[i - 1].y);
@@ -7627,7 +7646,7 @@ function cpDraw(now) {
     c.drawImage(im, -im.naturalWidth * k / 2, -im.naturalHeight * k / 2, im.naturalWidth * k, im.naturalHeight * k); c.restore();
   }
   // the others, shorter first (so a longer one passes over), then the player's
-  const me = CP.me, mine = cpLen(me), others = CP.worms.filter(w => !w.me && w.alive).sort((a, b) => a.segs.length - b.segs.length);
+  const me = CP.me, mine = cpLen(me), others = CP.worms.filter(w => !w.me && w.alive).sort((a, b) => cpLen(a) - cpLen(b));
   for (const w of others) cpDrawWorm(c, w, cpLen(w) > mine ? 'mad' : cpLen(w) < mine ? 'shy' : '', view);
   if (me.alive) {   // blinking while it cannot be eaten; the number on its body, under the head
     c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
