@@ -567,6 +567,11 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
 .ms-row.all { background: #fff0b8; }
 .ms-row .ic { width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center; }
 .ms-row .ic img, .ms-row .ic svg { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ms-row .ic .trio { position: relative; display: block; width: 100%; height: 100%; }   /* "play 3 games": owl and raccoon behind the rabbit */
+.ms-row .ic .trio img { position: absolute; width: auto; height: 80%; bottom: 2%; }
+.ms-row .ic .trio .t1 { left: -14%; }
+.ms-row .ic .trio .t2 { right: -16%; }
+.ms-row .ic .trio .t3 { left: 50%; transform: translateX(-50%); bottom: -2%; height: 100%; }
 .ms-row .tx { flex: 1; min-width: 0; }
 .ms-row .tx p { margin: 0 0 5px; font-size: clamp(12px, 3.6vw, 14px); line-height: 1.2; word-break: keep-all; overflow-wrap: anywhere; }   /* a long one on two lines */
 .fs-bar { position: relative; height: 15px; box-sizing: border-box; border: 2.5px solid var(--ol); border-radius: 8px; background: rgba(60, 30, 10, 0.18); overflow: hidden; }
@@ -1231,8 +1236,8 @@ html.tall-art .scr-box .ext { display: none; }
   <h2 class="fs-sign" data-t="rewards">오늘의 보상</h2>
   <div class="fs-card" id="daily-card">
     <div class="fs-tabs"><button type="button" id="tab-att" class="on"><span data-t="attTab">출석</span><span class="hub-badge" id="tab-att-b" hidden>!</span></button><button type="button" id="tab-mis"><span data-t="misTab">일일 미션</span><span class="hub-badge" id="tab-mis-b" hidden></span></button></div>
-    <div id="att-pane"><p class="fs-sub" id="att-sub"></p><div class="fs-cal" id="att-cal"></div><button class="btn primary fs-wide" id="btn-att-get" type="button" data-t="attGet">오늘 받기</button></div>
-    <div id="mis-pane" hidden><p class="fs-sub" id="mis-sub"></p><div id="mis-list"></div></div>
+    <div id="att-pane"><div class="fs-cal" id="att-cal"></div><button class="btn primary fs-wide" id="btn-att-get" type="button" data-t="attGet">보상 받기</button></div>
+    <div id="mis-pane" hidden><div id="mis-list"></div></div>
   </div>
   <div class="sh-top"><button class="sh-back" id="btn-daily-close" type="button" aria-label="닫기" data-ta="close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="fs-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div></div></div>
 </section>
@@ -1311,9 +1316,8 @@ const STR = {
     paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '목록으로',
     over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', miniGames: '미니게임', hubSub: '게임 12개, 순위에 도전해 보세요', hubPlay: '게임 시작', profile: '프로필', profGold: '황금 도토리', profGames: '한 판 수', profBest: '최고 기록',
     nickChange: '바꾸기', nickNew: '새 닉네임을 정해 주세요', nickDone: '닉네임을 바꿨어요', back: '뒤로',
-    coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', attGet: '오늘 받기', attGot: '오늘은 받았어요',
-    attSub: () => `${new Date().getMonth() + 1}월 · 날짜마다 정해진 보상, 지난 날은 못 받아요`, misSub: (t, n) => `0시에 새 미션 ${n}개 · 남은 시간 ${t}`,
-    misAny: n => `아무 게임 ${n}판 하기`, misPlay: g => `${g} 1판 하기`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음',
+    coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', attGet: '보상 받기', attGot: '오늘은 받았어요',
+    misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음',
     gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, gotAll: (g, c) => `황금 도토리 ${g}개, 코인 ${c.toLocaleString()}개를 받았어요`, noCoins: '코인이 모자라요',
     heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`,
     heroBonus: p => `캐릭터 보너스 +${p}%`, prev: '이전', next: '다음',
@@ -1362,9 +1366,8 @@ const STR = {
     paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Game list',
     over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', miniGames: 'Mini Games', hubSub: '12 games. Climb the rankings!', hubPlay: 'Play', profile: 'Profile', profGold: 'Golden acorns', profGames: 'Games played', profBest: 'Best scores',
     nickChange: 'Change', nickNew: 'Pick a new nickname', nickDone: 'Nickname changed', back: 'Back',
-    coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', attGet: 'Claim today', attGot: 'Claimed today',
-    attSub: () => `${new Date().toLocaleString('en', { month: 'long' })} · a reward for each date`, misSub: (t, n) => `${n} new at midnight · ${t} left`,
-    misAny: n => `Play any ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got',
+    coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', attGet: 'Claim reward', attGot: 'Claimed today',
+    misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got',
     gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, gotAll: (g, c) => `+${g} golden acorns, +${c.toLocaleString()} coins`, noCoins: 'Not enough coins',
     heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`,
     heroBonus: p => `Hero bonus +${p}%`, prev: 'Previous', next: 'Next',
@@ -1770,7 +1773,7 @@ function signedIn(st) {
   openLobby(false, false); hideScreen('splash');   // the first screen (the games list from its Play)
   lobbyInfo();
 }
-function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); rkSync(); goldOnSignIn(); walletOnSignIn(); }
+function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); rkPull().catch(() => {}).then(rkSync); goldOnSignIn(); walletOnSignIn(); }
 function openNick() {
   $('#nick').hidden = false;
   const err = $('#nick-err'); err.textContent = tr('nickRule'); err.classList.remove('bad');
@@ -3317,6 +3320,30 @@ async function rkSync() {
   } finally { rkBusy = false; }
   if (rkAgain) { rkAgain = false; rkSync(); }
 }
+// a mini game's best on this phone, raised to what the account has on its board (cleared phone data, another phone):
+// the games list, the start card and "new best" all go by this phone's best
+const rkKeep = (game, score) => { if (!RK_LOCAL[game] || game.startsWith('block') || !(score > RK_LOCAL[game]())) return false; try { localStorage.setItem('rise7-best-' + game, String(score)); } catch (e) { return false; } return true; };
+// once for a phone and an account (11 reads): each mini game's all-time line of mine, onto this phone's bests
+const RK_PULLED = 'rise7-pulled';
+async function rkPull() {
+  if (!rkOnline()) return;
+  const uid = ME.uid;
+  try { if (localStorage.getItem(RK_PULLED) === uid) return; } catch (e) { return; }
+  let ok = true;
+  await Promise.all(Object.keys(RK_LOCAL).filter(g => !g.startsWith('block')).map(async game => {
+    try {
+      const m = await NET.boardMine(game, 'all');
+      if (!m || !ME || ME.uid !== uid) return;
+      rkKeep(game, m.score);
+      const key = uid + '|' + game + '|all', sent = rkSent(key);
+      if (!sent || sent.s < m.score) rkSentPut(key, { s: m.score, k: m.k });   // already on the board: not sent again
+    } catch (e) { ok = false; }
+  }));
+  if (!ME || ME.uid !== uid) return;
+  if (ok) try { localStorage.setItem(RK_PULLED, uid); } catch (e) { /* storage unavailable */ }
+  if (!$('#minis').hidden) minisInfo();
+  if (!$('#profile').hidden) profileUI();
+}
 // the first place of each board (all-time): a line, null (nobody yet) or undefined (could not ask)
 async function rkTops(games, period = 'all') {
   if (!rkOnline()) return games.map(() => undefined);
@@ -3347,7 +3374,7 @@ async function rkIntroFill(game) {
   if (n !== rkN) return;
   put('top', all && (all[0] || null)); put('wk', week && (week[0] || null));
   const mine = RK_LOCAL[game]();
-  if (me && me.score >= mine) { $('#rki-me').textContent = me.score.toLocaleString(); $('#rki-me-rank').textContent = tr('rkPlace', me.rank); }
+  if (me && me.score >= mine) { $('#rki-me').textContent = me.score.toLocaleString(); $('#rki-me-rank').textContent = tr('rkPlace', me.rank); if (rkKeep(game, me.score)) { minisInfo(); if (!$('#profile').hidden) profileUI(); } }
 }
 function rkStart() { $('#rkintro').hidden = true; rkUnwait(); const go = rkGo; rkGo = null; if (go) { go(); tutMaybe(rkGame); } }
 function rkLeave() { $('#rkintro').hidden = true; rkUnwait(); rkGo = null; if (rkGame && RK_SCREEN[rkGame]) RK_SCREEN[rkGame][1](); }
@@ -3924,8 +3951,6 @@ function openDaily(tab) {
 }
 function closeDaily() { clearInterval(dailyIv); $('#daily').hidden = true; }
 function dailyClock() {
-  const now = new Date(), end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), s = Math.max(0, Math.floor((end - now) / 1000));
-  $('#mis-sub').textContent = tr('misSub', `${pad2(Math.floor(s / 3600))}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`, MIS_N);
   if ($('#mis-list').dataset.day !== dayKey() || $('#att-cal').dataset.day !== dayKey()) dailyUI();   // midnight passed
 }
 function dailyUI() {
@@ -3940,11 +3965,10 @@ function dailyUI() {
     h += `<div class="${cls}"><i>${d}</i><img src="${gold ? 'gold-icon.webp' : 'coin-1.webp'}" alt=""><b>${gold ? 'x1' : ATT_COINS}</b></div>`;
   }
   const cal = $('#att-cal'); cal.innerHTML = h; cal.dataset.day = dayKey();
-  $('#att-sub').textContent = tr('attSub');
   const can = attCan(), btn = $('#btn-att-get'); btn.disabled = !can; btn.textContent = tr(can ? 'attGet' : 'attGot');
   // the missions
   const st = misState(), L = misList(st.day), list = $('#mis-list');
-  const anyIc = '<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="11" width="34" height="20" rx="10" fill="#fff6dc" stroke="#2b1a0e" stroke-width="3"/><path d="M12 17v8M8 21h8" stroke="#2b1a0e" stroke-width="3" stroke-linecap="round"/><circle cx="27" cy="18" r="2.6" fill="#ff5a4a" stroke="#2b1a0e" stroke-width="1.6"/><circle cx="31" cy="23" r="2.6" fill="#4fb83f" stroke="#2b1a0e" stroke-width="1.6"/></svg>';
+  const anyIc = '<span class="trio"><img class="t1" src="hub-owl.webp" alt=""><img class="t2" src="hub-raccoon.webp" alt=""><img class="t3" src="hub-rabbit.webp" alt=""></span>';   // play any games: three of the forest friends
   const row = (ic, text, a, b, state, prize, i, gold) => `<div class="ms-row${gold ? ' all' : ''}"><div class="ic">${ic}</div><div class="tx"><p>${text}</p><div class="fs-bar${gold ? ' gold' : ''}"><i style="width:${Math.min(100, a / b * 100)}%"></i><span>${Math.min(a, b)} / ${b}</span></div></div>
     <button type="button" class="ms-get ${state}" data-i="${i}" ${state === 'go' ? '' : 'disabled'}>${state === 'done' ? `<b>${tr('misGot')}</b>` : prize}</button></div>`;
   list.innerHTML = L.map((m, i) => {
@@ -8072,7 +8096,7 @@ function delUI(st) {
 function wipeLocal() {
   try {
     for (const k of Object.keys(localStorage)) if (k.startsWith('rise7-best-')) localStorage.removeItem(k);
-    localStorage.removeItem(RK_SENT); localStorage.removeItem(RK_WEEK);
+    localStorage.removeItem(RK_SENT); localStorage.removeItem(RK_WEEK); localStorage.removeItem(RK_PULLED);
     const tut = tutLocal(); if (ME && tut[ME.uid]) { delete tut[ME.uid]; localStorage.setItem(TUT_KEY, JSON.stringify(tut)); }   // the how-to-plays it saw
     localStorage.removeItem(CONT_OWNER); localStorage.removeItem(CONT_DIRTY);
   } catch (e) { /* storage unavailable */ }
