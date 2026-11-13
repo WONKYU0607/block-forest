@@ -3907,9 +3907,9 @@ const heroStage = L => Math.min(5, Math.floor(L / HERO_STEP) + 1);
 const heroIn = L => (L >= HERO_MAX ? HERO_STEP : L % HERO_STEP);
 const heroPct = g => heroLv(g) * HERO_PCT;
 const heroPctTxt = g => (Math.round(heroPct(g) * 100) / 100).toFixed(2);
-const HERO_SKIN = {   // the stages' pictures, game by game, once they are drawn (until then the game's own picture)
-  block: [1, 2, 3, 4, 5].map(k => `skin-block-${k}.webp`),   // the bear (1: the game's own bear on the stages' canvas)
-};
+// the stages' pictures, game by game, once they are drawn (until then the game's own picture); stage 1 is the game's own
+// character on the stages' canvas: the bear, the squirrel, the rabbit
+const HERO_SKIN = Object.fromEntries(['block', 'acorn', 'stairs'].map(g => [g, [1, 2, 3, 4, 5].map(k => `skin-${g}-${k}.webp`)]));
 const HERO_ADD = {};   // what the hero has added to the score of the game being played (again on top after going on)
 // a game ends: its hero's share added to its score (to the points since the last time, after going on)
 function heroScore(game, X, key = 'score') {
