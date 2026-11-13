@@ -3907,7 +3907,9 @@ const heroStage = L => Math.min(5, Math.floor(L / HERO_STEP) + 1);
 const heroIn = L => (L >= HERO_MAX ? HERO_STEP : L % HERO_STEP);
 const heroPct = g => heroLv(g) * HERO_PCT;
 const heroPctTxt = g => (Math.round(heroPct(g) * 100) / 100).toFixed(2);
-const HERO_SKIN = {};   // the stages' pictures, game by game, once they are drawn (until then the game's own picture)
+const HERO_SKIN = {   // the stages' pictures, game by game, once they are drawn (until then the game's own picture)
+  block: [1, 2, 3, 4, 5].map(k => `skin-block-${k}.webp`),   // the bear (1: the game's own bear on the stages' canvas)
+};
 const HERO_ADD = {};   // what the hero has added to the score of the game being played (again on top after going on)
 // a game ends: its hero's share added to its score (to the points since the last time, after going on)
 function heroScore(game, X, key = 'score') {
@@ -4009,7 +4011,8 @@ function heroUI() {
   $('#hero-bar i').style.width = inn + '%'; $('#hero-bar span').textContent = tr('heroStage', st, inn);
   $('#hero-buff').innerHTML = `${tr('heroBuff', heroName(g))} <b>+${heroPctTxt(g)}%</b>`;
   const max = L >= HERO_MAX, btn = $('#btn-hero-up');
-  btn.disabled = max || WAL.coins < heroCost(L);   // off at the top, and without the coins btn.querySelector('[data-t]').textContent = tr(max ? 'heroMax' : 'heroUp');
+  btn.disabled = max || WAL.coins < heroCost(L);   // off at the top, and without the coins
+  btn.querySelector('[data-t]').textContent = tr(max ? 'heroMax' : 'heroUp');
   btn.querySelector('img').hidden = max; $('#hero-cost').hidden = max; $('#hero-cost').textContent = heroCost(L).toLocaleString();
   $('#hero-count').textContent = `${heroI + 1} / ${HERO_LIST.length}`;
 }
