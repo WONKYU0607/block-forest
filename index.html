@@ -1341,7 +1341,7 @@ const STR = {
     lobby: '로비', start: '게임 시작', backExit: '한 번 더 누르면 나가요',
     splash: '시작 화면', touch: '화면을 터치하세요',
     login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…', loginAsk: '게임별 최고 점수와 순위를 계정에 저장해요',
-    loginErr: '연결할 수 없어요. 인터넷 연결을 확인해 주세요.', loginBlocked: '로그인 창이 막혔어요. 다시 눌러 주세요.',
+    loginErr: '연결할 수 없어요. 인터넷 연결을 확인해 주세요.', offStart: '인터넷 없이 시작했어요. 연결되면 저장돼요', loginBlocked: '로그인 창이 막혔어요. 다시 눌러 주세요.',
     nickTitle: '닉네임', nickAsk: '랭킹에 보일 이름을 정해 주세요', nickRule: '2~10자 · 한글, 영문, 숫자, _', nickTaken: '이미 사용 중인 닉네임이에요',
     nickBad: '2~10자, 한글·영문·숫자·_만 쓸 수 있어요', ok: '확인',
     loading: '불러오는 중…', 
@@ -1391,7 +1391,7 @@ const STR = {
     lobby: 'Lobby', start: 'Play', backExit: 'Press back again to leave',
     splash: 'Title screen', touch: 'Touch to Start',
     login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…', loginAsk: 'Your bests and rankings are saved to your account',
-    loginErr: "Can't connect. Check your internet connection.", loginBlocked: 'The sign-in window was blocked. Tap again.',
+    loginErr: "Can't connect. Check your internet connection.", offStart: 'Playing offline. Saved once you are back online', loginBlocked: 'The sign-in window was blocked. Tap again.',
     nickTitle: 'Nickname', nickAsk: 'Pick the name others see in the rankings', nickRule: '2-10 letters, numbers or _', nickTaken: 'That nickname is taken',
     nickBad: 'Use 2-10 letters, numbers or _', ok: 'OK',
     loading: 'Loading…', 
@@ -1763,8 +1763,38 @@ function loginUI(st) {
 }
 async function enter() {
   loginUI('wait');
-  try { await loadNet(); signedIn(await NET.ready()); } catch (e) { loginUI('error'); }
+  try { await loadNet(); signedIn(await NET.ready()); } catch (e) { if (!(e && e.code === 'offline' && startOff(e.uid))) loginUI('error'); }
 }
+// No connection when the game opens: the account signed in on this phone goes on with the profile kept at its last sign-in
+// (forest-me) and this phone's own records, coins and acorns. What changes is kept as not saved yet; once the connection is
+// back the account is read again and signed in as usual (the phone's unsaved changes go up then).
+const ME_KEY = 'forest-me';
+let meOff = false;   // in on the kept profile, the account not read again yet
+function meKeep(st) { try { localStorage.setItem(ME_KEY, JSON.stringify({ uid: st.uid, profile: st.profile })); } catch (e) { /* storage unavailable */ } }
+function meKept(uid) {
+  try { const o = JSON.parse(localStorage.getItem(ME_KEY) || 'null'); return o && uid && o.uid === uid && o.profile && o.profile.name ? o.profile : null; } catch (e) { return null; }
+}
+function startOff(uid) {
+  const p = meKept(uid);
+  if (!p || !NET || !NET.useCached || walOwner !== uid) return false;   // (the phone's coins must be this account's)
+  try { NET.useCached(uid, p); } catch (e) { return false; }
+  ME = { uid, ...p }; meOff = true;
+  $('#login').hidden = true; $('#nick').hidden = true;
+  openLobby(false, false); hideScreen('splash');
+  lobbyInfo();
+  toast(tr('offStart'), 2600);
+  return true;
+}
+function meBack() {
+  if (!meOff || !ME || !NET) return;
+  const uid = ME.uid;
+  NET.ready().then(st => {
+    if (!meOff || !ME || ME.uid !== uid || st.uid !== uid || !st.profile) return;
+    meOff = false; setMe(st);
+    if (!$('#profile').hidden) profileUI();
+  }).catch(() => { /* still offline: the next time it comes back */ });
+}
+setInterval(() => { if (meOff && !document.hidden) meBack(); }, 30000);   // (a connection can come back without an 'online' event)
 // signed in or not, with a nickname or not: on to the next screen
 function signedIn(st) {
   if (!st.uid) { loginUI('signin'); return; }
@@ -1775,7 +1805,7 @@ function signedIn(st) {
   openLobby(false, false); hideScreen('splash');   // the first screen (the games list from its Play)
   lobbyInfo();
 }
-function setMe(st) { ME = { uid: st.uid, ...st.profile }; syncBest(); rkPull().catch(() => {}).then(rkSync); goldOnSignIn(); walletOnSignIn(); }
+function setMe(st) { ME = { uid: st.uid, ...st.profile }; meOff = false; meKeep(st); syncBest(); bestsSync(); rkPull().catch(() => {}).then(() => { bestsSync(); rkSync(); }); goldOnSignIn(); walletOnSignIn(); }
 function openNick() {
   $('#nick').hidden = false;
   const err = $('#nick-err'); err.textContent = tr('nickRule'); err.classList.remove('bad');
@@ -1802,6 +1832,23 @@ function syncBest() {
   for (const n of [16, 32]) if ((ME['best' + n] || 0) > bestFor(n)) { try { localStorage.setItem(`rise7-best-${n}`, String(ME['best' + n])); } catch (e) { /* storage unavailable */ } }
   const b16 = bestFor(16), b32 = bestFor(32);
   if (b16 > ME.best16 || b32 > ME.best32) NET.saveBest(b16, b32).then(() => { ME.best16 = Math.max(ME.best16, b16); ME.best32 = Math.max(ME.best32, b32); }).catch(() => {});
+}
+// each mini game's best: kept with the account too (the profile, read at every sign-in, brings them to another phone or
+// a cleared one), the higher of the phone's and the account's on both; sent again when a game ends with a new one
+function bestsSync() {
+  if (!ME || !NET || !NET.saveBests) return;
+  const acc = ME.bests || {}, mine = {};
+  let raised = false, up = false;
+  for (const g of Object.keys(RK_LOCAL)) {
+    if (g.startsWith('block')) continue;
+    if (rkKeep(g, acc[g] || 0)) raised = true;
+    mine[g] = RK_LOCAL[g]();
+    if (mine[g] > (acc[g] || 0)) up = true;
+  }
+  if (raised) { if (!$('#minis').hidden) minisInfo(); if (!$('#profile').hidden) profileUI(); }
+  if (!up) return;
+  const uid = ME.uid;
+  NET.saveBests(mine).then(() => { const p = NET.me().profile; if (ME && ME.uid === uid && p) ME.bests = { ...p.bests }; }).catch(() => {});
 }
 // Many new blocks are ones that can finish a row somewhere, so something breaks often (fewer as the level climbs).
 function completesRow(shape, c) {
@@ -3298,6 +3345,7 @@ function rkScore(game, score) {
   const wk = rkLoad(RK_WEEK), w = rkWeek();
   if (!wk[game] || wk[game].w !== w || score > wk[game].s) { wk[game] = { w, s: score }; rkStore(RK_WEEK, wk); }
   rkSync();
+  if (!game.startsWith('block')) bestsSync();
 }
 // whatever this phone has that beats what it last sent: onto the boards, one after another
 let rkBusy = false, rkAgain = false;
@@ -3854,6 +3902,17 @@ function walletOnSignIn() {
   }
   walOwner = ME.uid; walletStore(); walletUI();
 }
+// back online, or the app back in front: whatever could not go up while offline (or while the app was away) goes up
+// now, instead of waiting for the next change or the next start
+function syncPending() {
+  if (!ME || !NET) return;
+  if (meOff) { meBack(); return; }   // started with no connection: the account is read first (its sign-in sends the rest)
+  if (walDirty) walletSave();
+  try { if (localStorage.getItem(CONT_DIRTY)) goldSave(); } catch (e) { /* storage unavailable */ }
+  bestsSync(); rkSync();
+}
+addEventListener('online', syncPending);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) syncPending(); });
 function walletWipe() { WAL = { coins: 0, daily: {}, heroes: {} }; walOwner = null; walDirty = false; try { localStorage.removeItem(WALLET_KEY); } catch (e) { /* storage unavailable */ } walletUI(); }
 const pad2 = n => String(n).padStart(2, '0');
 const dayKey = (t = new Date()) => `${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(t.getDate())}`;
@@ -3935,8 +3994,8 @@ const heroIn = L => (L >= HERO_MAX ? HERO_STEP : L % HERO_STEP);
 const heroPct = g => heroLv(g) * HERO_PCT;
 const heroPctTxt = g => (Math.round(heroPct(g) * 100) / 100).toFixed(2);
 // the stages' pictures, game by game, once they are drawn (until then the game's own picture); stage 1 is the game's own
-// character on the stages' canvas: the bear, the squirrel, the rabbit, the raccoon, the otter, the mole
-const HERO_SKIN = Object.fromEntries(['block', 'acorn', 'stairs', 'merge', 'pebble', 'mushroom'].map(g => [g, [1, 2, 3, 4, 5].map(k => `skin-${g}-${k}.webp`)]));
+// character on the stages' canvas: the bear, the squirrel, the rabbit, the raccoon, the otter, the mole, the owl
+const HERO_SKIN = Object.fromEntries(['block', 'acorn', 'stairs', 'merge', 'pebble', 'mushroom', 'owlpost'].map(g => [g, [1, 2, 3, 4, 5].map(k => `skin-${g}-${k}.webp`)]));
 const HERO_ADD = {};   // what the hero has added to the score of the game being played (again on top after going on)
 // a game ends: its hero's share added to its score (to the points since the last time, after going on)
 function heroScore(game, X, key = 'score') {
@@ -8117,7 +8176,8 @@ $('#nick-in').addEventListener('input', () => { const err = $('#nick-err'); err.
 $('#btn-logout').addEventListener('click', async () => {
   sfx('pick');
   try { if (NET) await NET.signOut(); } catch (e) { /* signed out here anyway */ }
-  ME = null;
+  ME = null; meOff = false;
+  try { localStorage.removeItem(ME_KEY); } catch (e) { /* storage unavailable */ }   // no start without a connection as this account
   closeSettings(); $('#profile').hidden = true; closeDaily(); $('#heroes').hidden = true;
   $('#minis').hidden = true; $('#hub').hidden = true;
   openSplash();
@@ -8136,6 +8196,7 @@ function wipeLocal() {
     localStorage.removeItem(RK_SENT); localStorage.removeItem(RK_WEEK); localStorage.removeItem(RK_PULLED);
     const tut = tutLocal(); if (ME && tut[ME.uid]) { delete tut[ME.uid]; localStorage.setItem(TUT_KEY, JSON.stringify(tut)); }   // the how-to-plays it saw
     localStorage.removeItem(CONT_OWNER); localStorage.removeItem(CONT_DIRTY);
+    localStorage.removeItem(ME_KEY);
   } catch (e) { /* storage unavailable */ }
   contFrom(CONT_START);   // its golden acorns went with it
   walletWipe();   // and its coins, rewards and heroes
@@ -8148,7 +8209,7 @@ $('#btn-del-go').addEventListener('click', async () => {
   sfx('pick'); delUI('auth');
   try { await loadNet(); await NET.deleteAccount(() => delUI('wait')); }
   catch (e) { delUI(e.code === 'closed' ? 'ask' : e.code === 'offline' ? 'off' : 'fail'); return; }
-  wipeLocal(); ME = null;
+  wipeLocal(); ME = null; meOff = false;
   $('#delacct').hidden = true;
   closeSettings(); $('#profile').hidden = true; closeDaily(); $('#heroes').hidden = true;
   $('#minis').hidden = true; $('#hub').hidden = true;
@@ -9076,7 +9137,11 @@ new ResizeObserver(() => layout()).observe(stage);
 function snapshot() { return { G: JSON.parse(JSON.stringify(G)), menuMode, menuSize }; }
 function start(data) {
   readColors();
-  loadSquirrelArt(); loadRabbitArt(); loadMergeArt(); loadPebbleArt(); loadOwlArt(); loadChamArt(); loadBeaverArt(); fetchSfx();
+  // the sound effects (1.3 MB) and the mini games' pictures (about 1 MB) come in once the page and its first screen have
+  // loaded (each game also waits for its own pictures when it is opened): on a slow connection the splash is not queued
+  // behind them
+  const later = () => setTimeout(() => { fetchSfx(); loadSquirrelArt(); loadRabbitArt(); loadMergeArt(); loadPebbleArt(); loadOwlArt(); loadChamArt(); loadBeaverArt(); }, 300);
+  if (document.readyState === 'complete') later(); else addEventListener('load', later, { once: true });
   try { document.fonts.load(`40px ${FANCY}`); } catch (e) { /* the fallback font is used until it loads */ }
   layout();
   if (data && data.G && data.G.grid && data.G.size && data.G.phase !== undefined) {
