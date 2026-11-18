@@ -550,7 +550,19 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
 .fs-tabs button { position: relative; flex: 1; height: 44px; appearance: none; cursor: pointer; padding: 0; border: 3px solid var(--ol); border-radius: 14px; background: #e3d6bb; color: var(--ol);
   font-family: 'Black Han Sans', sans-serif; font-size: 17px; }
 .fs-tabs button.on { background: var(--wood); color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; font-family: var(--num); font-size: 19px; }
+.fs-tabs button span[data-t] { white-space: nowrap; }
 .fs-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+/* inviting friends: the reward, how it goes (three steps), how many came, the invite button */
+.inv-top { display: flex; align-items: center; gap: 10px; background: #fff0b8; border: 3px solid var(--ol); border-radius: 16px; padding: 10px 12px; margin-bottom: 12px; }
+.inv-top img { width: 46px; height: 46px; flex: none; display: block; }
+.inv-top p { margin: 0; font-family: var(--num); font-size: clamp(16px, 4.6vw, 19px); line-height: 1.25; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; word-break: keep-all; }
+.inv-steps { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 7px; counter-reset: inv; }
+.inv-steps li { counter-increment: inv; display: flex; align-items: center; gap: 9px; background: #fffaf0; border: 3px solid var(--ol); border-radius: 14px; padding: 7px 10px; font-size: clamp(13px, 3.8vw, 15px); line-height: 1.25; word-break: keep-all; }
+.inv-steps li:before { content: counter(inv); flex: none; width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid var(--ol); background: var(--wood); display: grid; place-items: center;
+  font-family: var(--num); font-size: 14px; color: #fff; -webkit-text-stroke: 3px var(--ol); paint-order: stroke fill; box-sizing: border-box; }
+.inv-count { margin: 0 0 5px; font-size: 14px; color: var(--bark); text-align: center; }
+#btn-inv-go svg { width: 26px; height: 26px; flex: none; }
+.inv-note { margin: 10px 0 0; font-size: 13px; }
 .fs-cal .wd { text-align: center; font-size: 12px; color: var(--bark); }
 .fs-cal .d { position: relative; aspect-ratio: 0.82; box-sizing: border-box; border: 2.5px solid var(--ol); border-radius: 10px; background: #fffaf0; display: flex; flex-direction: column; align-items: center;
   justify-content: space-between; padding: 2px 0 3px; min-width: 0; }
@@ -1312,9 +1324,17 @@ html.tall-art .scr-box .ext { display: none; }
 <section id="daily" class="fscr" hidden aria-label="오늘의 보상" data-ta="rewards">
   <h2 class="fs-sign" data-t="rewards">오늘의 보상</h2>
   <div class="fs-card" id="daily-card">
-    <div class="fs-tabs"><button type="button" id="tab-att" class="on"><span data-t="attTab">출석</span><span class="hub-badge" id="tab-att-b" hidden>!</span></button><button type="button" id="tab-mis"><span data-t="misTab">일일 미션</span><span class="hub-badge" id="tab-mis-b" hidden></span></button></div>
+    <div class="fs-tabs"><button type="button" id="tab-att" class="on"><span data-t="attTab">출석</span><span class="hub-badge" id="tab-att-b" hidden>!</span></button><button type="button" id="tab-mis"><span data-t="misTab">일일 미션</span><span class="hub-badge" id="tab-mis-b" hidden></span></button><button type="button" id="tab-inv"><span data-t="invTab">친구 초대</span></button></div>
     <div id="att-pane"><div class="fs-cal" id="att-cal"></div><button class="btn primary fs-wide" id="btn-att-get" type="button" data-t="attGet">보상 받기</button></div>
     <div id="mis-pane" hidden><div id="mis-list"></div></div>
+    <div id="inv-pane" hidden>
+      <div class="inv-top"><img src="coin-1.webp" alt=""><p id="inv-head"></p></div>
+      <ol class="inv-steps" id="inv-steps"></ol>
+      <p class="inv-count"><span data-t="invCount">초대한 친구</span></p>
+      <div class="fs-bar big gold" id="inv-bar"><i></i><span></span></div>
+      <button class="btn primary fs-wide" id="btn-inv-go" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 13.4l6.8 3.9M15.4 6.7l-6.8 3.9" stroke="#2b1a0e" stroke-width="2.4" fill="none"/><circle cx="18" cy="5" r="3" fill="#fff" stroke="#2b1a0e" stroke-width="2.2"/><circle cx="6" cy="12" r="3" fill="#fff" stroke="#2b1a0e" stroke-width="2.2"/><circle cx="18" cy="19" r="3" fill="#fff" stroke="#2b1a0e" stroke-width="2.2"/></svg><span id="inv-go-t"></span></button>
+      <p class="fs-sub inv-note" id="inv-note"></p>
+    </div>
   </div>
   <div class="sh-top"><button class="sh-back" id="btn-daily-close" type="button" aria-label="닫기" data-ta="close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="fs-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div></div></div>
 </section>
@@ -1403,7 +1423,10 @@ const STR = {
     paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '목록으로',
     over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', miniGames: '미니게임', hubSub: '게임 12개, 순위에 도전해 보세요', hubPlay: '게임 시작', profile: '프로필', profGold: '황금 도토리', profGames: '한 판 수', profBest: '최고 기록',
     nickChange: '바꾸기', nickNew: '새 닉네임을 정해 주세요', nickDone: '닉네임을 바꿨어요', back: '뒤로',
-    coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', attGet: '보상 받기', attGot: '오늘은 받았어요',
+    coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', invTab: '친구 초대', invHead: n => `친구를 초대하면 둘 다 ${n.toLocaleString()}코인!`,
+    invSteps: ['초대 링크를 보내요', '친구가 앱을 깔고 1판 해요', '친구도 나도 3,000코인!'], invCount: '초대한 친구', invGo: '친구 초대하기', invFull: n => `${n}명 모두 초대했어요`,
+    invNote: n => `새로 가입한 친구만 · 최대 ${n}명까지`, invMsg: '미니게임 포레스트 같이 하자! 이 링크로 앱을 깔고 1판 하면 우리 둘 다 3,000코인을 받아.', invCopied: '초대 링크를 복사했어요',
+    invGot: n => `친구 초대 보상으로 ${n.toLocaleString()}코인을 받았어요!`, invPaid: (k, n) => `친구 ${k}명이 들어왔어요! ${n.toLocaleString()}코인을 받았어요`, attGet: '보상 받기', attGot: '오늘은 받았어요',
     misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음',
     gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, gotAll: (g, c) => `황금 도토리 ${g}개, 코인 ${c.toLocaleString()}개를 받았어요`, noCoins: '코인이 모자라요',
     heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`, evolveTitle: '진화!',
@@ -1453,7 +1476,10 @@ const STR = {
     paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Game list',
     over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', miniGames: 'Mini Games', hubSub: '12 games. Climb the rankings!', hubPlay: 'Play', profile: 'Profile', profGold: 'Golden acorns', profGames: 'Games played', profBest: 'Best scores',
     nickChange: 'Change', nickNew: 'Pick a new nickname', nickDone: 'Nickname changed', back: 'Back',
-    coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', attGet: 'Claim reward', attGot: 'Claimed today',
+    coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', invTab: 'Invite', invHead: n => `Invite a friend: ${n.toLocaleString()} coins each!`,
+    invSteps: ['Send your invite link', 'Your friend installs and plays a game', 'You both get 3,000 coins!'], invCount: 'Friends invited', invGo: 'Invite friends', invFull: n => `All ${n} invited`,
+    invNote: n => `New players only · up to ${n} friends`, invMsg: 'Play Mini Game Forest with me! Install it from this link and play one game: we both get 3,000 coins.', invCopied: 'Invite link copied',
+    invGot: n => `Invite reward: +${n.toLocaleString()} coins!`, invPaid: (k, n) => `${k} friend${k > 1 ? 's' : ''} joined! +${n.toLocaleString()} coins`, attGet: 'Claim reward', attGot: 'Claimed today',
     misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got',
     gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, gotAll: (g, c) => `+${g} golden acorns, +${c.toLocaleString()} coins`, noCoins: 'Not enough coins',
     heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`, evolveTitle: 'Evolved!',
@@ -1891,7 +1917,7 @@ function signedIn(st) {
   openLobby(false, false); hideScreen('splash');   // the first screen (the games list from its Play)
   lobbyInfo();
 }
-function setMe(st) { ME = { uid: st.uid, ...st.profile }; meOff = false; meKeep(st); syncBest(); bestsSync(); rkPull().catch(() => {}).then(() => { bestsSync(); rkSync(); }); goldOnSignIn(); walletOnSignIn(); }
+function setMe(st) { ME = { uid: st.uid, ...st.profile }; meOff = false; meKeep(st); syncBest(); bestsSync(); rkPull().catch(() => {}).then(() => { bestsSync(); rkSync(); }); goldOnSignIn(); walletOnSignIn(); invN = null; setTimeout(invSync, 0); }
 function openNick() {
   $('#nick').hidden = false;
   const err = $('#nick-err'); err.textContent = tr('nickRule'); err.classList.remove('bad');
@@ -4103,6 +4129,7 @@ function endPic(box, game, good) {
 }
 // the game's end has played out (its score is kept already): the continue card, or once it has gone on, the result
 function gameEnd(game) {
+  invTry();   // (a friend who came by an invite: it counts now)
   const e = END[game];
   if (!e || !e.on()) return;
   if (endUsed(game) >= CONT_PER_GAME) { showResult(game); return; }
@@ -4410,7 +4437,7 @@ const HERO_LIST = ['block', 'acorn', 'stairs', 'merge', 'pebble', 'mushroom', 'o
 const HERO_MAX = 500, HERO_STEP = 100, HERO_PCT = 0.05;   // five stages of 100 upgrades; each upgrade +0.05% on that game's score
 const heroCost = L => 20 * heroStage(L);   // coins for the next upgrade: 20 a stage (20, 40 .. 100; a hero to the top 30 000 coins)
 // check-in a day; a mission; the day's missions (any 3 games, 2 games played, every game's score); all of them: golden acorns and coins
-const ATT_COINS = 500, MIS_COINS = 100, MIS_N = 3 + HERO_LIST.length, MIS_ALL_GOLD = 5, MIS_ALL_COINS = 1000;
+const ATT_COINS = 1000, MIS_COINS = 100, MIS_N = 3 + HERO_LIST.length, MIS_ALL_GOLD = 3, MIS_ALL_COINS = 1000;
 const MIS_V = 2;   // the list's make-up (1: five missions, two scores; 2: every game's score)
 // the score a "score" mission asks for, game by game (the block game's: on 16 wide only)
 const MIS_SCORE = { block: 50000, acorn: 50000, stairs: 10000, merge: 30000, pebble: 30000, mushroom: 30000, owlpost: 100000, chameleon: 7000, beaver: 15000, hedgehog: 70000, caterpillar: 1000000, cups: 10000 };
@@ -4690,8 +4717,9 @@ function dailyClock() {
   if ($('#mis-list').dataset.day !== dayKey() || $('#att-cal').dataset.day !== dayKey()) dailyUI();   // midnight passed
 }
 function dailyUI() {
-  $('#tab-att').classList.toggle('on', dailyTab === 'att'); $('#tab-mis').classList.toggle('on', dailyTab === 'mis');
-  $('#att-pane').hidden = dailyTab !== 'att'; $('#mis-pane').hidden = dailyTab !== 'mis';
+  $('#tab-att').classList.toggle('on', dailyTab === 'att'); $('#tab-mis').classList.toggle('on', dailyTab === 'mis'); $('#tab-inv').classList.toggle('on', dailyTab === 'inv');
+  $('#att-pane').hidden = dailyTab !== 'att'; $('#mis-pane').hidden = dailyTab !== 'mis'; $('#inv-pane').hidden = dailyTab !== 'inv';
+  invUI();
   // the month: from its first weekday, each date with its reward, ticked once taken
   const now = new Date(), y = now.getFullYear(), m = now.getMonth(), today = now.getDate(), first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(), bits = attBits();
   const wd = LANG === 'en' ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['일', '월', '화', '수', '목', '금', '토'];
@@ -4723,9 +4751,91 @@ $('#btn-hub-att').addEventListener('click', () => { sfx('pick'); openDaily('att'
 $('#btn-hub-mis').addEventListener('click', () => { sfx('pick'); openDaily('mis'); });
 $('#tab-att').addEventListener('click', () => { if (dailyTab !== 'att') { sfx('pick'); dailyTab = 'att'; dailyUI(); } });
 $('#tab-mis').addEventListener('click', () => { if (dailyTab !== 'mis') { sfx('pick'); dailyTab = 'mis'; dailyUI(); } });
+$('#tab-inv').addEventListener('click', () => { if (dailyTab !== 'inv') { sfx('pick'); dailyTab = 'inv'; dailyUI(); invSync(); } });
 $('#btn-att-get').addEventListener('click', attClaim);
 $('#mis-list').addEventListener('click', e => { const b = e.target.closest('.ms-get.go'); if (b) misClaim(+b.dataset.i); });
 $('#btn-daily-close').addEventListener('click', () => { sfx('back'); closeDaily(); });
+
+// ---- inviting friends. A player's link carries their uid: the invite page (invite.html) sends a phone to the app on
+// Google Play with it (the app reads it as it is first opened: ForestNative.referrer) or, on the web, here with ?inv=.
+// It is kept on the phone until the friend's first game ends, signed in: then it counts for the player who invited, if
+// the friend's account is new and the phone has not used one before (3,000 coins to the friend). The player who
+// invited is paid 3,000 for each friend who came, up to 10, when they next sign in or open this tab.
+const INV_COINS = 3000, INV_MAX = 10, INV_FROM = 'forest-inv-from', INV_DONE = 'forest-inv-done', INV_RE = /^[A-Za-z0-9]{1,128}$/;   // (a Firebase uid)
+const INV_SITE = 'https://block-forest.vercel.app';
+let invN = null, invBusy = false, invSyncing = false;   // invN: how many of the player's friends have come (paid), once known
+function invFromSet(u) { try { if (INV_RE.test(u) && !localStorage.getItem(INV_DONE)) localStorage.setItem(INV_FROM, u); } catch (e) { /* storage unavailable */ } }
+(function invFromUrl() {   // the site opened from an invite (?inv=...): kept, and the address put back without it
+  try {
+    const q = new URLSearchParams(location.search), u = q.get('inv');
+    if (!u) return;
+    invFromSet(u); q.delete('inv');
+    history.replaceState(history.state, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash);
+  } catch (e) { /* no history */ }
+})();
+(async function invFromApp() {   // the app's first opening: where it was installed from (the invite's link)
+  const nat = NATIVE();
+  if (!nat || !nat.referrer) return;
+  try { const m = /(?:^|&)inv=([A-Za-z0-9]{1,128})/.exec((await nat.referrer()) || ''); if (m) invFromSet(m[1]); } catch (e) { /* not known */ }
+})();
+const invEnd = () => { try { localStorage.removeItem(INV_FROM); localStorage.setItem(INV_DONE, '1'); } catch (e) { /* storage unavailable */ } };
+// a game is over: if this phone came by an invite, it counts now (once; offline: at the next game's end)
+async function invTry() {
+  let by = null;
+  try { by = localStorage.getItem(INV_FROM); } catch (e) { /* storage unavailable */ }
+  if (!by || invBusy || !ME || !NET || !NET.inviteMake) return;
+  invBusy = true;
+  try {
+    const ok = await NET.inviteMake(by);
+    invEnd();
+    if (ok) { walletPut(w => { w.coins += INV_COINS; }); sfx('mission'); toast(tr('invGot', INV_COINS)); }
+  } catch (e) {
+    if (!e || e.code !== 'offline') invEnd();   // refused (not a new account, counted before): not again
+  } finally { invBusy = false; }
+}
+// the player's friends who came: each not paid yet is paid now (up to 10 in all)
+async function invSync() {
+  if (!ME || !NET || !NET.invitesMine || invSyncing) return;
+  invSyncing = true;
+  let got = 0;
+  try {
+    const r = await NET.invitesMine();
+    let paid = r.n - r.open.length;
+    for (const id of r.open) {
+      if (paid >= INV_MAX) break;
+      await NET.inviteClaim(id);
+      paid++; got++;
+      walletPut(w => { w.coins += INV_COINS; });
+    }
+    invN = Math.min(INV_MAX, paid);
+  } catch (e) { /* offline: next time */ }
+  invSyncing = false;
+  if (got) { sfx('mission'); toast(tr('invPaid', got, got * INV_COINS)); }
+  if (!$('#daily').hidden) invUI();
+}
+function invUI() {
+  if ($('#inv-pane').hidden) return;
+  $('#inv-head').textContent = tr('invHead', INV_COINS);
+  $('#inv-steps').replaceChildren(...tr('invSteps').map(t => { const li = document.createElement('li'); li.textContent = t; return li; }));
+  const n = invN == null ? 0 : invN, full = n >= INV_MAX;
+  $('#inv-bar i').style.width = (n / INV_MAX * 100) + '%'; $('#inv-bar span').textContent = (invN == null ? '-' : n) + ' / ' + INV_MAX;
+  $('#btn-inv-go').disabled = full; $('#inv-go-t').textContent = full ? tr('invFull', INV_MAX) : tr('invGo');
+  $('#inv-note').textContent = tr('invNote', INV_MAX);
+}
+// the player's invite link to send: the phone's share sheet (any messenger), or copied
+async function invShare() {
+  if (!ME || !ME.uid) return;
+  sfx('pick');
+  const url = `${INV_SITE}/${LANG === 'en' ? 'invite-en' : 'invite'}.html?u=${encodeURIComponent(ME.uid)}`, text = tr('invMsg'), title = tr('title');
+  const copy = async () => { try { await navigator.clipboard.writeText(text + '\n' + url); toast(tr('invCopied')); } catch (e) { toast(url, 4000); } };
+  const nat = NATIVE();
+  try {
+    if (nat && nat.share) await nat.share({ title, text, url });
+    else if (navigator.share) await navigator.share({ title, text, url });
+    else await copy();
+  } catch (e) { if (!e || e.name !== 'AbortError') await copy(); }
+}
+$('#btn-inv-go').addEventListener('click', invShare);
 
 // ---- the heroes: one at a time (arrows or a swipe), its five stages, its upgrade
 let heroI = 0;
@@ -4796,8 +4906,8 @@ function shopFit() {
   st.style.setProperty('--cl', Math.max(105, (12 - left) / k).toFixed(1));
 }
 addEventListener('resize', shopFit);
-// watching an ad in the shop: a golden acorn each time, 5 times a day (a new day at midnight, the phone's time)
-const ADGIFT_KEY = 'forest-adgift', ADGIFT_DAY = 5;
+// watching an ad in the shop: a golden acorn each time, 3 times a day (a new day at midnight, the phone's time)
+const ADGIFT_KEY = 'forest-adgift', ADGIFT_DAY = 3;
 let adGiftBusy = false;
 const adGiftToday = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
 function adGiftLeft() {
