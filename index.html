@@ -3663,6 +3663,9 @@ $('#btn-rki-close').addEventListener('click', () => { sfx('pick'); rkLeave(); })
    What each one does is the game's: ITEM_USE[game][id], and the game asks itemHas / itemTake / itemRun where it counts.
    The pictures are stand-ins drawn here until the drawn ones come (the bomb and the drill have theirs). ---------- */
 const ITEM_COST = 200;
+// debugging: coins without end (nothing is spent, nothing is short; the coin chips show ∞). false before release
+const FREE_COINS = true;
+const coinsOK = n => FREE_COINS || WAL.coins >= n;
 const ITEMS_OF = { block: ['bomb', 'drill'], acorn: ['shield', 'magnet'], stairs: ['wing', 'boost'], merge: ['hammer', 'shake'], pebble: ['fire', 'rows'],
   mushroom: ['basket', 'time'], owlpost: ['hourglass'], chameleon: ['glass'], beaver: ['tape'], hedgehog: ['guard'], caterpillar: ['magnet', 'speed'], cups: ['xray'] };
 const ITEM_WAIT = ['shield', 'wing', 'guard'];   // on from the start, used up when their moment comes
@@ -3714,7 +3717,7 @@ function itemPickUI(game) {
   box.hidden = !ids.length;
   if (!ids.length) return;
   const pick = ITEM_PICK[g] || (ITEM_PICK[g] = new Set());
-  while (pick.size && pick.size * ITEM_COST > WAL.coins) pick.delete([...pick].pop());   // what can no longer be paid for
+  while (pick.size && !coinsOK(pick.size * ITEM_COST)) pick.delete([...pick].pop());   // what can no longer be paid for
   box.querySelector('.it-title').textContent = itemT().title;
   box.querySelector('.it-row').replaceChildren(...ids.map(id => {
     const b = document.createElement('button');
@@ -3732,7 +3735,7 @@ function itemPickTap(e) {
   const g = b.dataset.g, id = b.dataset.id, pick = ITEM_PICK[g];
   ITEM_NOTE[g] = id;
   if (pick.has(id)) { pick.delete(id); sfx('back'); }
-  else if ((pick.size + 1) * ITEM_COST > WAL.coins) { sfx('back'); toast(tr('noCoins')); }
+  else if (!coinsOK((pick.size + 1) * ITEM_COST)) { sfx('back'); toast(tr('noCoins')); }
   else { pick.add(id); sfx('pick'); }
   itemPickUI(g);
 }
@@ -3740,8 +3743,8 @@ function itemPickTap(e) {
 function itemsBegin(game) {
   const g = itemGame(game), pick = [...(ITEM_PICK[g] || [])].filter(id => (ITEMS_OF[g] || []).includes(id));
   IT = null;
-  if (!pick.length || WAL.coins < pick.length * ITEM_COST) return;
-  walletPut(w => { w.coins -= pick.length * ITEM_COST; });
+  if (!pick.length || !coinsOK(pick.length * ITEM_COST)) return;
+  if (!FREE_COINS) walletPut(w => { w.coins -= pick.length * ITEM_COST; });
   IT = { game: g, st: Object.fromEntries(pick.map(id => [id, ITEM_WAIT.includes(id) ? 'on' : 'ready'])), left: {}, len: {} };
 }
 const itemHas = (g, id) => !!IT && IT.game === g && (IT.st[id] === 'ready' || IT.st[id] === 'on');
@@ -4449,8 +4452,8 @@ function heroUp(g) {
   const L = heroLv(g);
   if (L >= HERO_MAX) return;
   const cost = heroCost(L);
-  if (WAL.coins < cost) { sfx('back'); toast(tr('noCoins')); return; }
-  walletPut(w => { w.coins -= cost; w.heroes[g] = L + 1; });
+  if (!coinsOK(cost)) { sfx('back'); toast(tr('noCoins')); return; }
+  walletPut(w => { if (!FREE_COINS) w.coins -= cost; w.heroes[g] = L + 1; });
   sfx('pick');
   if ((L + 1) % HERO_STEP === 0 && L + 1 < HERO_MAX) evolveShow(g, heroStage(L + 1));
 }
@@ -4561,7 +4564,7 @@ const heroName = g => (g === 'block' ? tr('blockGame') : tr(g));
 
 // what shows coins and the red marks
 function walletUI() {
-  for (const e of document.querySelectorAll('.js-coin')) e.textContent = WAL.coins.toLocaleString();
+  for (const e of document.querySelectorAll('.js-coin')) e.textContent = FREE_COINS ? '∞' : WAL.coins.toLocaleString();
   for (const e of document.querySelectorAll('.js-gold')) e.textContent = contN.toLocaleString();
   const att = attCan(), mis = ME ? misReady() : 0;
   $('#hub-att-b').hidden = !att; $('#tab-att-b').hidden = !att;
@@ -4637,7 +4640,7 @@ function heroUI() {
   $('#hero-bar i').style.width = inn + '%'; $('#hero-bar span').textContent = tr('heroStage', st, inn);
   $('#hero-buff').innerHTML = `${tr('heroBuff', heroName(g))} <b>+${heroPctTxt(g)}%</b>`;
   const max = L >= HERO_MAX, btn = $('#btn-hero-up');
-  btn.disabled = max || WAL.coins < heroCost(L);   // off at the top, and without the coins
+  btn.disabled = max || !coinsOK(heroCost(L));   // off at the top, and without the coins
   btn.querySelector('[data-t]').textContent = tr(max ? 'heroMax' : 'heroUp');
   btn.querySelector('img').hidden = max; $('#hero-cost').hidden = max; $('#hero-cost').textContent = heroCost(L).toLocaleString();
   $('#hero-count').textContent = `${heroI + 1} / ${HERO_LIST.length}`;
