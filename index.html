@@ -675,6 +675,47 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 #bfpick { z-index: 4; }
 /* a game's opening card (first places and my best) and the ranking card */
 #rkintro { z-index: 33; }
+/* items: the start card's row to pick them, and the buttons in the game */
+.it-pick { display: flex; flex-direction: column; gap: 6px; }
+.it-pick[hidden] { display: none; }
+.it-title { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: 14px; color: #7a5a3a; }
+.it-row { display: flex; gap: 8px; }
+.it-chip { flex: 1; min-width: 0; position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; column-gap: 6px; row-gap: 1px;
+  padding: 6px 8px; background: #fffaf0; border: 3px solid var(--ol); border-radius: 12px; box-shadow: 0 3px 0 var(--ol); cursor: pointer; text-align: left; font: inherit; color: var(--ol); -webkit-tap-highlight-color: transparent; }
+.it-chip .it-pic { grid-row: 1 / 3; width: 36px; height: 36px; object-fit: contain; }
+.it-chip .it-nm { font-family: 'Black Han Sans', sans-serif; font-size: 14px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.it-chip .it-cost { display: flex; align-items: center; gap: 3px; font-family: var(--num); font-size: 13px; line-height: 1; }
+.it-chip .it-cost img { width: 15px; height: 15px; }
+.it-chip.on { background: #e4f8c9; box-shadow: 0 0 0 3px #5fdc3c, 0 3px 0 var(--ol); }
+.it-ck { position: absolute; right: -8px; top: -8px; width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; background: #5fdc3c; border: 2.5px solid var(--ol); display: none; }
+.it-ck::after { content: ''; position: absolute; left: 5.5px; top: 2px; width: 5px; height: 9px; border: solid #fff; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+.it-chip.on .it-ck { display: block; }
+.it-note { margin: 0; min-height: 1.25em; font-family: 'Black Han Sans', sans-serif; font-size: 12.5px; line-height: 1.25; color: #7a5a3a; text-align: center; }
+.itemdock { position: absolute; z-index: 2; display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
+.itemdock[hidden] { display: none; }
+.it-btn { position: relative; width: 54px; height: 54px; padding: 0; display: grid; place-items: center; box-sizing: border-box; border: 3px solid var(--ol); border-radius: 50%;
+  background: #fffaf0; box-shadow: 0 3px 0 var(--ol); cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.it-btn img { width: 40px; height: 40px; object-fit: contain; pointer-events: none; }
+.it-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.it-ring { position: absolute; left: -7px; top: -7px; width: 62px; height: 62px; transform: rotate(-90deg); pointer-events: none; display: none; }
+.it-ring circle { fill: none; stroke: #ffd23a; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 163.4; }
+.it-btn.run .it-ring { display: block; }
+.it-btn.run { background: #fff7c2; }
+.it-btn.on { box-shadow: 0 0 0 3px #7fd0ff, 0 3px 0 var(--ol); }
+.it-btn.aim { background: #fff36b; animation: it-aim 0.6s ease-in-out infinite alternate; }
+.it-btn.used { filter: grayscale(1); opacity: 0.4; box-shadow: none; cursor: default; }
+@keyframes it-aim { to { transform: scale(1.08); } }
+.dock-acorn, .dock-stairs, .dock-beaver, .dock-hedgehog, .dock-caterpillar { right: 10px; top: calc(env(safe-area-inset-top, 0px) + 92px); }
+.dock-merge, .dock-owlpost { left: 10px; top: calc(env(safe-area-inset-top, 0px) + 92px); }
+.dock-owlpost { top: 40%; }
+.dock-pebble { left: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); flex-direction: row; }
+.dock-mushroom { left: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); }   /* a column left of the undo button */
+.dock-chameleon, .dock-cups { left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); flex-direction: row; }
+.dock-block { left: 50%; transform: translateX(-50%); flex-direction: row; align-items: center; gap: 22px; }   /* top: the row under the board (script) */
+.dock-block.call .it-btn.ready { animation: it-aim 0.5s ease-in-out infinite alternate; box-shadow: 0 0 0 4px #ffd23a, 0 3px 0 var(--ol); }
+.it-give { height: 40px; padding: 0 16px; border: 3px solid var(--ol); border-radius: 20px; background: #fff6dc; box-shadow: 0 3px 0 var(--ol);
+  font-family: 'Black Han Sans', sans-serif; font-size: 15px; color: #a8452f; cursor: pointer; touch-action: manipulation; }
+.it-give:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
 .screen.rk-wait > * { visibility: hidden; }   /* the game waits behind its start card: only its background shows */
 #rkb { z-index: 37; }
 /* the shop */
@@ -805,6 +846,36 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .acct-del { align-self: flex-end; margin: -2px 0 0; padding: 4px 2px; background: none; border: 0; cursor: pointer;
   font-family: 'Black Han Sans', sans-serif; font-size: 14px; color: #a8452f; text-decoration: underline; text-underline-offset: 3px; }
 #delacct { z-index: 46; }
+/* an upgrade that reaches a new stage: the evolve card over the heroes screen. The picture turns slowly, speeds up into a
+   fast spin glowing, with glitter swirling up round it, and comes out of it as the new stage in a burst of light (the
+   turning, the glow and the glitter are set from the script: evolveSpin) */
+#evolve { z-index: 46; }
+#evolve .card { align-items: center; text-align: center; }
+.ev-stage { position: relative; width: 100%; height: clamp(150px, 28vh, 220px); display: grid; place-items: center; }
+.ev-stage img { display: block; object-fit: contain; }
+.ev-line { margin: 2px 0 0; font-family: 'Black Han Sans', sans-serif; font-size: 19px; }
+#evolve .hero-buff { margin: 0; }
+.ev-rays { position: absolute; left: 50%; top: 50%; width: min(100%, 240px); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(rgba(255, 226, 90, 0.6) 0 9deg, rgba(255, 226, 90, 0) 9deg 22.5deg);
+  -webkit-mask: radial-gradient(closest-side, #000 25%, transparent 100%); mask: radial-gradient(closest-side, #000 25%, transparent 100%);
+  animation: ev-spin 10s linear infinite, ev-fade 0.5s var(--d, 0.5s) ease-out both; }
+.ev-spark { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px; box-sizing: border-box; background: #fff36b; border: 2px solid var(--ol); border-radius: 2px; opacity: 0; pointer-events: none;
+  animation: ev-spark 0.8s var(--d, 0.5s) ease-out both; }
+.ev-spark:nth-child(even) { background: #fff; width: 9px; height: 9px; margin: -4.5px; }
+.ev-c { position: relative; width: 100%; height: 100%; display: grid; place-items: center; perspective: 700px; }
+.ev-glow { position: absolute; left: 50%; top: 50%; width: min(86%, 210px); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(closest-side, rgba(255, 252, 214, 0.95) 22%, rgba(255, 226, 90, 0.5) 58%, rgba(255, 226, 90, 0)); }
+.ev-flip { position: relative; z-index: 1; width: 70%; height: 94%; transform-style: preserve-3d; }
+.ev-face { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.ev-face img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ev-back { transform: rotateY(180deg); }
+.ev-back .ev-new { opacity: 0; }
+.ev-sw { position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; margin: -10px; pointer-events: none; opacity: 0; }
+.ev-sw.s { width: 14px; height: 14px; margin: -7px; }
+@keyframes ev-spin { to { rotate: 360deg; } }
+@keyframes ev-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ev-spark { 0% { opacity: 0; transform: rotate(var(--a)) translateX(0) scale(0.4); } 20% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateX(var(--r, 105px)) scale(1); } }
+@media (prefers-reduced-motion: reduce) { #evolve * { animation-duration: 0.01s !important; animation-delay: 0s !important; } }
 .btn.danger { background: linear-gradient(#ff8f73, #e2483a); color: #fff; margin-bottom: 6px; }
 .btn.danger:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--ol); }
 a.btn { display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
@@ -918,6 +989,7 @@ html.tall-art .scr-box .ext { display: none; }
         <button class="opt" id="bf-16" type="button"><i class="mini m16"><i></i></i><div><b>16칸</b><span id="bf-16-top"></span><span id="bf-16-best"></span></div></button>
         <button class="opt" id="bf-32" type="button"><i class="mini m32"><i></i></i><div><b>32칸</b><span id="bf-32-top"></span><span id="bf-32-best"></span></div></button>
       </div>
+      <div class="it-pick" id="bf-items" hidden><b class="it-title"></b><div class="it-row"></div><p class="it-note"></p></div>
       <button class="btn plain" id="btn-bf-rank" type="button" data-t="rank">순위표</button>
       <button class="btn plain" id="btn-bf-close" type="button" data-t="close">닫기</button>
     </div>
@@ -1194,6 +1266,7 @@ html.tall-art .scr-box .ext { display: none; }
       <div class="rk-rec week"><span class="lab" data-t="rkWeekTop">주간 1위</span><b class="nm" id="rki-wk-nm"></b><span class="sc num" id="rki-wk"></span></div>
       <div class="rk-rec me"><span class="lab" data-t="rkMine">내 최고</span><b class="nm" id="rki-me-rank"></b><span class="sc num" id="rki-me"></span></div>
     </div>
+    <div class="it-pick" id="rki-items" hidden><b class="it-title"></b><div class="it-row"></div><p class="it-note"></p></div>
     <button class="btn primary" id="btn-rki-go" type="button" data-t="start">게임 시작</button>
     <div class="btn-row"><button class="btn plain" id="btn-rki-rank" type="button" data-t="rank">순위표</button><button class="btn plain" id="btn-rki-close" type="button" data-t="toList">목록으로</button></div>
   </div>
@@ -1257,6 +1330,16 @@ html.tall-art .scr-box .ext { display: none; }
   <div class="sh-top"><button class="sh-back" id="btn-heroes-close" type="button" aria-label="닫기" data-ta="close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="fs-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div></div></div>
 </section>
 
+<section id="evolve" class="overlay" hidden aria-label="진화" data-ta="evolveTitle">
+  <div class="card">
+    <div class="ribbon"><h2 data-t="evolveTitle">진화!</h2></div>
+    <div class="ev-stage" id="ev-stage" aria-hidden="true"></div>
+    <p class="ev-line" id="ev-line"></p>
+    <p class="hero-buff" id="ev-buff"></p>
+    <button class="btn primary" id="btn-evolve-ok" type="button" data-t="ok">확인</button>
+  </div>
+</section>
+
 <section id="cont" class="overlay" hidden aria-label="이어하기" data-ta="contTitle">
   <div class="card">
     <div class="ribbon"><h2 data-t="contTitle">이어하기</h2></div>
@@ -1314,14 +1397,14 @@ const STR = {
     colors: ['빨강', '초록', '파랑', '보라'],
     goalColor: (c, n) => `${c} 큐브 ${n}개 터뜨리기`, goalRows: n => `줄 ${n}개 깨기`, goalCombo: n => `콤보 ${n} 만들기`, goalBig: n => `한 번에 큐브 ${n}개 터뜨리기`,
     lineColor: (c, h, n) => `${c} 큐브 ${h}/${n}`, lineRows: (h, n) => `줄 깨기 ${h}/${n}`, lineCombo: (h, n) => `콤보 ${h}/${n}`, lineBig: (h, n) => `한 번에 ${h}/${n}개`,
-    fireBomb: '폭탄!', fireBolt: '번개!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
+    fireBomb: '폭탄!', fireBolt: '번개!', fireDrill: '드릴!', rows: n => `${n}줄`, next: '다음', combo: '콤보!',
     paused: '일시정지', resume: '이어서 하기', restart: '다시 시작', settings: '설정', toLobby: '목록으로',
     over: '게임 오버', contTitle: '이어하기', contFree: '이어하기', miniGames: '미니게임', hubSub: '게임 12개, 순위에 도전해 보세요', hubPlay: '게임 시작', profile: '프로필', profGold: '황금 도토리', profGames: '한 판 수', profBest: '최고 기록',
     nickChange: '바꾸기', nickNew: '새 닉네임을 정해 주세요', nickDone: '닉네임을 바꿨어요', back: '뒤로',
     coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', attGet: '보상 받기', attGot: '오늘은 받았어요',
     misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음',
     gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, gotAll: (g, c) => `황금 도토리 ${g}개, 코인 ${c.toLocaleString()}개를 받았어요`, noCoins: '코인이 모자라요',
-    heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`,
+    heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`, evolveTitle: '진화!',
     heroBonus: p => `캐릭터 보너스 +${p}%`, prev: '이전', next: '다음',
     heroName: g => ({ block: '곰', acorn: '다람쥐', stairs: '토끼', merge: '너구리', pebble: '수달', mushroom: '두더지', owlpost: '부엉이', chameleon: '카멜레온', beaver: '비버', hedgehog: '고슴도치', caterpillar: '애벌레', cups: '여우' })[g],
     tut: '게임 방법', tutGo: '화면을 누르면 시작해요', tutLines: {
@@ -1364,14 +1447,14 @@ const STR = {
     colors: ['Red', 'Green', 'Blue', 'Purple'],
     goalColor: (c, n) => `Pop ${n} ${c.toLowerCase()} cubes`, goalRows: n => `Clear ${n} lines`, goalCombo: n => `Reach a ${n} combo`, goalBig: n => `Pop ${n} cubes at once`,
     lineColor: (c, h, n) => `${c} ${h}/${n}`, lineRows: (h, n) => `Lines ${h}/${n}`, lineCombo: (h, n) => `Combo ${h}/${n}`, lineBig: (h, n) => `At once ${h}/${n}`,
-    fireBomb: 'BOMB!', fireBolt: 'ZAP!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
+    fireBomb: 'BOMB!', fireBolt: 'ZAP!', fireDrill: 'DRILL!', rows: n => (n === 1 ? '1 LINE' : `${n} LINES`), next: 'NEXT', combo: 'COMBO!',
     paused: 'Paused', resume: 'Resume', restart: 'Restart', settings: 'Settings', toLobby: 'Game list',
     over: 'Game Over', contTitle: 'Continue?', contFree: 'Continue', miniGames: 'Mini Games', hubSub: '12 games. Climb the rankings!', hubPlay: 'Play', profile: 'Profile', profGold: 'Golden acorns', profGames: 'Games played', profBest: 'Best scores',
     nickChange: 'Change', nickNew: 'Pick a new nickname', nickDone: 'Nickname changed', back: 'Back',
     coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', attGet: 'Claim reward', attGot: 'Claimed today',
     misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got',
     gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, gotAll: (g, c) => `+${g} golden acorns, +${c.toLocaleString()} coins`, noCoins: 'Not enough coins',
-    heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`,
+    heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`, evolveTitle: 'Evolved!',
     heroBonus: p => `Hero bonus +${p}%`, prev: 'Previous', next: 'Next',
     heroName: g => ({ block: 'Bear', acorn: 'Squirrel', stairs: 'Rabbit', merge: 'Raccoon', pebble: 'Otter', mushroom: 'Mole', owlpost: 'Owl', chameleon: 'Chameleon', beaver: 'Beaver', hedgehog: 'Hedgehog', caterpillar: 'Caterpillar', cups: 'Fox' })[g],
     tut: 'How to play', tutGo: 'Tap to start', tutLines: {
@@ -1491,6 +1574,7 @@ const G = {
 let menuMode = 'moves', menuSize = null;   // no board size is picked until the player taps one
 let drag = null;      // {i, x, y, x0, y0, t0, id, ghost}
 let pending = null;   // a drop released while the board was still settling
+let pendingItem = null, bAim = null;   // an item let go while the board was settling; an item's aim under the finger {id, pid, col, row}
 const END = {}, END_BEST = {};   // each game's end (see gameEnd) and its best before the game
 let anim = null;      // current settling step: {type: 'drop'|'item'|'burst'|'fall', t0, dur, cells | marks}
 let chain = 0, dropBurst = false;
@@ -1931,7 +2015,9 @@ function newGame(mode, size) {
   G.state = 'play'; G.started = true;
   fx.shift = null; fx.cubes = []; fx.pops = []; fx.combo = null; fx.spin = null;
   fx.sparks = []; fx.orbs = []; fx.banners = []; fx.shake = null; fx.flash = null; fx.stageFade = null;
-  drag = null; pending = null; anim = null;
+  drag = null; pending = null; anim = null; pendingItem = null; bAim = null; fx.drill = null;
+  G.stuck = false; G.itemMove = false;
+  if (IT && IT.game === 'block') { for (const id in IT.st) if (IT.st[id] === 'aim') IT.st[id] = 'ready'; blockStuckUI(); }   // a restart keeps the items not used yet
   applyTheme(0, true);
   touchGrid();
   hud(); feverUI(); rotUI();
@@ -1982,6 +2068,7 @@ function scoreFor(cubes, chainStep, combo) {
   return base + (combo >= 2 ? combo * COMBO_BONUS : 0);
 }
 function stepDone(a) {
+  if (a.type === 'item') { breakNow({ marks: a.tg.marks, rows: 0 }, [a.kind], null, a); return; }   // the item reached its spot
   if (a.type === 'drop') sfx('land');
   if (a.type === 'drop' || a.type === 'fall') {
     const b = findBursts(G.grid);
@@ -2002,9 +2089,9 @@ function stepDone(a) {
     else stepDone({ type: 'fall' });
   }
 }
-const FIRE_KEY = { bomb: 'fireBomb', bolt: 'fireBolt' };
+const FIRE_KEY = { bomb: 'fireBomb', bolt: 'fireBolt', drill: 'fireDrill' };
 // One break: score, effects, missions and the fever gauge, then the cubes start popping off.
-function breakNow(b, fired, spx) {
+function breakNow(b, fired, spx, item) {
     chain++;
     dropBurst = true; G.combo++;   // each break is a combo, including the ones falling cubes set off
     const pts = scoreFor(b.marks.size, chain, G.combo) * (G.feverDrop ? 2 : 1);
@@ -2016,12 +2103,14 @@ function breakNow(b, fired, spx) {
     if (G.combo % 5 === 0) G.specialDue = (G.specialDue || 0) + 1;   // reward: a rainbow cube in the next block
     if (fired.includes('bomb')) sfx('bomb');
     if (fired.includes('bolt')) sfx('bolt');
+    if (fired.includes('drill')) sfx('drill');
     if (b.rows) sfx('line', { rows: b.rows, chain }); else if (!fired.length) sfx('burst', { chain });
     if (G.combo >= 2) sfx('combo', { combo: G.combo });
-    buzz(fired.includes('bomb') ? [60, 30, 40] : G.combo >= 2 ? [25, 40, 35] : b.rows ? 30 : 18);
+    buzz(fired.includes('bomb') ? [60, 30, 40] : fired.includes('drill') ? [40, 20, 40, 20, 40] : G.combo >= 2 ? [25, 40, 35] : b.rows ? 30 : 18);
     // screen kick for the big moments
     if (fired.includes('bomb')) { shake(u * 0.75, 380); flash('255,226,170', 0.42); }
     else if (fired.includes('bolt')) { shake(u * 0.45, 300); flash('255,250,190', 0.34); }
+    else if (fired.includes('drill')) shake(u * 0.5, 420);
     if (b.rows >= 2) shake(u * (0.2 + 0.12 * Math.min(4, b.rows)), 300);
     if (G.combo >= 3) shake(u * (0.18 + 0.06 * Math.min(8, G.combo)), 280);
     if (chain >= 2) shake(u * 0.3 * Math.min(3, chain - 1), 260);
@@ -2029,6 +2118,20 @@ function breakNow(b, fired, spx) {
     // every cube that breaks outside fever counts toward the next one
     if (!G.feverDrop && !feverOn()) G.fever = Math.min(feverGoal(), (G.fever || 0) + b.marks.size);
     feverUI();
+    if (item) {
+      // the bomb blows outward from its cell; the drill eats down its column from the top
+      const delays = new Map(), dirs = new Map(), tg = item.tg, step = (380 / ROWS) * ANIM;
+      let maxD = 0;
+      b.marks.forEach((v, k) => {
+        const r = (k / COLS) | 0, c = k % COLS;
+        const d = item.kind === 'drill' ? (r - tg.hit) * step : Math.hypot(r - tg.rc, c - tg.cc) * 32 * ANIM;
+        const dir = item.kind === 'drill' ? (r % 2 ? 1 : -1) : Math.sign(c - tg.cc) || (Math.random() < 0.5 ? -1 : 1);
+        delays.set(k, d); dirs.set(k, dir); maxD = Math.max(maxD, d);
+      });
+      if (item.kind === 'drill') fx.drill = { col: item.col, t0: performance.now(), r0: tg.hit, r1: tg.r1, step };
+      anim = { type: 'burst', t0: performance.now(), dur: maxD + 200 * ANIM, marks: b.marks, delays, dirs, spawned: new Set() };
+      return;
+    }
     const delays = new Map(), dirs = new Map();
     const full = new Set();
     for (let r = 0; r < ROWS; r++) if (G.grid[r].every(v => v)) full.add(r);
@@ -2061,10 +2164,11 @@ function endSettle() {
   anim = null;
   if (!dropBurst) G.combo = 0;
   G.phase = 'idle';
-  missionTick();
+  const itemMove = G.itemMove; G.itemMove = false;   // an item is not a move: no mission step, no rising row
+  if (!itemMove) missionTick();
   if (!feverOn() && (G.fever || 0) >= feverGoal()) startFever();   // the gauge filled during this drop: fever from the next one
   feverUI();
-  if (G.mode === 'moves') {
+  if (G.mode === 'moves' && !itemMove) {
     G.riseAcc++;
     if (G.riseAcc >= moveIv()) {
       G.riseAcc = 0;
@@ -2078,6 +2182,9 @@ function endSettle() {
   if (pending && G.state === 'play') {
     const q = pending; pending = null;
     dropPiece(q.i, q.c);
+  } else if (pendingItem && G.state === 'play') {
+    const q = pendingItem; pendingItem = null;
+    blockItemFire(q.id, q.col, q.row);
   }
 }
 
@@ -2106,8 +2213,79 @@ function checkNoFit() {
     for (let k = 0, q = p; k < 3 && G.rotLeft > 0; k++) { q = turned(q); if (q && canDropAnywhere(shapeOf(q))) return true; }
     return false;
   };
-  if (G.tray.some(p => p && fitsSomehow(p))) return;
+  if (G.tray.some(p => p && fitsSomehow(p))) { blockStuck(false); return; }
+  // no block fits, but an item can still make room: wait for it (or for the player to end the game)
+  if (blockItemsLeft()) { blockStuck(true); return; }
+  blockStuck(false);
   die('nofit');
+}
+
+/* ---------- the block game's items: a bomb (a 5x5 square) and a drill (a whole column). A tap on its button, then on
+   the board: the aim follows the finger, it goes off where the finger comes up (nothing there to break: still aiming) ---------- */
+const blockItemsLeft = () => !!IT && IT.game === 'block' && Object.values(IT.st).some(v => v === 'ready' || v === 'aim');
+const blockAimId = () => (IT && IT.game === 'block' ? Object.keys(IT.st).find(k => IT.st[k] === 'aim') : undefined);
+// what an item breaks. The drill falls down column col and takes every cube of it (hit: the row of its first cube, ROWS
+// when it is empty). The bomb goes off on any cell (row, col): the 5x5 square round it, moved in to stay on the board.
+function itemTargets(kind, col, row) {
+  const marks = new Map();
+  let hit = 0;
+  while (hit < ROWS && !G.grid[hit][col]) hit++;
+  if (kind === 'drill') {
+    for (let r = hit; r < ROWS; r++) if (G.grid[r][col]) marks.set(r * COLS + col, G.grid[r][col]);
+    return { marks, hit, r0: hit, r1: ROWS - 1, c0: col, c1: col, rc: hit, cc: col };
+  }
+  const rc = Math.max(0, Math.min(ROWS - 1, row == null ? hit : row));
+  const r0 = Math.max(0, Math.min(rc - 2, ROWS - 5)), c0 = Math.max(0, Math.min(col - 2, COLS - 5));
+  for (let r = r0; r < r0 + 5; r++) for (let c = c0; c < c0 + 5; c++) if (G.grid[r][c]) marks.set(r * COLS + c, G.grid[r][c]);
+  return { marks, hit, r0, r1: r0 + 4, c0, c1: c0 + 4, rc, cc: col };
+}
+// the finger came up on the board: the item goes (now, or as soon as the board has settled)
+function blockItemGo(id, col, row) {
+  if (G.state !== 'play' || !IT || IT.st[id] !== 'aim') return;
+  if (!itemTargets(id, col, row).marks.size) { sfx('back'); return; }   // nothing to break there: kept, still aiming
+  if (G.phase !== 'idle' || anim) { pendingItem = { id, col, row }; return; }
+  blockItemFire(id, col, row);
+}
+function blockItemFire(id, col, row) {
+  if (G.state !== 'play' || !IT || IT.st[id] !== 'aim') return false;
+  const tg = itemTargets(id, col, row);
+  if (!tg.marks.size) { sfx('back'); return false; }
+  IT.st[id] = 'used'; itemDockUI();
+  blockStuck(false);
+  G.itemMove = true;
+  G.feverDrop = feverOn();
+  if (G.mission) G.mission.drop = 0;
+  chain = 0; dropBurst = false; lastDrop = null;
+  G.phase = 'settling';
+  if (id === 'bomb') anim = { type: 'item', kind: id, col, tg, t0: performance.now(), dur: 170 * ANIM };   // slammed down on its cell
+  else {   // the drill drops down its column onto the first cube
+    const land = Math.max(0, tg.hit - 1), from = -2;
+    anim = { type: 'item', kind: id, col, tg, from, land, t0: performance.now(), dur: (90 + 38 * Math.sqrt(land - from)) * ANIM };
+  }
+  sfx('pick'); buzz(20);
+  touchGrid();
+  return true;
+}
+// no block fits while items are left: a line, the buttons call, and a way to end the game
+function blockStuck(on) {
+  if (on && !G.stuck) { banner(itemT().stuck, itemT().stuckSub, COMBO_LOOK[1], 2200); sfx('missionFail'); }
+  G.stuck = !!on;
+  blockStuckUI();
+}
+function blockStuckUI() {
+  const d = $('#itemdock');
+  if (!d || !d.classList.contains('dock-block')) return;
+  d.classList.toggle('call', !!G.stuck);
+  let gv = d.querySelector('.it-give');
+  if (G.stuck && !gv) { gv = document.createElement('button'); gv.type = 'button'; gv.className = 'it-give'; gv.textContent = itemT().giveUp; d.append(gv); }
+  else if (!G.stuck && gv) gv.remove();
+}
+// the item buttons' row, between the board and the tray (its place set by layout)
+const ITEM_ROW = 60;
+const blockItemRow = () => !!IT && IT.game === 'block';
+function blockDockPlace() {
+  const d = $('#itemdock');
+  if (d && d.classList.contains('dock-block')) { d.style.top = itemY + 'px'; d.style.height = ITEM_ROW + 'px'; }
 }
 
 /* ---------- turning a block: a button on each tray pocket, 10 turns a game ---------- */
@@ -2285,7 +2463,8 @@ function die(reason) {
   musicStop();
   sfx('over');
   if (drag) { try { cv.releasePointerCapture(drag.id); } catch (e) { /* already released */ } }
-  drag = null; pending = null;
+  drag = null; pending = null; pendingItem = null; bAim = null;
+  if (G.stuck) { G.stuck = false; blockStuckUI(); }
   buzz([90, 60, 160]);
   setTimeout(() => { if (G.state === 'dying') finish(); }, Math.max(150, 700 * ANIM));
 }
@@ -2299,7 +2478,7 @@ function blockRevive() {
   for (let k = 0; k < n; k++) G.grid.unshift(Array(COLS).fill(0));
   if (G.reason === 'nofit') G.tray = [dealPiece(), dealPiece(), dealPiece()];
   G.reason = null; G.state = 'play'; G.phase = 'idle';
-  anim = null; pending = null; fx.shift = null;
+  anim = null; pending = null; fx.shift = null; pendingItem = null; bAim = null; G.stuck = false; G.itemMove = false;
   touchGrid(); hud(); showOnly(null);
   checkNoFit();
 }
@@ -2634,6 +2813,33 @@ function sfxSynth(name, o = {}) {
       hiss(bus, t, 0.8, { f: 300, to: 6000, q: 0.7, vol: 0.28 });
       [0, 7, 12, 16, 19, 24].forEach((st, i) => voice(bus, t + 0.25 + i * 0.06, 392 * semi(st), 0.5, { type: 'triangle', vol: 0.2, sus: 0.6 }));
       break;
+    case 'evolve': {   // the evolve card: a soft whoosh rising with the turn, glitter tinkling faster and higher as it spins
+      // (up the scale and round again: sha-ra-rak), a bright chime as the new stage comes out (o.fast, o.at: s from now)
+      const at = o.at || 2.3, f0 = o.fast || 1, PENT = [0, 2, 4, 7, 9];
+      const src = ctx.createBufferSource(); src.buffer = SND.noise; src.loop = true;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.4;
+      bp.frequency.setValueAtTime(600, t); bp.frequency.exponentialRampToValueAtTime(1400, t + f0); bp.frequency.exponentialRampToValueAtTime(7500, t + at);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.05, t + 0.5); g.gain.linearRampToValueAtTime(0.14, t + at - 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + at + 0.45);
+      src.connect(bp); bp.connect(g); g.connect(bus); src.start(t); src.stop(t + at + 0.5);
+      // the glitter: a few slow notes while it turns slowly, then closer and closer runs up two octaves
+      let x = 0.3, k = 0;
+      while (x < at - 0.04) {
+        const p = Math.min(1, Math.max(0, (x - f0 + 0.2) / (at - f0)));
+        const st = PENT[k % 5] + 12 * (Math.floor(k / 5) % 2) + Math.round(5 * p), f = 1046.5 * semi(st);
+        voice(bus, t + x, f, 0.22, { type: 'sine', vol: 0.05 + 0.06 * p, a: 0.002, sus: 0.15, rel: 0.12 });
+        voice(bus, t + x, f * 2.01, 0.1, { type: 'sine', vol: 0.02 + 0.02 * p, a: 0.001, sus: 0.1, rel: 0.06 });
+        x += x < f0 ? 0.22 : 0.075 - 0.045 * p; k++;
+      }
+      // out: a bright struck chord, a sparkle falling after it
+      [0, 4, 7, 12].forEach((s2, i) => [[1, 1], [2.01, 0.35], [3.9, 0.12]].forEach(([m, a]) =>
+        voice(bus, t + at + i * 0.025, 784 * semi(s2) * m, 1.1 - m * 0.15, { type: 'sine', vol: 0.11 * a, a: 0.003, sus: 0.08, rel: 0.3 })));
+      voice(bus, t + at, 392, 0.5, { type: 'triangle', vol: 0.14, sus: 0.4 });
+      [24, 21, 19, 16, 14, 12].forEach((s2, i) => voice(bus, t + at + 0.18 + i * 0.05, 784 * semi(s2), 0.18, { type: 'sine', vol: 0.05, a: 0.002, sus: 0.2, rel: 0.1 }));
+      hiss(bus, t + at, 0.4, { filter: 'highpass', f: 5000, to: 9000, vol: 0.12 });
+      break;
+    }
     case 'rot':
       voice(bus, t, 760, 0.07, { to: 1150, slide: 0.05, vol: 0.22, sus: 0.6 });
       voice(bus, t + 0.05, 1150, 0.05, { vol: 0.12, sus: 0.5 });
@@ -3041,7 +3247,7 @@ function miniFrame(now) {
 function miniStep(dt) {
   const g = miniGeo(), playing = MG.st === 'play';
   if (playing) {
-    MG.t += dt;
+    MG.t += dt; itemTick('acorn', dt);
     musicTempo(Math.floor(Math.min(1, MG.t / MINI_RAMP) * 3));   // the tune a step faster every 100 s, with the falling
     if (MG.key) MG.tx += MG.key * MG.W * 1.9 * dt;
     MG.tx = Math.max(g.bw / 2, Math.min(MG.W - g.bw / 2, MG.tx));
@@ -3060,6 +3266,7 @@ function miniStep(dt) {
     const y0 = it.y;
     it.vy += MG.H * 0.31 * dt; it.y += it.vy * dt; it.rot += it.spin * dt;
     if (!playing || it.done) continue;
+    if (it.k !== 'stone' && itemRun('acorn', 'magnet')) it.x += (MG.x - it.x) * Math.min(1, dt * 6);   // the magnet: everything but stones to the squirrel
     // caught when it touches the squirrel anywhere (checked along this frame's fall, so it cannot slip past a thin part)
     const rad = itemRad(it, g), steps = Math.max(1, Math.ceil((it.y - y0) / rad));
     let hit = null;
@@ -3098,6 +3305,12 @@ function miniStar(c, x, y, r, col) {
 function miniCatch(it, g) {
   const y = g.top - g.r * 0.4;   // the points rise from over the squirrel's head
   if (it.k === 'stone') {
+    if (itemTake('acorn', 'shield')) {   // the shield takes it: no heart, the streak goes on
+      gsfx('acHeart', 1, 'heart'); buzz(25);
+      MG.pops.push({ text: itemT().saved, x: MG.x, y, t: 0, look: CHAIN_LOOK, size: g.u * 1.4, life: 0.9 });
+      for (let i = 0; i < 12; i++) { const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.6, sp = 200 + Math.random() * 160; MG.sparks.push({ x: it.x, y: it.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: 0, life: 0.5, c: i % 2 ? '#7fd0ff' : '#fff', s: 3 + Math.random() * 2, star: i % 2 === 0 }); }
+      return;
+    }
     MG.hearts--; MG.combo = 0; MG.hurt = 0.8; MG.flash = 0.35;
     gsfx('acHit', 1, 'hit'); buzz(40);
     if (MG.hearts <= 0) { MG.st = 'dying'; MG.end = 0.4; }
@@ -3154,6 +3367,8 @@ function miniDraw(now) {
     else if (P.sq) c.drawImage(P.sq, -SQA.mid * g.S, -SQA.foot * g.S, SQA.w * g.S, g.S);
     c.restore();
   }
+  if (itemHas('acorn', 'shield')) itemBubble(c, MG.x, g.foot - g.S * 0.5, g.S * 0.62, t);
+  if (itemRun('acorn', 'magnet')) itemPull(c, MG.x, g.foot - g.S * 0.5, g.S * 0.7, t);
   // falling things, in front of the squirrel (they drop past its face into the basket)
   for (const it of MG.items) {
     c.save(); c.translate(it.x, it.y); c.rotate(it.rot);
@@ -3266,13 +3481,16 @@ $('#btn-nick-no').addEventListener('click', () => { sfx('back'); nickClose(); })
 // Block Forest: pick the board, and it starts
 function openBlockPick() {
   for (const n of [16, 32]) { $(`#bf-${n}-best`).textContent = tr('rkMineOf', bestFor(n).toLocaleString()); $(`#bf-${n}-top`).textContent = tr('loading'); }
+  itemPickUI('block');
   $('#bfpick').hidden = false;
   rkTops(['block16', 'block32']).then(tops => tops.forEach((t, i) => { const n = i ? 32 : 16; $(`#bf-${n}-top`).textContent = t === undefined ? '' : t ? tr('rkTopOf', t.name, t.score.toLocaleString()) : tr('rkTop') + ' ' + tr('rkNone'); }));
 }
 function startBlock(size) {
   $('#bfpick').hidden = true;
   setMenu(menuMode, size);
+  itemsBegin('block');
   newGame(menuMode, size); showOnly(null); leaveLobby(); musicStart(true);
+  itemDock('block', stage);
   tutMaybe('block');
 }
 $('#mg-block').addEventListener('click', () => { sfx('pick'); openBlockPick(); });
@@ -3412,6 +3630,7 @@ function rkGate(game, go) {
   $('#rki-me').textContent = RK_LOCAL[game]().toLocaleString(); $('#rki-me-rank').textContent = '';
   for (const id of ['top', 'wk']) { $(`#rki-${id}-nm`).textContent = tr('loading'); $(`#rki-${id}`).textContent = ''; }
   rkUnwait(); scr.classList.add('rk-wait');
+  itemPickUI(game);
   $('#rkintro').hidden = false;
   fitEnd($('#rki-me'));
   rkIntroFill(game);
@@ -3428,11 +3647,233 @@ async function rkIntroFill(game) {
   if (me && me.score >= mine) { $('#rki-me').textContent = me.score.toLocaleString(); $('#rki-me-rank').textContent = tr('rkPlace', me.rank); if (rkKeep(game, me.score)) { minisInfo(); if (!$('#profile').hidden) profileUI(); } }
   for (const id of ['top', 'wk', 'me']) fitEnd($('#rki-' + id));
 }
-function rkStart() { $('#rkintro').hidden = true; rkUnwait(); const go = rkGo; rkGo = null; if (go) { go(); tutMaybe(rkGame); } }
+function rkStart() {
+  $('#rkintro').hidden = true; rkUnwait(); const go = rkGo; rkGo = null;
+  if (go) { itemsBegin(rkGame); go(); itemDock(rkGame, $('#' + RK_SCREEN[rkGame][0])); tutMaybe(rkGame); }
+}
 function rkLeave() { $('#rkintro').hidden = true; rkUnwait(); rkGo = null; if (rkGame && RK_SCREEN[rkGame]) RK_SCREEN[rkGame][1](); }
 $('#btn-rki-go').addEventListener('click', () => { sfx('pick'); rkStart(); });
 $('#btn-rki-rank').addEventListener('click', () => { sfx('pick'); rkBoard(rkGame); });
 $('#btn-rki-close').addEventListener('click', () => { sfx('pick'); rkLeave(); });
+/* ---------- items: each game has its own one or two, ITEM_COST coins each. They are picked on the game's start card
+   (Block Forest's: its board card), paid for when the game starts, and are for that one game (going on after its end
+   keeps what is left). In the game they are round buttons by the side (#itemdock, put into the game's screen under its
+   cards): a tap uses one. Some wait for their moment and show as on until then (a shield), some run for a while (a
+   ring shows what is left, on the game's own clock, so a pause stops it too), some aim first (the block game's bomb).
+   What each one does is the game's: ITEM_USE[game][id], and the game asks itemHas / itemTake / itemRun where it counts.
+   The pictures are stand-ins drawn here until the drawn ones come (the bomb and the drill have theirs). ---------- */
+const ITEM_COST = 200;
+const ITEMS_OF = { block: ['bomb', 'drill'], acorn: ['shield', 'magnet'], stairs: ['wing', 'boost'], merge: ['hammer', 'shake'], pebble: ['fire', 'rows'],
+  mushroom: ['basket', 'time'], owlpost: ['hourglass'], chameleon: ['glass'], beaver: ['tape'], hedgehog: ['guard'], caterpillar: ['magnet', 'speed'], cups: ['xray'] };
+const ITEM_WAIT = ['shield', 'wing', 'guard'];   // on from the start, used up when their moment comes
+const ITEM_FILE = Object.fromEntries(['bomb', 'drill', 'shield', 'magnet', 'wing', 'boost', 'hammer', 'shake', 'fire', 'rows', 'basket', 'time', 'hourglass', 'glass', 'tape', 'speed', 'xray']
+  .map(k => [k, `item-${k}.webp`]));   // the pictures (the hedgehog's guard: the shield's)
+const itemPic = id => ITEM_FILE[id === 'guard' ? 'shield' : id];
+const ITEM_TXT = {
+  ko: {
+    name: { bomb: '폭탄', drill: '드릴', shield: '방패', magnet: '자석', wing: '날개', boost: '부스터', hammer: '망치', shake: '흔들기', fire: '불 조약돌', rows: '3줄 지우기',
+      basket: '빈 바구니', time: '시간 +10초', hourglass: '모래시계', glass: '돋보기', tape: '줄자', guard: '보호막', speed: '스피드 업', xray: '투시경' },
+    desc: { 'block.bomb': '판의 한 곳을 골라 5×5 칸을 터뜨려요', 'block.drill': '세로줄 하나를 골라 통째로 지워요',
+      'acorn.shield': '돌에 처음 맞을 때 하트를 지켜 줘요', 'acorn.magnet': '10초 동안 모든 도토리를 끌어당겨요',
+      'stairs.wing': '헛디딤을 한 번 봐줘요', 'stairs.boost': '10초 동안 2배 빠르기로 알아서 올라가요',
+      'merge.hammer': '과일 하나를 눌러 없애요', 'merge.shake': '상자를 세게 한 번 흔들어요',
+      'pebble.fire': '한 턴 동안 조약돌 하나가 5씩 깎아요', 'pebble.rows': '맨 아래 3줄을 없애요',
+      'mushroom.basket': '빈 바구니를 하나 더 놓아요 (이번 판)', 'mushroom.time': '제한 시간을 10초 늘려요',
+      'owlpost.hourglass': '10초 동안 아무 데나 눌러도 알맞은 동물에게 가요', 'chameleon.glass': '다른 잎이 있는 구역을 알려줘요',
+      'beaver.tape': '다음 다리 5개는 딱 맞는 길이에 표시선이 떠요', 'hedgehog.guard': '가시에 부딪혀도 한 번 봐줘요',
+      'caterpillar.magnet': '30초 동안 주변 잎을 끌어당겨요', 'caterpillar.speed': '15초 동안 1.5배 빨라져요', 'cups.xray': '섞은 뒤 도토리가 든 컵이 잠깐 빛나요' },
+    title: '아이템', none: '켜면 이번 판에 써요 (하나에 200코인)', saved: '막았어요!', hammerAim: '없앨 과일을 눌러요',
+    blockAim: { bomb: '터뜨릴 곳을 눌러요', drill: '지울 세로줄을 눌러요' }, stuck: '놓을 곳이 없어요', stuckSub: '아이템으로 자리를 만들어요', giveUp: '끝내기',
+  },
+  en: {
+    name: { bomb: 'Bomb', drill: 'Drill', shield: 'Shield', magnet: 'Magnet', wing: 'Wings', boost: 'Booster', hammer: 'Hammer', shake: 'Shake', fire: 'Fire Pebbles', rows: 'Clear 3 Rows',
+      basket: 'Extra Basket', time: '+10 Seconds', hourglass: 'Hourglass', glass: 'Magnifier', tape: 'Tape Measure', guard: 'Guard', speed: 'Speed Up', xray: 'X-Ray Goggles' },
+    desc: { 'block.bomb': 'Pick a spot: breaks a 5x5 square', 'block.drill': 'Pick a column: clears all of it',
+      'acorn.shield': 'Saves a heart the first time a stone hits', 'acorn.magnet': 'Pulls in every acorn for 10 seconds',
+      'stairs.wing': 'Saves you from one misstep', 'stairs.boost': 'Climbs by itself at double speed for 10 seconds',
+      'merge.hammer': 'Tap a fruit to smash it', 'merge.shake': 'Gives the box one big shake',
+      'pebble.fire': 'For one turn each pebble hits for 5', 'pebble.rows': 'Clears the 3 lowest rows',
+      'mushroom.basket': 'Adds one more empty basket (this round)', 'mushroom.time': 'Adds 10 seconds to the clock',
+      'owlpost.hourglass': 'For 10 seconds any tap sends it to the right friend', 'chameleon.glass': 'Shows the part where the odd leaf is',
+      'beaver.tape': 'Marks the exact length for the next 5 logs', 'hedgehog.guard': 'Saves you once from hitting a quill',
+      'caterpillar.magnet': 'Pulls in nearby leaves for 30 seconds', 'caterpillar.speed': '1.5x speed for 15 seconds', 'cups.xray': 'After a shuffle the cup with the acorn glows' },
+    title: 'Items', none: 'Turn one on to use it this game (200 coins each)', saved: 'Blocked!', hammerAim: 'Tap a fruit to smash',
+    blockAim: { bomb: 'Tap where to blow it up', drill: 'Tap a column to drill' }, stuck: 'No room left', stuckSub: 'Use an item to make room', giveUp: 'End game',
+  },
+};
+const itemT = () => ITEM_TXT[LANG] || ITEM_TXT.ko;
+const itemName = id => itemT().name[id];
+const itemDesc = (game, id) => itemT().desc[(game.startsWith('block') ? 'block' : game) + '.' + id];
+const ITEM_PICK = {};   // a game's picks on its start card: kept for its next game while the coins last
+const ITEM_NOTE = {};   // the item last tapped there (its line shows under the row)
+let IT = null;   // the game being played with items: { game, st: { id: 'ready' | 'on' | 'run' | 'aim' | 'used' }, left: {}, len: {} }
+const itemGame = g => (g && g.startsWith('block') ? 'block' : g);
+// the start card's row: the game's items to turn on and off (the coins checked as they are turned on)
+function itemPickUI(game) {
+  const g = itemGame(game), ids = ITEMS_OF[g] || [], box = $(g === 'block' ? '#bf-items' : '#rki-items');
+  box.hidden = !ids.length;
+  if (!ids.length) return;
+  const pick = ITEM_PICK[g] || (ITEM_PICK[g] = new Set());
+  while (pick.size && pick.size * ITEM_COST > WAL.coins) pick.delete([...pick].pop());   // what can no longer be paid for
+  box.querySelector('.it-title').textContent = itemT().title;
+  box.querySelector('.it-row').replaceChildren(...ids.map(id => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'it-chip' + (pick.has(id) ? ' on' : ''); b.dataset.id = id; b.dataset.g = g;
+    b.innerHTML = `<img class="it-pic" src="${itemPic(id)}" alt=""><span class="it-nm"></span><span class="it-cost"><img src="coin-1.webp" alt="">${ITEM_COST}</span><i class="it-ck" aria-hidden="true"></i>`;
+    b.querySelector('.it-nm').textContent = itemName(id);
+    return b;
+  }));
+  const note = ITEM_NOTE[g];
+  box.querySelector('.it-note').textContent = note ? itemDesc(g, note) : itemT().none;
+}
+function itemPickTap(e) {
+  const b = e.target.closest('.it-chip');
+  if (!b) return;
+  const g = b.dataset.g, id = b.dataset.id, pick = ITEM_PICK[g];
+  ITEM_NOTE[g] = id;
+  if (pick.has(id)) { pick.delete(id); sfx('back'); }
+  else if ((pick.size + 1) * ITEM_COST > WAL.coins) { sfx('back'); toast(tr('noCoins')); }
+  else { pick.add(id); sfx('pick'); }
+  itemPickUI(g);
+}
+// the game starts: what was picked paid for and in the player's hands (nothing picked: no items this game)
+function itemsBegin(game) {
+  const g = itemGame(game), pick = [...(ITEM_PICK[g] || [])].filter(id => (ITEMS_OF[g] || []).includes(id));
+  IT = null;
+  if (!pick.length || WAL.coins < pick.length * ITEM_COST) return;
+  walletPut(w => { w.coins -= pick.length * ITEM_COST; });
+  IT = { game: g, st: Object.fromEntries(pick.map(id => [id, ITEM_WAIT.includes(id) ? 'on' : 'ready'])), left: {}, len: {} };
+}
+const itemHas = (g, id) => !!IT && IT.game === g && (IT.st[id] === 'ready' || IT.st[id] === 'on');
+const itemRun = (g, id) => !!IT && IT.game === g && IT.st[id] === 'run';
+// one used up (a shield's moment, a tap): its button goes dim
+function itemTake(g, id) { if (!itemHas(g, id)) return false; IT.st[id] = 'used'; itemDockUI(); return true; }
+// one that runs for s seconds of the game's own time (itemTick counts them down from the game's frame)
+function itemStart(g, id, s) { if (!itemHas(g, id)) return false; IT.st[id] = 'run'; IT.left[id] = IT.len[id] = s; itemDockUI(); return true; }
+const ITEM_END = {};   // a game's running items' ends: ITEM_END[game][id]()
+function itemTick(g, dt) {
+  if (!IT || IT.game !== g) return;
+  let ch = false;
+  for (const id in IT.st) if (IT.st[id] === 'run') {
+    IT.left[id] -= dt;
+    if (IT.left[id] <= 0) { IT.left[id] = 0; IT.st[id] = 'used'; ch = true; const f = ITEM_END[g] && ITEM_END[g][id]; if (f) f(); }
+  }
+  itemDockUI(ch);
+}
+const ITEM_USE = {};   // what a tap on a game's item does: ITEM_USE[game][id]() (true: it was used or is aiming)
+// drawn in the games: a magnet's pull (rings closing in), a shield's bubble
+function itemPull(c, x, y, r, t, rgb = '120,200,255') {
+  c.save(); c.lineWidth = Math.max(2.5, r * 0.07);
+  for (let i = 0; i < 3; i++) { const k = (t * 1.2 + i / 3) % 1; c.globalAlpha = 0.6 * k; c.strokeStyle = `rgb(${rgb})`; c.beginPath(); c.arc(x, y, r * (1.6 - k * 0.9), 0, Math.PI * 2); c.stroke(); }
+  c.restore();
+}
+function itemBubble(c, x, y, r, t, rgb = '127,208,255') {
+  c.save(); c.globalAlpha = 0.16 + 0.05 * Math.sin(t * 4); c.fillStyle = `rgb(${rgb})`; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill();
+  c.globalAlpha = 0.6; c.lineWidth = Math.max(2, r * 0.05); c.strokeStyle = `rgb(${rgb})`; c.stroke();
+  c.globalAlpha = 0.7; c.lineWidth = Math.max(2, r * 0.06); c.strokeStyle = '#fff'; c.beginPath(); c.arc(x, y, r * 0.8, -2.5, -1.9); c.stroke(); c.restore();
+}
+// the buttons, in the game's screen (under its cards: its pause menu and end cards cover them)
+function itemDock(game, scr) {
+  const g = itemGame(game);
+  let d = $('#itemdock');
+  if (!d) {
+    d = document.createElement('div'); d.id = 'itemdock';
+    d.addEventListener('pointerdown', e => e.stopPropagation());   // not the game's own touch under it
+    d.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+    d.addEventListener('click', e => {
+      e.stopPropagation();
+      if (e.target.closest('.it-give')) { sfx('pick'); if (G.state === 'play' && G.stuck) { G.stuck = false; blockStuckUI(); die('nofit'); } return; }
+      const b = e.target.closest('.it-btn');
+      if (!b || !IT) return;
+      const id = b.dataset.id, use = ITEM_USE[IT.game] && ITEM_USE[IT.game][id];
+      if (IT.st[id] === 'on') { sfx('pick'); toast(itemDesc(IT.game, id)); return; }   // waits for its moment by itself
+      if ((IT.st[id] !== 'ready' && IT.st[id] !== 'aim') || !use || !use()) { sfx('back'); return; }
+      itemDockUI();
+    });
+  }
+  if (!IT || IT.game !== g || !scr) { d.hidden = true; return; }
+  d.className = 'itemdock dock-' + g; d.style.cssText = '';
+  scr.append(d);
+  d.replaceChildren(...Object.keys(IT.st).map(id => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'it-btn'; b.dataset.id = id; b.setAttribute('aria-label', itemName(id));
+    b.innerHTML = `<svg class="it-ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="26"/></svg><img src="${itemPic(id)}" alt="">`;
+    return b;
+  }));
+  d.hidden = false;
+  itemDockUI(true);
+  if (g === 'block') { blockDockPlace(); blockStuckUI(); for (const id in IT.st) itemIcon(id, 10); }
+}
+function itemDockUI() {
+  const d = $('#itemdock');
+  if (!d || d.hidden || !IT) return;
+  for (const b of d.children) {
+    const id = b.dataset.id, st = IT.st[id];
+    b.className = 'it-btn ' + st;
+    const c = b.querySelector('.it-ring circle');
+    c.style.strokeDashoffset = st === 'run' ? (163.4 * (1 - IT.left[id] / IT.len[id])).toFixed(1) : '0';
+  }
+}
+function itemsOff() { IT = null; const d = $('#itemdock'); if (d) d.hidden = true; }
+// "again" after a game's end: through its start card (the items to pick again), Block Forest through its board card
+function blockAgain() { G.started = false; G.state = 'menu'; openLobby(); openBlockPick(); }
+function itemsAgain(g) {
+  if (g.startsWith('block')) { blockAgain(); return; }
+  if (RK_SCREEN[g]) rkGate(g, () => END[g].again()); else END[g].again();
+}
+for (const id of ['#rki-items', '#bf-items']) $(id).addEventListener('click', itemPickTap);
+/* ---- each game's items: what a tap does (ITEM_USE) and what happens when a running one ends (ITEM_END) ---- */
+// the block game: a tap puts the bomb or the drill in hand (its aim on the board), a second tap puts it away
+ITEM_USE.block = Object.fromEntries(['bomb', 'drill'].map(id => [id, () => {
+  if (G.state !== 'play') return false;
+  if (IT.st[id] === 'aim') { IT.st[id] = 'ready'; bAim = null; if (pendingItem && pendingItem.id === id) pendingItem = null; return true; }   // tapped again: put away
+  for (const k in IT.st) if (IT.st[k] === 'aim') IT.st[k] = 'ready';
+  IT.st[id] = 'aim'; bAim = null;
+  sfx('pick'); toast(itemT().blockAim[id], 2000);
+  return true;
+}]));
+// the acorn game: the magnet runs 10 s (the shield waits for a stone)
+ITEM_USE.acorn = { magnet: () => MG.st === 'play' && itemStart('acorn', 'magnet', 10) && (gsfx('acGold', 1, 'catchGold'), true) };
+// the stairs: the booster runs 10 s (twice the speed, by itself), then 2 s blinking and safe (the wings wait for a miss)
+ITEM_USE.stairs = { boost: () => {
+  if (ST.st !== 'play' || ST.phase !== 'run' || !itemStart('stairs', 'boost', 10)) return false;
+  const h = ST.hop; if (h && h.miss && !h.gone) stFix(h);   // already off the way: back on it
+  gsfx('stGo', 1, 'missionNew'); buzz(30); return true;
+} };
+ITEM_END.stairs = { boost: () => { ST.prot = 2; } };
+// the pebbles: fire for this turn's throw, the 3 lowest rows of blocks gone (both while aiming)
+ITEM_USE.pebble = {
+  fire: () => PB.st === 'play' && PB.phase === 'aim' && itemTake('pebble', 'fire') && (PB.fireTurn = PB.turn, gsfx('pbPlus', 1, 'catchGold'), buzz(30), true),
+  rows: () => PB.st === 'play' && PB.phase === 'aim' && PB.blocks.some(b => !b.dead) && itemTake('pebble', 'rows') && (pbRows3(), true),
+};
+// the mushrooms: one more empty basket for this round, 10 s more on the clock
+ITEM_USE.mushroom = {
+  basket: () => MS.st === 'play' && !MS.clearT && itemTake('mushroom', 'basket') && (msExtraBasket(), true),
+  time: () => {
+    if (MS.st !== 'play' || !itemTake('mushroom', 'time')) return false;
+    MS.time = Math.min(MS_TMAX, MS.time + 10); msHud();
+    MS.pops.push({ text: tr('msBonus', 10), x: MS.W / 2, y: MS.H * 0.3, t: 0, life: 1.0, size: 24, look: GOLD_LOOK });
+    gsfx('msDone', 1, 'catchGold'); return true;
+  },
+};
+// the owl post: the hourglass runs 10 s
+ITEM_USE.owlpost = { hourglass: () => OP.st === 'play' && itemStart('owlpost', 'hourglass', 10) && (gsfx('opRight', 1, 'catch'), buzz(25), true) };
+// the chameleon: the magnifier shows the quarter its leaf is in (this board)
+ITEM_USE.chameleon = { glass: () => CM.st === 'play' && !CM.found && itemTake('chameleon', 'glass') && (cmHintOn(), true) };
+// the beaver: the tape measure shows the right length for the next 5 logs
+ITEM_USE.beaver = { tape: () => BV.st === 'play' && itemTake('beaver', 'tape') && (BV.tape = 5, gsfx('bvPerfect', 1, 'combo', { combo: 4 }), true) };
+// the caterpillar: the magnet runs 30 s, the speed-up 15 s (both once the game has started moving)
+ITEM_USE.caterpillar = {
+  magnet: () => CP.st === 'play' && CP.started && itemStart('caterpillar', 'magnet', 30) && (gsfx('cpGulp', 1, 'catchGold'), true),
+  speed: () => CP.st === 'play' && CP.started && itemStart('caterpillar', 'speed', 15) && (gsfx('cpGulp', 1, 'catchGold'), buzz(25), true),
+};
+// the cups: the x-ray goggles, once the shuffle is over (the acorn's cup glows for 1.5 s)
+ITEM_USE.cups = { xray: () => CU.st === 'play' && CU.ph === 'pick' && itemTake('cups', 'xray') && (CU.xray = 1.5, gsfx('cuRight', 1, 'pick'), true) };
+// fruit merge: the hammer aims first (a tap on its button again puts it back), the shake goes at once
+ITEM_USE.merge = {
+  hammer: () => { if (FM.st !== 'play') return false; if (IT.st.hammer === 'aim') { IT.st.hammer = 'ready'; return true; } if (!FM.fruits.length) return false; IT.st.hammer = 'aim'; sfx('pick'); return true; },
+  shake: () => FM.st === 'play' && FM.fruits.length > 0 && !FM.shake && itemTake('merge', 'shake') && (fmShake(), true),
+};
 // the ranking card: a board's top 20, and me below if I am further down
 function pickNote(text) { const p = document.createElement('p'); p.className = 'pick-note'; p.textContent = text; return p; }
 let rkbGame = 'acorn', rkbAll = true, rkbN = 0;
@@ -4011,7 +4452,103 @@ function heroUp(g) {
   if (WAL.coins < cost) { sfx('back'); toast(tr('noCoins')); return; }
   walletPut(w => { w.coins -= cost; w.heroes[g] = L + 1; });
   sfx('pick');
-  if ((L + 1) % HERO_STEP === 0 && L + 1 < HERO_MAX) toast(tr('heroEvolve', heroStage(L + 1)));
+  if ((L + 1) % HERO_STEP === 0 && L + 1 < HERO_MAX) evolveShow(g, heroStage(L + 1));
+}
+// the evolve card: the stage before turns slowly, speeds up into a fast spin glowing, with glitter swirling up round it,
+// and comes out of it as the new stage in a burst of light (a chime then, and the phone buzzes)
+const EV = { timer: 0 };
+const EV_STAR = (c, s) => `<svg class="ev-sw${s ? ' s' : ''}" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 0.8 12.4 7.6 19.2 10 12.4 12.4 10 19.2 7.6 12.4 0.8 10 7.6 7.6Z" fill="${c}" stroke="#2b1a0e" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+function evolveShow(g, st) {
+  const pics = HERO_SKIN[g];
+  if (!pics || st < 2) { toast(tr('heroEvolve', st)); return; }
+  const old = pics[st - 2], now = pics[st - 1];
+  $('#ev-stage').innerHTML = `<div class="ev-c"><div class="ev-glow"></div><div class="ev-flip"><div class="ev-face"><img class="ev-old" src="${old}" alt=""></div>`
+    + `<div class="ev-face ev-back"><img class="ev-old" src="${old}" alt=""><img class="ev-new" src="${now}" alt=""></div></div>`
+    + Array.from({ length: 48 }, (_, i) => EV_STAR((i / 3 | 0) % 3 ? '#ffe35a' : '#fff', (i / 3 | 0) % 2)).join('') + '</div>';   // 16, each with 2 after it (a trail)
+  $('#ev-line').textContent = tr('heroEvolve', st);
+  $('#ev-buff').innerHTML = `${tr('heroBuff', heroName(g))} <b>+${heroPctTxt(g)}%</b>`;
+  $('#evolve').hidden = false;
+  const tm = EV.tm = evolveSpin($('#ev-stage .ev-c'));
+  sfx('evolve', tm);
+  clearTimeout(EV.timer);
+  EV.timer = setTimeout(() => { if (!$('#evolve').hidden) buzz([30, 40, 60]); }, tm.at * 1000);
+}
+// the turning (deg/s over time: slow, faster and faster, the top speed held, slowing to a stop on the new picture), the glow,
+// the glitter swirling up with the turn, the light and the sparks as it stops; all as animations started now. Returns when
+// it starts to speed up and when the new picture is out (s)
+function evolveSpin(box) {
+  const flip = box.querySelector('.ev-flip'), imgs = box.querySelectorAll('.ev-face img'), nw = box.querySelector('.ev-new');
+  const glow = box.querySelector('.ev-glow'), stars = [...box.querySelectorAll('.ev-sw')];
+  const T0 = 0.25, SLOW = 260, TOP = 1440, sm = x => x * x * (3 - 2 * x);
+  const w = t => t < 0.25 ? SLOW * sm(t / 0.25) : t < 0.75 ? SLOW : t < 1.25 ? SLOW + (TOP - SLOW) * sm((t - 0.75) / 0.5)
+    : t < 1.75 ? TOP : t < 2.25 ? TOP * (1 - sm((t - 1.75) / 0.5)) : 0;
+  const END = 2.25, DT = 1 / 240, ang = [0];
+  for (let t = 0; t < END; t += DT) ang.push(ang[ang.length - 1] + w(t + DT / 2) * DT);
+  const raw = ang[ang.length - 1], goal = 360 * Math.round((raw - 180) / 360) + 180, k = goal / raw;   // stop on the back face
+  const A = t => ang[Math.min(ang.length - 1, Math.max(0, Math.round(t / DT)))] * k;
+  const when = deg => { let i = 0; while (i < ang.length - 1 && ang[i] * k < deg) i++; return i * DT; };
+  const fast = t => Math.min(1, Math.max(0, (w(t) - SLOW) / (TOP - SLOW)));
+  const tSwap = when(goal - 180), tOut = when(goal - 40);   // the new picture put on the back while the front faces us; out
+  const at = T0 + tOut, opt = { delay: T0 * 1000, duration: END * 1000, fill: 'both' };
+  if (REDUCE) {
+    flip.style.transform = 'rotateY(180deg)'; nw.style.opacity = 1;
+    box.insertAdjacentHTML('beforeend', '<div class="ev-rays" style="--d:0s"></div>');
+    return { fast: 0.1, at: 0.15 };
+  }
+  const N = 90, turn = [], lit = [];
+  for (let i = 0; i <= N; i++) {
+    const t = END * i / N, f = fast(t), o = t / END;
+    turn.push({ offset: o, transform: `rotateY(${A(t).toFixed(2)}deg) scale(${(1 + 0.08 * f).toFixed(3)})` });
+    const b = t < tOut ? 1 + 1.3 * Math.pow(f, 1.3) + (t > tOut - 0.3 ? 0.8 * (t - tOut + 0.3) / 0.3 : 0) : 1 + 2.1 * Math.max(0, 1 - (t - tOut) / 0.35);
+    lit.push({ offset: o, filter: `brightness(${b.toFixed(3)}) drop-shadow(0 0 ${(10 * Math.min(1, b - 1)).toFixed(2)}px rgba(255, 236, 140, ${Math.min(0.95, b - 1).toFixed(3)}))` });
+  }
+  flip.animate(turn, opt);
+  imgs.forEach(im => im.animate(lit, opt));
+  const sw = tSwap / END;
+  nw.animate([{ opacity: 0 }, { opacity: 0, offset: sw }, { opacity: 1, offset: Math.min(1, sw + 0.001) }, { opacity: 1 }], opt);
+  // the glow behind: up with the speed, a burst as it comes out, then a soft light that stays
+  const gl = [];
+  for (let i = 0; i <= 40; i++) {
+    const t = (END + 0.6) * i / 40, f = fast(t);
+    const burst = t >= tOut ? Math.max(0, 1 - (t - tOut) / 0.6) : 0;
+    gl.push({ offset: i / 40, opacity: Math.min(1, 0.85 * f + burst + (t > tOut ? 0.45 : 0)).toFixed(3), transform: `scale(${(0.8 + 0.25 * f + 0.6 * burst + (t < tOut ? 0.05 * Math.sin(t * 30) * f : 0)).toFixed(3)})` });
+  }
+  glow.animate(gl, { delay: T0 * 1000, duration: (END + 0.6) * 1000, fill: 'both' });
+  // the glitter: each one a spiral up round the picture, with the turn (in front of it on the near side, behind on the far),
+  // two more just after it on the same path, smaller and fainter (its trail)
+  const W = box.clientWidth, H = box.clientHeight, R = Math.min(W * 0.36, H * 0.46), t1 = 0.5, t2 = tOut - 0.8, n = stars.length / 3;
+  stars.forEach((el, q) => {
+    const i = q / 3 | 0, L = q % 3, s0 = t1 + (t2 - t1) * i / (n - 1), life = 0.8, ph = i * 137.5, kf = [];
+    for (let j = 0; j <= 40; j++) {
+      const u = j / 40, t = s0 + life * u, th = (A(t) * 1.1 + ph) * Math.PI / 180, z = Math.sin(th);
+      const x = R * (0.8 + 0.2 * u) * Math.cos(th), y = H * (0.4 - 0.85 * u);
+      const a = Math.min(1, u * 6, (1 - u) * 5) * (0.7 + 0.3 * z) * [1, 0.6, 0.32][L];
+      kf.push({ offset: u, opacity: a.toFixed(3), zIndex: z > 0 ? 2 : 0, transform: `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${(u * 360).toFixed(0)}deg) scale(${((0.75 + 0.35 * z) * [1, 0.8, 0.6][L]).toFixed(3)})` });
+    }
+    el.animate(kf, { delay: (T0 + s0 + L * 0.03) * 1000, duration: life * 1000, fill: 'both' });
+  });
+  // the light and the sparks as it comes out
+  box.insertAdjacentHTML('beforeend', `<div class="ev-rays" style="--d:${(at - 0.1).toFixed(2)}s"></div>`
+    + Array.from({ length: 10 }, (_, i) => `<i class="ev-spark" style="--a:${i * 36 + 18}deg;--d:${at.toFixed(2)}s;--r:${i % 2 ? 80 : 110}px"></i>`).join(''));
+  nw.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18)', offset: 0.3 }, { transform: 'scale(1)' }], { delay: at * 1000, duration: 450, easing: 'ease-out', fill: 'both' });
+  return { fast: T0 + 0.75, at };
+}
+function evolveClose() { clearTimeout(EV.timer); $('#evolve').hidden = true; $('#ev-stage').textContent = ''; }
+$('#btn-evolve-ok').addEventListener('click', () => { sfx('pick'); evolveClose(); });
+// the games list shows each hero at its stage from stage 2 (stage 1: the list's own picture, as before); the start card,
+// the profile's records and the missions take their pictures from the list, so they show it too. The chameleon's and the
+// caterpillar's stage 1 is its sheet's (not the list's own picture), so theirs is the stage picture from stage 1.
+const HERO_IC = {};   // the list's own pictures (the caterpillar's is drawn, put here by cpFaces)
+const HERO_IC_SKIN1 = ['chameleon', 'caterpillar'];
+function heroIcons() {
+  for (const g of HERO_LIST) {
+    const ic = $('#mg-' + g + ' .mg-ic');
+    if (!ic) continue;
+    if (!(g in HERO_IC)) HERO_IC[g] = ic.getAttribute('src');
+    const st = heroStage(heroLv(g)), skin = st > 1 || HERO_IC_SKIN1.includes(g);
+    const want = skin && HERO_SKIN[g] ? HERO_SKIN[g][st - 1] : HERO_IC[g];
+    if (want && ic.getAttribute('src') !== want) ic.src = want;
+  }
 }
 function heroPic(g, stage) {   // the stage's picture, or the game's own (its picture in the games list)
   const s = HERO_SKIN[g] && HERO_SKIN[g][stage - 1];
@@ -4031,6 +4568,7 @@ function walletUI() {
   for (const id of ['#hub-mis-b', '#tab-mis-b']) { $(id).hidden = !mis; $(id).textContent = mis; }
   if (!$('#daily').hidden) dailyUI();
   if (!$('#heroes').hidden) heroUI();
+  heroIcons();
 }
 
 // ---- today's rewards: check-in and missions, two tabs
@@ -4273,7 +4811,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && NA
 $('#btn-cont-ad').addEventListener('click', () => { sfx('pick'); contGo('ad'); });
 $('#btn-cont-item').addEventListener('click', () => { sfx('pick'); contGo('item'); });
 $('#btn-cont-no').addEventListener('click', () => { sfx('pick'); contStop(); });
-$('#btn-res-again').addEventListener('click', () => { sfx('pick'); const g = resClose(); if (g) afterResult(() => END[g].again()); });
+$('#btn-res-again').addEventListener('click', () => { sfx('pick'); const g = resClose(); if (g) afterResult(() => itemsAgain(g)); });
 $('#btn-res-rank').addEventListener('click', () => { sfx('pick'); if (endGame) rkBoard(endGame); });
 $('#btn-res-list').addEventListener('click', () => { sfx('pick'); const g = resClose(); if (g) afterResult(() => END[g].list()); });
 $('#btn-mini-pause').addEventListener('click', () => { sfx('pick'); miniPause(); });
@@ -4559,7 +5097,7 @@ function stStart() {
   stResize();
   endBest('stairs');
   Object.assign(ST, { st: 'play', phase: 'count', cd: ST_COUNT, cdT: 0, goT: 9, t: 0, xs: [0], way: 1, left: 4, idx: 0, dir: 1, score: 0, best: stBest(),
-    pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, fall: null, end: 0 });
+    pos: { x: 0, y: 0 }, cam: { x: 0, y: 0 }, hop: null, fall: null, end: 0, prot: 0 });
   Object.assign(stBg, { from: 0, to: 0, k: 1, dirty: true });   // back to the forest at once
   gsfx('stTick', 1, 'pick');   // the countdown's first tick
   stMore(60);
@@ -4570,6 +5108,7 @@ function stStart() {
 // the next hop, the way the rabbit faces: onto the next step, or (no step that way) into the air
 function stHop(k0 = 0) {
   stMore(ST.idx + 60);
+  if (itemRun('stairs', 'boost')) ST.dir = ST.xs[ST.idx + 1] - ST.xs[ST.idx];   // the booster climbs by itself: always the right way
   const fx = ST.xs[ST.idx], fy = ST.idx, ok = ST.xs[ST.idx + 1] - fx === ST.dir;
   ST.hop = { fx, fy, tx: ok ? ST.xs[ST.idx + 1] : fx + ST.dir, ty: fy + 1, k: k0, el: 0, miss: !ok, gone: false };
 }
@@ -4584,6 +5123,18 @@ function stTurn(d) {
     const tx = ST.xs[ST.idx + 1], k = Math.min(0.9, h.k);
     h.fx = (ST.pos.x - tx * k) / (1 - k); h.tx = tx; h.miss = false;   // on from where it is shown, to the step
   }
+}
+// a hop into the air turned back onto the step (from where the rabbit is shown), facing the way the stairs go
+function stFix(h) {
+  const tx = ST.xs[ST.idx + 1], k = Math.min(0.9, h.k);
+  ST.dir = tx - ST.xs[ST.idx]; h.fx = (ST.pos.x - tx * k) / (1 - k); h.tx = tx; h.miss = false;
+}
+// a miss about to fall: saved while the booster runs or blinks after it, else by the wings (once)
+function stSave(h) {
+  if (!(itemRun('stairs', 'boost') || ST.prot > 0 || itemTake('stairs', 'wing'))) return false;
+  stFix(h);
+  if (!itemRun('stairs', 'boost') && !(ST.prot > 0)) { gsfx('stTheme', 1, 'missionNew'); buzz(25); ST.saved = 0.9; }   // the wings: shown a moment
+  return true;
 }
 function stFall() {
   ST.st = 'dying'; ST.fall = { vy: -4, rot: 0 }; ST.end = 1.0;
@@ -4637,10 +5188,10 @@ function stUpdate(dt) {
   if (ST.phase === 'run') ST.goT += dt;
   const h = ST.hop;
   if (h && (ST.st === 'play' || ST.st === 'dying')) {
-    if (ST.st === 'play') { ST.t += dt; musicTempo(Math.floor(ST.t / 60)); }   // the tune a step faster every minute (to 1.4x at 3 minutes)
-    const T = 1 / stSpeed(ST.t), f = Math.min(1, ST.t / ST_RAMP);
+    if (ST.st === 'play') { ST.t += dt; musicTempo(Math.floor(ST.t / 60)); itemTick('stairs', dt); ST.prot = Math.max(0, (ST.prot || 0) - dt); ST.saved = Math.max(0, (ST.saved || 0) - dt); }   // the tune a step faster every minute (to 1.4x at 3 minutes)
+    const T = 1 / (stSpeed(ST.t) * (itemRun('stairs', 'boost') ? 2 : 1)), f = Math.min(1, ST.t / ST_RAMP);   // the booster: twice the speed
     h.k += dt / T; h.el += dt;
-    if (h.miss && !h.gone && h.el >= Math.min(ST_GRACE, Math.max(0.02, 0.25 * T))) { h.gone = true; stFall(); }
+    if (h.miss && !h.gone && h.el >= Math.min(ST_GRACE, Math.max(0.02, 0.25 * T)) && !stSave(h)) { h.gone = true; stFall(); }
     const k = Math.min(1, h.k);   // an arc over the whole hop, lower when fast
     ST.pos.x = h.fx + (h.tx - h.fx) * k; ST.pos.y = h.fy + (h.ty - h.fy) * k + Math.sin(k * Math.PI) * (0.5 - 0.2 * f);
     let cur = h;
@@ -4650,7 +5201,7 @@ function stUpdate(dt) {
       if (ST.idx % ST_THEME_LEN === 0 && stTheme(ST.idx) !== stTheme(ST.idx - 1)) gsfx('stTheme', 1, 'missionNew'); else gsfx('stHop', 1, 'move');   // a new stretch of stairs
       if (ST.st !== 'play') { ST.hop = null; break; }
       const left = cur.k - 1; stHop(0); cur = ST.hop; cur.k = left; cur.el = left * T;
-      if (cur.miss && cur.el >= Math.min(ST_GRACE, Math.max(0.02, 0.25 * T))) { cur.gone = true; stFall(); }
+      if (cur.miss && cur.el >= Math.min(ST_GRACE, Math.max(0.02, 0.25 * T)) && !stSave(cur)) { cur.gone = true; stFall(); }
       const k2 = Math.min(1, cur.k); ST.pos.x = cur.fx + (cur.tx - cur.fx) * k2; ST.pos.y = cur.fy + (cur.ty - cur.fy) * k2 + Math.sin(k2 * Math.PI) * (0.5 - 0.2 * f);
     }
   }
@@ -4680,10 +5231,13 @@ function stDraw(now) {
   const im = P.rb[pose] || P.rb.idle;
   if (im) {
     const a = RB_AT[pose] || RB_AT.idle, w = im.width / dpr, h = im.height / dpr;
+    if (itemRun('stairs', 'boost')) itemPull(c, rx, ry - g.rh * 0.45, g.rh * 0.75, now / 1000, '255,214,64');
     c.save(); c.translate(rx, ry);
+    if (ST.prot > 0 && Math.floor(now / 90) % 2) c.globalAlpha = 0.35;   // after the booster: blinking, safe
     if (pose === 'fall') { c.translate(0, -g.rh * 0.45); c.rotate(ST.fall.rot); c.scale(ST.dir, 1); c.drawImage(im, -a[0] * k, -a[1] * k, w, h); }
     else { if (pose !== 'idle') c.scale(ST.dir, 1); c.drawImage(im, -a[0] * k, -a[1] * k, w, h); }
     c.restore();
+    if (ST.saved > 0) { c.save(); c.globalAlpha = Math.min(1, ST.saved / 0.3); miniText(c, itemT().saved, rx, ry - g.rh * 1.25, g.rh * 0.42, CHAIN_LOOK, now / 1000); c.restore(); }   // the wings saved it
   }
   // the steps fade out under the top bar and above the buttons (no slivers of steps cut at the edges)
   c.save(); c.globalCompositeOperation = 'destination-out';
@@ -4820,7 +5374,7 @@ function fmStart() {
   fmResize();
   endBest('merge');
   Object.assign(FM, { st: 'play', fruits: [], held: fmPick(), next: fmPick(), aim: 0.5, rx: 0.5, cool: 0, aiming: false, score: 0, best: fmBest(), overT: 0,
-    face: 'hold', sparks: [], pops: [] });
+    face: 'hold', sparks: [], pops: [], shake: 0 });
   fmHud();
   cancelAnimationFrame(FM.raf); FM.last = performance.now(); FM.raf = requestAnimationFrame(fmFrame);
 }
@@ -4843,8 +5397,13 @@ function fmAimAt(clientX) {
   FM.aim = Math.max(0, Math.min(1, (clientX - b.left - g.L) / g.bw));
 }
 // one small physics step (Verlet): move, then push apart, keep inside the box, and join pairs
+const FM_SHAKE = 1.0;   // s: the shake item's shake (3 times a second, side to side)
 function fmPhys(h) {
   const F = FM.fruits;
+  if (FM.shake > 0) {   // the box shaken: each fruit pushed side to side (a little differently, so they move among each other)
+    const ph = FM_SHAKE - FM.shake, A = 40 * Math.sin(ph * Math.PI * 6) * Math.min(1, FM.shake / 0.25);
+    for (const f of F) f.x += A * (f.sh || 1) * h * h;
+  }
   for (const f of F) {   // speed limits per step: a join deep in the pile may nudge fruits, never fling them out. Slow
     // drifting is damped hard, so a pile comes to rest quickly instead of creeping
     const dx = f.x - f.px, dy = f.y - f.py, damp = dx * dx + dy * dy < 3.6e-7 ? 0.95 : 0.998;
@@ -4901,6 +5460,23 @@ function fmJoin(a, b) {
   f.age = 1;   // a joined fruit counts at once for the top line
   if (k + 1 >= 8) gsfx('fmBig', 1, 'catchGold'); else gsfx('fmPop', semi(9 - k * 1.5), 'catch', { n: k - 1 });   // bigger fruit, lower pop
 }
+// the hammer comes down on the fruit under the finger (none there: still aiming)
+function fmHammer(cx, cy) {
+  const g = fmGeo(), b = fcv.getBoundingClientRect(), x = (cx - b.left - g.L) / g.bw, y = (cy - b.top - g.T) / g.bw;
+  let hit = null, best = Infinity;
+  for (const f of FM.fruits) { const d = Math.hypot(f.x - x, f.y - y) - f.r; if (d < 0.04 && d < best) { best = d; hit = f; } }
+  if (!hit) return;
+  hit.gone = true; FM.fruits = FM.fruits.filter(f => !f.gone);
+  fmBurst(fmX(g, hit.x), fmY(g, hit.y), hit.k, 18);
+  IT.st.hammer = 'used'; itemDockUI();
+  gsfx('fmBig', 1, 'catchGold'); buzz([30, 20, 40]);
+}
+// the shake: the fruits hop up a little, then the box goes side to side
+function fmShake() {
+  FM.shake = FM_SHAKE;
+  for (const f of FM.fruits) { f.py = f.y + 0.004; f.sh = 0.6 + Math.random() * 0.8; }
+  gsfx('fmDrop', 1, 'rot'); buzz([40, 30, 40, 30, 40]);
+}
 function fmBurst(x, y, k, n) {
   const col = [FM_COL[k - 1], '#fff6c8'];
   for (let i = 0; i < n; i++) {
@@ -4954,11 +5530,13 @@ function fmUpdate(dt) {
     f.age += dt;
     if (f.grow < 1) { f.grow = Math.min(1, f.grow + dt / 0.25); f.r = f.r0 + (f.rf - f.r0) * ease(f.grow); }
   }
+  itemTick('merge', dt);
+  if (FM.shake > 0) FM.shake = Math.max(0, FM.shake - dt);
   for (let i = 0; i < n; i++) fmPhys(h);
   if (!FM.held && (FM.cool -= dt) <= 0) { FM.held = FM.next; FM.next = fmPick(); }
   FM.rx += (FM.aim - FM.rx) * (1 - Math.exp(-dt * 22));
   // the top line: a settled fruit sticking up over it for FM_OVER seconds ends it
-  const over = FM.fruits.some(f => f.age > 1 && f.y - f.r < 0);
+  const over = !FM.shake && FM.fruits.some(f => f.age > 1 && f.y - f.r < 0);   // (not while the box shakes: fruits hop up in it)
   FM.overT = over ? FM.overT + dt : 0;
   if (FM.overT >= FM_OVER) fmGameOver();
   for (const p of FM.sparks) { p.t += dt; p.vy += 900 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
@@ -4978,7 +5556,10 @@ function fmDraw(now) {
   const c = fmctx, g = fmGeo(), P = fmPics();
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   c.clearRect(0, 0, FM.W, FM.H);
+  const shx = FM.shake > 0 ? Math.sin((FM_SHAKE - FM.shake) * Math.PI * 6) * 7 * Math.min(1, FM.shake / 0.25) : 0;   // the box shaking
+  c.save(); c.translate(shx, 0);
   c.drawImage(P.box, g.L - g.wall - 2, g.T, g.bw + g.wall * 2 + 4, g.bh + g.wall + 8);
+  c.restore();
   // the raccoon on top, following the aim, with the fruit it holds
   const k = P.k, held = FM.held, rx = fmX(g, Math.max(fmR(held || 1), Math.min(1 - fmR(held || 1), FM.rx))), feet = g.T - 2;
   const face = FM.face === 'cry' ? 'cry' : 'hold', ri = P.rac[face];
@@ -4989,7 +5570,14 @@ function fmDraw(now) {
   if (ri) { const a = FM_RAC[face]; c.drawImage(ri, rx - a[0] * k, feet - a[1] * k, ri.width / dpr, ri.height / dpr); }
   if (held && FM.st !== 'over') fmDrawFruit(c, P, held, rx, fmY(g, fmHeldY(g, held)), 0, FM.cool > -0.12 ? 0.7 + 0.3 * ease(Math.min(1, -FM.cool / 0.12 + 1)) : 1);
   // the fruits in the box
+  c.save(); c.translate(shx, 0);
   for (const f of FM.fruits) fmDrawFruit(c, P, f.k, fmX(g, f.x), fmY(g, f.y), f.rot);
+  c.restore();
+  if (IT && IT.game === 'merge' && IT.st.hammer === 'aim') {   // the hammer: which fruit (each one ringed)
+    c.save(); c.lineWidth = 3; c.strokeStyle = `rgba(255,243,107,${0.55 + 0.4 * Math.sin(now / 120)})`;
+    for (const f of FM.fruits) { c.beginPath(); c.arc(fmX(g, f.x), fmY(g, f.y), f.r * g.bw + 3, 0, Math.PI * 2); c.stroke(); }
+    c.restore(); miniText(c, itemT().hammerAim, FM.W / 2, g.T + 26, 17, SUB_LOOK, now);
+  }
   // the top line, red while something sticks up over it
   const near = FM.fruits.some(f => f.age > 1 && f.y - f.r < 0.06);
   if (near || FM.overT > 0) {
@@ -5020,6 +5608,7 @@ function fmDraw(now) {
 }
 fcv.addEventListener('pointerdown', e => {
   if (FM.st !== 'play') return;
+  if (IT && IT.game === 'merge' && IT.st.hammer === 'aim') { e.preventDefault(); fmHammer(e.clientX, e.clientY); return; }   // the hammer, not a drop
   e.preventDefault(); FM.aiming = true; fmAimAt(e.clientX);
   try { fcv.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
 });
@@ -5174,7 +5763,7 @@ function pbStart() {
   endBest('pebble');
   Object.assign(PB, { st: 'play', phase: 'aim', turn: 1, count: 1, gained: 0, x0: 3.5, nextX: null, blocks: [], items: [], balls: [], drops: [],
     launched: 0, launchT: 0, flyT: 0, shiftT: 0, aim: null, keyAim: false, th: Math.PI / 2, face: 1, ox: 3.5, throwT: 0,
-    score: 0, best: pbBest(), sparks: [], hudDirty: false });
+    score: 0, best: pbBest(), sparks: [], hudDirty: false, fireTurn: 0 });
   pbNewRow();
   for (const b of PB.blocks) b.row++;
   for (const it of PB.items) it.row++;
@@ -5288,8 +5877,9 @@ function pbStep(b, h) {
   pbBank(b);
 }
 function pbHit(k) {
-  k.hp--; k.flash = 0.12; PB.idleT = 0;
-  PB.score += PB_HIT; PB.hudDirty = true;
+  const dmg = PB.fireTurn === PB.turn ? Math.min(5, k.hp) : 1;   // fire pebbles (the item, one turn): 5 a hit
+  k.hp -= dmg; k.flash = 0.12; PB.idleT = 0;
+  PB.score += PB_HIT * dmg; PB.hudDirty = true;
   const now = performance.now();
   if (k.hp <= 0) { pbBreak(k); return; }
   if (now - PB.lastHit > 40) { PB.lastHit = now; gsfx('pbHit', semi(PB_STEPS[k.hp % 5]), 'rot'); }
@@ -5408,6 +5998,19 @@ function pbDrawBlock(c, g, k, y, alpha) {
   c.fillStyle = '#fff'; c.fillText(str, x0 + w / 2, y0 + w / 2 + fs * 0.04);
   c.restore();
 }
+// a fire pebble's glow, under it (the item's turn)
+function pbFlame(c, x, y, s, now) {
+  const r = s * (0.42 + 0.05 * Math.sin(now / 60 + x)), gr = c.createRadialGradient(x, y, r * 0.2, x, y, r);
+  gr.addColorStop(0, 'rgba(255,240,120,0.95)'); gr.addColorStop(0.5, 'rgba(255,140,30,0.7)'); gr.addColorStop(1, 'rgba(255,80,20,0)');
+  c.fillStyle = gr; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill();
+}
+// the item's 3 rows: the three lowest rows that have blocks break (no points)
+function pbRows3() {
+  const rows = [...new Set(PB.blocks.filter(b => !b.dead).map(b => b.row))].sort((a, b) => b - a).slice(0, 3);
+  for (const b of PB.blocks) if (!b.dead && rows.includes(b.row)) pbBreak(b);
+  pbGrid();
+  gsfx('pbBreak', 1, 'catch'); buzz([40, 30, 40]);
+}
 function pbDrawStone(c, pic, x, y, rot) {
   const w = pic.width / dpr;
   c.save(); c.translate(x, y); c.rotate(rot); c.drawImage(pic, -w / 2, -w / 2, w, w); c.restore();
@@ -5491,8 +6094,9 @@ function pbDraw(now) {
     c.restore();
   }
   // the pebbles: in the paw while aiming, flying, rolling back along the bank
-  if (PB.st === 'play' && PB.phase === 'aim') pbDrawStone(c, P.peb, px, py, 0);
-  for (const b of PB.balls) if (b.st !== 'done') pbDrawStone(c, P.peb, pbX(g, b.x), pbY(g, b.y), b.rot);
+  if (PB.st === 'play' && PB.phase === 'aim') { if (PB.fireTurn === PB.turn) pbFlame(c, px, py, g.s, now); pbDrawStone(c, P.peb, px, py, 0); }
+  const fire = PB.fireTurn === PB.turn;
+  for (const b of PB.balls) if (b.st !== 'done') { if (fire) pbFlame(c, pbX(g, b.x), pbY(g, b.y), g.s, now); pbDrawStone(c, P.peb, pbX(g, b.x), pbY(g, b.y), b.rot); }
   for (const b of PB.drops) if (b.st !== 'done') pbDrawStone(c, P.peb, pbX(g, b.x), pbY(g, b.y), b.rot);
   // how many it throws
   const left = PB.phase === 'fly' ? PB.count - PB.launched : PB.count;
@@ -5805,6 +6409,13 @@ function msTap(i) {
     gsfx('msDone', 1, 'catchGold');
   }
   if (T.every(t => !t.length || msFull(t))) msCleared();
+}
+// the item's empty basket: one more at the end of the row, for this round (the row closes up to make room)
+function msExtraBasket() {
+  MS.tubes.push([]); MS.shake.push(0); MS.img = null;
+  const g = msGeo(), sp = g.spots[g.spots.length - 1];
+  msBurst(sp.x + sp.w / 2, sp.bottom - g.bh * 0.5, '#5fdc3c', 12);
+  gsfx('msDone', 1, 'catchGold');
 }
 function msUndo() {
   if (MS.st !== 'play' || MS.clearT > 0 || !MS.undo.length) return;
@@ -6142,6 +6753,7 @@ function opFrame(now) {
 }
 function opUpdate(dt) {
   if (OP.st === 'play') {
+    itemTick('owlpost', dt);
     if (OP.swapIn > 0) { if ((OP.swapIn -= dt) <= 0) { OP.swapIn = 0; opShuffle(); } }
     else if (OP.swapT > 0) { if ((OP.swapT -= dt) <= 0) { OP.swapT = 0; OP.from = null; } }
     else if ((OP.time -= dt) <= 0) { OP.time = 0; opGameOver(); }
@@ -6216,6 +6828,7 @@ function opDraw(now) {
   if (f > 0) { rr(c, bx, by, Math.max(bh, bw * f), bh, 9); c.fillStyle = col; c.fill(); }
   rr(c, bx, by, bw, bh, 9); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
   miniText(c, String(Math.ceil(OP.time)), bx + bw / 2, by + bh / 2 + 1, 15, SUB_LOOK, now);
+  if (itemRun('owlpost', 'hourglass')) itemPull(c, g.cx, g.frontY, g.sp * 0.9, now / 1000, '255,214,64');   // the hourglass: any tap sends it right
   // the streak, by the column
   if (OP.streak >= 2) miniText(c, tr('comboN', OP.streak), g.ox + g.cw * 0.2, g.frontY - g.sp * 0.4, 18, OP.streak >= 10 ? GOLD_LOOK : SCORE_LOOK, now);
   // the column and the things in it (coming down to their places), the post box over it and the owl on the box
@@ -6283,6 +6896,7 @@ opcv.addEventListener('pointerdown', e => {
   if (OP.st !== 'play') return;
   e.preventDefault();
   const b = opcv.getBoundingClientRect(), x = e.clientX - b.left, y = e.clientY - b.top, g = opGeo();
+  if (itemRun('owlpost', 'hourglass')) { opSend(OP.pos.indexOf(OP.queue[0])); return; }   // the hourglass: anywhere, to the right friend
   if (y < g.top) return;
   opSend(Math.max(0, Math.min(3, Math.floor((x - g.ox) / (g.cw / 4)))));
 });
@@ -6413,7 +7027,13 @@ function cmRound(r) {
   CM.round = r; [CM.cols, CM.rows] = CM.seq[Math.min(r, CM.seq.length) - 1]; CM.size = CM_SIZE(r);
   CM.odd = Math.floor(Math.random() * CM.cols * CM.rows);
   CM.at = Math.floor(Math.random() * CM_EDGES.length);   // which edge point
-  CM.shake = -1; CM.inT = 0.18; CM.img = null;
+  CM.shake = -1; CM.inT = 0.18; CM.img = null; CM.hint = null;
+}
+// the magnifier: the quarter of the board (half the columns, half the rows) the odd leaf is in, for this board
+function cmHintOn() {
+  const oc = CM.odd % CM.cols, orow = Math.floor(CM.odd / CM.cols), hc = Math.ceil(CM.cols / 2), hr = Math.ceil(CM.rows / 2);
+  CM.hint = { c0: oc < hc ? 0 : hc, c1: oc < hc ? hc - 1 : CM.cols - 1, r0: orow < hr ? 0 : hr, r1: orow < hr ? hr - 1 : CM.rows - 1, t: 0 };
+  gsfx('cmFind', 1, 'catch');
 }
 function cmTap(i) {
   if (CM.st !== 'play' || CM.found > 0 || i < 0 || i >= CM.cols * CM.rows) return;
@@ -6506,6 +7126,11 @@ function cmDraw(now) {
         c.lineWidth = 4; c.strokeStyle = '#ff4d3d'; c.stroke(); c.restore();
       }
     }
+  }
+  if (CM.hint && !CM.found) {   // the magnifier's quarter: the rest of the board dimmed, a frame round it
+    const h = CM.hint, x0 = g.x + g.inner + h.c0 * g.cell, y0 = g.y + g.inner + h.r0 * g.cell, w = (h.c1 - h.c0 + 1) * g.cell, hh = (h.r1 - h.r0 + 1) * g.cell;
+    c.save(); c.beginPath(); c.rect(g.x, g.y, g.bw, g.bh); c.rect(x0 + w, y0, -w, hh); c.fillStyle = 'rgba(10,25,10,0.5)'; c.fill('evenodd');
+    rr(c, x0 - 2, y0 - 2, w + 4, hh + 4, 12); c.lineWidth = 4; c.strokeStyle = `rgba(255,236,90,${0.65 + 0.35 * Math.sin(now / 150)})`; c.stroke(); c.restore();
   }
   // the found chameleon jumping out of its leaf
   if (CM.found > 0 && P.found) {
@@ -6670,6 +7295,19 @@ function bvLog(c, g, x, y, L, lean) {
   c.beginPath(); c.ellipse(-w / 2, -L + 1, w / 2, w / 3.2, 0, 0, Math.PI * 2); c.fillStyle = '#fbd08f'; c.fill(); c.lineWidth = 2 * g.s; c.stroke();   // its cut end
   c.restore();
 }
+// the tape measure: up the log's way, a yellow tape to the length that lands on the next stump's mark, and how many
+// logs it still shows
+function bvTape(c, g, x, L, now) {
+  const y = g.top - L, on = BV.phase === 'grow' && Math.abs(BV.log - L) <= g.mark / 2 + 1, w = 30 * g.s;
+  c.save();
+  c.setLineDash([5 * g.s, 5 * g.s]); c.lineWidth = 2.5 * g.s; c.strokeStyle = 'rgba(255,226,74,0.85)';
+  c.beginPath(); c.moveTo(x, g.top); c.lineTo(x, y); c.stroke(); c.setLineDash([]);
+  rr(c, x - w / 2, y - 5 * g.s, w, 10 * g.s, 3 * g.s); c.fillStyle = on ? '#fff36b' : '#ffd23a'; c.fill(); c.lineWidth = 2.4 * g.s; c.strokeStyle = MOL; c.stroke();
+  c.lineWidth = 1.6 * g.s; for (let k = -2; k <= 2; k++) { c.beginPath(); c.moveTo(x + k * w / 6, y - 5 * g.s); c.lineTo(x + k * w / 6, y - (k ? 1 : -1) * g.s); c.stroke(); }
+  if (on) { c.globalAlpha = 0.5 + 0.5 * Math.sin(now / 60); c.beginPath(); c.arc(x, y, 14 * g.s, 0, Math.PI * 2); c.lineWidth = 3 * g.s; c.strokeStyle = '#fff36b'; c.stroke(); c.globalAlpha = 1; }
+  miniText(c, '×' + BV.tape, x + w / 2 + 16 * g.s, y, 15, SUB_LOOK, now);
+  c.restore();
+}
 function bvResize() {
   const r = bvcv.getBoundingClientRect();
   BV.W = Math.max(1, Math.round(r.width)); BV.H = Math.max(1, Math.round(r.height));
@@ -6701,7 +7339,7 @@ function bvStart() {
   endBest('beaver');
   const g = bvGeo(), w0 = g.W * 0.24;
   Object.assign(BV, { st: 'play', stumps: [{ x: g.stand - w0, w: w0 }], cur: 0, log: 0, lean: 0, logs: [], cam: 0, camTo: 0, t: 0, phase: 'idle', n: 0, score: 0,
-    best: bvBest(), pops: [], drops: [], rings: [], spin: 0, held: false, by: 0, vy: 0, splashed: false });
+    best: bvBest(), pops: [], drops: [], rings: [], spin: 0, held: false, by: 0, vy: 0, splashed: false, tape: 0 });
   bvNext();
   BV.bx = g.stand - g.bh * 0.35; BV.by = 0;
   bvHud();
@@ -6712,6 +7350,7 @@ function bvRelease() {
   BV.held = false;
   if (BV.st !== 'play' || BV.phase !== 'grow') return;
   BV.phase = 'fall'; BV.t = 0;
+  if (BV.tape > 0) BV.tape--;   // the tape measure: one of its logs laid
   gsfx('bvLay', 1, 'rot');
 }
 // the log is down: did its end reach the next stump (and its mark)?
@@ -6854,6 +7493,7 @@ function bvDraw(now) {
   const a = BV.stumps[BV.cur];
   if (a) bvLog(c, g, X(a.x + a.w), g.top, BV.log, BV.lean);
   c.restore();
+  if (BV.tape > 0 && (BV.phase === 'idle' || BV.phase === 'grow') && a && BV.stumps[BV.cur + 1]) bvTape(c, g, X(a.x + a.w) - g.lw / 2, (BV.stumps[BV.cur + 1].x + BV.stumps[BV.cur + 1].w / 2) - (a.x + a.w), now);
   // the beaver; falling, it turns over and goes under the water at the stumps' feet
   if (BV.phase !== 'drop' || g.top + BV.by < g.base + g.bh * 1.2) {
     c.save();
@@ -7083,7 +7723,7 @@ function hhThrow() {
 function hhHit() {
   const g = hhGeo(), a = hhAng(Math.PI / 2 - HH.rot), tipY = g.cy + g.R - g.dig;
   HH.fly = null;
-  if (HH.quills.some(q => Math.abs(hhDiff(a, q.a)) < g.gap)) return hhBounce(tipY);
+  if (HH.quills.some(q => Math.abs(hhDiff(a, q.a)) < g.gap)) return itemTake('hedgehog', 'guard') ? hhGuarded(tipY) : hhBounce(tipY);
   HH.quills.push({ a, t: 0 }); HH.kick = 0.1;
   for (let k = 0; k < 5; k++) HH.chips.push({ x: g.cx + (Math.random() - 0.5) * g.qw * 2, y: g.cy + g.R, vx: (Math.random() - 0.5) * 220 * g.s, vy: (60 + Math.random() * 120) * g.s, t: 0, life: 0.45 });
   let pts = HH_PTS, berry = false;
@@ -7106,6 +7746,15 @@ function hhClear() {
   for (const q of HH.quills) { const w = q.a + HH.rot, r = g.R - g.dig + g.q * 0.5; HH.falls.push({ x: g.cx + Math.cos(w) * r, y: g.cy + Math.sin(w) * r, a: w, vx: Math.cos(w) * 320 * g.s, vy: Math.sin(w) * 320 * g.s - 150 * g.s, vr: (Math.random() - 0.5) * 14, t: 0 }); }
   HH.quills = []; HH.berries = [];
   HH.pops.push({ text: tr('hhClear') + ' +' + HH_CLEAR.toLocaleString(), x: g.cx, y: g.cy, t: 0, life: 0.9, size: 26, look: GOLD_LOOK });
+}
+// the guard (the item) takes the bounce: the quill falls away and comes back to be thrown again, the game goes on
+function hhGuarded(tipY) {
+  const g = hhGeo();
+  HH.falls.push({ x: g.cx, y: tipY + g.q * 0.5, a: Math.PI / 2, vx: (Math.random() < 0.5 ? -1 : 1) * 170 * g.s, vy: 160 * g.s, vr: (Math.random() < 0.5 ? -1 : 1) * 16, t: 0 });
+  HH.left++; HH.shake = 0.2; hhHud();
+  HH.pops.push({ text: itemT().saved, x: g.cx, y: tipY + g.q, t: 0, life: 0.9, size: 26, look: CHAIN_LOOK });
+  for (let k = 0; k < 12; k++) { const t = k * HH_TAU / 12; HH.sparks.push({ x: g.cx, y: tipY, vx: Math.cos(t) * 200, vy: Math.sin(t) * 200 - 40, t: 0, life: 0.5, c: k % 2 ? '#fff' : '#7fd0ff', s: 3 }); }
+  gsfx('hhBerry', 1, 'pick'); buzz(25);
 }
 function hhBounce(tipY) {
   const g = hhGeo();
@@ -7216,6 +7865,7 @@ function hhDraw(now) {
     c.save(); c.translate(g.cx, y); c.rotate(Math.PI / 2); hhQuill(c, g.q, g.qw); c.restore();
   }
   hhHog(c, g.cx, g.foot, g.hb, HH.throwT > 0 ? Math.max(0.01, 1 - HH.throwT / 0.18) : 0, HH.st === 'over');
+  if (itemHas('hedgehog', 'guard')) itemBubble(c, g.cx, g.foot - g.hb * 0.48, g.hb * 0.62, now / 1000);   // the guard, waiting
   for (const p of HH.chips) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); c.fillStyle = '#e0a868'; c.fillRect(p.x - 2.5, p.y - 2.5, 5, 5); }
   for (const p of HH.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
   c.globalAlpha = 1;
@@ -7407,6 +8057,7 @@ const cpLeafNew = all => { const N = cpNear(), [x, y] = all ? cpSpot(60, N) : cp
 // the player's caterpillar on the screen grows no thicker than this (px, at 390 wide): about 50 000 long; past that the
 // view draws back as fast as it thickens, so a huge one does not fill the screen
 const CP_SCREEN_R = 22;
+const CP_MAGNET = 260;   // world units round the head the magnet item pulls leaves from
 function cpCamera(dt) {
   // the view draws back as the player's grows, with no end (twice as far at about 160 long, three times at 650), a
   // little less than it thickens, so it still looks a bit bigger on the screen (up to CP_SCREEN_R)
@@ -7478,7 +8129,7 @@ function cpThink(w, dt) {
 // onto itself: its turning circle stays about as wide as its body), both by how much thicker than at the start it is
 function cpPace(w) {
   const n = cpLen(w), big = cpRad(n) / cpRad(CP_LEN0);
-  return { v: CP_SPEED * w.speed * (1 - Math.min(0.18, (n - CP_LEN0) * 0.0015)) * Math.pow(big, 0.65), turn: (w.me ? CP_TURN : CP_TURN_BOT) * Math.pow(big, -0.35) };
+  return { v: CP_SPEED * w.speed * (w.me && itemRun('caterpillar', 'speed') ? 1.5 : 1) * (1 - Math.min(0.18, (n - CP_LEN0) * 0.0015)) * Math.pow(big, 0.65), turn: (w.me ? CP_TURN : CP_TURN_BOT) * Math.pow(big, -0.35) };
 }
 // k segments more to grow, at 50 a second or fast enough for all that is left to come within a second
 function cpFeed(w, k) { w.grow += k; w.rate = Math.max(50, w.grow); }
@@ -7613,7 +8264,11 @@ function cpFrame(now) {
 function cpUpdate(dt) {
   const live = CP.st === 'play' && CP.started;
   if (live || CP.st === 'over') {   // after the player's is eaten the others go on crawling
-    if (live) { CP.t += dt; if (CP.safe > 0) CP.safe = Math.max(0, CP.safe - dt); }
+    if (live) { CP.t += dt; if (CP.safe > 0) CP.safe = Math.max(0, CP.safe - dt); itemTick('caterpillar', dt); }
+    if (live && itemRun('caterpillar', 'magnet')) {   // the magnet: leaves round the head drift in to it
+      const h = CP.me.segs[0], R = CP_MAGNET + cpRad(cpLen(CP.me)), k = 1 - Math.exp(-dt * 5);
+      for (const l of CP.leaves) { const dx = h.x - l.x, dy = h.y - l.y; if (Math.abs(dx) < R && Math.abs(dy) < R && dx * dx + dy * dy < R * R) { l.x += dx * k; l.y += dy * k; } }
+    }
     for (const w of CP.worms) if (w.alive) { if (!w.me) cpThink(w, dt); cpMove(w, dt); }
     if (live) { cpEatLeaves(); cpMeet(); }
     CP.worms = CP.worms.filter(w => w.alive || w.me);
@@ -7770,6 +8425,8 @@ function cpDraw(now) {
   // the others, shorter first (so a longer one passes over), then the player's
   const me = CP.me, mine = cpLen(me), others = CP.worms.filter(w => !w.me && w.alive).sort((a, b) => cpLen(a) - cpLen(b));
   for (const w of others) cpDrawWorm(c, w, cpLen(w) > mine ? 'mad' : cpLen(w) < mine ? 'shy' : '', view);
+  if (me.alive && itemRun('caterpillar', 'magnet')) itemPull(c, me.segs[0].x, me.segs[0].y, CP_MAGNET * 0.6, now / 1000);
+  if (me.alive && itemRun('caterpillar', 'speed')) itemPull(c, me.segs[0].x, me.segs[0].y, cpRad(mine) * 2.2, now / 700, '255,214,64');
   if (me.alive) {   // blinking while it cannot be eaten; the number on its body, under the head
     c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
     cpDrawWorm(c, me, '', view, () => cpTag(c, me, cam, z, W, H, sx, dpr, now)); c.restore();
@@ -7814,7 +8471,7 @@ function cpPortrait(sad) {
   return cv.toDataURL('image/png');
 }
 const CP_FACE = {};
-function cpFaces() { CP_FACE.joy = cpPortrait(false); CP_FACE.sad = cpPortrait(true); $('#mg-caterpillar img').src = CP_FACE.joy; }
+function cpFaces() { CP_FACE.joy = cpPortrait(false); CP_FACE.sad = cpPortrait(true); HERO_IC.caterpillar = CP_FACE.joy; heroIcons(); }   // (the list's picture: by the hero's stage)
 try { cpFaces(); } catch (e) { /* no canvas */ }
 loadCaterpillarArt();   // small: in now, for the games list's picture
 // the thumb: a stick from where it went down (bx, by); dragged past its reach the stick comes along, so turning back is
@@ -8023,6 +8680,7 @@ function cuFrame(now) {
 }
 function cuUpdate(dt) {
   CU.t += dt;
+  if (CU.xray > 0) CU.xray = Math.max(0, CU.xray - dt);
   if (CU.ph === 'show' && CU.t >= CU_LIFT * 2 + CU_SHOW + 0.15) { CU.ph = 'shuffle'; cuNextSwap(); }
   else if (CU.ph === 'shuffle' && CU.swap && CU.t >= CU.dur) {
     for (const m of CU.swap) CU.cups[m.k].slot = m.to;
@@ -8111,6 +8769,14 @@ function cuDraw(now) {
     }
     if (cuArt.cup) { const im = cuArt.cup, iw = w * 1.1, ih = iw * im.naturalHeight / im.naturalWidth; c.drawImage(im, p.x - iw / 2, p.y - lift - ih * CU_CUP_RIM, iw, ih); }
     else cuCup(c, p.x, p.y - lift, w, h);
+  }
+  if (CU.xray > 0 && CU.ph === 'pick') {   // the x-ray goggles: the acorn seen through its cup, glowing
+    const p = cuPos(g, CU.ac), q = Math.min(1, CU.xray / 0.3, (1.5 - CU.xray) / 0.2), y = p.y - g.ch * 0.45;
+    c.save(); c.globalAlpha = q;
+    const gr = c.createRadialGradient(p.x, y, 4, p.x, y, g.cw * 0.8); gr.addColorStop(0, 'rgba(255,248,170,0.95)'); gr.addColorStop(1, 'rgba(255,220,80,0)');
+    c.fillStyle = gr; c.beginPath(); c.arc(p.x, y, g.cw * 0.8, 0, Math.PI * 2); c.fill();
+    if (cuArt.acorn) { const im = cuArt.acorn, ih = g.cw * 0.62, iw = ih * im.naturalWidth / im.naturalHeight; c.globalAlpha = q * 0.85; c.drawImage(im, p.x - iw / 2, y - ih / 2, iw, ih); }
+    c.restore();
   }
   if (CU.ph === 'reveal' && !CU.right) {   // a cross over the empty cup
     const x = cuSlotX(g, CU.cups[CU.picked].slot), y = g.y - g.ch * 1.35, r = 12 * g.s, q = Math.min(1, CU.t / 0.2);
@@ -8232,7 +8898,7 @@ $('#btn-plobby').addEventListener('click', () => openLobby());
 
 /* ---------- drawing ---------- */
 let W = 0, H = 0, dpr = 1, cu = 12, u = 12, bx = 0, by = 0, BW = 384, BH = 480;
-let trayY = 0, trayH = 140, slotW = 128, sideX = 0, sideW = 0;
+let trayY = 0, trayH = 140, slotW = 128, sideX = 0, sideW = 0, itemY = 0;
 let FR = 10;   // the cartoon frame round the board: dark outline, yellow band, dark inner line (8 on short screens)
 const OL = '#2b1a0e', TOON = { yellow: '#ffe14d', purple: '#3f9a38', board: '#1f4a29', orange: '#6ccf4f', red: '#e9483b', sky: '#e6f7d6', lilac: 'rgba(255,246,220,0.6)', cream: '#fff6dc', bark: '#8a5a2c', woodHi: '#e0a463', woodLo: '#b97540' };
 // the leaf cluster on the corners of the board frame (the same drawing as on the title sign)
@@ -8274,7 +8940,8 @@ function layout() {
   // measured in u, the cube size of the 32-wide board; both boards take the same space on screen
   const k = 32 / COLS;
   FR = H < 600 ? 8 : 10;
-  const units = ROWS * k + 9, fixed = 2 + FR * 2 + 4 + 8 + 4;   // frame round the board, its shadow, gaps
+  const row = blockItemRow() ? ITEM_ROW + 2 : 0;   // the item buttons' row under the board
+  const units = ROWS * k + 9, fixed = 2 + FR * 2 + 4 + 8 + 4 + row;   // frame round the board, its shadow, gaps
   let c = Math.min((W - 2 - FR * 2) / 32, (H - fixed) / units, 16);
   c = Math.max(6, Math.floor(c * k * dpr) / (k * dpr));
   u = c; cu = u * k;
@@ -8283,13 +8950,15 @@ function layout() {
   const spare = Math.max(0, H - units * u - fixed), grow = Math.min(spare * 0.8, 6 * u), left = spare - grow;
   bx = Math.round((W - BW) / 2 * dpr) / dpr;
   by = Math.round((2 + FR + left * 0.5) * dpr) / dpr;
-  trayY = by + BH + FR + 4 + 8;
+  itemY = by + BH + FR + 4 + 2;
+  trayY = by + BH + FR + 4 + 8 + row;
   trayH = H - trayY - 4 - left * 0.5;
   slotW = BW * 0.82 / 3;   // three pockets, then a narrow column showing the next block
   sideX = bx + slotW * 3; sideW = BW - slotW * 3;
   cache.clear(); textCache.clear();
   planks = null; planksPrev = null; fx.stageFade = null;
   sizeFx();
+  blockDockPlace();
 }
 
 function hexRgb(h) {
@@ -8672,6 +9341,169 @@ function drawBlock(p, X, Y, size, alpha) {
   ctx.globalAlpha = 1;
 }
 
+// the block game's item pictures on the board (loaded the first time they are needed). ITEM_GEO: where things sit on
+// each picture, as fractions of its side: the bomb's ball (drawn about a cube across), the drill's tip (it points left on
+// the picture; on the board it is turned to point down)
+const ITEM_GEO = { bomb: { cx: 0.4682, cy: 0.6281, d: 0.6941 }, drill: { tipx: 0.0217, tipy: 0.5405 } };
+const blockArt = {};
+const bombSize = () => Math.max(cu, u * 2) / ITEM_GEO.bomb.d, drillTip = () => [ITEM_GEO.drill.tipy, 1 - ITEM_GEO.drill.tipx];
+function itemIcon(kind, s) {
+  const k = kind === 'drillDown' ? 'drill' : kind, art = blockArt[k];
+  if (!art) {
+    if (!(k in blockArt)) { blockArt[k] = null; const im = new Image(); im.onload = () => { blockArt[k] = im; }; im.src = ITEM_FILE[k]; }
+    return null;
+  }
+  const sz = Math.round(s * 2) / 2, key = 'item|' + kind + '|' + sz;
+  let c = cache.get(key);
+  if (c) return c;
+  const px = Math.max(1, Math.ceil(sz * dpr));
+  c = document.createElement('canvas'); c.width = c.height = px;
+  const x = c.getContext('2d');
+  x.scale(px / sz, px / sz);
+  if (kind === 'drillDown') { x.translate(0, sz); x.rotate(-Math.PI / 2); }
+  x.imageSmoothingQuality = 'high';
+  x.drawImage(tileDown(art, sz * dpr), 0, 0, sz, sz);
+  cache.set(key, c);
+  return c;
+}
+// an item's aim on the board:
+//  bomb - its 5x5 square glowing warm from the aimed cell, a shock ring going out, corner brackets round it;
+//  drill - a pale beam down the column from its first cube, chevrons running down it, brackets capping both ends.
+// Cubes that will break are lit and pulse. With nothing to break, all of it turns a muted red and stops moving.
+const AIM_LOOK = {
+  bomb: { glow: [255, 150, 70], line: '#ffd98a', ring: '255,226,160' },
+  drill: { glow: [175, 225, 255], line: '#d6f1ff', ring: '220,244,255' },
+  none: { glow: [255, 90, 80], line: '#ff8a7a', ring: '255,140,130' },
+};
+function drawAim(tg, kind, none, t, pulse) {
+  const bomb = kind === 'bomb', L = none ? AIM_LOOK.none : AIM_LOOK[kind];
+  const r0 = none && !bomb ? 0 : tg.r0, r1 = none && !bomb ? ROWS - 1 : tg.r1;
+  const x0 = bx + tg.c0 * cu, y0 = by + r0 * cu, w = (tg.c1 - tg.c0 + 1) * cu, h = (r1 - r0 + 1) * cu;
+  const cx = bx + (tg.cc + 0.5) * cu, cy = bomb ? by + (tg.rc + 0.5) * cu : y0 + h / 2;
+  const breath = none ? 0 : 0.5 + 0.5 * Math.sin(t / 230);
+  const [gr, gg, gb] = L.glow, rad = Math.min(cu * 0.35, w / 2);
+  ctx.save();
+  // 1) the zone
+  rr(ctx, x0, y0, w, h, rad);
+  let g;
+  if (bomb) {
+    g = ctx.createRadialGradient(cx, cy, cu * 0.2, cx, cy, Math.max(w, h) * 0.75);
+    g.addColorStop(0, `rgba(${gr},${gg},${gb},0.34)`); g.addColorStop(0.55, `rgba(${gr},${gg},${gb},0.16)`); g.addColorStop(1, `rgba(${gr},${gg},${gb},0.05)`);
+  } else {
+    g = ctx.createLinearGradient(0, y0, 0, y0 + h);
+    g.addColorStop(0, `rgba(${gr},${gg},${gb},0.32)`); g.addColorStop(1, `rgba(${gr},${gg},${gb},0.08)`);
+  }
+  ctx.fillStyle = g; ctx.fill();
+  ctx.save(); rr(ctx, x0, y0, w, h, rad); ctx.clip();
+  // 2) cubes that break: lit, pulsing; empty cells of the bomb's square get a small target dot
+  ctx.globalAlpha = none ? 0 : 0.22 + 0.26 * pulse;
+  tg.marks.forEach((v, k) => ctx.drawImage(sprite(v, cu, true), bx + (k % COLS) * cu, by + ((k / COLS) | 0) * cu, cu, cu));
+  ctx.globalAlpha = 1;
+  if (bomb) {
+    ctx.fillStyle = `rgba(${gr},${gg},${gb},0.55)`;
+    for (let r = tg.r0; r <= tg.r1; r++) for (let c = tg.c0; c <= tg.c1; c++) {
+      if (G.grid[r][c]) continue;
+      ctx.beginPath(); ctx.arc(bx + (c + 0.5) * cu, by + (r + 0.5) * cu, Math.max(1.2, cu * 0.07), 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  // 3) motion: a shock ring from the aimed cell (bomb), chevrons running down the column (drill)
+  if (!none && bomb) {
+    for (let j = 0; j < 2; j++) {
+      const p = ((t / 900) + j / 2) % 1, rr2 = cu * 0.5 + p * Math.max(w, h) * 0.62;
+      ctx.strokeStyle = `rgba(${L.ring},${0.55 * (1 - p)})`; ctx.lineWidth = Math.max(1.5, u * 0.22) * (1 - p * 0.5);
+      ctx.beginPath(); ctx.arc(cx, cy, rr2, 0, Math.PI * 2); ctx.stroke();
+    }
+  } else if (!none) {
+    const cw = Math.max(3.5, cu * 0.3), ch = Math.max(2.2, cu * 0.17), step = Math.max(cw * 3.2, cu * 1.5), off = (t / 7) % step;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (let yy = y0 - step + off; yy < y0 + h + step; yy += step) {
+      const a = 0.9 * clamp01((yy - y0) / Math.max(1, step * 1.2));
+      if (a <= 0) continue;
+      ctx.beginPath(); ctx.moveTo(cx - cw, yy - ch); ctx.lineTo(cx, yy + ch); ctx.lineTo(cx + cw, yy - ch);
+      ctx.strokeStyle = `rgba(16,26,40,${a * 0.75})`; ctx.lineWidth = Math.max(3, cu * 0.17); ctx.stroke();
+      ctx.strokeStyle = `rgba(${L.ring},${a})`; ctx.lineWidth = Math.max(1.6, cu * 0.09); ctx.stroke();
+    }
+  }
+  ctx.restore();
+  // 4) the frame. Bomb: a faint outline joined by four corner brackets with a dark edge, breathing a little outward.
+  //    Drill: two rails down the sides of the column, capped top and bottom.
+  const o = 1.5 + breath * Math.max(1.5, u * 0.22), lw = Math.max(2, u * 0.3), m = lw / 2 + 1.5;
+  const bxl = Math.max(bx + m, x0 - o), byt = Math.max(by + m, y0 - o), bxr = Math.min(bx + BW - m, x0 + w + o), byb = Math.min(by + BH - m, y0 + h + o);
+  const ink = (path, width) => {
+    path(); ctx.strokeStyle = 'rgba(28,10,2,0.75)'; ctx.lineWidth = width + 2.5; ctx.stroke();
+    path(); ctx.strokeStyle = L.line; ctx.lineWidth = width; ctx.stroke();
+  };
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if (bomb) {
+    rr(ctx, x0 + 0.5, y0 + 0.5, w - 1, h - 1, rad);
+    ctx.strokeStyle = `rgba(${L.ring},0.28)`; ctx.lineWidth = 1; ctx.stroke();
+    const lx = Math.max(cu * 0.9, w * 0.24), ly = lx, kr = Math.min(cu * 0.3, 6);
+    for (const [x, y, sx, sy] of [[bxl, byt, 1, 1], [bxr, byt, -1, 1], [bxl, byb, 1, -1], [bxr, byb, -1, -1]]) {
+      ink(() => { ctx.beginPath(); ctx.moveTo(x + sx * lx, y); ctx.lineTo(x + sx * kr, y); ctx.quadraticCurveTo(x, y, x, y + sy * kr); ctx.lineTo(x, y + sy * ly); }, lw);
+    }
+  } else {
+    const rl = bxl, rrt = bxr;
+    ctx.globalAlpha = 0.7;
+    ink(() => { ctx.beginPath(); ctx.moveTo(rl, byt); ctx.lineTo(rl, byb); ctx.moveTo(rrt, byt); ctx.lineTo(rrt, byb); }, Math.max(1.2, lw * 0.45));
+    ctx.globalAlpha = 1;
+    const leg = Math.max(cu * 0.45, 4), kr = Math.min((rrt - rl) * 0.3, 5);
+    const cap = (y, sy) => () => {
+      ctx.beginPath(); ctx.moveTo(rl, y + sy * leg); ctx.lineTo(rl, y + sy * kr); ctx.quadraticCurveTo(rl, y, rl + kr, y);
+      ctx.lineTo(rrt - kr, y); ctx.quadraticCurveTo(rrt, y, rrt, y + sy * kr); ctx.lineTo(rrt, y + sy * leg);
+    };
+    ink(cap(byt, 1), lw); ink(cap(byb, -1), lw);
+  }
+  ctx.restore();
+}
+// on the board: the item's aim and the item itself (see-through) where it goes off; the item on its way; the drill
+// grinding down its column
+function drawBlockItems(t, pulse) {
+  const isz = Math.max(cu * 1.5, u * 2.6);
+  if (bAim && G.state === 'play') {
+    const bomb = bAim.id === 'bomb', tg = itemTargets(bAim.id, bAim.col, bomb ? bAim.row : null), none = !tg.marks.size;
+    drawAim(tg, bAim.id, none, t, pulse);
+    ctx.globalAlpha = none ? 0.4 : 0.85;
+    if (bomb) {
+      const bs = bombSize(), gx = Math.max(bx, Math.min(bx + BW - bs, bx + (tg.cc + 0.5) * cu - bs * ITEM_GEO.bomb.cx)), gy = Math.max(by, Math.min(by + BH - bs, by + (tg.rc + 0.5) * cu - bs * ITEM_GEO.bomb.cy));
+      const ic = itemIcon('bomb', bs); if (ic) ctx.drawImage(ic, gx, gy, bs, bs);
+    } else {
+      const [tx, ty] = drillTip(), ic = itemIcon('drillDown', isz);
+      if (ic) ctx.drawImage(ic, bx + (bAim.col + 0.5) * cu - isz * tx, by + Math.min(tg.hit, ROWS) * cu - isz * ty, isz, isz);
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (anim && anim.type === 'item') {
+    const p = clamp01((t - anim.t0) / anim.dur);
+    if (anim.kind === 'bomb') {   // slammed down onto its cell
+      const sz = bombSize() * (1.7 - 0.7 * ease(p)), ic = itemIcon('bomb', sz);
+      ctx.globalAlpha = 0.55 + 0.45 * p;
+      if (ic) ctx.drawImage(ic, bx + (anim.tg.cc + 0.5) * cu - sz * ITEM_GEO.bomb.cx, by + (anim.tg.rc + 0.5) * cu - sz * ITEM_GEO.bomb.cy, sz, sz);
+      ctx.globalAlpha = 1;
+    } else {   // dropping down its column
+      const r = anim.from + (anim.land - anim.from) * p * p, [tx, ty] = drillTip(), ic = itemIcon('drillDown', isz);
+      if (ic) ctx.drawImage(ic, bx + (anim.col + 0.5) * cu - isz * tx, by + (r + 1) * cu - isz * ty, isz, isz);
+    }
+  }
+  if (fx.drill) {   // grinding down through its column, shaking a little
+    const d = fx.drill, r = d.r0 + (t - d.t0) / Math.max(1, d.step);
+    if (r > d.r1 + 3 || G.state !== 'play') fx.drill = null;
+    else {
+      const jx = Math.sin(t / 16) * u * 0.14, [tx, ty] = drillTip(), ic = itemIcon('drillDown', isz);
+      if (ic) ctx.drawImage(ic, bx + (d.col + 0.5) * cu - isz * tx + jx, by + r * cu - isz * ty, isz, isz);
+    }
+  }
+}
+// an item in hand, before the finger is on the board: the board's edge glows, calling for a tap
+function drawAimCall(t) {
+  const id = blockAimId();
+  if (!id || bAim || G.state !== 'play') return;
+  const a = 0.45 + 0.35 * Math.sin(t / 180), L = AIM_LOOK[id];
+  ctx.save();
+  rr(ctx, bx - 2, by - 2, BW + 4, BH + 4, Math.max(4, cu * 0.4));
+  ctx.lineWidth = Math.max(3, u * 0.5); ctx.strokeStyle = `rgba(${L.ring},${a})`; ctx.stroke();
+  ctx.restore();
+}
+
 let lastDraw = performance.now();
 function draw(t) {
   const dt = Math.min(0.05, Math.max(0, (t - lastDraw) / 1000));
@@ -8745,7 +9577,9 @@ function draw(t) {
     drag.ghost.cells.forEach((e, j) => ctx.drawImage(sprite(pieceCell(p, j), cu, !!hold), bx + e.c * cu, by + e.r * cu, cu, cu));
     ctx.globalAlpha = 1;
   }
+  drawBlockItems(t, pulse);
   ctx.restore();
+  drawAimCall(t);
 
   // danger: the stack is about to be pushed past the top
   const h = heights(G.grid), maxH = Math.max(...h);
@@ -9061,9 +9895,21 @@ function drawOrbs(t) {
 
 /* ---------- input: one thumb, bottom of the screen ---------- */
 function pt(e) { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+const cellAt = (x, y) => ({ col: Math.max(0, Math.min(COLS - 1, Math.floor((x - bx) / cu))), row: Math.max(0, Math.min(ROWS - 1, Math.floor((y - by) / cu))) });
 cv.addEventListener('pointerdown', e => {
   if (G.state !== 'play' || drag) return;
   const { x, y } = pt(e);
+  const aimId = bAim ? null : blockAimId();
+  if (aimId) {
+    if (x >= bx && x < bx + BW && y >= by - cu && y < by + BH + cu) {   // on the board: the aim follows the finger, goes off as it comes up
+      bAim = { id: aimId, pid: e.pointerId, ...cellAt(x, y) };
+      try { cv.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
+      if (!SND.playing) musicStart(false);
+      e.preventDefault();
+      return;
+    }
+    IT.st[aimId] = 'ready'; itemDockUI();   // elsewhere: the item put away, the touch goes on as usual
+  }
   for (let k = 0; k < 3; k++) {
     const b = rotBtn(k);
     if (Math.hypot(x - b.x, y - b.y) <= b.r + 6) {
@@ -9087,6 +9933,7 @@ cv.addEventListener('pointerdown', e => {
   e.preventDefault();
 });
 cv.addEventListener('pointermove', e => {
+  if (bAim && e.pointerId === bAim.pid) { const p = pt(e); Object.assign(bAim, cellAt(p.x, p.y)); return; }
   if (!drag || e.pointerId !== drag.id) return;
   const p = pt(e); drag.x = p.x; drag.y = p.y;
   drag.home = Math.hypot(drag.x - drag.x0, drag.y - drag.y0) < homeR();
@@ -9104,8 +9951,11 @@ function endDrag(e, commit) {
   if (G.phase === 'idle') dropPiece(d.i, c);
   else pending = { i: d.i, c };   // board still settling: drop as soon as it is done
 }
-cv.addEventListener('pointerup', e => endDrag(e, true));
-cv.addEventListener('pointercancel', e => endDrag(e, false));
+cv.addEventListener('pointerup', e => {
+  if (bAim && e.pointerId === bAim.pid) { const a = bAim; bAim = null; blockItemGo(a.id, a.col, a.row); return; }
+  endDrag(e, true);
+});
+cv.addEventListener('pointercancel', e => { if (bAim && e.pointerId === bAim.pid) { bAim = null; return; } endDrag(e, false); });
 cv.addEventListener('contextmenu', e => e.preventDefault());
 
 /* ---------- loop ---------- */
@@ -9192,7 +10042,7 @@ function bkWant() {
   const end = bkVis('cont') || bkVis('result');   // a game's end (any game)
   for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro') || bkVis('tut')) ? 5 + (bkVis('rkb') ? 1 : 0) : 4;   // over the list
   if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 3 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) : 2;
-  if (bkVis('hub')) return (bkVis('settings') || bkVis('shop') || bkVis('profile') || bkVis('daily') || bkVis('heroes')) ? 2 + (bkVis('delacct') || bkVis('nick') ? 1 : 0) : 1;   // the first screen
+  if (bkVis('hub')) return (bkVis('settings') || bkVis('shop') || bkVis('profile') || bkVis('daily') || bkVis('heroes')) ? 2 + (bkVis('delacct') || bkVis('nick') || bkVis('evolve') ? 1 : 0) : 1;   // the first screen
   return 3 + ((bkVis('menu') || end || bkVis('tut')) ? 1 : 0) + (bkVis('settings') || (end && bkVis('rkb')) ? 1 : 0);
 }
 function bkSync() {
@@ -9203,6 +10053,7 @@ function bkSync() {
 function bkBack() {
   const press = id => { const b = $('#' + id); if (b && !b.hidden) b.click(); };
   if (bkVis('delacct')) return press('btn-del-no');
+  if (bkVis('evolve')) return press('btn-evolve-ok');
   if (bkVis('nick') && nickChanging) return press('btn-nick-no');
   if (bkVis('profile')) return press('btn-prof-close');
   if (bkVis('settings')) return press('btn-settings-close');
@@ -9242,7 +10093,8 @@ for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener
 setInterval(bkSync, 300);   // cards that open by themselves (a game ending) get their entry too
 
 // read-only hooks for automated checks
-window.__rise = { G, shapeOf, sprite, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW }), nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
+window.__rise = { SND, sfxSynth, evTm: () => EV.tm, G, shapeOf, sprite, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY }),
+  bitems: { IT: () => IT, targets: (k, c, r) => itemTargets(k, c, r).marks.size, aim: () => bAim, checkNoFit, touch: touchGrid }, acorn: { MG }, nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
                   deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, gsfx, scoreFor, wireAudio, MUSIC, SFXB, SFX_AT, musicStart, musicStop, musicTempo, musicPos },
