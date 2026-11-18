@@ -705,9 +705,11 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .it-btn.aim { background: #fff36b; animation: it-aim 0.6s ease-in-out infinite alternate; }
 .it-btn.used { filter: grayscale(1); opacity: 0.4; box-shadow: none; cursor: default; }
 @keyframes it-aim { to { transform: scale(1.08); } }
-.dock-acorn, .dock-stairs, .dock-beaver, .dock-hedgehog, .dock-caterpillar { right: 10px; top: calc(env(safe-area-inset-top, 0px) + 92px); }
-.dock-merge, .dock-owlpost { left: 10px; top: calc(env(safe-area-inset-top, 0px) + 92px); }
-.dock-owlpost { top: 40%; }
+/* where each game's buttons sit: low on the screen, in reach of the thumb, clear of the game's own buttons and its play */
+.dock-acorn { right: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 22%); }   /* over the squirrel's head height */
+.dock-stairs, .dock-beaver, .dock-hedgehog, .dock-caterpillar { right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
+.dock-merge { left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); flex-direction: row; gap: 22px; }   /* a row under the box (room kept: fmGeo) */
+.dock-owlpost { left: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 22%); }   /* left of the column, over the friends */
 .dock-pebble { left: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); flex-direction: row; }
 .dock-mushroom { left: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); }   /* a column left of the undo button */
 .dock-chameleon, .dock-cups { left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); flex-direction: row; }
@@ -3649,7 +3651,7 @@ async function rkIntroFill(game) {
 }
 function rkStart() {
   $('#rkintro').hidden = true; rkUnwait(); const go = rkGo; rkGo = null;
-  if (go) { itemsBegin(rkGame); go(); itemDock(rkGame, $('#' + RK_SCREEN[rkGame][0])); tutMaybe(rkGame); }
+  if (go) { itemsBegin(rkGame); go(); itemsAuto(rkGame); itemDock(rkGame, $('#' + RK_SCREEN[rkGame][0])); tutMaybe(rkGame); }
 }
 function rkLeave() { $('#rkintro').hidden = true; rkUnwait(); rkGo = null; if (rkGame && RK_SCREEN[rkGame]) RK_SCREEN[rkGame][1](); }
 $('#btn-rki-go').addEventListener('click', () => { sfx('pick'); rkStart(); });
@@ -3681,8 +3683,8 @@ const ITEM_TXT = {
       'stairs.wing': '헛디딤을 한 번 봐줘요', 'stairs.boost': '10초 동안 2배 빠르기로 알아서 올라가요',
       'merge.hammer': '과일 하나를 눌러 없애요', 'merge.shake': '상자를 세게 한 번 흔들어요',
       'pebble.fire': '한 턴 동안 조약돌 하나가 5씩 깎아요', 'pebble.rows': '맨 아래 3줄을 없애요',
-      'mushroom.basket': '빈 바구니를 하나 더 놓아요 (이번 판)', 'mushroom.time': '제한 시간을 10초 늘려요',
-      'owlpost.hourglass': '제한 시간을 10초 늘려요', 'owlpost.boost': '10초 동안 아무 데나 눌러도 알맞은 동물에게 가요', 'chameleon.glass': '다른 잎이 있는 구역을 알려줘요',
+      'mushroom.basket': '빈 바구니를 하나 더 놓아요 (이번 판)', 'mushroom.time': '시작할 때 제한 시간이 10초 늘어나요',
+      'owlpost.hourglass': '시작할 때 제한 시간이 10초 늘어나요', 'owlpost.boost': '10초 동안 아무 데나 눌러도 알맞은 동물에게 가요', 'chameleon.glass': '다른 잎이 있는 구역을 알려줘요',
       'beaver.tape': '다음 다리 5개는 딱 맞는 길이에 표시선이 떠요', 'hedgehog.guard': '가시에 부딪혀도 한 번 봐줘요',
       'caterpillar.magnet': '30초 동안 주변 잎을 끌어당겨요', 'caterpillar.speed': '15초 동안 1.5배 빨라져요', 'cups.xray': '섞은 뒤 도토리가 든 컵이 잠깐 빛나요' },
     title: '아이템', none: '켜면 이번 판에 써요 (하나에 200코인)', saved: '막았어요!', hammerAim: '없앨 과일을 눌러요',
@@ -3696,8 +3698,8 @@ const ITEM_TXT = {
       'stairs.wing': 'Saves you from one misstep', 'stairs.boost': 'Climbs by itself at double speed for 10 seconds',
       'merge.hammer': 'Tap a fruit to smash it', 'merge.shake': 'Gives the box one big shake',
       'pebble.fire': 'For one turn each pebble hits for 5', 'pebble.rows': 'Clears the 3 lowest rows',
-      'mushroom.basket': 'Adds one more empty basket (this round)', 'mushroom.time': 'Adds 10 seconds to the clock',
-      'owlpost.hourglass': 'Adds 10 seconds to the clock', 'owlpost.boost': 'For 10 seconds any tap sends it to the right friend', 'chameleon.glass': 'Shows the part where the odd leaf is',
+      'mushroom.basket': 'Adds one more empty basket (this round)', 'mushroom.time': 'Starts with 10 more seconds on the clock',
+      'owlpost.hourglass': 'Starts with 10 more seconds on the clock', 'owlpost.boost': 'For 10 seconds any tap sends it to the right friend', 'chameleon.glass': 'Shows the part where the odd leaf is',
       'beaver.tape': 'Marks the exact length for the next 5 logs', 'hedgehog.guard': 'Saves you once from hitting a quill',
       'caterpillar.magnet': 'Pulls in nearby leaves for 30 seconds', 'caterpillar.speed': '1.5x speed for 15 seconds', 'cups.xray': 'After a shuffle the cup with the acorn glows' },
     title: 'Items', none: 'Turn one on to use it this game (200 coins each)', saved: 'Blocked!', hammerAim: 'Tap a fruit to smash',
@@ -3892,10 +3894,11 @@ function itemDock(game, scr) {
       itemDockUI();
     });
   }
-  if (!IT || IT.game !== g || !scr) { d.hidden = true; return; }
+  const ids = IT && IT.game === g ? Object.keys(IT.st).filter(id => !itemAuto(g, id)) : [];
+  if (!ids.length || !scr) { d.hidden = true; return; }
   d.className = 'itemdock dock-' + g; d.style.cssText = '';
   scr.append(d);
-  d.replaceChildren(...Object.keys(IT.st).map(id => {
+  d.replaceChildren(...ids.map(id => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'it-btn'; b.dataset.id = id; b.setAttribute('aria-label', itemName(id));
     b.innerHTML = `<svg class="it-ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="26"/></svg><img src="${itemPic(id)}" alt="">`;
@@ -3948,25 +3951,21 @@ ITEM_USE.pebble = {
   rows: () => PB.st === 'play' && PB.phase === 'aim' && PB.blocks.some(b => !b.dead) && itemTake('pebble', 'rows') && (pbRows3(), true),
 };
 // the mushrooms: one more empty basket for this round, 10 s more on the clock
-ITEM_USE.mushroom = {
-  basket: () => MS.st === 'play' && !MS.clearT && itemTake('mushroom', 'basket') && (msExtraBasket(), true),
-  time: () => {
-    if (MS.st !== 'play' || !itemTake('mushroom', 'time')) return false;
-    MS.time = Math.min(MS_TMAX, MS.time + 10); msHud();
-    MS.pops.push({ text: tr('msBonus', 10), x: MS.W / 2, y: MS.H * 0.3, t: 0, life: 1.0, size: 24, look: GOLD_LOOK });
-    gsfx('msDone', 1, 'catchGold'); return true;
-  },
+ITEM_USE.mushroom = { basket: () => MS.st === 'play' && !MS.clearT && itemTake('mushroom', 'basket') && (msExtraBasket(), true) };
+// the owl post: the booster runs 10 s
+ITEM_USE.owlpost = { boost: () => OP.st === 'play' && itemStart('owlpost', 'boost', 10) && (gsfx('opRight', 1, 'catch'), buzz(25), true) };   // 10 s: any tap to the right friend
+// items that work by themselves as the game starts (no button): 10 s more on the clock (up to 99), shown over the game
+const ITEM_AUTO = {
+  mushroom: { time: () => { MS.time = Math.min(MS_TMAX, MS.time + 10); msHud(); MS.pops.push({ text: tr('msBonus', 10), x: MS.W / 2, y: MS.H * 0.3, t: 0, life: 1.2, size: 24, look: GOLD_LOOK }); } },
+  owlpost: { hourglass: () => { OP.time = Math.min(OP_TMAX, OP.time + 10); const g = opGeo(); OP.pops.push({ text: tr('msBonus', 10), x: OP.W / 2, y: g.frontY - g.sp * 1.2, t: 0, life: 1.2, size: 24, look: GOLD_LOOK }); } },
 };
-// the owl post: the hourglass, 10 s more on the clock; the booster runs 10 s
-ITEM_USE.owlpost = {
-  hourglass: () => {   // 10 s more on the clock (up to 99, as the mushrooms')
-    if (OP.st !== 'play' || !itemTake('owlpost', 'hourglass')) return false;
-    OP.time = Math.min(OP_TMAX, OP.time + 10);
-    const g = opGeo(); OP.pops.push({ text: tr('msBonus', 10), x: OP.W / 2, y: g.frontY - g.sp * 1.2, t: 0, life: 1.0, size: 24, look: GOLD_LOOK });
-    gsfx('msDone', 1, 'catchGold'); buzz(25); return true;
-  },
-  boost: () => OP.st === 'play' && itemStart('owlpost', 'boost', 10) && (gsfx('opRight', 1, 'catch'), buzz(25), true),   // 10 s: any tap to the right friend
-};
+const itemAuto = (g, id) => !!(ITEM_AUTO[g] && ITEM_AUTO[g][id]);
+function itemsAuto(g) {
+  if (!IT || IT.game !== g || !ITEM_AUTO[g]) return;
+  let any = false;
+  for (const id in ITEM_AUTO[g]) if (itemHas(g, id)) { IT.st[id] = 'used'; ITEM_AUTO[g][id](); any = true; }
+  if (any) gsfx('msDone', 1, 'catchGold');
+}
 // the chameleon: the magnifier shows the quarter its leaf is in (this board)
 ITEM_USE.chameleon = { glass: () => CM.st === 'play' && !CM.found && itemTake('chameleon', 'glass') && (cmHintOn(), true) };
 // the beaver: the tape measure shows the right length for the next 5 logs
@@ -5424,7 +5423,8 @@ function fmBest() { try { return parseInt(localStorage.getItem(FM_BEST) || '0', 
 const fmPick = () => 1 + Math.floor(Math.random() * FM_DROP);
 // sizes on screen: the box (inside width bw, left L, top T, floor B), wall thickness, raccoon height
 function fmGeo() {
-  const W = FM.W, H = FM.H, wall = 10, low = 16, rh = Math.round(Math.min(78, Math.max(54, W * 0.18))), next = 34;
+  // low: room under the box (with items, their buttons' row as well)
+  const W = FM.W, H = FM.H, wall = 10, low = 16 + (IT && IT.game === 'merge' ? 66 : 0), rh = Math.round(Math.min(78, Math.max(54, W * 0.18))), next = 34;
   const bw = Math.floor(Math.min(W - 2 * (wall + 12), (H - low - wall - rh - next - 16) / (FM_HB + 2 * fmR(FM_DROP))));
   const bh = bw * FM_HB, used = next + rh + bw * 2 * fmR(FM_DROP) + 16 + bh + wall + low;
   const T = Math.round((H - used) * 0.45 + next + rh + bw * 2 * fmR(FM_DROP) + 16);
@@ -5436,7 +5436,7 @@ const fmX = (g, x) => g.L + x * g.bw, fmY = (g, y) => g.T + y * g.bw;
 function fmHeldY(g, k) { return (-2 - (FM_RAC.hold[1] - FM_RAC_TOP) * g.rh / FM_RAC_H) / g.bw - fmR(k) * 0.92; }
 // the pictures at screen size: each fruit, the raccoon, the box
 function fmPics() {
-  const g = fmGeo(), key = [FM.W, FM.H, dpr, fmArt.fruit.filter(Boolean).length, Object.keys(fmArt).length].join('|');
+  const g = fmGeo(), key = [FM.W, FM.H, g.bw, dpr, fmArt.fruit.filter(Boolean).length, Object.keys(fmArt).length].join('|');   // (the box smaller with items: g.bw)
   if (FM.img && FM.img.key === key) return FM.img;
   const P = { key, fr: [], rac: {} };
   for (let i = 1; i <= FM_N; i++) {
