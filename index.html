@@ -3368,7 +3368,7 @@ function miniDraw(now) {
     c.restore();
   }
   if (itemHas('acorn', 'shield')) itemBubble(c, MG.x, g.foot - g.S * 0.5, g.S * 0.62, t);
-  if (itemRun('acorn', 'magnet')) itemPull(c, MG.x, g.foot - g.S * 0.5, g.S * 0.7, t);
+  if (itemRun('acorn', 'magnet')) magnetFx(c, 'acorn', MG.x, g.foot - g.S * 0.5, g.S * 0.62, t, MG.items.filter(i => i.k !== 'stone' && !i.done && i.y > -g.r && i.y < g.gy), IT.left.magnet / IT.len.magnet);
   // falling things, in front of the squirrel (they drop past its face into the basket)
   for (const it of MG.items) {
     c.save(); c.translate(it.x, it.y); c.rotate(it.rot);
@@ -3667,7 +3667,7 @@ const ITEM_COST = 200;
 const FREE_COINS = true;
 const coinsOK = n => FREE_COINS || WAL.coins >= n;
 const ITEMS_OF = { block: ['bomb', 'drill'], acorn: ['shield', 'magnet'], stairs: ['wing', 'boost'], merge: ['hammer', 'shake'], pebble: ['fire', 'rows'],
-  mushroom: ['basket', 'time'], owlpost: ['hourglass'], chameleon: ['glass'], beaver: ['tape'], hedgehog: ['guard'], caterpillar: ['magnet', 'speed'], cups: ['xray'] };
+  mushroom: ['basket', 'time'], owlpost: ['hourglass', 'boost'], chameleon: ['glass'], beaver: ['tape'], hedgehog: ['guard'], caterpillar: ['magnet', 'speed'], cups: ['xray'] };
 const ITEM_WAIT = ['shield', 'wing', 'guard'];   // on from the start, used up when their moment comes
 const ITEM_FILE = Object.fromEntries(['bomb', 'drill', 'shield', 'magnet', 'wing', 'boost', 'hammer', 'shake', 'fire', 'rows', 'basket', 'time', 'hourglass', 'glass', 'tape', 'speed', 'xray']
   .map(k => [k, `item-${k}.webp`]));   // the pictures (the hedgehog's guard: the shield's)
@@ -3682,7 +3682,7 @@ const ITEM_TXT = {
       'merge.hammer': '과일 하나를 눌러 없애요', 'merge.shake': '상자를 세게 한 번 흔들어요',
       'pebble.fire': '한 턴 동안 조약돌 하나가 5씩 깎아요', 'pebble.rows': '맨 아래 3줄을 없애요',
       'mushroom.basket': '빈 바구니를 하나 더 놓아요 (이번 판)', 'mushroom.time': '제한 시간을 10초 늘려요',
-      'owlpost.hourglass': '10초 동안 아무 데나 눌러도 알맞은 동물에게 가요', 'chameleon.glass': '다른 잎이 있는 구역을 알려줘요',
+      'owlpost.hourglass': '제한 시간을 10초 늘려요', 'owlpost.boost': '10초 동안 아무 데나 눌러도 알맞은 동물에게 가요', 'chameleon.glass': '다른 잎이 있는 구역을 알려줘요',
       'beaver.tape': '다음 다리 5개는 딱 맞는 길이에 표시선이 떠요', 'hedgehog.guard': '가시에 부딪혀도 한 번 봐줘요',
       'caterpillar.magnet': '30초 동안 주변 잎을 끌어당겨요', 'caterpillar.speed': '15초 동안 1.5배 빨라져요', 'cups.xray': '섞은 뒤 도토리가 든 컵이 잠깐 빛나요' },
     title: '아이템', none: '켜면 이번 판에 써요 (하나에 200코인)', saved: '막았어요!', hammerAim: '없앨 과일을 눌러요',
@@ -3697,7 +3697,7 @@ const ITEM_TXT = {
       'merge.hammer': 'Tap a fruit to smash it', 'merge.shake': 'Gives the box one big shake',
       'pebble.fire': 'For one turn each pebble hits for 5', 'pebble.rows': 'Clears the 3 lowest rows',
       'mushroom.basket': 'Adds one more empty basket (this round)', 'mushroom.time': 'Adds 10 seconds to the clock',
-      'owlpost.hourglass': 'For 10 seconds any tap sends it to the right friend', 'chameleon.glass': 'Shows the part where the odd leaf is',
+      'owlpost.hourglass': 'Adds 10 seconds to the clock', 'owlpost.boost': 'For 10 seconds any tap sends it to the right friend', 'chameleon.glass': 'Shows the part where the odd leaf is',
       'beaver.tape': 'Marks the exact length for the next 5 logs', 'hedgehog.guard': 'Saves you once from hitting a quill',
       'caterpillar.magnet': 'Pulls in nearby leaves for 30 seconds', 'caterpillar.speed': '1.5x speed for 15 seconds', 'cups.xray': 'After a shuffle the cup with the acorn glows' },
     title: 'Items', none: 'Turn one on to use it this game (200 coins each)', saved: 'Blocked!', hammerAim: 'Tap a fruit to smash',
@@ -3764,16 +3764,114 @@ function itemTick(g, dt) {
   itemDockUI(ch);
 }
 const ITEM_USE = {};   // what a tap on a game's item does: ITEM_USE[game][id]() (true: it was used or is aiming)
-// drawn in the games: a magnet's pull (rings closing in), a shield's bubble
-function itemPull(c, x, y, r, t, rgb = '120,200,255') {
-  c.save(); c.lineWidth = Math.max(2.5, r * 0.07);
-  for (let i = 0; i < 3; i++) { const k = (t * 1.2 + i / 3) % 1; c.globalAlpha = 0.6 * k; c.strokeStyle = `rgb(${rgb})`; c.beginPath(); c.arc(x, y, r * (1.6 - k * 0.9), 0, Math.PI * 2); c.stroke(); }
-  c.restore();
-}
+// drawn in the games: a shield's bubble
 function itemBubble(c, x, y, r, t, rgb = '127,208,255') {
   c.save(); c.globalAlpha = 0.16 + 0.05 * Math.sin(t * 4); c.fillStyle = `rgb(${rgb})`; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill();
   c.globalAlpha = 0.6; c.lineWidth = Math.max(2, r * 0.05); c.strokeStyle = `rgb(${rgb})`; c.stroke();
   c.globalAlpha = 0.7; c.lineWidth = Math.max(2, r * 0.06); c.strokeStyle = '#fff'; c.beginPath(); c.arc(x, y, r * 0.8, -2.5, -1.9); c.stroke(); c.restore();
+}
+// the running items' looks, drawn like the rest of the games (bold shapes, a dark edge): the magnet's crackling cords
+// and the booster's speed lines and afterimages
+const FX = new Map();   // each running effect's own particles and history, by key
+const fxState = (key, now) => {
+  let S = FX.get(key);
+  if (!S || now - S.last > 0.5 || now < S.last) { S = { parts: [], hist: [], last: now, acc: 0 }; FX.set(key, S); }   // new (or back after a pause)
+  const dt = Math.min(0.05, Math.max(0, now - S.last)); S.last = now; S.dt = dt;
+  return S;
+};
+const FX_TAU = Math.PI * 2, FX_INK = '43,26,14';
+const fxPics = {};
+const fxPic = id => { let im = fxPics[id]; if (!im) { im = fxPics[id] = new Image(); im.src = ITEM_FILE[id]; } return im.complete && im.naturalWidth ? im : null; };
+// a stroke with a dark edge under it (how lines are drawn in these games)
+function fxInk(c, path, w, col, a = 1) {
+  c.globalAlpha = a; c.lineCap = 'round'; c.lineJoin = 'round';
+  path(); c.strokeStyle = `rgb(${FX_INK})`; c.lineWidth = w + Math.max(2.5, w * 0.7); c.stroke();
+  path(); c.strokeStyle = col; c.lineWidth = w; c.stroke();
+  c.globalAlpha = 1;
+}
+function fxStar(c, x, y, s, rot, col, a = 1) {   // a little four-point sparkle with a dark edge
+  c.globalAlpha = a; c.beginPath();
+  for (let i = 0; i < 8; i++) { const an = rot + i * Math.PI / 4, q = i % 2 ? s * 0.36 : s; c.lineTo(x + Math.cos(an) * q, y + Math.sin(an) * q); }
+  c.closePath(); c.lineJoin = 'round'; c.lineWidth = Math.max(1.5, s * 0.28); c.strokeStyle = `rgb(${FX_INK})`; c.stroke(); c.fillStyle = col; c.fill();
+  c.globalAlpha = 1;
+}
+function fxGlow(c, x, y, r, rgb, a) {
+  const g = c.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, `rgba(${rgb},${a})`); g.addColorStop(0.5, `rgba(${rgb},${a * 0.4})`); g.addColorStop(1, `rgba(${rgb},0)`);
+  c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, FX_TAU); c.fill();
+}
+// the magnet: crackling cords from it to everything it pulls, a sparkle on each. x, y the character's middle, r its
+// size; targets: what it pulls ({x, y}); left: 0..1 of its time. Over a character's head (the acorn game) the magnet
+// itself floats beside its head with its time round it; round (the caterpillar): the cords come out of the head itself
+function magnetFx(c, key, x, y, r, now, targets, left, round) {
+  // the magnet beside the head, on the side with room (clear of the points that rise over the head)
+  const W = c.canvas.width / dpr, sd = x > W * 0.7 ? -1 : 1;
+  const ms = r * 0.78, mx = x + sd * r * 1.3, my = y - r * 0.75 + Math.sin(now * 4) * r * 0.05;
+  const sx = round ? x : mx, sy = round ? y : my - ms * 0.3, q = Math.floor(now * 20);   // the crackle changes 20 times a second
+  c.save();
+  for (const t of targets) {
+    const dx = t.x - sx, dy = t.y - sy, d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d;
+    const pts = [[sx, sy]], n = Math.max(4, Math.min(10, Math.round(d / (r * 0.45))));
+    for (let i = 1; i < n; i++) { const f = i / n, j = (seeded(q * 131 + i * 17 + Math.round(t.x * 7 + t.y))() - 0.5) * r * 0.42 * Math.sin(f * Math.PI); pts.push([sx + dx * f + nx * j, sy + dy * f + ny * j]); }
+    pts.push([t.x, t.y]);
+    const path = () => { c.beginPath(); pts.forEach(([px, py], i) => (i ? c.lineTo(px, py) : c.moveTo(px, py))); };
+    fxInk(c, path, Math.max(3.5, r * 0.11), '#7fd8ff');
+    path(); c.strokeStyle = '#ffffff'; c.lineWidth = Math.max(1.4, r * 0.04); c.stroke();
+    fxStar(c, t.x, t.y - r * 0.3, r * 0.17, now * 5 + t.x, '#ffffff');
+  }
+  if (!round) {
+    const im = fxPic('magnet');
+    fxGlow(c, mx, my, ms * 0.95, '160,230,255', 0.55 + 0.15 * Math.sin(now * 8));
+    if (im) { c.save(); c.translate(mx, my); c.rotate(Math.sin(now * 3) * 0.1); c.drawImage(im, -ms / 2, -ms / 2, ms, ms); c.restore(); }
+    c.lineCap = 'round';
+    c.strokeStyle = `rgba(${FX_INK},0.6)`; c.lineWidth = Math.max(4, r * 0.11); c.beginPath(); c.arc(mx, my, ms * 0.64, 0, FX_TAU); c.stroke();
+    c.strokeStyle = '#7fd8ff'; c.lineWidth = Math.max(2.5, r * 0.07); c.beginPath(); c.arc(mx, my, ms * 0.64, -Math.PI / 2, -Math.PI / 2 + FX_TAU * Math.max(0, left)); c.stroke();
+  }
+  c.restore();
+}
+// a picture of a character in one colour (an afterimage), made once per picture
+const fxTinted = new WeakMap();
+function fxTint(im, rgb) {
+  let m = fxTinted.get(im); if (!m) { m = {}; fxTinted.set(im, m); }
+  if (m[rgb]) return m[rgb];
+  const cv = document.createElement('canvas'); cv.width = im.width; cv.height = im.height;
+  const x = cv.getContext('2d'); x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-atop'; x.fillStyle = `rgb(${rgb})`; x.fillRect(0, 0, cv.width, cv.height);
+  return (m[rgb] = cv);
+}
+const FX_GHOST = ['255,140,215', '200,140,255', '130,170,255', '120,220,255'];   // the afterimages, pink to blue
+// the booster, drawn under the character: white speed lines streaming back past it, and afterimages where it was a
+// moment ago. x, y its middle, r its size; o.mv: the way it is going (a unit vector); o.sprite: how it is drawn
+// ({ im, ax, ay, w, h, flip, k: drawn k times as big }); o.world: its place in the game's world and how that comes to where it is drawn
+// ({ x, y, screen: (x, y) => [sx, sy] }); without them, only the lines
+function boostFx(c, key, x, y, r, now, o) {
+  const S = fxState(key, now), dt = S.dt, mv = o.mv || { x: 0, y: -1 };
+  const back = { x: -mv.x, y: -mv.y }, side = { x: -mv.y, y: mv.x };
+  c.save();
+  S.acc += dt * 22;
+  while (S.acc >= 1) {
+    S.acc--;
+    const s = (Math.random() - 0.5) * r * 3;
+    S.parts.push({ x: x + side.x * s + mv.x * r * 1.4, y: y + side.y * s + mv.y * r * 1.4, l: r * (0.7 + Math.random() * 1.1), age: 0, life: 0.3 });
+  }
+  for (const p of S.parts) { p.age += dt; p.x += back.x * r * 10 * dt; p.y += back.y * r * 10 * dt; }
+  S.parts = S.parts.filter(p => p.age < p.life);
+  c.lineCap = 'round'; c.strokeStyle = '#ffffff'; c.lineWidth = Math.max(2.5, r * 0.06);
+  for (const p of S.parts) {
+    c.globalAlpha = Math.sin(p.age / p.life * Math.PI) * 0.85;
+    c.beginPath(); c.moveTo(p.x, p.y); c.lineTo(p.x + back.x * p.l, p.y + back.y * p.l); c.stroke();
+  }
+  c.globalAlpha = 1;
+  if (o.world && o.sprite) {
+    S.hist.unshift({ t: now, x: o.world.x, y: o.world.y, im: o.sprite.im, flip: o.sprite.flip, ax: o.sprite.ax, ay: o.sprite.ay, w: o.sprite.w, h: o.sprite.h });
+    S.hist = S.hist.filter(h => now - h.t < 0.4);
+    [0.08, 0.16, 0.24, 0.32].forEach((age, i) => {
+      const h = S.hist.find(e => now - e.t >= age); if (!h) return;
+      const [hx, hy] = o.world.screen(h.x, h.y);
+      c.save(); c.globalAlpha = 0.62 - i * 0.12; c.translate(hx, hy); c.scale(h.flip, 1);
+      const k = o.sprite.k || 1; c.drawImage(fxTint(h.im, FX_GHOST[i]), -h.ax * k, -h.ay * k, h.w * k, h.h * k); c.restore();
+    });
+  }
+  c.restore();
 }
 // the buttons, in the game's screen (under its cards: its pause menu and end cards cover them)
 function itemDock(game, scr) {
@@ -3859,8 +3957,16 @@ ITEM_USE.mushroom = {
     gsfx('msDone', 1, 'catchGold'); return true;
   },
 };
-// the owl post: the hourglass runs 10 s
-ITEM_USE.owlpost = { hourglass: () => OP.st === 'play' && itemStart('owlpost', 'hourglass', 10) && (gsfx('opRight', 1, 'catch'), buzz(25), true) };
+// the owl post: the hourglass, 10 s more on the clock; the booster runs 10 s
+ITEM_USE.owlpost = {
+  hourglass: () => {   // 10 s more on the clock (up to 99, as the mushrooms')
+    if (OP.st !== 'play' || !itemTake('owlpost', 'hourglass')) return false;
+    OP.time = Math.min(OP_TMAX, OP.time + 10);
+    const g = opGeo(); OP.pops.push({ text: tr('msBonus', 10), x: OP.W / 2, y: g.frontY - g.sp * 1.2, t: 0, life: 1.0, size: 24, look: GOLD_LOOK });
+    gsfx('msDone', 1, 'catchGold'); buzz(25); return true;
+  },
+  boost: () => OP.st === 'play' && itemStart('owlpost', 'boost', 10) && (gsfx('opRight', 1, 'catch'), buzz(25), true),   // 10 s: any tap to the right friend
+};
 // the chameleon: the magnifier shows the quarter its leaf is in (this board)
 ITEM_USE.chameleon = { glass: () => CM.st === 'play' && !CM.found && itemTake('chameleon', 'glass') && (cmHintOn(), true) };
 // the beaver: the tape measure shows the right length for the next 5 logs
@@ -5234,7 +5340,11 @@ function stDraw(now) {
   const im = P.rb[pose] || P.rb.idle;
   if (im) {
     const a = RB_AT[pose] || RB_AT.idle, w = im.width / dpr, h = im.height / dpr;
-    if (itemRun('stairs', 'boost')) itemPull(c, rx, ry - g.rh * 0.45, g.rh * 0.75, now / 1000, '255,214,64');
+    if (itemRun('stairs', 'boost')) {   // rushing up the way it is going
+      const vx = ST.dir * g.sw, vy = -g.rise, vl = Math.hypot(vx, vy) || 1, flip = pose !== 'idle' ? ST.dir : 1;
+      boostFx(c, 'stairs', rx, ry - g.rh * 0.45, g.rh * 0.62, now / 1000, { mv: { x: vx / vl, y: vy / vl },
+        sprite: { im, ax: a[0] * k, ay: a[1] * k, w, h, flip, ox: rx, oy: ry }, world: { x: ST.pos.x, y: ST.pos.y, screen: (wx, wy) => [X(wx), Y(wy)] } });
+    }
     c.save(); c.translate(rx, ry);
     if (ST.prot > 0 && Math.floor(now / 90) % 2) c.globalAlpha = 0.35;   // after the booster: blinking, safe
     if (pose === 'fall') { c.translate(0, -g.rh * 0.45); c.rotate(ST.fall.rot); c.scale(ST.dir, 1); c.drawImage(im, -a[0] * k, -a[1] * k, w, h); }
@@ -6577,7 +6687,7 @@ $('#ms-undo').addEventListener('click', () => msUndo());
 const OP_BEST = 'rise7-best-owlpost';
 const OP_PALS = ['bear', 'fox', 'hedgehog', 'deer'];
 const OP_GIFTS = ['honey', 'grape', 'apple', 'clover'];
-const OP_T0 = 60;   // s on the clock
+const OP_T0 = 60, OP_TMAX = 99;   // s on the clock to start, the most it can hold (the hourglass)
 const OP_LOSE = 3;   // s off the clock for a wrong one
 const OP_PTS = 1000;   // a thing delivered
 const OP_SWAP_AT = 30;   // the friends change places once, when the clock gets down to this
@@ -6831,7 +6941,7 @@ function opDraw(now) {
   if (f > 0) { rr(c, bx, by, Math.max(bh, bw * f), bh, 9); c.fillStyle = col; c.fill(); }
   rr(c, bx, by, bw, bh, 9); c.lineWidth = 3; c.strokeStyle = MOL; c.stroke();
   miniText(c, String(Math.ceil(OP.time)), bx + bw / 2, by + bh / 2 + 1, 15, SUB_LOOK, now);
-  if (itemRun('owlpost', 'hourglass')) itemPull(c, g.cx, g.frontY, g.sp * 0.9, now / 1000, '255,214,64');   // the hourglass: any tap sends it right
+  if (itemRun('owlpost', 'boost')) boostFx(c, 'owlpost', g.cx, g.frontY, g.sp * 0.8, now / 1000, { mv: { x: 0, y: 1 } });   // the booster: lines down the column
   // the streak, by the column
   if (OP.streak >= 2) miniText(c, tr('comboN', OP.streak), g.ox + g.cw * 0.2, g.frontY - g.sp * 0.4, 18, OP.streak >= 10 ? GOLD_LOOK : SCORE_LOOK, now);
   // the column and the things in it (coming down to their places), the post box over it and the owl on the box
@@ -6874,6 +6984,11 @@ function opDraw(now) {
     if (!im) continue;
     const q = ease(Math.min(1, f.t / OP_FLY)), x = f.x0 + (f.tx - f.x0) * q, y = f.y0 + (f.ty - f.y0) * q - Math.sin(q * Math.PI) * g.is * 0.6;
     const s = 1 - 0.25 * q, w = im.width / dpr * s, h = im.height / dpr * s;
+    if (itemRun('owlpost', 'boost')) [0.12, 0.24, 0.36, 0.48].forEach((k, i) => {   // the booster: afterimages behind it, pink to blue
+      const q2 = ease(Math.max(0, Math.min(1, f.t / OP_FLY - k))); if (q2 >= q) return;
+      const x2 = f.x0 + (f.tx - f.x0) * q2, y2 = f.y0 + (f.ty - f.y0) * q2 - Math.sin(q2 * Math.PI) * g.is * 0.6, s2 = 1 - 0.25 * q2;
+      c.globalAlpha = 0.62 - i * 0.12; c.drawImage(fxTint(im, FX_GHOST[i]), x2 - w / s * s2 / 2, y2 - h / s * s2 / 2, w / s * s2, h / s * s2); c.globalAlpha = 1;
+    });
     c.drawImage(im, x - w / 2, y - h / 2, w, h);
   }
   for (const f of OP.falling) {
@@ -6899,7 +7014,7 @@ opcv.addEventListener('pointerdown', e => {
   if (OP.st !== 'play') return;
   e.preventDefault();
   const b = opcv.getBoundingClientRect(), x = e.clientX - b.left, y = e.clientY - b.top, g = opGeo();
-  if (itemRun('owlpost', 'hourglass')) { opSend(OP.pos.indexOf(OP.queue[0])); return; }   // the hourglass: anywhere, to the right friend
+  if (itemRun('owlpost', 'boost')) { opSend(OP.pos.indexOf(OP.queue[0])); return; }   // the booster: anywhere, to the right friend
   if (y < g.top) return;
   opSend(Math.max(0, Math.min(3, Math.floor((x - g.ox) / (g.cw / 4)))));
 });
@@ -8428,9 +8543,19 @@ function cpDraw(now) {
   // the others, shorter first (so a longer one passes over), then the player's
   const me = CP.me, mine = cpLen(me), others = CP.worms.filter(w => !w.me && w.alive).sort((a, b) => cpLen(a) - cpLen(b));
   for (const w of others) cpDrawWorm(c, w, cpLen(w) > mine ? 'mad' : cpLen(w) < mine ? 'shy' : '', view);
-  if (me.alive && itemRun('caterpillar', 'magnet')) itemPull(c, me.segs[0].x, me.segs[0].y, CP_MAGNET * 0.6, now / 1000);
-  if (me.alive && itemRun('caterpillar', 'speed')) itemPull(c, me.segs[0].x, me.segs[0].y, cpRad(mine) * 2.2, now / 700, '255,214,64');
+  if (me.alive && itemRun('caterpillar', 'magnet')) {   // cords to the leaves it is pulling in
+    const h = me.segs[0], R = CP_MAGNET + cpRad(mine);
+    magnetFx(c, 'caterpillar', h.x, h.y, cpRad(mine) * 1.6, now / 1000, CP.leaves.filter(l => (l.x - h.x) ** 2 + (l.y - h.y) ** 2 < R * R).slice(0, 14), 0, true);
+  }
+  const speedFx = () => {   // the speed up: lines streaming back from the head; afterimages of the head, a little bigger, under its body
+    if (!itemRun('caterpillar', 'speed')) return;
+    const h = me.segs[0], r = cpRad(mine), T = cpTinted(me.col), im = T && T.head, at = CP_HEAD_AT.head;
+    const iw = r * 1.3 / at[2], ih = im ? iw * im.height / im.width : iw;
+    boostFx(c, 'caterpillar', h.x, h.y, r * 1.6, now / 1000, { mv: { x: Math.cos(me.a), y: Math.sin(me.a) },
+      sprite: im && { im, ax: at[0] * iw, ay: at[1] * ih, w: iw, h: ih, flip: 1, k: 1.25 }, world: im && { x: h.x, y: h.y, screen: (wx, wy) => [wx, wy] } });
+  };
   if (me.alive) {   // blinking while it cannot be eaten; the number on its body, under the head
+    speedFx();
     c.save(); if (CP.safe > 0) c.globalAlpha = 0.55 + 0.45 * Math.cos(CP.safe * Math.PI * 4);
     cpDrawWorm(c, me, '', view, () => cpTag(c, me, cam, z, W, H, sx, dpr, now)); c.restore();
   }
