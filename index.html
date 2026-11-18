@@ -718,13 +718,14 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .it-btn.used { filter: grayscale(1); opacity: 0.4; box-shadow: none; cursor: default; }
 @keyframes it-aim { to { transform: scale(1.08); } }
 /* where each game's buttons sit: low on the screen, in reach of the thumb, clear of the game's own buttons and its play */
-.dock-acorn { right: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 22%); }   /* over the squirrel's head height */
+.dock-acorn { left: 12px; flex-direction: row; gap: 8px; }   /* a row at the top left, left of the hearts (placed: dockTopPlace) */
 .dock-stairs, .dock-beaver, .dock-hedgehog, .dock-caterpillar { right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
 .dock-merge { left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); flex-direction: row; gap: 22px; }   /* a row under the box (room kept: fmGeo) */
-.dock-owlpost { left: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 22%); }   /* left of the column, over the friends */
+.dock-owlpost { left: 12px; }   /* top left, under the clock bar, beside the owl (placed: dockTopPlace) */
 .dock-pebble { left: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); flex-direction: row; }
 .dock-mushroom { left: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); }   /* a column left of the undo button */
-.dock-chameleon, .dock-cups { left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); flex-direction: row; }
+.dock-cups { left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); flex-direction: row; }
+.dock-chameleon { left: 12px; flex-direction: row; }   /* top left, in the round and clock row (made taller: cmTop; placed: dockTopPlace) */
 .dock-block { left: 50%; transform: translateX(-50%); flex-direction: row; align-items: center; gap: 22px; }   /* top: the row under the board (script) */
 .dock-block.call .it-btn.ready { animation: it-aim 0.5s ease-in-out infinite alternate; box-shadow: 0 0 0 4px #ffd23a, 0 3px 0 var(--ol); }
 .it-give { height: 40px; padding: 0 16px; border: 3px solid var(--ol); border-radius: 20px; background: #fff6dc; box-shadow: 0 3px 0 var(--ol);
@@ -2308,6 +2309,17 @@ function blockStuckUI() {
   if (G.stuck && !gv) { gv = document.createElement('button'); gv.type = 'button'; gv.className = 'it-give'; gv.textContent = itemT().giveUp; d.append(gv); }
   else if (!G.stuck && gv) gv.remove();
 }
+// the item buttons at the top left of the acorn game, the owl post and the chameleon game: under the bar, on the
+// canvas (the acorn's by the hearts, the owl post's under its clock bar, the chameleon's in its round and clock row)
+const DOCK_TOP = { acorn: () => [mcv, 8], owlpost: () => [opcv, opGeo().top + 4], chameleon: () => [cmcv, (cmTop() - 54) / 2] };
+function dockTopPlace() {
+  const d = $('#itemdock');
+  if (!d || d.hidden) return;
+  const g = Object.keys(DOCK_TOP).find(n => d.classList.contains('dock-' + n));
+  if (!g) return;
+  const [cv, y] = DOCK_TOP[g](), sc = d.parentElement.getBoundingClientRect();
+  d.style.top = Math.round(cv.getBoundingClientRect().top - sc.top + y) + 'px';
+}
 // the item buttons' row, between the board and the tray (its place set by layout)
 const ITEM_ROW = 60;
 const blockItemRow = () => !!IT && IT.game === 'block';
@@ -3183,6 +3195,7 @@ function miniResize() {
   MG.W = W; MG.H = H;
   mcv.width = Math.round(W * dpr); mcv.height = Math.round(H * dpr);
   if (old) { MG.x = MG.x * W / old; MG.tx = MG.tx * W / old; }
+  dockTopPlace();
 }
 function miniHud() {
   $('#mini-score').textContent = MG.score.toLocaleString(); fitNum($('#mini-score'));
@@ -3293,7 +3306,8 @@ function miniStep(dt) {
   for (const it of MG.items) {
     const y0 = it.y;
     it.vy += MG.H * 0.31 * dt; it.y += it.vy * dt; it.rot += it.spin * dt;
-    if (!playing || it.done) continue;
+    if (it.vx) it.x += it.vx * dt;   // a stone knocked off the shield
+    if (!playing || it.done || it.bounce) continue;
     if (it.k !== 'stone' && itemRun('acorn', 'magnet')) it.x += (MG.x - it.x) * Math.min(1, dt * 6);   // the magnet: everything but stones to the squirrel
     // caught when it touches the squirrel anywhere (checked along this frame's fall, so it cannot slip past a thin part)
     const rad = itemRad(it, g), steps = Math.max(1, Math.ceil((it.y - y0) / rad));
@@ -3334,8 +3348,11 @@ function miniCatch(it, g) {
   const y = g.top - g.r * 0.4;   // the points rise from over the squirrel's head
   if (it.k === 'stone') {
     if (itemTake('acorn', 'shield')) {   // the shield takes it: no heart, the streak goes on
+      shieldHit('acorn-shield');
+      const side = it.x === MG.x ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(it.x - MG.x);   // the stone knocked off it, spinning
+      MG.items.push({ ...it, done: false, bounce: true, y: Math.min(it.y, g.foot - g.S * 1.12), vx: side * MG.W * 0.55, vy: -MG.H * 0.42, spin: side * 10 });
       gsfx('acHeart', 1, 'heart'); buzz(25);
-      MG.pops.push({ text: itemT().saved, x: MG.x, y, t: 0, look: CHAIN_LOOK, size: g.u * 1.4, life: 0.9 });
+      MG.pops.push({ text: itemT().saved, x: MG.x, y: g.foot - g.S * 1.12 - g.u * 1.1, t: 0, look: CHAIN_LOOK, size: g.u * 1.4, life: 0.9 });   // over the shield (its breaking shows)
       for (let i = 0; i < 12; i++) { const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.6, sp = 200 + Math.random() * 160; MG.sparks.push({ x: it.x, y: it.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: 0, life: 0.5, c: i % 2 ? '#7fd0ff' : '#fff', s: 3 + Math.random() * 2, star: i % 2 === 0 }); }
       return;
     }
@@ -3395,7 +3412,7 @@ function miniDraw(now) {
     else if (P.sq) c.drawImage(P.sq, -SQA.mid * g.S, -SQA.foot * g.S, SQA.w * g.S, g.S);
     c.restore();
   }
-  if (itemHas('acorn', 'shield')) itemBubble(c, MG.x, g.foot - g.S * 0.5, g.S * 0.62, t);
+  shieldFx(c, 'acorn-shield', MG.x, g.foot - g.S * 0.5, g.S * 0.62, t, itemHas('acorn', 'shield'));
   if (itemRun('acorn', 'magnet')) magnetFx(c, 'acorn', MG.x, g.foot - g.S * 0.5, g.S * 0.62, t, MG.items.filter(i => i.k !== 'stone' && !i.done && i.y > -g.r && i.y < g.gy), IT.left.magnet / IT.len.magnet);
   // falling things, in front of the squirrel (they drop past its face into the basket)
   for (const it of MG.items) {
@@ -3416,7 +3433,8 @@ function miniDraw(now) {
   // hearts and the multiplier, under the bar
   const hy = 10, hs = 30;
   for (let i = 0; i < 3; i++) c.drawImage(i < MG.hearts ? P.heartHud : P.heartOff, W / 2 - hs * 1.6 + i * hs * 1.1, hy, hs, hs);
-  if (MG.combo >= 3) miniText(c, tr('comboN', MG.combo) + (miniMult() > 1 ? '  x' + miniMult() : ''), W / 2, hy + hs + 20, Math.min(22, W * 0.056), miniMult() > 1 ? GOLD_LOOK : SUB_LOOK, now);
+  const cmy = hy + hs + 20 + (IT && IT.game === 'acorn' ? 30 : 0);   // under the item buttons' row, if any (dockTopPlace)
+  if (MG.combo >= 3) miniText(c, tr('comboN', MG.combo) + (miniMult() > 1 ? '  x' + miniMult() : ''), W / 2, cmy, Math.min(22, W * 0.056), miniMult() > 1 ? GOLD_LOOK : SUB_LOOK, now);
   for (const p of MG.pops) {
     const k = p.t / p.life;
     c.save(); c.globalAlpha = k > 0.7 ? (1 - k) / 0.3 : 1;
@@ -3792,11 +3810,33 @@ function itemTick(g, dt) {
   itemDockUI(ch);
 }
 const ITEM_USE = {};   // what a tap on a game's item does: ITEM_USE[game][id]() (true: it was used or is aiming)
-// drawn in the games: a shield's bubble
-function itemBubble(c, x, y, r, t, rgb = '127,208,255') {
-  c.save(); c.globalAlpha = 0.16 + 0.05 * Math.sin(t * 4); c.fillStyle = `rgb(${rgb})`; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill();
-  c.globalAlpha = 0.6; c.lineWidth = Math.max(2, r * 0.05); c.strokeStyle = `rgb(${rgb})`; c.stroke();
-  c.globalAlpha = 0.7; c.lineWidth = Math.max(2, r * 0.06); c.strokeStyle = '#fff'; c.beginPath(); c.arc(x, y, r * 0.8, -2.5, -1.9); c.stroke(); c.restore();
+// The shield (the acorn game's shield, the hedgehog's guard): a clear bubble round the character, barely there - a faint
+// edge, a soft glint and a sheen going slowly round; when it takes a hit (shieldHit) it lights up a moment and goes,
+// growing a little
+const SHIELD_BREAK = 0.4;
+const fxOut = p => 1 - Math.pow(1 - p, 3);
+function shieldHit(key) { FX.set(key + ':brk', { t0: null }); }
+function shieldBubble(c, x, y, r, a, t) {
+  const gr = c.createRadialGradient(x, y, r * 0.55, x, y, r);
+  gr.addColorStop(0, 'rgba(210,242,255,0)'); gr.addColorStop(1, `rgba(210,242,255,${Math.min(1, 0.16 * a)})`);
+  c.fillStyle = gr; c.beginPath(); c.arc(x, y, r, 0, FX_TAU); c.fill();
+  c.lineWidth = Math.max(1.5, r * 0.035); c.strokeStyle = `rgba(255,255,255,${Math.min(1, 0.3 * a)})`; c.stroke();
+  c.lineCap = 'round'; c.lineWidth = Math.max(2, r * 0.06);
+  c.strokeStyle = `rgba(255,255,255,${Math.min(1, 0.42 * a)})`; c.beginPath(); c.arc(x, y, r * 0.8, -2.5, -1.9); c.stroke();
+  const s0 = t * 0.7; c.lineWidth = Math.max(1.5, r * 0.045);
+  c.strokeStyle = `rgba(255,255,255,${Math.min(1, 0.2 * a)})`; c.beginPath(); c.arc(x, y, r * 0.92, s0, s0 + 0.9); c.stroke();
+}
+function shieldFx(c, key, x, y, r, now, on) {
+  c.save();
+  if (on) shieldBubble(c, x, y, r, 0.85 + 0.15 * Math.sin(now * 2.5), now);
+  const B = FX.get(key + ':brk');
+  if (B) {
+    if (B.t0 == null || now < B.t0) B.t0 = now;
+    const k = (now - B.t0) / SHIELD_BREAK;
+    if (k >= 1) FX.delete(key + ':brk');
+    else shieldBubble(c, x, y, r * (1 + 0.25 * fxOut(k)), 2.2 * (1 - k), now);
+  }
+  c.restore();
 }
 // the running items' looks, drawn like the rest of the games (bold shapes, a dark edge): the magnet's crackling cords
 // and the booster's speed lines and afterimages
@@ -3807,7 +3847,7 @@ const fxState = (key, now) => {
   const dt = Math.min(0.05, Math.max(0, now - S.last)); S.last = now; S.dt = dt;
   return S;
 };
-const FX_TAU = Math.PI * 2, FX_INK = '43,26,14';
+const FX_TAU = Math.PI * 2, FX_INK = '43,26,14', FX_INKC = `rgb(${FX_INK})`;
 const fxPics = {};
 const fxPic = id => { let im = fxPics[id]; if (!im) { im = fxPics[id] = new Image(); im.src = ITEM_FILE[id]; } return im.complete && im.naturalWidth ? im : null; };
 // a stroke with a dark edge under it (how lines are drawn in these games)
@@ -3933,6 +3973,7 @@ function itemDock(game, scr) {
   d.hidden = false;
   itemDockUI(true);
   if (g === 'block') { blockDockPlace(); blockStuckUI(); for (const id in IT.st) itemIcon(id, 10); }
+  if (g in DOCK_TOP) dockTopPlace();
 }
 function itemDockUI() {
   const d = $('#itemdock');
@@ -5896,7 +5937,8 @@ const pcv = $('#pb-cv'), pbctx = pcv.getContext('2d');
 function pbBest() { try { return parseInt(localStorage.getItem(PB_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
 // sizes on screen: the cell (s), the field (left L, top T, right R, bank B), the frame, the otter's scale (k)
 function pbGeo() {
-  const W = PB.W, H = PB.H, frame = 12, side = 8, top = 10, low = 8;
+  // low: room under the bank (with items, their buttons' row as well: the otter walks the whole bank)
+  const W = PB.W, H = PB.H, frame = 12, side = 8, top = 10, low = 8 + (IT && IT.game === 'pebble' ? 66 : 0);
   const s = Math.max(10, Math.floor(Math.min((W - 2 * (side + frame)) / PB_C, (H - top - frame - low) / (PB_R + 1))));
   const fw = s * PB_C, fh = s * PB_R, L = Math.round((W - fw) / 2);
   const T = Math.round(top + frame + Math.max(0, H - top - frame - low - fh - s) * 0.3);   // spare height mostly to the bank
@@ -5917,7 +5959,7 @@ function pbStonePic(r) {
 }
 // the pictures at screen size: the otter, the pebbles, the field (water in a frame of river stones, the sandy bank below)
 function pbPics() {
-  const g = pbGeo(), key = [PB.W, PB.H, dpr, Object.keys(pbArt).length].join('|');
+  const g = pbGeo(), key = [PB.W, PB.H, g.s, dpr, Object.keys(pbArt).length].join('|');   // (the field smaller with items: g.s)
   if (PB.img && PB.img.key === key) return PB.img;
   const P = { key, ot: {} };
   for (const n of Object.keys(PB_ART)) if (pbArt[n]) P.ot[n] = artPic(pbArt[n], pbArt[n].naturalWidth * g.k, pbArt[n].naturalHeight * g.k);
@@ -6880,6 +6922,7 @@ function opResize() {
   OP.W = Math.max(1, Math.round(r.width)); OP.H = Math.max(1, Math.round(r.height));
   opcv.width = Math.round(OP.W * dpr); opcv.height = Math.round(OP.H * dpr);
   OP.img = null;
+  dockTopPlace();
 }
 function opHud() {
   $('#op-score').textContent = OP.score.toLocaleString(); fitNum($('#op-score'));
@@ -7149,8 +7192,8 @@ const CM_CELL = 30, CM_CELL_LAST = 26;   // a leaf's cell: smallest while the bo
 // the boards of a game on this screen: squares (2x2, 3x3 ...) while a cell stays 30px or more; then one row more each board
 // until the screen's height is full; then one column more each board (cells smaller, down to 26px) with the rows filling
 // the height. Each board has more leaves than the one before it; past the last one, the last again
-function cmSizes(W, H) {
-  const aw = Math.min(W - 28, 520) - 20, ah = H - 44 - 28 - 20, out = [];   // the room for cells (as in cmGeo)
+function cmSizes(W, H, top = 44) {
+  const aw = Math.min(W - 28, 520) - 20, ah = H - top - 28 - 20, out = [];   // the room for cells (as in cmGeo)
   for (let n = 2; aw / n >= CM_CELL && ah / n >= CM_CELL; n++) out.push([n, n]);
   if (!out.length) out.push([2, 2]);
   let c = out[out.length - 1][0];
@@ -7191,8 +7234,10 @@ const cmcv = $('#cm-cv'), cmctx = cmcv.getContext('2d');
 function cmBest() { try { return parseInt(localStorage.getItem(CM_BEST) || '0', 10) || 0; } catch (e) { return 0; } }
 // sizes on screen: the round and the clock on top, the board in the middle of what is left, its square cells as big as
 // fit (the full width, up to 520px)
+// with items, the round and clock row taller: their button at its left
+const cmTop = () => (IT && IT.game === 'chameleon' ? 66 : 44);
 function cmGeo() {
-  const W = CM.W, H = CM.H, top = 44, pad = 14, inner = 10, cols = CM.cols, rows = CM.rows;
+  const W = CM.W, H = CM.H, top = cmTop(), pad = 14, inner = 10, cols = CM.cols, rows = CM.rows;
   const cell = Math.min((Math.min(W - 2 * pad, 520) - 2 * inner) / cols, (H - top - 2 * pad - 2 * inner) / rows);
   const bw = cols * cell + 2 * inner, bh = rows * cell + 2 * inner;
   const x = Math.round((W - bw) / 2), y = Math.round(top + (H - top - bh) / 2);
@@ -7227,6 +7272,7 @@ function cmResize() {
   CM.W = Math.max(1, Math.round(r.width)); CM.H = Math.max(1, Math.round(r.height));
   cmcv.width = Math.round(CM.W * dpr); cmcv.height = Math.round(CM.H * dpr);
   CM.img = null;
+  dockTopPlace();
 }
 function cmHud() {
   $('#cm-score').textContent = CM.score.toLocaleString(); fitNum($('#cm-score'));
@@ -7243,7 +7289,7 @@ function openChameleon() {
 function cmStart() {
   $('#cm-menu').hidden = true;
   cmResize();
-  CM.seq = cmSizes(CM.W, CM.H);
+  CM.seq = cmSizes(CM.W, CM.H, cmTop());
   endBest('chameleon');
   Object.assign(CM, { st: 'play', time: CM_T0, score: 0, best: cmBest(), found: 0, shake: -1, shakeT: 0, pops: [], sparks: [] });
   cmRound(1);
@@ -7330,8 +7376,9 @@ function cmDraw(now) {
   c.clearRect(0, 0, CM.W, CM.H);
   // the round and the clock: a bar that empties, red and pulsing in the last 10 seconds
   const lab = textImg(tr('msLevel', CM.round), 18, SUB_LOOK, false);
-  miniText(c, tr('msLevel', CM.round), 16 + lab.w / 2, 22, 18, SUB_LOOK, now);
-  const bx = Math.round(16 + lab.w + 12), bw = CM.W - bx - 16, by = 13, bh = 18, f = Math.max(0, Math.min(1, CM.time / CM_T0));
+  const lx = g.top > 44 ? 12 + 54 + 10 : 16, my = g.top / 2;   // after the item button (dockTopPlace), if any
+  miniText(c, tr('msLevel', CM.round), lx + lab.w / 2, my, 18, SUB_LOOK, now);
+  const bx = Math.round(lx + lab.w + 12), bw = CM.W - bx - 16, by = Math.round(my - 9), bh = 18, f = Math.max(0, Math.min(1, CM.time / CM_T0));
   rr(c, bx, by, bw, bh, 9); c.fillStyle = 'rgba(30,20,10,0.35)'; c.fill();
   const low = CM.time <= 10, col = low ? (Math.sin(now / 120) > 0 ? '#ff4d3d' : '#ff8a5c') : CM.time <= 25 ? '#ffc23a' : '#6fdc4a';
   if (f > 0) { rr(c, bx, by, Math.max(bh, bw * f), bh, 9); c.fillStyle = col; c.fill(); }
@@ -7978,6 +8025,7 @@ function hhClear() {
 // the guard (the item) takes the bounce: the quill falls away and comes back to be thrown again, the game goes on
 function hhGuarded(tipY) {
   const g = hhGeo();
+  shieldHit('hh-guard');   // the guard lights up and goes
   HH.falls.push({ x: g.cx, y: tipY + g.q * 0.5, a: Math.PI / 2, vx: (Math.random() < 0.5 ? -1 : 1) * 170 * g.s, vy: 160 * g.s, vr: (Math.random() < 0.5 ? -1 : 1) * 16, t: 0 });
   HH.left++; HH.shake = 0.2; hhHud();
   HH.pops.push({ text: itemT().saved, x: g.cx, y: tipY + g.q, t: 0, life: 0.9, size: 26, look: CHAIN_LOOK });
@@ -8093,7 +8141,7 @@ function hhDraw(now) {
     c.save(); c.translate(g.cx, y); c.rotate(Math.PI / 2); hhQuill(c, g.q, g.qw); c.restore();
   }
   hhHog(c, g.cx, g.foot, g.hb, HH.throwT > 0 ? Math.max(0.01, 1 - HH.throwT / 0.18) : 0, HH.st === 'over');
-  if (itemHas('hedgehog', 'guard')) itemBubble(c, g.cx, g.foot - g.hb * 0.48, g.hb * 0.62, now / 1000);   // the guard, waiting
+  shieldFx(c, 'hh-guard', g.cx, g.foot - g.hb * 0.48, g.hb * 0.62, now / 1000, itemHas('hedgehog', 'guard'));   // the guard, waiting (and breaking)
   for (const p of HH.chips) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); c.fillStyle = '#e0a868'; c.fillRect(p.x - 2.5, p.y - 2.5, 5, 5); }
   for (const p of HH.sparks) { c.globalAlpha = Math.max(0, 1 - p.t / p.life); miniStar(c, p.x, p.y, p.s * 1.6, p.c); }
   c.globalAlpha = 1;
@@ -10331,8 +10379,8 @@ for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener
 setInterval(bkSync, 300);   // cards that open by themselves (a game ending) get their entry too
 
 // read-only hooks for automated checks
-window.__rise = { SND, sfxSynth, evTm: () => EV.tm, G, shapeOf, sprite, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY }),
-  bitems: { IT: () => IT, targets: (k, c, r) => itemTargets(k, c, r).marks.size, aim: () => bAim, checkNoFit, touch: touchGrid }, acorn: { MG }, nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
+window.__rise = { shieldArm: () => { if (IT && IT.st.shield) { IT.st.shield = 'on'; itemDockUI(); } }, SND, sfxSynth, evTm: () => EV.tm, G, shapeOf, sprite, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY }),
+  bitems: { IT: () => IT, targets: (k, c, r) => itemTargets(k, c, r).marks.size, aim: () => bAim, checkNoFit, touch: touchGrid }, acorn: { MG, geo: miniGeo }, nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
                   deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
                   sound: { SND, sfx, gsfx, scoreFor, wireAudio, MUSIC, SFXB, SFX_AT, musicStart, musicStop, musicTempo, musicPos },
