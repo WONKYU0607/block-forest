@@ -524,7 +524,7 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
 .hub-badge[hidden] { display: none; }
 /* coins and golden acorns (top left), settings (top right) */
 /* one row up to the gear; a long coin number comes down in size to fit it (hubChipsFit sets --hc) */
-.hub-chips { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); right: calc(max(12px, env(safe-area-inset-right, 0px)) + 52px);
+.hub-chips { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); right: calc(max(12px, env(safe-area-inset-right, 0px)) + 104px);
   display: flex; gap: 8px; pointer-events: none; }
 .hub-chips > * { pointer-events: auto; flex: none; }
 .hub-chips .hub-chip b.js-coin { font-size: var(--hc, 18px); -webkit-text-stroke-width: calc(var(--hc, 18px) * 0.28); }   /* only the coins' number comes down (its edge with it) */
@@ -540,6 +540,21 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
   display: grid; place-items: center; appearance: none; cursor: pointer; background: var(--wood); border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); }
 .hub-gear svg { width: 30px; height: 30px; display: block; }
 .hub-gear:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ol); }
+.hub-gear.hub-mail { right: calc(max(12px, env(safe-area-inset-right, 0px)) + 52px); }   /* the mailbox, left of the gear */
+/* the first screen's top row kept on one line: on a narrow screen all of it (chips and buttons) a little smaller (hubChipsFit
+   sets --hs, and --hc, --hg: the coins' and the golden acorns' numbers) */
+#hub .hub-chips { right: calc(max(12px, env(safe-area-inset-right, 0px)) + 104px * var(--hs, 1)); gap: calc(8px * var(--hs, 1)); }
+#hub .hub-chip { height: calc(38px * var(--hs, 1)); gap: calc(5px * var(--hs, 1)); padding: 0 calc(12px * var(--hs, 1)) 0 calc(4px * var(--hs, 1)); border-radius: calc(20px * var(--hs, 1)); }
+#hub .hub-chip img { width: calc(30px * var(--hs, 1)); height: calc(30px * var(--hs, 1)); }
+#hub .hub-chip b { font-size: calc(18px * var(--hs, 1)); -webkit-text-stroke-width: calc(5px * var(--hs, 1)); }
+#hub .hub-chips .hub-chip b.js-coin { font-size: calc(var(--hc, 18px) * var(--hs, 1)); -webkit-text-stroke-width: calc(var(--hc, 18px) * var(--hs, 1) * 0.28); }
+#hub .hub-chips .hub-chip b.js-gold { font-size: calc(var(--hg, 18px) * var(--hs, 1)); -webkit-text-stroke-width: calc(var(--hg, 18px) * var(--hs, 1) * 0.28); }
+#hub .hub-chip .hc-heart { width: calc(28px * var(--hs, 1)); height: calc(28px * var(--hs, 1)); }
+#hub .hub-chip small { font-size: calc(10px * var(--hs, 1)); }
+#hub .hub-gear { width: calc(44px * var(--hs, 1)); height: calc(44px * var(--hs, 1)); border-radius: calc(14px * var(--hs, 1)); }
+#hub .hub-gear svg { width: calc(30px * var(--hs, 1)); height: calc(30px * var(--hs, 1)); }
+#hub .hub-gear.hub-mail { right: calc(max(12px, env(safe-area-inset-right, 0px)) + 52px * var(--hs, 1)); }
+#hub .hub-mail .hub-badge { transform: scale(var(--hs, 1)); transform-origin: 100% 0; }
 /* today's rewards (check-in, missions) and the heroes: screens of their own, the shop's look */
 .fscr { position: fixed; inset: 0; z-index: 35; overflow: hidden; background: linear-gradient(rgba(12, 40, 18, 0.35), rgba(12, 40, 18, 0.15)), url(shop-bg.webp) center / cover, #8fd36a; }
 .fscr[hidden] { display: none; }
@@ -580,6 +595,7 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
 .fs-cal .d img { width: 62%; height: 46%; object-fit: contain; display: block; }
 .fs-cal .d b { font-family: var(--num); font-weight: 400; font-size: 11px; color: #fff; -webkit-text-stroke: 3px var(--ol); paint-order: stroke fill; line-height: 1; }
 .fs-cal .d.gold { background: #fff0b8; }
+.fs-cal .d img.gb { position: absolute; top: 1px; right: 0; width: 46%; height: auto; aspect-ratio: 1; filter: drop-shadow(0 1px 0 rgba(43, 26, 14, 0.5)); }   /* + a golden acorn */
 .fs-cal .d.got > * { opacity: 0.35; }
 .fs-cal .d.got:after { content: ''; position: absolute; inset: 14% 12%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5l5 5L20 6.5' fill='none' stroke='%232b1a0e' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M4 12.5l5 5L20 6.5' fill='none' stroke='%236ccf4f' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
 .fs-cal .d.today { background: linear-gradient(#b8f08f, #7ad35a); box-shadow: 0 0 0 3px #fff36b, 0 0 14px 4px rgba(255, 240, 120, 0.9); }
@@ -697,6 +713,14 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 #bfpick { z-index: 4; }
 /* a game's opening card (first places and my best) and the ranking card */
 #rkintro { z-index: 33; }
+#mailbox { z-index: 40; }   /* over the first screen */
+#mailbox .ml-list { max-height: min(46vh, 400px); overflow-y: auto; margin: 0 -4px 6px; padding: 2px 4px; }
+#mailbox .ms-row .tx p { margin: 0 0 3px; font-family: 'Black Han Sans', sans-serif; }
+#mailbox .ml-k { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--bark); line-height: 1; }
+#mailbox .rp-place { font-family: var(--num); font-weight: 400; font-size: 16px; color: #fff; -webkit-text-stroke: 4px var(--ol); paint-order: stroke fill; line-height: 1; }
+#mailbox .rp-place.p1 { color: #ffd84a; } #mailbox .rp-place.p2 { color: #e4ebf2; } #mailbox .rp-place.p3 { color: #f0a868; }
+#mailbox .ms-get { background: #fff0b8; width: auto; min-width: 66px; padding: 0 7px; }   /* as wide as its prize (friends: up to 30,000) */
+#mailbox #btn-mail-all { margin-top: 8px; }
 #heartnone { z-index: 36; }   /* over a game's start card, under an ad */
 #heartnone .hn-big { width: 84px; height: 84px; display: block; margin: 4px auto 6px; }
 #heartnone .hn-next { margin: 0 0 12px; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 17px; color: var(--ol); font-variant-numeric: tabular-nums; }
@@ -983,6 +1007,7 @@ html.tall-art .scr-box .ext { display: none; }
     <button class="hub-go" id="btn-hub-play" type="button" data-t="hubPlay">게임 시작</button>
   </div>
   <div class="hub-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div><div class="hub-chip heart-chip" aria-label="하트" data-ta="hearts"><svg class="hc-heart" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 35C6 26 2 18 4 11C6 4 15 3 20 10C25 3 34 4 36 11C38 18 34 26 20 35Z" fill="#ff5a6e" stroke="#2b1a0e" stroke-width="3.2" stroke-linejoin="round"/><ellipse cx="12" cy="12" rx="3.4" ry="2.4" transform="rotate(-34 12 12)" fill="#fff" fill-opacity=".75"/></svg><span class="hc-num"><b class="js-heart">5</b><small class="js-heart-t"></small></span></div></div>
+  <button class="hub-gear hub-mail" id="btn-hub-mail" type="button" aria-label="우편함" data-ta="mail"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13.5" rx="2.6" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2"/><path d="M3.6 7.2l8.4 6.4 8.4-6.4" fill="none" stroke="#2b1a0e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="2.5" fill="#ff5a4a" stroke="#2b1a0e" stroke-width="1.6"/></svg><span class="hub-badge" id="hub-mail-b" hidden></span></button>
   <button class="hub-gear" id="btn-hub-set" type="button" aria-label="설정" data-ta="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></button>
   <nav class="hub-dock">
     <button class="hub-d" id="btn-hub-att" type="button"><i class="hub-ic"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="8" width="30" height="27" rx="5" fill="#fff6dc" stroke="#2b1a0e" stroke-width="3"/><path d="M5 13a5 5 0 0 1 5-5h20a5 5 0 0 1 5 5v4H5z" fill="#ff5a4a" stroke="#2b1a0e" stroke-width="3"/><rect x="11" y="4" width="4" height="9" rx="2" fill="#fff" stroke="#2b1a0e" stroke-width="2.5"/><rect x="25" y="4" width="4" height="9" rx="2" fill="#fff" stroke="#2b1a0e" stroke-width="2.5"/><path d="M13 25.5l4 4 9-9" fill="none" stroke="#4fb83f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b data-t="attend">출석</b><span class="hub-badge" id="hub-att-b" hidden>!</span></button>
@@ -1392,6 +1417,15 @@ html.tall-art .scr-box .ext { display: none; }
   </div>
 </section>
 
+<section id="mailbox" class="overlay" hidden aria-label="우편함" data-ta="mail">
+  <div class="card">
+    <div class="ribbon"><h2 data-t="mail">우편함</h2></div>
+    <div class="ml-list" id="ml-list"></div>
+    <button class="btn primary" id="btn-mail-all" type="button" data-t="misAllGet">한번에 받기</button>
+    <button class="btn plain" id="btn-mail-close" type="button" data-t="close">닫기</button>
+  </div>
+</section>
+
 <section id="heartnone" class="overlay" hidden aria-label="하트가 없어요" data-ta="heartNone">
   <div class="card">
     <div class="ribbon"><h2 data-t="heartNone">하트가 없어요</h2></div>
@@ -1456,7 +1490,7 @@ const STR = {
     invSteps: ['초대 링크를 보내요', '친구가 앱을 깔고 1판 해요', '친구도 나도 3,000코인!'], invCount: '초대한 친구', invGo: '친구 초대하기', invFull: n => `${n}명 모두 초대했어요`,
     invNote: n => `새로 가입한 친구만 · 최대 ${n}명까지`, invMsg: '미니게임 포레스트 같이 하자! 이 링크로 앱을 깔고 1판 하면 우리 둘 다 3,000코인을 받아.', invCopied: '초대 링크를 복사했어요',
     invGot: n => `친구 초대 보상으로 ${n.toLocaleString()}코인을 받았어요!`, invPaid: (k, n) => `친구 ${k}명이 들어왔어요! ${n.toLocaleString()}코인을 받았어요`, attGet: '보상 받기',
-    misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음', misAllGet: '한번에 받기', hearts: '하트', heartNone: '하트가 없어요', heartNext: t => `다음 하트까지 ${t}`, heartFull: '하트가 가득 찼어요', adCoin: '광고 보고 코인 받기', adHeart: '광고 보고 하트 받기', gotHeart: '하트 1개를 받았어요', itemBack: n => `안 쓴 아이템 ${n}코인을 돌려받았어요`,
+    misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음', misAllGet: '한번에 받기', hearts: '하트', heartNone: '하트가 없어요', heartNext: t => `다음 하트까지 ${t}`, heartFull: '하트가 가득 찼어요', adCoin: '광고 보고 코인 받기', adHeart: '광고 보고 하트 받기', freeGift: '황금 도토리 받기', freeCoin: '코인 받기', freeHeart: '하트 받기', gotHeart: '하트 1개를 받았어요', itemBack: n => `안 쓴 아이템 ${n}코인을 돌려받았어요`,
     gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, gotAll: (g, c) => `황금 도토리 ${g}개, 코인 ${c.toLocaleString()}개를 받았어요`, noCoins: '코인이 모자라요',
     heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`, evolveTitle: '진화!',
     heroBonus: p => `캐릭터 보너스 +${p}%`, prev: '이전', next: '다음',
@@ -1488,7 +1522,7 @@ const STR = {
     delFail: '지우지 못했어요. 다시 해 주세요', delOff: '인터넷 연결을 확인하고 다시 해 주세요', privacy: '개인정보처리방침', terms: '이용약관',
     webOnlyText: '미니게임 포레스트는 안드로이드 앱으로 즐길 수 있어요.', webOnlyGo: 'Google Play에서 받기',
      rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', mushroom: '버섯 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', hedgehog: '가시 꽂기', hedgehogShort: '가시', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkAllTop: '전체 1위', rkWeekTop: '주간 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '전체', rkWeek: '주간', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', mushroom: '버섯 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', hedgehog: '가시 꽂기', hedgehogShort: '가시', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkAllTop: '전체 1위', rkWeekTop: '주간 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, mail: '우편함', mailRank: '주간 랭킹', mailInv: '친구 초대 보상', mailInvN: n => `친구 ${n}명이 왔어요`, rkAll: '전체', rkWeek: '주간', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
@@ -1509,8 +1543,8 @@ const STR = {
     invSteps: ['Send your invite link', 'Your friend installs and plays a game', 'You both get 3,000 coins!'], invCount: 'Friends invited', invGo: 'Invite friends', invFull: n => `All ${n} invited`,
     invNote: n => `New players only · up to ${n} friends`, invMsg: 'Play Mini Game Forest with me! Install it from this link and play one game: we both get 3,000 coins.', invCopied: 'Invite link copied',
     invGot: n => `Invite reward: +${n.toLocaleString()} coins!`, invPaid: (k, n) => `${k} friend${k > 1 ? 's' : ''} joined! +${n.toLocaleString()} coins`, attGet: 'Claim reward',
-    misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got', misAllGet: 'Claim all', hearts: 'Hearts', heartNone: 'Out of hearts', heartNext: t => `Next heart in ${t}`, heartFull: 'Hearts are full', adCoin: 'Watch an ad for coins', adHeart: 'Watch an ad for a heart', gotHeart: 'You got a heart', itemBack: n => `Unused items: ${n} coins back`,
-    gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, gotAll: (g, c) => `+${g} golden acorns, +${c.toLocaleString()} coins`, noCoins: 'Not enough coins',
+    misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got', misAllGet: 'Claim all', hearts: 'Hearts', heartNone: 'Out of hearts', heartNext: t => `Next heart in ${t}`, heartFull: 'Hearts are full', adCoin: 'Watch an ad for coins', adHeart: 'Watch an ad for a heart', freeGift: 'Get a golden acorn', freeCoin: 'Get coins', freeHeart: 'Get a heart', gotHeart: 'You got a heart', itemBack: n => `Unused items: ${n} coins back`,
+    gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, gotAll: (g, c) => `+${g} golden acorn${g > 1 ? 's' : ''}, +${c.toLocaleString()} coins`, noCoins: 'Not enough coins',
     heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`, evolveTitle: 'Evolved!',
     heroBonus: p => `Hero bonus +${p}%`, prev: 'Previous', next: 'Next',
     heroName: g => ({ block: 'Bear', acorn: 'Squirrel', stairs: 'Rabbit', merge: 'Raccoon', pebble: 'Otter', mushroom: 'Mole', owlpost: 'Owl', chameleon: 'Chameleon', beaver: 'Beaver', hedgehog: 'Hedgehog', caterpillar: 'Caterpillar', cups: 'Fox' })[g],
@@ -1541,7 +1575,7 @@ const STR = {
     delFail: 'Could not delete. Please try again', delOff: 'Check your connection and try again', privacy: 'Privacy policy', terms: 'Terms',
     webOnlyText: 'Mini Game Forest is played in the Android app.', webOnlyGo: 'Get it on Google Play',
      rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', caterpillar: 'Leaf Munch', caterpillarShort: 'Munch', cups: 'Acorn Cups', cupsShort: 'Cups', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkAllTop: 'Overall 1st', rkWeekTop: 'Weekly 1st', rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'Overall', rkWeek: 'Weekly', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', caterpillar: 'Leaf Munch', caterpillarShort: 'Munch', cups: 'Acorn Cups', cupsShort: 'Cups', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkAllTop: 'Overall 1st', rkWeekTop: 'Weekly 1st', rkMine: 'My best', rkPlace: n => `#${n}`, mail: 'Mailbox', mailRank: 'Weekly ranking', mailInv: 'Invite reward', mailInvN: n => `${n} friend${n > 1 ? 's' : ''} joined`, rkAll: 'Overall', rkWeek: 'Weekly', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -3581,7 +3615,7 @@ $('#btn-bf-close').addEventListener('click', () => { sfx('pick'); $('#bfpick').h
    further down, me. A board's top 20 is one read (it is kept in one document, rewritten only when someone gets onto
    it); what was read is shown again for a minute without asking. ---------- */
 const RK_SENT = 'rise-rk-sent', RK_WEEK = 'rise-rk-week', RK_TOP = 20, RK_KEEP = 60000;
-const rkWeek = (t = Date.now()) => Math.floor((t - 313200000) / 604800000);
+const rkWeek = (t = srvNow() ?? Date.now()) => Math.floor((t - 313200000) / 604800000);   // the server's clock when known
 // each board's best on this phone
 const RK_LOCAL = { block16: () => bestFor(16), block32: () => bestFor(32), acorn: () => miniBest(), stairs: () => stBest(), merge: () => fmBest(), pebble: () => pbBest(),
   mushroom: () => msBest(), owlpost: () => opBest(), chameleon: () => cmBest(), beaver: () => bvBest(), hedgehog: () => hhBest(), caterpillar: () => cpBest(), cups: () => cuBest() };
@@ -4264,6 +4298,7 @@ function setNoAds(v) {
   noAds = !!v;
   try { localStorage.setItem(NOADS_KEY, noAds ? '1' : '0'); } catch (e) { /* storage unavailable */ }
   contUI(); shopUI();
+  if (!$('#heartnone').hidden) heartNoneUI();
 }
 // fetch the ads ahead, so none keeps the player waiting (in the app; the native part keeps one of each)
 function adsAhead() { const nat = NATIVE(); if (nat && !noAds) { try { nat.ads.preloadRewarded(); } catch (e) { /* no ad */ } } }
@@ -4281,8 +4316,10 @@ function adStandIn(done) {
   const tick = () => { if (--n > 0) { adCover(true, n); el._t = setTimeout(tick, 1000); } else { adCover(false); done(); } };
   el._t = setTimeout(tick, 1000);
 }
-// the rewarded ad, before going on: done() once it has been watched to the end, fail() when not (closed early, none to show)
+// the rewarded ad, before going on: done() once it has been watched to the end, fail() when not (closed early, none to show).
+// Ad removal bought: no ad, the reward at once
 function showRewardedAd(done, fail) {
+  if (noAds) { done(); return; }
   const nat = NATIVE();
   if (!nat) { adStandIn(done); return; }
   adCover(true);
@@ -4573,19 +4610,103 @@ function heartsNow(now = srvNow()) {
 let SRV = null, srvBusy = false;
 function srvNow() { return SRV ? Math.round(SRV.ms + (performance.now() - SRV.at)) : null; }
 async function srvSync() {
-  if (FREE_COINS || srvBusy || !ME || !NET || !NET.serverTime) return;
+  if (srvBusy || !ME || !NET || !NET.serverTime) return;
   srvBusy = true;
   try {
     const r = await NET.serverTime();
     if (r) {
       SRV = { ms: r.server, at: performance.now() - (Date.now() - r.local) };
       const h = WAL.hearts;
-      if (h && h.n < HEART_MAX && !(h.t > 0)) walletPut(w => { w.hearts = { n: h.n, t: srvNow() }; });   // one taken before the clock was known: it starts now
-      heartsUI();
+      if (!FREE_COINS && h && h.n < HEART_MAX && !(h.t > 0)) walletPut(w => { w.hearts = { n: h.n, t: srvNow() }; });   // one taken before the clock was known: it starts now
+      walletUI();   // the day known: check-in, missions, the ads (and the badges)
+      if (!$('#daily').hidden) dailyUI();
+      if (!$('#shop').hidden) shopUI();
     }
   } catch (e) { /* offline: the hearts wait for the clock */ } finally { srvBusy = false; }
+  rkPrizeCheck();   // the week known: last week's prizes
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) srvSync(); });
+addEventListener('online', () => srvSync());
+/* ---------- the mailbox (beside the gear on the first screen, a red mark with how many): what waits to be taken, all at
+   once with its button. The week's rankings' prizes: last week's top 10 of each board (each game; the block game's two
+   sizes each), by the server's clock, once an account: 1st 3 golden acorns and 1,000 coins, 2nd 1 and 500, 3rd 500 coins,
+   4th to 10th 300 coins. Looked at once the server's clock is known: a week's 13 boards (13 reads; the old weeks' boards
+   no longer change), the weeks not looked at yet (up to 4); kept as daily.wk (the last week taken, or looked at with
+   none). And the friends who came by the player's invite (invSync), 3,000 coins each, up to 10 in all ---------- */
+const RK_PRIZE = [{ g: 3, c: 1000 }, { g: 1, c: 500 }, { g: 0, c: 500 }, ...Array(7).fill({ g: 0, c: 300 })];
+let rpBusy = false, mailRank = null, mailInv = null, mailBusy = false;   // mailRank: { uid, wk, rows: [{ game, place }] }; mailInv: { uid, ids }
+async function rkPrizeCheck() {
+  if (rpBusy || mailRank || !rkOnline() || !NET.GAMES || srvNow() == null) return;
+  const uid = ME.uid, last = rkWeek() - 1, done = WAL.daily.wk;
+  if (Number.isInteger(done) && done >= last) return;
+  rpBusy = true;
+  try {
+    const rows = [];
+    for (let w = Number.isInteger(done) ? Math.max(done + 1, last - 3) : last; w <= last; w++) {
+      const lists = await Promise.all(NET.GAMES.map(g => NET.boardTop(g, 'w' + w)));
+      lists.forEach((l, i) => { const at = l.findIndex(o => o.uid === uid); if (at >= 0 && at < RK_PRIZE.length) rows.push({ game: NET.GAMES[i], place: at + 1 }); });
+    }
+    if (!ME || ME.uid !== uid) return;
+    if (!rows.length) { walletPut(w => { w.daily.wk = last; }); return; }   // none: not looked at again
+    rows.sort((a, b) => a.place - b.place);
+    mailRank = { uid, wk: last, rows };
+  } catch (e) { /* offline: next time */ } finally { rpBusy = false; mailBadge(); mailUI(); }
+}
+const mailMine = m => !!(m && ME && ME.uid === m.uid);
+const mailCount = () => (mailMine(mailRank) ? mailRank.rows.length : 0) + (mailMine(mailInv) && mailInv.ids.length ? 1 : 0);
+function mailBadge() { const n = mailCount(), b = $('#hub-mail-b'); b.hidden = !n; b.textContent = n; }
+function openMail() { $('#mailbox').hidden = false; mailUI(); rkPrizeCheck(); invSync(); }
+function mailUI() {
+  if ($('#mailbox').hidden) return;
+  const name = g => (g.startsWith('block') ? heroName('block') + ' ' + tr('size', +g.slice(5)) : heroName(g));
+  const icon = g => { const src = $('#mg-' + (g.startsWith('block') ? 'block' : g) + ' .mg-ic'), cl = src && src.cloneNode(true); if (cl) cl.removeAttribute('class'); return cl ? cl.outerHTML : ''; };
+  const coins = n => `<img src="coin-1.webp" alt=""><b>${n.toLocaleString()}</b>`;
+  const prize = p => { const z = RK_PRIZE[p - 1]; return z.g ? `<span class="two"><span><img src="gold-icon.webp" alt=""><b>${z.g}</b></span><span>${coins(z.c)}</span></span>` : coins(z.c); };
+  const row = (ic, title, sub, pz) => `<div class="ms-row"><div class="ic">${ic}</div><div class="tx"><p>${title}</p><div class="ml-k">${sub}</div></div><span class="ms-get">${pz}</span></div>`;
+  let h = mailMine(mailRank) ? mailRank.rows.map(r => row(icon(r.game), name(r.game), `<span>${tr('mailRank')}</span><b class="rp-place p${Math.min(4, r.place)}">${tr('rkPlace', r.place)}</b>`, prize(r.place))).join('') : '';
+  if (mailMine(mailInv) && mailInv.ids.length) {
+    const friends = '<span class="trio"><img class="t1" src="hub-owl.webp" alt=""><img class="t2" src="hub-raccoon.webp" alt=""><img class="t3" src="hub-rabbit.webp" alt=""></span>';
+    h += row(friends, tr('mailInv'), `<span>${tr('mailInvN', mailInv.ids.length)}</span>`, coins(mailInv.ids.length * INV_COINS));
+  }
+  $('#ml-list').innerHTML = h; $('#ml-list').hidden = !h;
+  const gs = [...$('#ml-list').querySelectorAll('.ms-get')];   // the prizes' boxes one width: the widest one's
+  for (const g of gs) g.style.width = '';
+  const gw = Math.max(66, ...gs.map(g => g.offsetWidth));
+  for (const g of gs) g.style.width = gw + 'px';
+  $('#btn-mail-all').disabled = !h || mailBusy;
+}
+// all at once: the prizes kept with the account; each friend marked paid on the server first (offline: those wait)
+async function mailTake() {
+  if (mailBusy || !mailCount()) return;
+  mailBusy = true; mailUI();
+  let g = 0, c = 0, off = false;
+  const rk = mailRank;
+  if (mailMine(rk)) {
+    let rc = 0;
+    for (const r of rk.rows) { g += RK_PRIZE[r.place - 1].g; rc += RK_PRIZE[r.place - 1].c; }
+    walletPut(w => { w.coins += rc; w.daily.wk = rk.wk; });
+    if (g) contPut(contN + g);
+    c += rc; mailRank = null;
+  }
+  const iv = mailInv;
+  if (mailMine(iv)) {
+    while (iv.ids.length) {
+      try { await NET.inviteClaim(iv.ids[0]); } catch (e) {
+        if (e && e.code === 'offline') { off = true; break; }
+        iv.ids.shift(); continue;   // refused (taken on another phone): not paid here
+      }
+      iv.ids.shift(); c += INV_COINS;
+      walletPut(w => { w.coins += INV_COINS; });
+    }
+    if (!iv.ids.length) mailInv = null;
+  }
+  mailBusy = false; mailBadge(); mailUI();
+  if (g || c) sfx('mission');
+  else if (off) toast(tr('delOff'));
+}
+$('#btn-hub-mail').addEventListener('click', () => { sfx('pick'); openMail(); });
+$('#btn-mail-all').addEventListener('click', mailTake);
+$('#btn-mail-close').addEventListener('click', () => { sfx('back'); $('#mailbox').hidden = true; });
 function heartsLeft() { return FREE_COINS ? Infinity : heartsNow().n; }
 function heartUse() {   // a game starts: one heart (false: none)
   if (FREE_COINS) return true;
@@ -4614,12 +4735,18 @@ function heartsUI() {
 setInterval(heartsUI, 1000);
 // the home's chips (coins, golden acorns, hearts) in one row up to the gear: the coins' number a size smaller at a time
 // until it fits (from 18px down to 10px)
+// the top row on one line: the coins' number comes down first (to 14), then the whole row with its two buttons (to 0.7 of
+// its size), then the coins' and the golden acorns' numbers further (to 11 and 12)
 function hubChipsFit() {
-  const row = $('#hub .hub-chips');
+  const hub = $('#hub'), row = $('#hub .hub-chips');
   if (!row || !row.offsetParent) return;
-  let px = 18;
-  row.style.setProperty('--hc', px + 'px');
-  while (row.scrollWidth > row.clientWidth + 0.5 && px > 10) row.style.setProperty('--hc', --px + 'px');
+  const v = { hs: 1, hc: 18, hg: 18 }, over = () => row.scrollWidth > row.clientWidth + 0.5;
+  const set = () => { hub.style.setProperty('--hs', v.hs); row.style.setProperty('--hc', v.hc + 'px'); row.style.setProperty('--hg', v.hg + 'px'); };
+  set();
+  while (over() && v.hc > 14) { v.hc--; set(); }
+  while (over() && v.hs > 0.7) { v.hs = Math.round((v.hs - 0.02) * 100) / 100; set(); }
+  while (over() && v.hc > 11) { v.hc--; set(); }
+  while (over() && v.hg > 12) { v.hg--; set(); }
 }
 addEventListener('resize', hubChipsFit);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(hubChipsFit);   // measured again in the numbers' own font
@@ -4632,6 +4759,9 @@ function heartNoneUI() {
   $('#hn-next').textContent = tr('heartNext', w == null ? '--:--' : mmss(w));
   $('#hn-left').textContent = tr('adGiftSub', left);
   $('#btn-hn-ad').disabled = left <= 0 || adBusy;
+  const lab = $('#btn-hn-ad span');   // ad removal bought: no ad to watch for it
+  lab.dataset.t = noAds ? 'freeHeart' : 'adHeart'; lab.textContent = tr(lab.dataset.t);
+  $('#btn-hn-ad svg').style.display = noAds ? 'none' : '';
 }
 $('#btn-hn-ad').addEventListener('click', () => { sfx('pick'); adHeartGo(); });
 $('#btn-hn-close').addEventListener('click', () => { sfx('back'); $('#heartnone').hidden = true; });
@@ -4661,23 +4791,27 @@ addEventListener('online', syncPending);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) syncPending(); });
 function walletWipe() { WAL = { coins: 0, daily: {}, heroes: {} }; walOwner = null; walDirty = false; try { localStorage.removeItem(WALLET_KEY); } catch (e) { /* storage unavailable */ } walletUI(); }
 const pad2 = n => String(n).padStart(2, '0');
-const dayKey = (t = new Date()) => `${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(t.getDate())}`;
-const monKey = (t = new Date()) => `${t.getFullYear()}-${pad2(t.getMonth() + 1)}`;
+// today by the server's clock, in the phone's time zone (a new day at the phone's midnight; moving the phone's clock does
+// nothing): check-in, the missions, the ads' counts. null: the server's clock not known yet (just opened, no connection)
+function srvDate() { const t = srvNow(); return t == null ? null : new Date(t); }
+const dayKey = (t = srvDate()) => (t ? `${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(t.getDate())}` : null);
+const monKey = (t = srvDate()) => (t ? `${t.getFullYear()}-${pad2(t.getMonth() + 1)}` : null);
 
-// check-in: each date of the month has its reward (coins; a golden acorn on the 7th, 14th, 21st, 28th), today's only
+// check-in: each date of the month has its reward (coins; and a golden acorn too on the 7th, 14th, 21st, 28th), today's only
 const attGold = d => d % 7 === 0 && d <= 28;
-const attBits = () => (WAL.daily.mon === monKey() ? WAL.daily.att | 0 : 0);
-const attCan = () => !(attBits() & (1 << (new Date().getDate() - 1)));
+const attBits = () => { const m = monKey(); return m && WAL.daily.mon === m ? WAL.daily.att | 0 : 0; };
+const attCan = () => { const t = srvDate(); return !!t && !(attBits() & (1 << (t.getDate() - 1))); };   // the day not known yet: wait
 function attClaim() {
-  if (!attCan()) return;
-  const d = new Date().getDate(), m = monKey(), gold = attGold(d);
+  const t = srvDate();
+  if (!t || !attCan()) return;
+  const d = t.getDate(), m = monKey(t), gold = attGold(d);
   walletPut(w => {
     if (w.daily.mon !== m) { w.daily.mon = m; w.daily.att = 0; }
     w.daily.att = (w.daily.att | 0) | (1 << (d - 1));
-    if (!gold) w.coins += ATT_COINS;
+    w.coins += ATT_COINS;
   });
   if (gold) contPut(contN + 1);
-  sfx('pick'); toast(gold ? tr('gotGold') : tr('gotCoins', ATT_COINS));
+  sfx('pick'); toast(gold ? tr('gotAll', 1, ATT_COINS) : tr('gotCoins', ATT_COINS));
 }
 
 // the day's five missions: the same on every phone of the account (from the date and the account), new at midnight
@@ -4690,7 +4824,7 @@ function misList(day) {
   return [{ t: 'any', n: 3 }, { t: 'play', g: g[0], n: 1 }, { t: 'play', g: g[1], n: 1 }, ...HERO_LIST.map(x => ({ t: 'score', g: x, n: 1, s: MIS_SCORE[x] }))];
 }
 function misState() {
-  const day = dayKey(), d = WAL.daily;
+  const d = WAL.daily, day = dayKey() || d.day || '';   // the day not known yet: the one kept
   if (d.day !== day || !Array.isArray(d.prog)) return { day, prog: new Array(MIS_N).fill(0), got: 0 };
   // today's from the list before (five missions): its first three (any 3 games, the two games played) are the same
   const same = d.v === MIS_V, keep = same ? MIS_N : 3;
@@ -4883,6 +5017,7 @@ function walletUI() {
   heartsUI(); hubChipsFit();
   const att = attCan(), mis = ME ? misReady() : 0;
   $('#hub-att-b').hidden = !att; $('#tab-att-b').hidden = !att;
+  mailBadge();
   for (const id of ['#hub-mis-b', '#tab-mis-b']) { $(id).hidden = !mis; $(id).textContent = mis; }
   if (!$('#daily').hidden) dailyUI();
   if (!$('#heroes').hidden) heroUI();
@@ -4897,21 +5032,22 @@ function openDaily(tab) {
 }
 function closeDaily() { clearInterval(dailyIv); $('#daily').hidden = true; }
 function dailyClock() {
-  if ($('#mis-list').dataset.day !== dayKey() || $('#att-cal').dataset.day !== dayKey()) dailyUI();   // midnight passed
+  const k = dayKey();
+  if (k && ($('#mis-list').dataset.day !== k || $('#att-cal').dataset.day !== k)) dailyUI();   // midnight passed (or the day just known)
 }
 function dailyUI() {
   $('#tab-att').classList.toggle('on', dailyTab === 'att'); $('#tab-mis').classList.toggle('on', dailyTab === 'mis'); $('#tab-inv').classList.toggle('on', dailyTab === 'inv');
   $('#att-pane').hidden = dailyTab !== 'att'; $('#mis-pane').hidden = dailyTab !== 'mis'; $('#inv-pane').hidden = dailyTab !== 'inv';
   invUI();
   // the month: from its first weekday, each date with its reward, ticked once taken
-  const now = new Date(), y = now.getFullYear(), m = now.getMonth(), today = now.getDate(), first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(), bits = attBits();
+  const now = srvDate() || new Date(), y = now.getFullYear(), m = now.getMonth(), today = now.getDate(), first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(), bits = attBits();
   const wd = LANG === 'en' ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['일', '월', '화', '수', '목', '금', '토'];
   let h = wd.map(w => `<div class="wd">${w}</div>`).join('') + '<div class="d blank"></div>'.repeat(first);
   for (let d = 1; d <= days; d++) {
     const gold = attGold(d), cls = ['d', gold ? 'gold' : '', bits & (1 << (d - 1)) ? 'got' : '', d === today ? 'today' : '', d < today ? 'past' : ''].join(' ');
-    h += `<div class="${cls}"><i>${d}</i><img src="${gold ? 'gold-icon.webp' : 'coin-1.webp'}" alt=""><b>${gold ? 'x1' : ATT_COINS}</b></div>`;
+    h += `<div class="${cls}"><i>${d}</i><img src="coin-1.webp" alt=""><b>${ATT_COINS}</b>${gold ? '<img class="gb" src="gold-icon.webp" alt="">' : ''}</div>`;   // the golden acorn on top of the coins
   }
-  const cal = $('#att-cal'); cal.innerHTML = h; cal.dataset.day = dayKey();
+  const cal = $('#att-cal'); cal.innerHTML = h; cal.dataset.day = dayKey() || '';
   const can = attCan(), btn = $('#btn-att-get'); btn.disabled = !can; btn.textContent = tr('attGet');   // taken today: the button off
   // the missions
   const st = misState(), L = misList(st.day), list = $('#mis-list');
@@ -4980,22 +5116,15 @@ async function invTry() {
 }
 // the player's friends who came: each not paid yet is paid now (up to 10 in all)
 async function invSync() {
-  if (!ME || !NET || !NET.invitesMine || invSyncing) return;
+  if (!ME || !NET || !NET.invitesMine || invSyncing || mailBusy) return;
   invSyncing = true;
-  let got = 0;
+  const uid = ME.uid;
   try {
-    const r = await NET.invitesMine();
-    let paid = r.n - r.open.length;
-    for (const id of r.open) {
-      if (paid >= INV_MAX) break;
-      await NET.inviteClaim(id);
-      paid++; got++;
-      walletPut(w => { w.coins += INV_COINS; });
-    }
-    invN = Math.min(INV_MAX, paid);
+    const r = await NET.invitesMine(), paid = r.n - r.open.length, ids = r.open.slice(0, Math.max(0, INV_MAX - paid));
+    if (ME && ME.uid === uid && !mailBusy) { mailInv = ids.length ? { uid, ids } : null; invN = Math.min(INV_MAX, paid + ids.length); }
   } catch (e) { /* offline: next time */ }
   invSyncing = false;
-  if (got) { sfx('mission'); toast(tr('invPaid', got, got * INV_COINS)); }
+  mailBadge(); mailUI();
   if (!$('#daily').hidden) invUI();
 }
 function invUI() {
@@ -5117,40 +5246,40 @@ function shopFit() {
   st.style.setProperty('--cl', Math.max(105, (12 - left) / k).toFixed(1));
 }
 addEventListener('resize', shopFit);
-// watching an ad in the shop: a golden acorn each time, 3 times a day (a new day at midnight, the phone's time)
-const ADGIFT_KEY = 'forest-adgift', ADGIFT_DAY = 3;
+// watching an ad in the shop: a golden acorn each time, 3 times a day (a new day at midnight: dayKey)
+const ADGIFT_DAY = 3;
 let adGiftBusy = false;
-const adGiftToday = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
-function adGiftLeft() {
-  try { const g = JSON.parse(localStorage.getItem(ADGIFT_KEY) || '{}'); return Math.max(0, ADGIFT_DAY - (g.d === adGiftToday() ? g.n || 0 : 0)); } catch (e) { return ADGIFT_DAY; }
+// the ads' counts today (the golden acorn's g, the coins' c, the heart's h), kept with the account (daily.ads: { d: the day,
+// g, c, h }), so clearing the phone or another phone does not start them again. The day not known yet: none to watch
+const AD_KEY = { adgift: 'g', adcoin: 'c', adheart: 'h' };
+function adUsed(id) { const a = WAL.daily.ads, day = dayKey(); return !day ? Infinity : a && a.d === day ? a[AD_KEY[id]] | 0 : 0; }
+function adCount(id) {
+  const day = dayKey();
+  if (day) walletPut(w => { const a = w.daily.ads && w.daily.ads.d === day ? w.daily.ads : { d: day }; a[AD_KEY[id]] = (a[AD_KEY[id]] | 0) + 1; w.daily.ads = a; });
 }
+function adGiftLeft() { return Math.max(0, ADGIFT_DAY - adUsed('adgift')); }
 function adGiftGo() {
   if (adGiftBusy || adGiftLeft() <= 0 || !$('#adfake').hidden) return;
   adGiftBusy = true; shopUI();
   showRewardedAd(() => {
     adGiftBusy = false;
-    const used = ADGIFT_DAY - adGiftLeft() + 1;
-    try { localStorage.setItem(ADGIFT_KEY, JSON.stringify({ d: adGiftToday(), n: used })); } catch (e) { /* storage unavailable */ }
+    adCount('adgift');
     contPut(contN + 1); contUI(); shopUI();
     sfx('mission'); toast(tr('adGiftDone'));
   }, () => { adGiftBusy = false; shopUI(); });
 }
 // the other ads in the shop: 1,000 coins (3 a day); a heart (5 a day, while there is room for one). Counted like the
-// golden acorn's, on the phone, a new day at midnight
+// golden acorn's (with the account, by the server's day)
 const AD_DAY = { adcoin: 3, adheart: 5 }, AD_COINS = 1000;
+// ad removal bought: the same rewards (as many a day), without the ad, so their names without it
+const AD_FREE = { adGift: 'freeGift', adCoin: 'freeCoin', adHeart: 'freeHeart' };
 let adBusy = false;
-function adLeft(id) {
-  try { const g = JSON.parse(localStorage.getItem('forest-' + id) || '{}'); return Math.max(0, AD_DAY[id] - (g.d === adGiftToday() ? g.n || 0 : 0)); } catch (e) { return AD_DAY[id]; }
-}
-function adMark(id) {
-  const n = AD_DAY[id] - adLeft(id) + 1;
-  try { localStorage.setItem('forest-' + id, JSON.stringify({ d: adGiftToday(), n })); } catch (e) { /* storage unavailable */ }
-}
+function adLeft(id) { return Math.max(0, AD_DAY[id] - adUsed(id)); }
 function adCoinGo() {
   if (adBusy || adLeft('adcoin') <= 0 || !$('#adfake').hidden) return;
   adBusy = true; shopUI();
   showRewardedAd(() => {
-    adBusy = false; adMark('adcoin');
+    adBusy = false; adCount('adcoin');
     walletPut(w => { w.coins += AD_COINS; }); shopUI();
     sfx('mission'); toast(tr('gotCoins', AD_COINS.toLocaleString()));
   }, () => { adBusy = false; shopUI(); });
@@ -5159,7 +5288,7 @@ function adHeartGo() {
   if (adBusy || adLeft('adheart') <= 0 || heartsLeft() >= HEART_MAX || !$('#adfake').hidden) return;
   adBusy = true; shopUI(); heartNoneUI();
   showRewardedAd(() => {
-    adBusy = false; adMark('adheart');
+    adBusy = false; adCount('adheart');
     heartAdd(1); shopUI();
     $('#heartnone').hidden = true;
     sfx('mission'); toast(tr('gotHeart'));
@@ -5192,7 +5321,8 @@ function shopUI() {
   if (!shopBuilt) return;
   $('#shop-n').textContent = contN;
   const nat = NATIVE(), left = adGiftLeft();
-  for (const e of $('#shop').querySelectorAll('[data-name]')) { const k = e.dataset.name; e.textContent = k.startsWith('pack:') ? tr('packN', +k.slice(5)) : tr(k); }
+  for (const e of $('#shop').querySelectorAll('[data-name]')) { const k = e.dataset.name; e.textContent = k.startsWith('pack:') ? tr('packN', +k.slice(5)) : tr(noAds && AD_FREE[k] || k); }
+  $('#sh-cards [data-id="adgift"]').closest('.sh-card').querySelector('img').src = noAds ? 'gold-icon.webp' : 'tv-gift.webp';   // no television when no ad
   for (const b of $('#sh-packs').querySelectorAll('.sh-pack')) {
     b.querySelector('.sh-price').textContent = !nat ? '' : shopPrices[b.dataset.id] || '…';
     b.classList.toggle('off', !nat || shopBusy);
@@ -5215,7 +5345,7 @@ function shopUI() {
 function openShop() {
   shopBuild(); $('#shop').hidden = false; shopFit(); shopUI(); shopLoad();
   const nat = NATIVE();
-  if (nat && adGiftLeft() > 0) { try { nat.ads.preloadRewarded(); } catch (e) { /* no ad */ } }   // ready for "watch an ad"
+  if (nat && !noAds && adGiftLeft() > 0) { try { nat.ads.preloadRewarded(); } catch (e) { /* no ad */ } }   // ready for "watch an ad"
 }
 // the prices (once they have come), and anything paid for but not given yet
 async function shopLoad() {
@@ -10532,7 +10662,7 @@ function bkWant() {
   const end = bkVis('cont') || bkVis('result');   // a game's end (any game)
   for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro') || bkVis('tut')) ? 5 + (bkVis('rkb') || bkVis('heartnone') ? 1 : 0) : 4;   // over the list
   if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 3 + (bkVis('bfpick') && (bkVis('rkb') || bkVis('heartnone')) ? 1 : 0) : 2;
-  if (bkVis('hub')) return (bkVis('settings') || bkVis('shop') || bkVis('profile') || bkVis('daily') || bkVis('heroes')) ? 2 + (bkVis('delacct') || bkVis('nick') || bkVis('evolve') ? 1 : 0) : 1;   // the first screen
+  if (bkVis('hub')) return (bkVis('settings') || bkVis('shop') || bkVis('profile') || bkVis('daily') || bkVis('heroes') || bkVis('mailbox')) ? 2 + (bkVis('delacct') || bkVis('nick') || bkVis('evolve') ? 1 : 0) : 1;   // the first screen
   return 3 + ((bkVis('menu') || end || bkVis('tut')) ? 1 : 0) + (bkVis('settings') || (end && bkVis('rkb')) ? 1 : 0);
 }
 function bkSync() {
@@ -10544,6 +10674,7 @@ function bkBack() {
   const press = id => { const b = $('#' + id); if (b && !b.hidden) b.click(); };
   if (bkVis('delacct')) return press('btn-del-no');
   if (bkVis('evolve')) return press('btn-evolve-ok');
+  if (bkVis('mailbox')) return press('btn-mail-close');
   if (bkVis('nick') && nickChanging) return press('btn-nick-no');
   if (bkVis('profile')) return press('btn-prof-close');
   if (bkVis('settings')) return press('btn-settings-close');
