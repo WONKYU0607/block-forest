@@ -523,10 +523,19 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
   display: grid; place-items: center; font-family: var(--num); font-weight: 400; font-size: 13px; line-height: 1; color: #fff; -webkit-text-stroke: 3px var(--ol); paint-order: stroke fill; pointer-events: none; }
 .hub-badge[hidden] { display: none; }
 /* coins and golden acorns (top left), settings (top right) */
-.hub-chips { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); display: flex; gap: 8px; }
+/* one row up to the gear; a long coin number comes down in size to fit it (hubChipsFit sets --hc) */
+.hub-chips { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px)); right: calc(max(12px, env(safe-area-inset-right, 0px)) + 52px);
+  display: flex; gap: 8px; pointer-events: none; }
+.hub-chips > * { pointer-events: auto; flex: none; }
+.hub-chips .hub-chip b.js-coin { font-size: var(--hc, 18px); -webkit-text-stroke-width: calc(var(--hc, 18px) * 0.28); }   /* only the coins' number comes down (its edge with it) */
 .hub-chip { box-sizing: border-box; height: 38px; display: flex; align-items: center; gap: 5px; padding: 0 12px 0 4px; background: var(--cream); border: 3px solid var(--ol); border-radius: 20px; box-shadow: 0 3px 0 var(--ol); }
 .hub-chip img { width: 30px; height: 30px; display: block; object-fit: contain; }
 .hub-chip b { font-family: var(--num); font-weight: 400; font-size: 18px; line-height: 1; color: #fff; -webkit-text-stroke: 5px var(--ol); paint-order: stroke fill; }
+.hub-chip .hc-heart { width: 28px; height: 28px; flex: none; display: block; margin-left: 1px; }
+.hub-chip .hc-num { display: flex; flex-direction: column; align-items: center; gap: 1px; }   /* how many, and under it the next one's wait */
+.hub-chip small { font-family: var(--num); font-size: 10px; line-height: 1; color: var(--ol); font-variant-numeric: tabular-nums; }
+.hub-chip small:empty { display: none; }
+.hm-top .heart-chip { flex: none; height: 42px; margin-left: 8px; }
 .hub-gear { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); width: 44px; height: 44px; padding: 0; box-sizing: border-box;
   display: grid; place-items: center; appearance: none; cursor: pointer; background: var(--wood); border: 3px solid var(--ol); border-radius: 14px; box-shadow: 0 3px 0 var(--ol); }
 .hub-gear svg { width: 30px; height: 30px; display: block; }
@@ -688,6 +697,10 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 #bfpick { z-index: 4; }
 /* a game's opening card (first places and my best) and the ranking card */
 #rkintro { z-index: 33; }
+#heartnone { z-index: 36; }   /* over a game's start card, under an ad */
+#heartnone .hn-big { width: 84px; height: 84px; display: block; margin: 4px auto 6px; }
+#heartnone .hn-next { margin: 0 0 12px; text-align: center; font-family: 'Black Han Sans', sans-serif; font-size: 17px; color: var(--ol); font-variant-numeric: tabular-nums; }
+#heartnone .hn-left { margin: 6px 0 2px; text-align: center; font-size: 13px; color: var(--bark); }
 /* items: the start card's row to pick them, and the buttons in the game */
 .it-pick { display: flex; flex-direction: column; gap: 6px; }
 .it-pick[hidden] { display: none; }
@@ -766,8 +779,12 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .sh-buy.owned { background: var(--wood); }
 .sh-buy[disabled] { pointer-events: none; }
 /* below them on the counter's front: watching an ad for one, and ad removal */
-.sh-cards { position: absolute; left: calc(var(--k) * var(--cl)); right: calc(var(--k) * var(--cl)); top: calc(var(--k) * 1236); display: flex; flex-direction: column; gap: calc(var(--k) * 26); }
-.sh-card { box-sizing: border-box; height: calc(var(--k) * 150); display: flex; align-items: center; gap: calc(var(--k) * 14); padding: 0 calc(var(--k) * 18) 0 calc(var(--k) * 8);
+/* the cards on the counter (1236 to 1610 of the picture: two at a time and the top edge of the next), the rest scrolled to */
+.sh-cards { position: absolute; left: calc(var(--k) * var(--cl)); right: calc(var(--k) * var(--cl)); top: calc(var(--k) * 1222); height: calc(var(--k) * 402); box-sizing: border-box;
+  padding: calc(var(--k) * 14) 0 calc(var(--k) * 30); display: flex; flex-direction: column; gap: calc(var(--k) * 26); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - var(--k) * 12), transparent); mask-image: linear-gradient(#000 calc(100% - var(--k) * 12), transparent); }   /* the next card's top shows: more below */
+.sh-cards::-webkit-scrollbar { display: none; }
+.sh-card { flex: none; box-sizing: border-box; height: calc(var(--k) * 150); display: flex; align-items: center; gap: calc(var(--k) * 14); padding: 0 calc(var(--k) * 18) 0 calc(var(--k) * 8);
   background: #fff8e4; border: calc(var(--k) * 6) solid var(--ol); border-radius: calc(var(--k) * 34); box-shadow: 0 calc(var(--k) * 8) 0 var(--ol); }
 .sh-card > img { flex: none; width: calc(var(--k) * 150); height: calc(var(--k) * 150); margin-top: calc(var(--k) * -10); object-fit: contain; }
 .sh-nm { flex: 1 1 0; width: 0; min-width: 0; display: flex; flex-direction: column; gap: calc(var(--k) * 4); }
@@ -965,7 +982,7 @@ html.tall-art .scr-box .ext { display: none; }
     <p class="hub-sub" data-t="hubSub">게임 12개, 순위에 도전해 보세요</p>
     <button class="hub-go" id="btn-hub-play" type="button" data-t="hubPlay">게임 시작</button>
   </div>
-  <div class="hub-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div></div>
+  <div class="hub-chips"><div class="hub-chip" aria-label="코인" data-ta="coins"><img src="coin-1.webp" alt=""><b class="js-coin">0</b></div><div class="hub-chip" aria-label="황금 도토리" data-ta="profGold"><img src="gold-icon.webp" alt=""><b class="js-gold">0</b></div><div class="hub-chip heart-chip" aria-label="하트" data-ta="hearts"><svg class="hc-heart" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 35C6 26 2 18 4 11C6 4 15 3 20 10C25 3 34 4 36 11C38 18 34 26 20 35Z" fill="#ff5a6e" stroke="#2b1a0e" stroke-width="3.2" stroke-linejoin="round"/><ellipse cx="12" cy="12" rx="3.4" ry="2.4" transform="rotate(-34 12 12)" fill="#fff" fill-opacity=".75"/></svg><span class="hc-num"><b class="js-heart">5</b><small class="js-heart-t"></small></span></div></div>
   <button class="hub-gear" id="btn-hub-set" type="button" aria-label="설정" data-ta="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></button>
   <nav class="hub-dock">
     <button class="hub-d" id="btn-hub-att" type="button"><i class="hub-ic"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="8" width="30" height="27" rx="5" fill="#fff6dc" stroke="#2b1a0e" stroke-width="3"/><path d="M5 13a5 5 0 0 1 5-5h20a5 5 0 0 1 5 5v4H5z" fill="#ff5a4a" stroke="#2b1a0e" stroke-width="3"/><rect x="11" y="4" width="4" height="9" rx="2" fill="#fff" stroke="#2b1a0e" stroke-width="2.5"/><rect x="25" y="4" width="4" height="9" rx="2" fill="#fff" stroke="#2b1a0e" stroke-width="2.5"/><path d="M13 25.5l4 4 9-9" fill="none" stroke="#4fb83f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></i><b data-t="attend">출석</b><span class="hub-badge" id="hub-att-b" hidden>!</span></button>
@@ -977,7 +994,7 @@ html.tall-art .scr-box .ext { display: none; }
 </section>
 
 <section id="minis" class="screen" hidden aria-label="미니게임 포레스트" data-ta="title">
-  <div class="hm-top"><button class="hm-back" id="btn-minis-back" type="button" aria-label="뒤로" data-ta="back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="hm-shop" id="btn-home-shop" type="button"><img class="gold-ic" src="gold-icon.webp" alt=""><b class="num" id="hm-gold">0</b><i class="hm-sep" aria-hidden="true"></i><span data-t="shop">상점</span></button><button class="hm-set" id="btn-home-set" type="button" aria-label="설정" data-ta="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></button></div>
+  <div class="hm-top"><button class="hm-back" id="btn-minis-back" type="button" aria-label="뒤로" data-ta="back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="#2b1a0e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="hub-chip heart-chip" aria-label="하트" data-ta="hearts"><svg class="hc-heart" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 35C6 26 2 18 4 11C6 4 15 3 20 10C25 3 34 4 36 11C38 18 34 26 20 35Z" fill="#ff5a6e" stroke="#2b1a0e" stroke-width="3.2" stroke-linejoin="round"/><ellipse cx="12" cy="12" rx="3.4" ry="2.4" transform="rotate(-34 12 12)" fill="#fff" fill-opacity=".75"/></svg><span class="hc-num"><b class="js-heart">5</b><small class="js-heart-t"></small></span></div><button class="hm-shop" id="btn-home-shop" type="button"><img class="gold-ic" src="gold-icon.webp" alt=""><b class="num" id="hm-gold">0</b><i class="hm-sep" aria-hidden="true"></i><span data-t="shop">상점</span></button><button class="hm-set" id="btn-home-set" type="button" aria-label="설정" data-ta="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2.5h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9-2.6-.5v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8z" fill="#fff6dc" stroke="#2b1a0e" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#c98f4f" stroke="#2b1a0e" stroke-width="2"/></svg></button></div>
   <div class="flies" aria-hidden="true"><i style="left:14%;top:20%;animation-delay:-1s"></i><i style="left:82%;top:30%;animation-delay:-3.4s"></i><i style="left:26%;top:78%;animation-delay:-5.2s;animation-duration:8s"></i><i style="left:70%;top:84%;animation-delay:-2.2s;animation-duration:6.4s"></i><i style="left:50%;top:12%;animation-delay:-4.4s"></i></div>
   <div class="minis-wrap">
     <div class="card minis-card">
@@ -1375,6 +1392,17 @@ html.tall-art .scr-box .ext { display: none; }
   </div>
 </section>
 
+<section id="heartnone" class="overlay" hidden aria-label="하트가 없어요" data-ta="heartNone">
+  <div class="card">
+    <div class="ribbon"><h2 data-t="heartNone">하트가 없어요</h2></div>
+    <svg class="hn-big" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 35C6 26 2 18 4 11C6 4 15 3 20 10C25 3 34 4 36 11C38 18 34 26 20 35Z" fill="#e9dcc0" stroke="#2b1a0e" stroke-width="3.2" stroke-linejoin="round"/></svg>
+    <p class="hn-next" id="hn-next"></p>
+    <button class="btn primary ic-btn" id="btn-hn-ad" type="button"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="26" height="20" rx="5" fill="#fff" stroke="#2b1a0e" stroke-width="3"/><path d="M13.2 11.2v9.6l8-4.8z" fill="#4fb83f" stroke="#2b1a0e" stroke-width="2.4" stroke-linejoin="round"/></svg><span data-t="adHeart">광고 보고 하트 받기</span></button>
+    <p class="hn-left" id="hn-left"></p>
+    <button class="btn plain" id="btn-hn-close" type="button" data-t="close">닫기</button>
+  </div>
+</section>
+
 <section id="adfake" class="overlay" hidden aria-label="광고" data-ta="ad">
   <div class="ad-box"><span class="ad-tag" data-t="ad">광고</span><b id="ad-n" class="num">3</b></div>
 </section>
@@ -1428,7 +1456,7 @@ const STR = {
     invSteps: ['초대 링크를 보내요', '친구가 앱을 깔고 1판 해요', '친구도 나도 3,000코인!'], invCount: '초대한 친구', invGo: '친구 초대하기', invFull: n => `${n}명 모두 초대했어요`,
     invNote: n => `새로 가입한 친구만 · 최대 ${n}명까지`, invMsg: '미니게임 포레스트 같이 하자! 이 링크로 앱을 깔고 1판 하면 우리 둘 다 3,000코인을 받아.', invCopied: '초대 링크를 복사했어요',
     invGot: n => `친구 초대 보상으로 ${n.toLocaleString()}코인을 받았어요!`, invPaid: (k, n) => `친구 ${k}명이 들어왔어요! ${n.toLocaleString()}코인을 받았어요`, attGet: '보상 받기',
-    misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음', misAllGet: '한번에 받기',
+    misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음', misAllGet: '한번에 받기', hearts: '하트', heartNone: '하트가 없어요', heartNext: t => `다음 하트까지 ${t}`, heartFull: '하트가 가득 찼어요', adCoin: '광고 보고 코인 받기', adHeart: '광고 보고 하트 받기', gotHeart: '하트 1개를 받았어요', itemBack: n => `안 쓴 아이템 ${n}코인을 돌려받았어요`,
     gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, gotAll: (g, c) => `황금 도토리 ${g}개, 코인 ${c.toLocaleString()}개를 받았어요`, noCoins: '코인이 모자라요',
     heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`, evolveTitle: '진화!',
     heroBonus: p => `캐릭터 보너스 +${p}%`, prev: '이전', next: '다음',
@@ -1481,7 +1509,7 @@ const STR = {
     invSteps: ['Send your invite link', 'Your friend installs and plays a game', 'You both get 3,000 coins!'], invCount: 'Friends invited', invGo: 'Invite friends', invFull: n => `All ${n} invited`,
     invNote: n => `New players only · up to ${n} friends`, invMsg: 'Play Mini Game Forest with me! Install it from this link and play one game: we both get 3,000 coins.', invCopied: 'Invite link copied',
     invGot: n => `Invite reward: +${n.toLocaleString()} coins!`, invPaid: (k, n) => `${k} friend${k > 1 ? 's' : ''} joined! +${n.toLocaleString()} coins`, attGet: 'Claim reward',
-    misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got', misAllGet: 'Claim all',
+    misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got', misAllGet: 'Claim all', hearts: 'Hearts', heartNone: 'Out of hearts', heartNext: t => `Next heart in ${t}`, heartFull: 'Hearts are full', adCoin: 'Watch an ad for coins', adHeart: 'Watch an ad for a heart', gotHeart: 'You got a heart', itemBack: n => `Unused items: ${n} coins back`,
     gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, gotAll: (g, c) => `+${g} golden acorns, +${c.toLocaleString()} coins`, noCoins: 'Not enough coins',
     heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`, evolveTitle: 'Evolved!',
     heroBonus: p => `Hero bonus +${p}%`, prev: 'Previous', next: 'Next',
@@ -3019,6 +3047,7 @@ function lobbyInfo() {
 }
 // leaving a game ends it: the score so far is the final one (a new best is kept)
 function quitGame() {
+  itemsSettle();
   if (G.started) heroScore('block' + G.size, G);
   if (G.started && G.score > G.best) { G.best = G.score; saveBest(G.score); }
   if (G.started) rkScore('block' + G.size, G.score);
@@ -3532,6 +3561,7 @@ function openBlockPick() {
   rkTops(['block16', 'block32']).then(tops => tops.forEach((t, i) => { const n = i ? 32 : 16; $(`#bf-${n}-top`).textContent = t === undefined ? '' : t ? tr('rkTopOf', t.name, t.score.toLocaleString()) : tr('rkTop') + ' ' + tr('rkNone'); }));
 }
 function startBlock(size) {
+  if (!heartUse()) { heartNoneOpen(); return; }
   $('#bfpick').hidden = true;
   setMenu(menuMode, size);
   itemsBegin('block');
@@ -3694,6 +3724,7 @@ async function rkIntroFill(game) {
   for (const id of ['top', 'wk', 'me']) fitEnd($('#rki-' + id));
 }
 function rkStart() {
+  if (rkGo && !heartUse()) { heartNoneOpen(); return; }   // no heart: the start card stays
   $('#rkintro').hidden = true; rkUnwait(); const go = rkGo; rkGo = null;
   if (go) { itemsBegin(rkGame); go(); itemsAuto(rkGame); itemDock(rkGame, $('#' + RK_SCREEN[rkGame][0])); tutMaybe(rkGame); }
 }
@@ -3701,16 +3732,22 @@ function rkLeave() { $('#rkintro').hidden = true; rkUnwait(); rkGo = null; if (r
 $('#btn-rki-go').addEventListener('click', () => { sfx('pick'); rkStart(); });
 $('#btn-rki-rank').addEventListener('click', () => { sfx('pick'); rkBoard(rkGame); });
 $('#btn-rki-close').addEventListener('click', () => { sfx('pick'); rkLeave(); });
-/* ---------- items: each game has its own one or two, ITEM_COST coins each. They are picked on the game's start card
+/* ---------- items: each game has its own one or two, ITEM_COST or ITEM_COST_HI coins each. They are picked on the game's start card
    (Block Forest's: its board card), paid for when the game starts, and are for that one game (going on after its end
    keeps what is left). In the game they are round buttons by the side (#itemdock, put into the game's screen under its
    cards): a tap uses one. Some wait for their moment and show as on until then (a shield), some run for a while (a
    ring shows what is left, on the game's own clock, so a pause stops it too), some aim first (the block game's bomb).
    What each one does is the game's: ITEM_USE[game][id], and the game asks itemHas / itemTake / itemRun where it counts.
    The pictures are stand-ins drawn here until the drawn ones come (the bomb and the drill have theirs). ---------- */
-const ITEM_COST = 200;
-// debugging: coins without end (nothing is spent, nothing is short; the coin chips show ∞). false before release
+const ITEM_COST = 200, ITEM_COST_HI = 300;
+// the strong one of a game's two (the acorn game's and the caterpillar's magnet, the stairs' and the owl post's boost): 300
+const ITEM_HI = ['bomb', 'magnet', 'boost', 'hammer', 'rows', 'basket'];
+const itemCost = id => (ITEM_HI.includes(id) ? ITEM_COST_HI : ITEM_COST);
+const pickCost = ids => [...ids].reduce((s, id) => s + itemCost(id), 0);
+// debugging: coins and hearts without end (nothing is spent, nothing is short; the chips show ∞). false before release
 const FREE_COINS = true;
+// hearts: a game takes one at its start; 5 at most, one more every 10 minutes (the phone's clock); an ad gives one
+const HEART_MAX = 5, HEART_MS = 10 * 60 * 1000;
 const coinsOK = n => FREE_COINS || WAL.coins >= n;
 const ITEMS_OF = { block: ['bomb', 'drill'], acorn: ['shield', 'magnet'], stairs: ['wing', 'boost'], merge: ['hammer', 'shake'], pebble: ['fire', 'rows'],
   mushroom: ['basket', 'time'], owlpost: ['hourglass', 'boost'], chameleon: ['glass'], beaver: ['tape'], hedgehog: ['guard'], caterpillar: ['magnet', 'speed'], cups: ['xray'] };
@@ -3763,12 +3800,12 @@ function itemPickUI(game) {
   box.hidden = !ids.length;
   if (!ids.length) return;
   const pick = ITEM_PICK[g] || (ITEM_PICK[g] = new Set());
-  while (pick.size && !coinsOK(pick.size * ITEM_COST)) pick.delete([...pick].pop());   // what can no longer be paid for
+  while (pick.size && !coinsOK(pickCost(pick))) pick.delete([...pick].pop());   // what can no longer be paid for
   box.querySelector('.it-title').textContent = itemT().title;
   box.querySelector('.it-row').replaceChildren(...ids.map(id => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'it-chip' + (pick.has(id) ? ' on' : ''); b.dataset.id = id; b.dataset.g = g;
-    b.innerHTML = `<img class="it-pic" src="${itemPic(id)}" alt=""><span class="it-nm"></span><span class="it-cost"><img src="coin-1.webp" alt="">${ITEM_COST}</span><i class="it-ck" aria-hidden="true"></i>`;
+    b.innerHTML = `<img class="it-pic" src="${itemPic(id)}" alt=""><span class="it-nm"></span><span class="it-cost"><img src="coin-1.webp" alt="">${itemCost(id)}</span><i class="it-ck" aria-hidden="true"></i>`;
     b.querySelector('.it-nm').textContent = itemName(id);
     return b;
   }));
@@ -3781,17 +3818,29 @@ function itemPickTap(e) {
   const g = b.dataset.g, id = b.dataset.id, pick = ITEM_PICK[g];
   ITEM_NOTE[g] = id;
   if (pick.has(id)) { pick.delete(id); sfx('back'); }
-  else if (!coinsOK((pick.size + 1) * ITEM_COST)) { sfx('back'); toast(tr('noCoins')); }
+  else if (!coinsOK(pickCost(pick) + itemCost(id))) { sfx('back'); toast(tr('noCoins')); }
   else { pick.add(id); sfx('pick'); }
   itemPickUI(g);
 }
-// the game starts: what was picked paid for and in the player's hands (nothing picked: no items this game)
+// the game starts: what was picked paid for and in the player's hands (nothing picked: no items this game). The picks
+// are for this game only: the next start card begins with none (picked again each time)
 function itemsBegin(game) {
-  const g = itemGame(game), pick = [...(ITEM_PICK[g] || [])].filter(id => (ITEMS_OF[g] || []).includes(id));
+  const g = itemGame(game), pick = [...(ITEM_PICK[g] || [])].filter(id => (ITEMS_OF[g] || []).includes(id)), cost = pickCost(pick);
   IT = null;
-  if (!pick.length || !coinsOK(pick.length * ITEM_COST)) return;
-  if (!FREE_COINS) walletPut(w => { w.coins -= pick.length * ITEM_COST; });
-  IT = { game: g, st: Object.fromEntries(pick.map(id => [id, ITEM_WAIT.includes(id) ? 'on' : 'ready'])), left: {}, len: {} };
+  if (ITEM_PICK[g]) ITEM_PICK[g].clear();
+  delete ITEM_NOTE[g];
+  if (!pick.length || !coinsOK(cost)) return;
+  if (!FREE_COINS) walletPut(w => { w.coins -= cost; });
+  IT = { game: g, st: Object.fromEntries(pick.map(id => [id, ITEM_WAIT.includes(id) ? 'on' : 'ready'])), left: {}, len: {},
+    paid: Object.fromEntries(pick.map(id => [id, FREE_COINS ? 0 : itemCost(id)])) };
+}
+// the game is over for good (its result, or left from the pause): what was paid for and never used goes back (one in
+// hand, or one waiting for a moment that never came)
+function itemsSettle() {
+  if (!IT) return;
+  const back = Object.keys(IT.st).filter(id => ['ready', 'on', 'aim'].includes(IT.st[id])).reduce((n, id) => n + ((IT.paid || {})[id] || 0), 0);
+  itemsOff();
+  if (back > 0) { walletPut(w => { w.coins += back; }); toast(tr('itemBack', back.toLocaleString())); }
 }
 const itemHas = (g, id) => !!IT && IT.game === g && (IT.st[id] === 'ready' || IT.st[id] === 'on');
 const itemRun = (g, id) => !!IT && IT.game === g && IT.st[id] === 'run';
@@ -3993,6 +4042,7 @@ function itemsAgain(g) {
   if (RK_SCREEN[g]) rkGate(g, () => END[g].again()); else END[g].again();
 }
 for (const id of ['#rki-items', '#bf-items']) $(id).addEventListener('click', itemPickTap);
+for (const b of document.querySelectorAll('[id^="btn-"][id$="-quit"]')) b.addEventListener('click', itemsSettle);   // a mini game left from its pause
 /* ---- each game's items: what a tap does (ITEM_USE) and what happens when a running one ends (ITEM_END) ---- */
 // the block game: a tap puts the bomb or the drill in hand (its aim on the board), a second tap puts it away
 ITEM_USE.block = Object.fromEntries(['bomb', 'drill'].map(id => [id, () => {
@@ -4456,6 +4506,7 @@ function showResult(game) {
   fitEnd($('#res-score')); fitEnd($('#res-best'));
   gameCounted();
   misGame(game, score);
+  itemsSettle();
   if (isBest && e.best) gsfx(e.best[0], 1, e.best[1]);
   resRanks(game);
 }
@@ -4486,7 +4537,7 @@ let WAL = { coins: 0, daily: {}, heroes: {} }, walOwner = null, walDirty = false
 (function walletLoad() {
   try {
     const o = JSON.parse(localStorage.getItem(WALLET_KEY) || 'null');
-    if (o) { WAL = { coins: Math.max(0, o.coins | 0), daily: o.daily || {}, heroes: o.heroes || {} }; walOwner = o.owner || null; walDirty = !!o.dirty; }
+    if (o) { WAL = { coins: Math.max(0, o.coins | 0), daily: o.daily || {}, heroes: o.heroes || {}, ...(o.hearts ? { hearts: o.hearts } : {}) }; walOwner = o.owner || null; walDirty = !!o.dirty; }
   } catch (e) { /* storage unavailable */ }
 })();
 function walletStore() { try { localStorage.setItem(WALLET_KEY, JSON.stringify({ ...WAL, owner: walOwner, dirty: walDirty })); } catch (e) { /* storage unavailable */ } }
@@ -4507,17 +4558,95 @@ function walletSave() {
     }).catch(() => {});   // offline, or the rules not yet published: the phone keeps it, it goes up next time
   }, 700);
 }
+// the hearts (WAL.hearts: { n, t }: how many, and when the one filling now began; none kept: full). Worked out from the
+// clock when asked, written only when one is taken or given
+function heartsNow(now = srvNow()) {
+  const h = WAL.hearts || {}, n0 = Number.isInteger(h.n) ? h.n : HEART_MAX;
+  if (n0 >= HEART_MAX) return { n: n0, t: 0 };
+  if (now == null || !(h.t > 0)) return { n: n0, t: h.t > 0 ? h.t : 0 };   // the server's clock not known yet: as kept
+  const t0 = Math.min(h.t, now), k = Math.floor((now - t0) / HEART_MS), n = Math.min(HEART_MAX, n0 + k);
+  return { n, t: n >= HEART_MAX ? 0 : t0 + k * HEART_MS };
+}
+// the server's clock: the hearts fill by it, so moving the phone's clock does nothing. Read when signed in and when the
+// game comes back to the front; in between counted on the page's steady clock (performance.now, which the phone's clock
+// setting does not move)
+let SRV = null, srvBusy = false;
+function srvNow() { return SRV ? Math.round(SRV.ms + (performance.now() - SRV.at)) : null; }
+async function srvSync() {
+  if (FREE_COINS || srvBusy || !ME || !NET || !NET.serverTime) return;
+  srvBusy = true;
+  try {
+    const r = await NET.serverTime();
+    if (r) {
+      SRV = { ms: r.server, at: performance.now() - (Date.now() - r.local) };
+      const h = WAL.hearts;
+      if (h && h.n < HEART_MAX && !(h.t > 0)) walletPut(w => { w.hearts = { n: h.n, t: srvNow() }; });   // one taken before the clock was known: it starts now
+      heartsUI();
+    }
+  } catch (e) { /* offline: the hearts wait for the clock */ } finally { srvBusy = false; }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) srvSync(); });
+function heartsLeft() { return FREE_COINS ? Infinity : heartsNow().n; }
+function heartUse() {   // a game starts: one heart (false: none)
+  if (FREE_COINS) return true;
+  const now = srvNow(), h = heartsNow(now);
+  if (h.n <= 0) return false;
+  walletPut(w => { w.hearts = { n: h.n - 1, t: h.n >= HEART_MAX ? now || 0 : h.t }; });   // from full: the 10 minutes start now (the clock not known: when it is)
+  return true;
+}
+function heartAdd(k) {
+  const now = srvNow(), h = heartsNow(now), n = Math.min(HEART_MAX, h.n + k);
+  walletPut(w => { w.hearts = { n, t: n >= HEART_MAX ? 0 : h.t || now || 0 }; });
+}
+function heartWait() { const now = srvNow(), h = heartsNow(now); return h.n >= HEART_MAX ? 0 : now == null || !h.t ? null : Math.max(0, h.t + HEART_MS - now); }   // null: not known yet
+function mmss(ms) { const s = Math.ceil(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+const HEART_URL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M20 35C6 26 2 18 4 11C6 4 15 3 20 10C25 3 34 4 36 11C38 18 34 26 20 35Z" fill="#ff5a6e" stroke="#2b1a0e" stroke-width="3.2" stroke-linejoin="round"/><ellipse cx="12" cy="12" rx="3.4" ry="2.4" transform="rotate(-34 12 12)" fill="#fff" fill-opacity=".75"/></svg>');
+// the chips (the home's, the games list's): how many, and while not full the next one's wait; every second
+function heartsUI() {
+  const n = heartsLeft(), w = FREE_COINS ? 0 : heartWait();
+  const a = FREE_COINS ? '∞' : String(n), b = w > 0 ? mmss(w) : '';
+  let ch = false;
+  for (const e of document.querySelectorAll('.js-heart')) if (e.textContent !== a) { e.textContent = a; ch = true; }
+  for (const e of document.querySelectorAll('.js-heart-t')) if (e.textContent !== b) { e.textContent = b; ch = true; }
+  if (ch) hubChipsFit();
+  if (!$('#heartnone').hidden) heartNoneUI();
+}
+setInterval(heartsUI, 1000);
+// the home's chips (coins, golden acorns, hearts) in one row up to the gear: the coins' number a size smaller at a time
+// until it fits (from 18px down to 10px)
+function hubChipsFit() {
+  const row = $('#hub .hub-chips');
+  if (!row || !row.offsetParent) return;
+  let px = 18;
+  row.style.setProperty('--hc', px + 'px');
+  while (row.scrollWidth > row.clientWidth + 0.5 && px > 10) row.style.setProperty('--hc', --px + 'px');
+}
+addEventListener('resize', hubChipsFit);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(hubChipsFit);   // measured again in the numbers' own font
+// none left as a game is started: the wait for the next, and an ad for one
+function heartNoneOpen() { sfx('back'); heartNoneUI(); $('#heartnone').hidden = false; }
+function heartNoneUI() {
+  if (heartsLeft() > 0) { $('#heartnone').hidden = true; return; }   // one has come: start again
+  const left = adLeft('adheart');
+  const w = heartWait();
+  $('#hn-next').textContent = tr('heartNext', w == null ? '--:--' : mmss(w));
+  $('#hn-left').textContent = tr('adGiftSub', left);
+  $('#btn-hn-ad').disabled = left <= 0 || adBusy;
+}
+$('#btn-hn-ad').addEventListener('click', () => { sfx('pick'); adHeartGo(); });
+$('#btn-hn-close').addEventListener('click', () => { sfx('back'); $('#heartnone').hidden = true; });
 // signed in: the account's, unless this phone holds a change of the same account's not sent yet (that goes up)
 function walletOnSignIn() {
   if (!ME) return;
   const has = Number.isInteger(ME.coins) || !!ME.daily || !!ME.heroes;
   if (has && !(walOwner === ME.uid && walDirty)) {
-    WAL = { coins: Math.max(0, ME.coins | 0), daily: ME.daily || {}, heroes: ME.heroes || {} }; walDirty = false;
+    WAL = { coins: Math.max(0, ME.coins | 0), daily: ME.daily || {}, heroes: ME.heroes || {}, ...(ME.hearts ? { hearts: ME.hearts } : {}) }; walDirty = false;
   } else {
     if (!has && walOwner && walOwner !== ME.uid) WAL = { coins: 0, daily: {}, heroes: {} };   // another account's copy: this one starts empty
     walDirty = true; walletSave();
   }
   walOwner = ME.uid; walletStore(); walletUI();
+  setTimeout(srvSync, 0);   // the server's clock, for the hearts
 }
 // back online, or the app back in front: whatever could not go up while offline (or while the app was away) goes up
 // now, instead of waiting for the next change or the next start
@@ -4751,6 +4880,7 @@ const heroName = g => (g === 'block' ? tr('blockGame') : tr(g));
 function walletUI() {
   for (const e of document.querySelectorAll('.js-coin')) e.textContent = FREE_COINS ? '∞' : WAL.coins.toLocaleString();
   for (const e of document.querySelectorAll('.js-gold')) e.textContent = contN.toLocaleString();
+  heartsUI(); hubChipsFit();
   const att = attCan(), mis = ME ? misReady() : 0;
   $('#hub-att-b').hidden = !att; $('#tab-att-b').hidden = !att;
   for (const id of ['#hub-mis-b', '#tab-mis-b']) { $(id).hidden = !mis; $(id).textContent = mis; }
@@ -4979,6 +5109,36 @@ function adGiftGo() {
     sfx('mission'); toast(tr('adGiftDone'));
   }, () => { adGiftBusy = false; shopUI(); });
 }
+// the other ads in the shop: 1,000 coins (3 a day); a heart (5 a day, while there is room for one). Counted like the
+// golden acorn's, on the phone, a new day at midnight
+const AD_DAY = { adcoin: 3, adheart: 5 }, AD_COINS = 1000;
+let adBusy = false;
+function adLeft(id) {
+  try { const g = JSON.parse(localStorage.getItem('forest-' + id) || '{}'); return Math.max(0, AD_DAY[id] - (g.d === adGiftToday() ? g.n || 0 : 0)); } catch (e) { return AD_DAY[id]; }
+}
+function adMark(id) {
+  const n = AD_DAY[id] - adLeft(id) + 1;
+  try { localStorage.setItem('forest-' + id, JSON.stringify({ d: adGiftToday(), n })); } catch (e) { /* storage unavailable */ }
+}
+function adCoinGo() {
+  if (adBusy || adLeft('adcoin') <= 0 || !$('#adfake').hidden) return;
+  adBusy = true; shopUI();
+  showRewardedAd(() => {
+    adBusy = false; adMark('adcoin');
+    walletPut(w => { w.coins += AD_COINS; }); shopUI();
+    sfx('mission'); toast(tr('gotCoins', AD_COINS.toLocaleString()));
+  }, () => { adBusy = false; shopUI(); });
+}
+function adHeartGo() {
+  if (adBusy || adLeft('adheart') <= 0 || heartsLeft() >= HEART_MAX || !$('#adfake').hidden) return;
+  adBusy = true; shopUI(); heartNoneUI();
+  showRewardedAd(() => {
+    adBusy = false; adMark('adheart');
+    heartAdd(1); shopUI();
+    $('#heartnone').hidden = true;
+    sfx('mission'); toast(tr('gotHeart'));
+  }, () => { adBusy = false; shopUI(); heartNoneUI(); });
+}
 function shopBuild() {
   if (shopBuilt) return;
   shopBuilt = true;
@@ -4998,6 +5158,8 @@ function shopBuild() {
     $('#sh-cards').append(c);
   };
   card('adgift', 'tv-gift.webp', 'adGift', adGiftGo);
+  card('adcoin', 'coin-bag.webp', 'adCoin', adCoinGo);
+  card('adheart', HEART_URL, 'adHeart', adHeartGo);
   card(NOADS_ID, 'tv-noads.webp', 'noads', () => shopBuy(NOADS_ID));
 }
 function shopUI() {
@@ -5013,6 +5175,12 @@ function shopUI() {
   gift.closest('.sh-card').querySelector('.sh-sub').textContent = tr('adGiftSub', left);
   gift.textContent = tr('adGiftGo');   // none left today: the same word, the button off
   gift.classList.toggle('off', left <= 0 || adGiftBusy); gift.disabled = left <= 0;
+  const ac = $('#sh-cards [data-id="adcoin"]'), acn = adLeft('adcoin');
+  ac.closest('.sh-card').querySelector('.sh-sub').textContent = tr('adGiftSub', acn);
+  ac.textContent = tr('adGiftGo'); ac.classList.toggle('off', acn <= 0 || adBusy); ac.disabled = acn <= 0;
+  const ah = $('#sh-cards [data-id="adheart"]'), ahn = adLeft('adheart'), full = heartsLeft() >= HEART_MAX;
+  ah.closest('.sh-card').querySelector('.sh-sub').textContent = full ? tr('heartFull') : tr('adGiftSub', ahn);
+  ah.textContent = tr('adGiftGo'); ah.classList.toggle('off', full || ahn <= 0 || adBusy); ah.disabled = full || ahn <= 0;
   const na = $('#sh-cards [data-id="' + NOADS_ID + '"]');
   na.closest('.sh-card').querySelector('.sh-sub').textContent = tr('noadsSub');
   na.textContent = noAds ? tr('owned') : !nat ? '' : shopPrices[NOADS_ID] || '…';
@@ -10336,8 +10504,8 @@ const BK_MINI = [['mini', 'mini'], ['stairs', 'st'], ['merge', 'fm'], ['pebble',
 function bkWant() {
   if (bkVis('splash')) return 0;
   const end = bkVis('cont') || bkVis('result');   // a game's end (any game)
-  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro') || bkVis('tut')) ? 5 + (bkVis('rkb') ? 1 : 0) : 4;   // over the list
-  if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 3 + (bkVis('bfpick') && bkVis('rkb') ? 1 : 0) : 2;
+  for (const [scr, k] of BK_MINI) if (bkVis(scr)) return (bkVis(k + '-menu') || end || bkVis('rkintro') || bkVis('tut')) ? 5 + (bkVis('rkb') || bkVis('heartnone') ? 1 : 0) : 4;   // over the list
+  if (bkVis('minis')) return (bkVis('settings') || bkVis('bfpick') || bkVis('rkb') || bkVis('shop')) ? 3 + (bkVis('bfpick') && (bkVis('rkb') || bkVis('heartnone')) ? 1 : 0) : 2;
   if (bkVis('hub')) return (bkVis('settings') || bkVis('shop') || bkVis('profile') || bkVis('daily') || bkVis('heroes')) ? 2 + (bkVis('delacct') || bkVis('nick') || bkVis('evolve') ? 1 : 0) : 1;   // the first screen
   return 3 + ((bkVis('menu') || end || bkVis('tut')) ? 1 : 0) + (bkVis('settings') || (end && bkVis('rkb')) ? 1 : 0);
 }
@@ -10358,6 +10526,7 @@ function bkBack() {
   if (bkVis('daily')) return press('btn-daily-close');
   if (bkVis('heroes')) return press('btn-heroes-close');
   if (bkVis('adfake')) return;   // the ad plays to its end
+  if (bkVis('heartnone')) return press('btn-hn-close');
   if (bkVis('tut')) return tutClose();
   if (bkVis('cont')) return press('btn-cont-no');
   if (bkVis('result')) return press('btn-res-list');
