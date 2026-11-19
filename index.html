@@ -546,6 +546,7 @@ html[lang="en"] .hub-d b { font-size: min(calc(var(--dh, 100px) * 0.17), 3.2vw);
 .fs-wide img { width: 28px; height: 28px; display: block; }
 .fs-wide .num { font-family: var(--num); }
 .fs-wide:disabled { background: #d8cbb0; }
+#btn-mis-all { margin: 0 0 10px; }   /* over the list: in sight without scrolling */
 .fs-tabs { display: flex; gap: 8px; margin: 0 0 12px; }
 .fs-tabs button { position: relative; flex: 1; height: 44px; appearance: none; cursor: pointer; padding: 0; border: 3px solid var(--ol); border-radius: 14px; background: #e3d6bb; color: var(--ol);
   font-family: 'Black Han Sans', sans-serif; font-size: 17px; }
@@ -931,8 +932,8 @@ html.tall-art .scr-box .ext { display: none; }
     <div class="stat right"><span class="label" data-t="best">최고</span><span id="best" class="num sm">0</span></div>
   </header>
   <div class="subbar">
-    <div id="mission" class="mission idle" aria-live="polite"><i class="m-dot" id="m-dot"></i><span class="m-text" id="m-text">곧 새 미션이 나와요</span></div>
-    <div id="rotbox" class="rotbox" aria-label="남은 돌리기 횟수, 세 칸 합계" data-ta="rotLeft"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12a7 7 0 1 1-2.05-4.95" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M20.5 3.5v5.2h-5.2z" fill="currentColor"/></svg><b id="rot-n">10</b></div>
+    <div id="mission" class="mission idle" aria-live="polite"><i class="m-dot" id="m-dot"></i><span class="m-text" id="m-text"></span></div>
+    <div id="rotbox" class="rotbox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12a7 7 0 1 1-2.05-4.95" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M20.5 3.5v5.2h-5.2z" fill="currentColor"/></svg><b id="rot-n">10</b></div>
     <div id="fever" class="fever" aria-label="피버 게이지"><span class="f-label" id="f-label">피버</span><div class="f-track"><div class="f-fill" id="f-fill"></div></div></div>
   </div>
   <div id="stage">
@@ -1242,9 +1243,8 @@ html.tall-art .scr-box .ext { display: none; }
   </div>
 </section>
 
-<section id="webonly" class="overlay" hidden aria-label="앱에서 만나요" data-ta="webOnly">
+<section id="webonly" class="overlay" hidden>
   <div class="card">
-    <div class="ribbon"><h2 data-t="webOnly">앱에서 만나요</h2></div>
     <p class="acct-msg" data-t="webOnlyText">미니게임 포레스트는 안드로이드 앱으로 즐길 수 있어요.</p>
     <a class="btn primary" id="btn-store" href="https://play.google.com/store/apps/details?id=com.wonkyu.minigameforest" target="_blank" rel="noopener" data-t="webOnlyGo">Google Play에서 받기</a>
     <p class="legal"><a href="https://block-forest.vercel.app/privacy.html" target="_blank" rel="noopener" data-t="privacy">개인정보처리방침</a><span aria-hidden="true">·</span><a href="https://block-forest.vercel.app/terms.html" target="_blank" rel="noopener" data-t="terms">이용약관</a><span aria-hidden="true">·</span><a href="https://block-forest.vercel.app/delete.html" target="_blank" rel="noopener" data-t="delAcct">계정 삭제</a></p>
@@ -1327,7 +1327,7 @@ html.tall-art .scr-box .ext { display: none; }
   <div class="fs-card" id="daily-card">
     <div class="fs-tabs"><button type="button" id="tab-att" class="on"><span data-t="attTab">출석</span><span class="hub-badge" id="tab-att-b" hidden>!</span></button><button type="button" id="tab-mis"><span data-t="misTab">일일 미션</span><span class="hub-badge" id="tab-mis-b" hidden></span></button><button type="button" id="tab-inv"><span data-t="invTab">친구 초대</span></button></div>
     <div id="att-pane"><div class="fs-cal" id="att-cal"></div><button class="btn primary fs-wide" id="btn-att-get" type="button" data-t="attGet">보상 받기</button></div>
-    <div id="mis-pane" hidden><div id="mis-list"></div></div>
+    <div id="mis-pane" hidden><button class="btn primary fs-wide" id="btn-mis-all" type="button" data-t="misAllGet">한번에 받기</button><div id="mis-list"></div></div>
     <div id="inv-pane" hidden>
       <div class="inv-top"><img src="coin-1.webp" alt=""><p id="inv-head"></p></div>
       <ol class="inv-steps" id="inv-steps"></ol>
@@ -1411,11 +1411,11 @@ let LANG = 'ko';
 try { const l = localStorage.getItem('rise-lang'); LANG = l === 'ko' || l === 'en' ? l : (/^ko/i.test(navigator.language || '') ? 'ko' : 'en'); } catch (e) { LANG = /^ko/i.test(navigator.language || '') ? 'ko' : 'en'; }
 const STR = {
   ko: {
-    title: '미니게임 포레스트', score: '점수', best: '최고', pause: '멈추고 메뉴 열기', board: '게임 판', rotLeft: '남은 돌리기 횟수, 세 칸 합계',
+    title: '미니게임 포레스트', score: '점수', best: '최고', pause: '멈추고 메뉴 열기', board: '게임 판',
     feverGauge: '피버 게이지', feverOn: s => `피버! ${s}초`, feverCount: (n, g) => `피버 ${n}/${g}`,
     feverBanner: '피버 타임!', feverSub: s => `${s}초 동안 점수 2배`,
     size: n => `${n}칸`, lv: n => `Lv ${n}`, levelUp: '레벨 업!', 
-    missionNext: '곧 새 미션이 나와요', missionDone: r => `성공! ${r}`, missionFail: '미션 실패',
+    missionDone: r => `성공! ${r}`, missionFail: '미션 실패',
     missionWin: '미션 성공!', missionNew: '새 미션', pts: n => `+${n}점`,
     colors: ['빨강', '초록', '파랑', '보라'],
     goalColor: (c, n) => `${c} 큐브 ${n}개 터뜨리기`, goalRows: n => `줄 ${n}개 깨기`, goalCombo: n => `콤보 ${n} 만들기`, goalBig: n => `한 번에 큐브 ${n}개 터뜨리기`,
@@ -1427,8 +1427,8 @@ const STR = {
     coins: '코인', attend: '출석', missions: '미션', heroes: '캐릭터', rewards: '오늘의 보상', attTab: '출석', misTab: '일일 미션', invTab: '친구 초대', invHead: n => `친구를 초대하면 둘 다 ${n.toLocaleString()}코인!`,
     invSteps: ['초대 링크를 보내요', '친구가 앱을 깔고 1판 해요', '친구도 나도 3,000코인!'], invCount: '초대한 친구', invGo: '친구 초대하기', invFull: n => `${n}명 모두 초대했어요`,
     invNote: n => `새로 가입한 친구만 · 최대 ${n}명까지`, invMsg: '미니게임 포레스트 같이 하자! 이 링크로 앱을 깔고 1판 하면 우리 둘 다 3,000코인을 받아.', invCopied: '초대 링크를 복사했어요',
-    invGot: n => `친구 초대 보상으로 ${n.toLocaleString()}코인을 받았어요!`, invPaid: (k, n) => `친구 ${k}명이 들어왔어요! ${n.toLocaleString()}코인을 받았어요`, attGet: '보상 받기', attGot: '오늘은 받았어요',
-    misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음',
+    invGot: n => `친구 초대 보상으로 ${n.toLocaleString()}코인을 받았어요!`, invPaid: (k, n) => `친구 ${k}명이 들어왔어요! ${n.toLocaleString()}코인을 받았어요`, attGet: '보상 받기',
+    misAny: n => `게임 ${n}판 플레이`, misPlay: g => `${g} 1판 플레이`, misScore: (g, s) => `${g} ${s}점\u00a0넘기`, misAll: n => `${n}개 모두 깨기`, misGot: '받음', misAllGet: '한번에 받기',
     gotCoins: n => `코인 ${n}개를 받았어요`, gotGold: (n = 1) => `황금 도토리 ${n}개를 받았어요`, gotAll: (g, c) => `황금 도토리 ${g}개, 코인 ${c.toLocaleString()}개를 받았어요`, noCoins: '코인이 모자라요',
     heroUp: '강화', heroMax: '최대', heroStage: (s, l) => `${s}단계 강화 ${l} / 100`, heroBuff: g => `${g} 점수`, heroEvolve: s => `${s}단계로 진화했어요`, evolveTitle: '진화!',
     heroBonus: p => `캐릭터 보너스 +${p}%`, prev: '이전', next: '다음',
@@ -1446,10 +1446,10 @@ const STR = {
       hedgehog: ['화면을 누르면 가시를 던져요', '꽂힌 가시에 맞으면 끝나요'],
       caterpillar: ['아무 데나 대고 끌면 그쪽으로 가요', '잎을 먹고, 나보다 짧은 애벌레의 머리를 먹어요'],
       cups: ['도토리가 든 컵을 잘 보세요', '다 섞이면 그 컵을 눌러요'] },
-    shop: '상점', shopHave: '내 황금 도토리', packN: n => `${n}개`, adGift: '광고 보고 받기', adGiftSub: n => `오늘 ${n}번 남음`, adGiftGo: '받기', adGiftNone: '내일 다시', adGiftDone: '황금 도토리 1개를 받았어요', noads: '광고 제거', noadsSub: '모든 광고가 사라져요', owned: '보유 중', inApp: '앱 전용', shopApp: '앱에서 살 수 있어요', shopDone: '구매했어요', shopPending: '결제가 확인되면 들어와요', shopFail: '구매하지 못했어요', adNone: '지금은 광고를 볼 수 없어요', adSkipped: '광고를 끝까지 보면 이어할 수 있어요', contAd: '광고 보고 이어하기', contItem: '황금 도토리 쓰기', contNo: '그만하기', ad: '광고', result: '결과', newBest: '새 최고 기록!', again: '다시 하기',
-    lobby: '로비', start: '게임 시작', backExit: '한 번 더 누르면 나가요',
+    shop: '상점', shopHave: '내 황금 도토리', packN: n => `${n}개`, adGift: '광고 보고 받기', adGiftSub: n => `오늘 ${n}번 남음`, adGiftGo: '받기', adGiftDone: '황금 도토리 1개를 받았어요', noads: '광고 제거', noadsSub: '모든 광고가 사라져요', owned: '보유 중', shopDone: '구매했어요', shopPending: '결제가 확인되면 들어와요', shopFail: '구매하지 못했어요', adNone: '지금은 광고를 볼 수 없어요', adSkipped: '광고를 끝까지 보면 이어할 수 있어요', contAd: '광고 보고 이어하기', contItem: '황금 도토리 쓰기', contNo: '그만하기', ad: '광고', result: '결과', newBest: '새 최고 기록!', again: '다시 하기',
+    lobby: '로비', start: '게임 시작',
     splash: '시작 화면', touch: '화면을 터치하세요',
-    login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…', loginAsk: '게임별 최고 점수와 순위를 계정에 저장해요',
+    login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…',
     loginErr: '연결할 수 없어요. 인터넷 연결을 확인해 주세요.', offStart: '인터넷 없이 시작했어요. 연결되면 저장돼요', loginBlocked: '로그인 창이 막혔어요. 다시 눌러 주세요.',
     nickTitle: '닉네임', nickAsk: '랭킹에 보일 이름을 정해 주세요', nickRule: '2~10자 · 한글, 영문, 숫자, _', nickTaken: '이미 사용 중인 닉네임이에요',
     nickBad: '2~10자, 한글·영문·숫자·_만 쓸 수 있어요', ok: '확인',
@@ -1458,17 +1458,17 @@ const STR = {
     delText: '닉네임과 모든 순위 기록이 지워지고 되돌릴 수 없어요. 산 아이템과 광고 제거는 그대로예요.',
     delAsk: '본인 확인을 위해 구글 계정을 한 번 더 골라 주세요', delWait: '지우는 중…', delDone: '계정을 지웠어요',
     delFail: '지우지 못했어요. 다시 해 주세요', delOff: '인터넷 연결을 확인하고 다시 해 주세요', privacy: '개인정보처리방침', terms: '이용약관',
-    webOnly: '앱에서 만나요', webOnlyText: '미니게임 포레스트는 안드로이드 앱으로 즐길 수 있어요.', webOnlyGo: 'Google Play에서 받기',
+    webOnlyText: '미니게임 포레스트는 안드로이드 앱으로 즐길 수 있어요.', webOnlyGo: 'Google Play에서 받기',
      rank: '순위표', myName: '내 닉네임', rankEmpty: '아직 기록이 없어요',
-    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', mushroom: '버섯 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', bvPerfect: '딱 맞아!', hedgehog: '가시 꽂기', hedgehogShort: '가시', hhClear: '통나무 깼다!', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', opSwap: '자리 바꿔요!', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msClear: '정리 완료!', msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkAllTop: '전체 1위', rkWeekTop: '주간 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '전체', rkWeek: '주간', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
+    merge: '과일 합치기', mergeShort: '과일', pebble: '조약돌 깨기', pebbleShort: '조약돌', mushroom: '버섯 정리', mushroomShort: '버섯', owlpost: '부엉이 우체국', owlpostShort: '우체국', chameleon: '카멜레온 찾기', chameleonShort: '카멜레온', beaver: '비버 다리 놓기', beaverShort: '비버', hedgehog: '가시 꽂기', hedgehogShort: '가시', caterpillar: '애벌레 잎 먹기', caterpillarShort: '애벌레', cups: '도토리 컵 찾기', cupsShort: '컵 찾기', opLose: n => `-${n}초`, msUndo: '되돌리기', msLevel: n => `${n}판`, msBonus: n => `+${n}초`, stairs: '토끼 계단', stairsShort: '계단', stTurn: '방향 바꾸기', acorn: '도토리 받기', acornShort: '도토리', blockGame: '블록 포레스트', rkTop: '1위', rkAllTop: '전체 1위', rkWeekTop: '주간 1위', rkMine: '내 최고', rkPlace: n => `${n}위`, rkAll: '전체', rkWeek: '주간', rkNone: '아직 없어요', rkTopOf: (nm, sc) => `1위 ${nm} ${sc}`, rkMineOf: sc => `내 최고 ${sc}`, minis: '미니게임', toList: '목록으로', mgBest: n => `최고 ${n}`, go: '시작!', comboN: n => `콤보 ${n}`,
     sound: '소리·진동', soundAria: '소리와 진동', music: '배경음', sfx: '효과음', vib: '진동', on: '켜짐', off: '꺼짐', language: '언어', close: '닫기',
   },
   en: {
-    title: 'Mini Game Forest', score: 'Score', best: 'Best', pause: 'Pause and open the menu', board: 'Game board', rotLeft: 'Turns left, all three slots',
+    title: 'Mini Game Forest', score: 'Score', best: 'Best', pause: 'Pause and open the menu', board: 'Game board',
     feverGauge: 'Fever gauge', feverOn: s => `Fever! ${s}s`, feverCount: (n, g) => `Fever ${Math.floor(n * 100 / g)}%`,
     feverBanner: 'FEVER TIME!', feverSub: s => `Double points for ${s}s`,
     size: n => `${n} Wide`, lv: n => `Lv ${n}`, levelUp: 'LEVEL UP!', 
-    missionNext: 'Next mission soon', missionDone: r => `Done! ${r}`, missionFail: 'Mission failed',
+    missionDone: r => `Done! ${r}`, missionFail: 'Mission failed',
     missionWin: 'MISSION CLEAR!', missionNew: 'NEW MISSION', pts: n => `+${n} pts`,
     colors: ['Red', 'Green', 'Blue', 'Purple'],
     goalColor: (c, n) => `Pop ${n} ${c.toLowerCase()} cubes`, goalRows: n => `Clear ${n} lines`, goalCombo: n => `Reach a ${n} combo`, goalBig: n => `Pop ${n} cubes at once`,
@@ -1480,8 +1480,8 @@ const STR = {
     coins: 'Coins', attend: 'Daily', missions: 'Quests', heroes: 'Heroes', rewards: "Today's Rewards", attTab: 'Check-in', misTab: 'Quests', invTab: 'Invite', invHead: n => `Invite a friend: ${n.toLocaleString()} coins each!`,
     invSteps: ['Send your invite link', 'Your friend installs and plays a game', 'You both get 3,000 coins!'], invCount: 'Friends invited', invGo: 'Invite friends', invFull: n => `All ${n} invited`,
     invNote: n => `New players only · up to ${n} friends`, invMsg: 'Play Mini Game Forest with me! Install it from this link and play one game: we both get 3,000 coins.', invCopied: 'Invite link copied',
-    invGot: n => `Invite reward: +${n.toLocaleString()} coins!`, invPaid: (k, n) => `${k} friend${k > 1 ? 's' : ''} joined! +${n.toLocaleString()} coins`, attGet: 'Claim reward', attGot: 'Claimed today',
-    misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got',
+    invGot: n => `Invite reward: +${n.toLocaleString()} coins!`, invPaid: (k, n) => `${k} friend${k > 1 ? 's' : ''} joined! +${n.toLocaleString()} coins`, attGet: 'Claim reward',
+    misAny: n => `Play ${n} games`, misPlay: g => `Play ${g}`, misScore: (g, s) => `${s} in ${g}`, misAll: n => `Clear all ${n}`, misGot: 'Got', misAllGet: 'Claim all',
     gotCoins: n => `+${n} coins`, gotGold: (n = 1) => `+${n} golden acorn${n > 1 ? 's' : ''}`, gotAll: (g, c) => `+${g} golden acorns, +${c.toLocaleString()} coins`, noCoins: 'Not enough coins',
     heroUp: 'Upgrade', heroMax: 'Max', heroStage: (s, l) => `Stage ${s} · ${l} / 100`, heroBuff: g => `${g} score`, heroEvolve: s => `Evolved to stage ${s}`, evolveTitle: 'Evolved!',
     heroBonus: p => `Hero bonus +${p}%`, prev: 'Previous', next: 'Next',
@@ -1499,10 +1499,10 @@ const STR = {
       hedgehog: ['Tap to throw a quill', 'Hit a quill already in and it is over'],
       caterpillar: ['Drag anywhere to steer', 'Eat leaves, and the heads of shorter caterpillars'],
       cups: ['Watch the cup with the acorn', 'Tap it when the shuffling stops'] },
-    shop: 'Shop', shopHave: 'My golden acorns', packN: n => `×${n}`, adGift: 'Watch an ad', adGiftSub: n => `${n} left today`, adGiftGo: 'Get', adGiftNone: 'Tomorrow', adGiftDone: 'You got a golden acorn', noads: 'Remove ads', noadsSub: 'No more ads', owned: 'Owned', inApp: 'In app', shopApp: 'Available in the app', shopDone: 'Purchased', shopPending: 'It arrives once the payment clears', shopFail: 'Purchase failed', adNone: 'No ad right now', adSkipped: 'Watch the whole ad to continue', contAd: 'Watch an ad', contItem: 'Golden acorn', contNo: 'No thanks', ad: 'Ad', result: 'Result', newBest: 'New Best!', again: 'Play Again',
-    lobby: 'Lobby', start: 'Play', backExit: 'Press back again to leave',
+    shop: 'Shop', shopHave: 'My golden acorns', packN: n => `×${n}`, adGift: 'Watch an ad', adGiftSub: n => `${n} left today`, adGiftGo: 'Get', adGiftDone: 'You got a golden acorn', noads: 'Remove ads', noadsSub: 'No more ads', owned: 'Owned', shopDone: 'Purchased', shopPending: 'It arrives once the payment clears', shopFail: 'Purchase failed', adNone: 'No ad right now', adSkipped: 'Watch the whole ad to continue', contAd: 'Watch an ad', contItem: 'Golden acorn', contNo: 'No thanks', ad: 'Ad', result: 'Result', newBest: 'New Best!', again: 'Play Again',
+    lobby: 'Lobby', start: 'Play',
     splash: 'Title screen', touch: 'Touch to Start',
-    login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…', loginAsk: 'Your bests and rankings are saved to your account',
+    login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…',
     loginErr: "Can't connect. Check your internet connection.", offStart: 'Playing offline. Saved once you are back online', loginBlocked: 'The sign-in window was blocked. Tap again.',
     nickTitle: 'Nickname', nickAsk: 'Pick the name others see in the rankings', nickRule: '2-10 letters, numbers or _', nickTaken: 'That nickname is taken',
     nickBad: 'Use 2-10 letters, numbers or _', ok: 'OK',
@@ -1511,9 +1511,9 @@ const STR = {
     delText: 'Your nickname and all your ranking records will be deleted. This cannot be undone. Items and ad removal you bought stay.',
     delAsk: 'Choose your Google account once more to confirm it is you', delWait: 'Deleting…', delDone: 'Account deleted',
     delFail: 'Could not delete. Please try again', delOff: 'Check your connection and try again', privacy: 'Privacy policy', terms: 'Terms',
-    webOnly: 'See you in the app', webOnlyText: 'Mini Game Forest is played in the Android app.', webOnlyGo: 'Get it on Google Play',
+    webOnlyText: 'Mini Game Forest is played in the Android app.', webOnlyGo: 'Get it on Google Play',
      rank: 'Ranking', myName: 'My nickname', rankEmpty: 'No records yet',
-    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', bvPerfect: 'Perfect!', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', hhClear: 'Log split!', caterpillar: 'Leaf Munch', caterpillarShort: 'Munch', cups: 'Acorn Cups', cupsShort: 'Cups', opSwap: 'Places swap!', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msClear: 'Sorted!', msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkAllTop: 'Overall 1st', rkWeekTop: 'Weekly 1st', rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'Overall', rkWeek: 'Weekly', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
+    merge: 'Fruit Merge', mergeShort: 'Fruit', pebble: 'Pebble Break', pebbleShort: 'Pebbles', mushroom: 'Mushroom Sort', mushroomShort: 'Sort', owlpost: 'Owl Post', owlpostShort: 'Post', chameleon: 'Chameleon', chameleonShort: 'Hunt', beaver: 'Beaver Bridge', beaverShort: 'Bridge', hedgehog: 'Quill Toss', hedgehogShort: 'Quills', caterpillar: 'Leaf Munch', caterpillarShort: 'Munch', cups: 'Acorn Cups', cupsShort: 'Cups', opLose: n => `-${n}s`, msUndo: 'Undo', msLevel: n => `Round ${n}`, msBonus: n => `+${n}s`, stairs: 'Bunny Stairs', stairsShort: 'Stairs', stTurn: 'Turn', acorn: 'Acorn Catch', acornShort: 'Acorns', blockGame: 'Block Forest', rkTop: '1st', rkAllTop: 'Overall 1st', rkWeekTop: 'Weekly 1st', rkMine: 'My best', rkPlace: n => `#${n}`, rkAll: 'Overall', rkWeek: 'Weekly', rkNone: 'None yet', rkTopOf: (nm, sc) => `1st ${nm} ${sc}`, rkMineOf: sc => `My best ${sc}`, minis: 'Mini Games', toList: 'Game list', mgBest: n => `Best ${n}`, go: 'GO!', comboN: n => `COMBO ${n}`,
     sound: 'Sound & Vibration', soundAria: 'Sound and vibration', music: 'Music', sfx: 'Sounds', vib: 'Vibrate', on: 'On', off: 'Off', language: 'Language', close: 'Close',
   },
 };
@@ -1869,7 +1869,8 @@ function loadNet() {
 }
 function loginUI(st) {
   $('#login').hidden = false;
-  $('#login-msg').textContent = tr(st === 'wait' ? 'loginWait' : st === 'error' ? 'loginErr' : st === 'blocked' ? 'loginBlocked' : 'loginAsk');
+  const lm = { wait: 'loginWait', error: 'loginErr', blocked: 'loginBlocked' }[st];
+  $('#login-msg').textContent = lm ? tr(lm) : '';   // asking: no line under the button
   $('#btn-google').hidden = st === 'error';
   $('#btn-google').disabled = st === 'wait';
   $('#btn-retry').hidden = st !== 'error';
@@ -2441,7 +2442,7 @@ function missionUI(extra) {
   const el = $('#mission'), m = G.mission;
   el.className = 'mission ' + (!m ? 'idle' : m.state === 'on' ? '' : m.state) + (extra ? ' ' + extra : '');
   $('#m-dot').style.background = m ? (m.type === 'color' ? COLORS[m.col - 1] : C.accent || '#efcd94') : 'transparent';
-  $('#m-text').textContent = !m ? tr('missionNext') : m.state === 'done' ? tr('missionDone', rewardText(m)) : m.state === 'fail' ? tr('missionFail') : missionLine(m);
+  $('#m-text').textContent = !m ? '' : m.state === 'done' ? tr('missionDone', rewardText(m)) : m.state === 'fail' ? tr('missionFail') : missionLine(m);
 }
 function missionProgress(marks, rows) {
   const m = G.mission;
@@ -3352,7 +3353,6 @@ function miniCatch(it, g) {
       const side = it.x === MG.x ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(it.x - MG.x);   // the stone knocked off it, spinning
       MG.items.push({ ...it, done: false, bounce: true, y: Math.min(it.y, g.foot - g.S * 1.12), vx: side * MG.W * 0.55, vy: -MG.H * 0.42, spin: side * 10 });
       gsfx('acHeart', 1, 'heart'); buzz(25);
-      MG.pops.push({ text: itemT().saved, x: MG.x, y: g.foot - g.S * 1.12 - g.u * 1.1, t: 0, look: CHAIN_LOOK, size: g.u * 1.4, life: 0.9 });   // over the shield (its breaking shows)
       for (let i = 0; i < 12; i++) { const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.6, sp = 200 + Math.random() * 160; MG.sparks.push({ x: it.x, y: it.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: 0, life: 0.5, c: i % 2 ? '#7fd0ff' : '#fff', s: 3 + Math.random() * 2, star: i % 2 === 0 }); }
       return;
     }
@@ -3731,8 +3731,8 @@ const ITEM_TXT = {
       'owlpost.hourglass': '시작할 때 제한 시간이 10초 늘어나요', 'owlpost.boost': '10초 동안 아무 데나 눌러도 알맞은 동물에게 가요', 'chameleon.glass': '다른 잎이 있는 구역을 알려줘요',
       'beaver.tape': '다음 다리 5개는 딱 맞는 길이에 표시선이 떠요', 'hedgehog.guard': '가시에 부딪혀도 한 번 봐줘요',
       'caterpillar.magnet': '30초 동안 주변 잎을 끌어당겨요', 'caterpillar.speed': '15초 동안 1.5배 빨라져요', 'cups.xray': '섞은 뒤 도토리가 든 컵이 잠깐 빛나요' },
-    title: '아이템', none: '켜면 이번 판에 써요 (하나에 200코인)', saved: '막았어요!', hammerAim: '없앨 과일을 눌러요',
-    blockAim: { bomb: '터뜨릴 곳을 눌러요', drill: '지울 세로줄을 눌러요' }, stuck: '놓을 곳이 없어요', stuckSub: '아이템으로 자리를 만들어요', giveUp: '끝내기',
+    title: '아이템',
+    stuck: '놓을 곳이 없어요', stuckSub: '아이템으로 자리를 만들어요', giveUp: '끝내기',
   },
   en: {
     name: { bomb: 'Bomb', drill: 'Drill', shield: 'Shield', magnet: 'Magnet', wing: 'Wings', boost: 'Booster', hammer: 'Hammer', shake: 'Shake', fire: 'Fire Pebbles', rows: 'Clear 3 Rows',
@@ -3746,8 +3746,8 @@ const ITEM_TXT = {
       'owlpost.hourglass': 'Starts with 10 more seconds on the clock', 'owlpost.boost': 'For 10 seconds any tap sends it to the right friend', 'chameleon.glass': 'Shows the part where the odd leaf is',
       'beaver.tape': 'Marks the exact length for the next 5 logs', 'hedgehog.guard': 'Saves you once from hitting a quill',
       'caterpillar.magnet': 'Pulls in nearby leaves for 30 seconds', 'caterpillar.speed': '1.5x speed for 15 seconds', 'cups.xray': 'After a shuffle the cup with the acorn glows' },
-    title: 'Items', none: 'Turn one on to use it this game (200 coins each)', saved: 'Blocked!', hammerAim: 'Tap a fruit to smash',
-    blockAim: { bomb: 'Tap where to blow it up', drill: 'Tap a column to drill' }, stuck: 'No room left', stuckSub: 'Use an item to make room', giveUp: 'End game',
+    title: 'Items',
+    stuck: 'No room left', stuckSub: 'Use an item to make room', giveUp: 'End game',
   },
 };
 const itemT = () => ITEM_TXT[LANG] || ITEM_TXT.ko;
@@ -3773,7 +3773,7 @@ function itemPickUI(game) {
     return b;
   }));
   const note = ITEM_NOTE[g];
-  box.querySelector('.it-note').textContent = note ? itemDesc(g, note) : itemT().none;
+  box.querySelector('.it-note').textContent = note ? itemDesc(g, note) : '';
 }
 function itemPickTap(e) {
   const b = e.target.closest('.it-chip');
@@ -4000,7 +4000,7 @@ ITEM_USE.block = Object.fromEntries(['bomb', 'drill'].map(id => [id, () => {
   if (IT.st[id] === 'aim') { IT.st[id] = 'ready'; bAim = null; if (pendingItem && pendingItem.id === id) pendingItem = null; return true; }   // tapped again: put away
   for (const k in IT.st) if (IT.st[k] === 'aim') IT.st[k] = 'ready';
   IT.st[id] = 'aim'; bAim = null;
-  sfx('pick'); toast(itemT().blockAim[id], 2000);
+  sfx('pick');
   return true;
 }]));
 // the acorn game: the magnet runs 10 s (the shield waits for a stone)
@@ -4603,6 +4603,18 @@ function misClaim(i) {
   sfx('pick'); toast(tr('gotCoins', MIS_COINS));
 }
 
+// every reward waiting in the missions at once (each done mission's coins, then the all-done prize if that makes 15)
+function misClaimAll() {
+  const st = misState(), L = misList(st.day);
+  let coins = 0, gold = 0;
+  for (let i = 0; i < MIS_N; i++) if (misDone(st, L, i) && !(st.got & (1 << i))) { st.got |= 1 << i; coins += MIS_COINS; }
+  if ((st.got & misFull) === misFull && !(st.got & misAllBit)) { st.got |= misAllBit; coins += MIS_ALL_COINS; gold = MIS_ALL_GOLD; }
+  if (!coins) return;
+  walletPut(w => { misSave(w, st); w.coins += coins; });
+  if (gold) contPut(contN + gold);
+  sfx('pick'); toast(gold ? tr('gotAll', gold, coins.toLocaleString()) : tr('gotCoins', coins.toLocaleString()));
+}
+
 // the heroes: one a game, upgraded with coins; every 100 upgrades it evolves (five stages); its game's score gets +0.05% an upgrade
 const heroOf = game => (game.startsWith('block') ? 'block' : game);
 const heroLv = g => Math.max(0, Math.min(HERO_MAX, WAL.heroes[g] | 0));
@@ -4770,7 +4782,7 @@ function dailyUI() {
     h += `<div class="${cls}"><i>${d}</i><img src="${gold ? 'gold-icon.webp' : 'coin-1.webp'}" alt=""><b>${gold ? 'x1' : ATT_COINS}</b></div>`;
   }
   const cal = $('#att-cal'); cal.innerHTML = h; cal.dataset.day = dayKey();
-  const can = attCan(), btn = $('#btn-att-get'); btn.disabled = !can; btn.textContent = tr(can ? 'attGet' : 'attGot');
+  const can = attCan(), btn = $('#btn-att-get'); btn.disabled = !can; btn.textContent = tr('attGet');   // taken today: the button off
   // the missions
   const st = misState(), L = misList(st.day), list = $('#mis-list');
   const anyIc = '<span class="trio"><img class="t1" src="hub-owl.webp" alt=""><img class="t2" src="hub-raccoon.webp" alt=""><img class="t3" src="hub-rabbit.webp" alt=""></span>';   // play any games: three of the forest friends
@@ -4786,6 +4798,7 @@ function dailyUI() {
   }).join('') + row('<img src="gold-icon.webp" alt="">', tr('misAll', MIS_N), L.filter((m, i) => st.got & (1 << i)).length, MIS_N,
     st.got & misAllBit ? 'done' : (st.got & misFull) === misFull ? 'go' : '', `<span class="two"><span><img src="gold-icon.webp" alt=""><b>${MIS_ALL_GOLD}</b></span><span><img src="coin-1.webp" alt=""><b>${MIS_ALL_COINS.toLocaleString()}</b></span></span>`, MIS_N, true);
   list.dataset.day = st.day;
+  $('#btn-mis-all').disabled = !misReady();
   dailyClock();
 }
 $('#btn-hub-att').addEventListener('click', () => { sfx('pick'); openDaily('att'); });
@@ -4795,6 +4808,7 @@ $('#tab-mis').addEventListener('click', () => { if (dailyTab !== 'mis') { sfx('p
 $('#tab-inv').addEventListener('click', () => { if (dailyTab !== 'inv') { sfx('pick'); dailyTab = 'inv'; dailyUI(); invSync(); } });
 $('#btn-att-get').addEventListener('click', attClaim);
 $('#mis-list').addEventListener('click', e => { const b = e.target.closest('.ms-get.go'); if (b) misClaim(+b.dataset.i); });
+$('#btn-mis-all').addEventListener('click', misClaimAll);
 $('#btn-daily-close').addEventListener('click', () => { sfx('back'); closeDaily(); });
 
 // ---- inviting friends. A player's link carries their uid: the invite page (invite.html) sends a phone to the app on
@@ -4992,16 +5006,16 @@ function shopUI() {
   const nat = NATIVE(), left = adGiftLeft();
   for (const e of $('#shop').querySelectorAll('[data-name]')) { const k = e.dataset.name; e.textContent = k.startsWith('pack:') ? tr('packN', +k.slice(5)) : tr(k); }
   for (const b of $('#sh-packs').querySelectorAll('.sh-pack')) {
-    b.querySelector('.sh-price').textContent = !nat ? tr('inApp') : shopPrices[b.dataset.id] || '…';
+    b.querySelector('.sh-price').textContent = !nat ? '' : shopPrices[b.dataset.id] || '…';
     b.classList.toggle('off', !nat || shopBusy);
   }
   const gift = $('#sh-cards [data-id="adgift"]');
   gift.closest('.sh-card').querySelector('.sh-sub').textContent = tr('adGiftSub', left);
-  gift.textContent = left > 0 ? tr('adGiftGo') : tr('adGiftNone');
+  gift.textContent = tr('adGiftGo');   // none left today: the same word, the button off
   gift.classList.toggle('off', left <= 0 || adGiftBusy); gift.disabled = left <= 0;
   const na = $('#sh-cards [data-id="' + NOADS_ID + '"]');
   na.closest('.sh-card').querySelector('.sh-sub').textContent = tr('noadsSub');
-  na.textContent = noAds ? tr('owned') : !nat ? tr('inApp') : shopPrices[NOADS_ID] || '…';
+  na.textContent = noAds ? tr('owned') : !nat ? '' : shopPrices[NOADS_ID] || '…';
   na.classList.toggle('owned', noAds); na.classList.toggle('off', !noAds && (!nat || shopBusy)); na.disabled = noAds;
 }
 function openShop() {
@@ -5026,7 +5040,7 @@ function shopGive(id, tok) {
 }
 async function shopBuy(id) {
   const nat = NATIVE();
-  if (!nat) { toast(tr('shopApp')); return; }
+  if (!nat) return;
   if (shopBusy || (id === NOADS_ID && noAds)) return;
   shopBusy = true; shopUI();
   try {
@@ -5392,7 +5406,7 @@ function stFix(h) {
 function stSave(h) {
   if (!(itemRun('stairs', 'boost') || ST.prot > 0 || itemTake('stairs', 'wing'))) return false;
   stFix(h);
-  if (!itemRun('stairs', 'boost') && !(ST.prot > 0)) { gsfx('stTheme', 1, 'missionNew'); buzz(25); ST.saved = 0.9; }   // the wings: shown a moment
+  if (!itemRun('stairs', 'boost') && !(ST.prot > 0)) { gsfx('stTheme', 1, 'missionNew'); buzz(25); }   // the wings: heard and felt
   return true;
 }
 function stFall() {
@@ -5447,7 +5461,7 @@ function stUpdate(dt) {
   if (ST.phase === 'run') ST.goT += dt;
   const h = ST.hop;
   if (h && (ST.st === 'play' || ST.st === 'dying')) {
-    if (ST.st === 'play') { ST.t += dt; musicTempo(Math.floor(ST.t / 60)); itemTick('stairs', dt); ST.prot = Math.max(0, (ST.prot || 0) - dt); ST.saved = Math.max(0, (ST.saved || 0) - dt); }   // the tune a step faster every minute (to 1.4x at 3 minutes)
+    if (ST.st === 'play') { ST.t += dt; musicTempo(Math.floor(ST.t / 60)); itemTick('stairs', dt); ST.prot = Math.max(0, (ST.prot || 0) - dt); }   // the tune a step faster every minute (to 1.4x at 3 minutes)
     const T = 1 / (stSpeed(ST.t) * (itemRun('stairs', 'boost') ? 2 : 1)), f = Math.min(1, ST.t / ST_RAMP);   // the booster: twice the speed
     h.k += dt / T; h.el += dt;
     if (h.miss && !h.gone && h.el >= Math.min(ST_GRACE, Math.max(0.02, 0.25 * T)) && !stSave(h)) { h.gone = true; stFall(); }
@@ -5500,7 +5514,6 @@ function stDraw(now) {
     if (pose === 'fall') { c.translate(0, -g.rh * 0.45); c.rotate(ST.fall.rot); c.scale(ST.dir, 1); c.drawImage(im, -a[0] * k, -a[1] * k, w, h); }
     else { if (pose !== 'idle') c.scale(ST.dir, 1); c.drawImage(im, -a[0] * k, -a[1] * k, w, h); }
     c.restore();
-    if (ST.saved > 0) { c.save(); c.globalAlpha = Math.min(1, ST.saved / 0.3); miniText(c, itemT().saved, rx, ry - g.rh * 1.25, g.rh * 0.42, CHAIN_LOOK, now / 1000); c.restore(); }   // the wings saved it
   }
   // the steps fade out under the top bar and above the buttons (no slivers of steps cut at the edges)
   c.save(); c.globalCompositeOperation = 'destination-out';
@@ -5840,7 +5853,7 @@ function fmDraw(now) {
   if (IT && IT.game === 'merge' && IT.st.hammer === 'aim') {   // the hammer: which fruit (each one ringed)
     c.save(); c.lineWidth = 3; c.strokeStyle = `rgba(255,243,107,${0.55 + 0.4 * Math.sin(now / 120)})`;
     for (const f of FM.fruits) { c.beginPath(); c.arc(fmX(g, f.x), fmY(g, f.y), f.r * g.bw + 3, 0, Math.PI * 2); c.stroke(); }
-    c.restore(); miniText(c, itemT().hammerAim, FM.W / 2, g.T + 26, 17, SUB_LOOK, now);
+    c.restore();
   }
   // the top line, red while something sticks up over it
   const near = FM.fruits.some(f => f.age > 1 && f.y - f.r < 0.06);
@@ -6611,7 +6624,7 @@ function msHud() {
 function openMushroom() {
   const el = $('#mushroom');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
-  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('msClear') + '0123456789+초s').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + '0123456789+초s').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   loadMushroomArt();
   rkGate('mushroom', () => { msStart(); musicRate(1); musicStart(true); });
 }
@@ -6695,8 +6708,7 @@ function msCleared() {
   MS.score += pts; msHud();
   MS.time = Math.min(MS_TMAX, MS.time + bonus);
   MS.clearT = 1.1;
-  MS.pops.push({ text: tr('msClear'), x: MS.W / 2, y: MS.H * 0.42, t: 0, life: 1.1, size: 34, look: GOLD_LOOK });
-  MS.pops.push({ text: tr('msBonus', bonus), x: MS.W / 2, y: MS.H * 0.42 + 44, t: 0, life: 1.1, size: 22, look: SCORE_LOOK });
+  MS.pops.push({ text: tr('msBonus', bonus), x: MS.W / 2, y: MS.H * 0.42, t: 0, life: 1.1, size: 22, look: SCORE_LOOK });
   for (let i = 0; i < 4; i++) msBurst(MS.W * (0.2 + i * 0.2), MS.H * 0.45, MS_SHROOM[i][0], 12);
   gsfx('msClear', 1, 'stage');
 }
@@ -6931,7 +6943,7 @@ function opHud() {
 function openOwlPost() {
   const el = $('#owlpost');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
-  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('opSwap') + tr('comboN', 0) + tr('opLose', OP_LOSE) + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('comboN', 0) + tr('opLose', OP_LOSE) + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   const go = () => { opStart(); musicRate(1); musicStart(true); };
   if (opArt.hold && OP_PALS.every(p => opArt[p]) && OP_GIFTS.every(n => opArt['gift-' + n])) return rkGate('owlpost', go);
   Promise.race([loadOwlArt(), new Promise(res => setTimeout(res, 3000))]).then(() => { if (!el.hidden && OP.st === 'off') rkGate('owlpost', go); });
@@ -6981,7 +6993,6 @@ function opShuffle() {
   do { p = old.slice(); for (let i = p.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; } } while (p.some((v, i) => v === old[i]));
   OP.from = old; OP.pos = p; OP.swapT = 0.7;
   const g = opGeo();
-  opSidePop(g, tr('opSwap'), 22, SUB_LOOK, g.frontY - g.sp * 2.6, 1.1);
   gsfx('opShuffle', 1, 'rise');
 }
 function opFinish() {
@@ -7602,7 +7613,7 @@ function bvNext() {
 function openBeaver() {
   const el = $('#beaver');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
-  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('bvPerfect') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   const go = () => { bvStart(); musicRate(1); musicStart(true); };
   if (Object.keys(BV_ART).every(k => bvArt[k])) return rkGate('beaver', go);
   BV.st = 'off';
@@ -7642,7 +7653,7 @@ function bvCrossed() {
   const pts = BV.perfect ? BV_PTS * 2 : BV_PTS;
   BV.score += pts; BV.n++; bvHud();
   const x = b.x + b.w / 2 - BV.cam;
-  BV.pops.push({ text: BV.perfect ? tr('bvPerfect') + ' +' + pts.toLocaleString() : '+' + pts.toLocaleString(), x, y: g.top - g.bh - 30 * g.s, t: 0, life: 0.8, size: BV.perfect ? 24 : 20, look: BV.perfect ? GOLD_LOOK : SCORE_LOOK });
+  BV.pops.push({ text: '+' + pts.toLocaleString(), x, y: g.top - g.bh - 30 * g.s, t: 0, life: 0.8, size: BV.perfect ? 24 : 20, look: BV.perfect ? GOLD_LOOK : SCORE_LOOK });
   BV.logs.push({ x: BV.stumps[BV.cur].x + BV.stumps[BV.cur].w, L: BV.log });   // the bridge stays where it lies
   BV.cur++; BV.log = 0; BV.lean = 0;
   bvNext();
@@ -7976,7 +7987,7 @@ function hhSpin(t) {
 function openHedgehog() {
   const el = $('#hedgehog');
   el.hidden = false; el.classList.add('out'); void el.offsetWidth; el.classList.remove('out');
-  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + tr('hhClear') + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
+  try { document.fonts.load(`20px ${SUB_LOOK.font}`, tr('msLevel', 0) + '0123456789+').then(() => textCache.clear()).catch(() => {}); } catch (e) { /* old browsers */ }
   loadHedgehogArt();
   rkGate('hedgehog', () => { hhStart(); musicRate(1); musicStart(true); });
 }
@@ -8020,7 +8031,7 @@ function hhClear() {
   for (let k = 0; k < 4; k++) { const a = HH.rot + k * Math.PI / 2 + Math.PI / 4; HH.pieces.push({ a0: HH.rot + k * Math.PI / 2, rot0: HH.rot, x: g.cx, y: g.cy, vx: Math.cos(a) * 260 * g.s, vy: Math.sin(a) * 260 * g.s - 120 * g.s, r: 0, vr: (k % 2 ? 1 : -1) * 4, t: 0 }); }
   for (const q of HH.quills) { const w = q.a + HH.rot, r = g.R - g.dig + g.q * 0.5; HH.falls.push({ x: g.cx + Math.cos(w) * r, y: g.cy + Math.sin(w) * r, a: w, vx: Math.cos(w) * 320 * g.s, vy: Math.sin(w) * 320 * g.s - 150 * g.s, vr: (Math.random() - 0.5) * 14, t: 0 }); }
   HH.quills = []; HH.berries = [];
-  HH.pops.push({ text: tr('hhClear') + ' +' + HH_CLEAR.toLocaleString(), x: g.cx, y: g.cy, t: 0, life: 0.9, size: 26, look: GOLD_LOOK });
+  HH.pops.push({ text: '+' + HH_CLEAR.toLocaleString(), x: g.cx, y: g.cy, t: 0, life: 0.9, size: 26, look: GOLD_LOOK });
 }
 // the guard (the item) takes the bounce: the quill falls away and comes back to be thrown again, the game goes on
 function hhGuarded(tipY) {
@@ -8028,7 +8039,6 @@ function hhGuarded(tipY) {
   shieldHit('hh-guard');   // the guard lights up and goes
   HH.falls.push({ x: g.cx, y: tipY + g.q * 0.5, a: Math.PI / 2, vx: (Math.random() < 0.5 ? -1 : 1) * 170 * g.s, vy: 160 * g.s, vr: (Math.random() < 0.5 ? -1 : 1) * 16, t: 0 });
   HH.left++; HH.shake = 0.2; hhHud();
-  HH.pops.push({ text: itemT().saved, x: g.cx, y: tipY + g.q, t: 0, life: 0.9, size: 26, look: CHAIN_LOOK });
   for (let k = 0; k < 12; k++) { const t = k * HH_TAU / 12; HH.sparks.push({ x: g.cx, y: tipY, vx: Math.cos(t) * 200, vy: Math.sin(t) * 200 - 40, t: 0, life: 0.5, c: k % 2 ? '#fff' : '#7fd0ff', s: 3 }); }
   gsfx('hhBerry', 1, 'pick'); buzz(25);
 }
@@ -10360,7 +10370,6 @@ function bkBack() {
   if (bkVis('splash')) return;
   if (bkVis('minis')) return press('btn-minis-back');
   if (bkVis('hub')) {
-    toast(tr('backExit'));
     const h = bkHave();
     if (h > 0) { BK.ignore++; history.go(-h); }   // back to the page's first entry: the next press leaves
     return;
