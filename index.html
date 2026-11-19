@@ -5053,7 +5053,33 @@ function heroGo(d) {
 $('#btn-hub-hero').addEventListener('click', () => { sfx('pick'); openHeroes(); });
 $('#hero-prev').addEventListener('click', () => heroGo(-1));
 $('#hero-next').addEventListener('click', () => heroGo(1));
-$('#btn-hero-up').addEventListener('click', () => heroUp(HERO_LIST[heroI]));
+// the upgrade button: pressed, one upgrade at once; held, more and more (after 0.4 s, one every 160 ms speeding up to
+// 60 ms) until let go, out of coins, at the top, or a stage's 100th (the evolve card shows and the hold ends there)
+const HOLD = { t: 0, n: 0, eat: false };
+function heroHoldStop() { clearTimeout(HOLD.t); HOLD.t = 0; }
+function heroHoldStep() {
+  HOLD.t = 0;
+  const g = HERO_LIST[heroI], L = heroLv(g);
+  if ($('#heroes').hidden || !$('#evolve').hidden || L >= HERO_MAX || !coinsOK(heroCost(L))) return;
+  heroUp(g); HOLD.n++;
+  if (!$('#evolve').hidden) return;
+  HOLD.t = setTimeout(heroHoldStep, Math.max(60, 160 - HOLD.n * 10));
+}
+{
+  const b = $('#btn-hero-up');
+  b.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    heroHoldStop(); HOLD.n = 0;
+    try { b.setPointerCapture(e.pointerId); } catch (err) { /* not this pointer */ }
+    heroUp(HERO_LIST[heroI]);
+    if ($('#evolve').hidden) HOLD.t = setTimeout(heroHoldStep, 400);
+  });
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) b.addEventListener(ev, heroHoldStop);
+  // the evolve card came up under the finger: the click of letting go is not a tap on it (its OK sits where this button is)
+  b.addEventListener('pointerup', () => { if (!$('#evolve').hidden) { HOLD.eat = true; setTimeout(() => { HOLD.eat = false; }, 500); } });
+  document.addEventListener('click', e => { if (HOLD.eat) { HOLD.eat = false; e.stopPropagation(); e.preventDefault(); } }, true);
+  b.addEventListener('click', e => { if (e.detail === 0) heroUp(HERO_LIST[heroI]); });   // a key (Enter, Space): once; a finger or mouse went by pointerdown
+}
 $('#btn-heroes-close').addEventListener('click', () => { sfx('back'); $('#heroes').hidden = true; });
 { let sx = null, sy = 0;
   $('#hero-stage').addEventListener('pointerdown', e => { if (e.target.closest('.hero-arr')) return; sx = e.clientX; sy = e.clientY; });
