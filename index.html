@@ -811,18 +811,23 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .sh-pack.off .sh-price, .sh-buy.off { background: #d8ccb2; }
 .sh-buy.owned { background: var(--wood); }
 .sh-buy[disabled] { pointer-events: none; }
-/* below them on the counter's front: watching an ad for one, and ad removal */
-/* the cards on the counter (1236 to 1610 of the picture: two at a time and the top edge of the next), the rest scrolled to */
-.sh-cards { position: absolute; left: calc(var(--k) * var(--cl)); right: calc(var(--k) * var(--cl)); top: calc(var(--k) * 1222); height: calc(var(--k) * 402); box-sizing: border-box;
-  padding: calc(var(--k) * 14) 0 calc(var(--k) * 30); display: flex; flex-direction: column; gap: calc(var(--k) * 26); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(#000 calc(100% - var(--k) * 12), transparent); mask-image: linear-gradient(#000 calc(100% - var(--k) * 12), transparent); }   /* the next card's top shows: more below */
-.sh-cards::-webkit-scrollbar { display: none; }
-.sh-card { flex: none; box-sizing: border-box; height: calc(var(--k) * 150); display: flex; align-items: center; gap: calc(var(--k) * 14); padding: 0 calc(var(--k) * 18) 0 calc(var(--k) * 8);
-  background: #fff8e4; border: calc(var(--k) * 6) solid var(--ol); border-radius: calc(var(--k) * 34); box-shadow: 0 calc(var(--k) * 8) 0 var(--ol); }
-.sh-card > img { flex: none; width: calc(var(--k) * 150); height: calc(var(--k) * 150); margin-top: calc(var(--k) * -10); object-fit: contain; }
-.sh-nm { flex: 1 1 0; width: 0; min-width: 0; display: flex; flex-direction: column; gap: calc(var(--k) * 4); }
-.sh-nm b { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: calc(var(--k) * 40); line-height: 1.1; color: var(--ol); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sh-nm span { font-family: 'Black Han Sans', sans-serif; font-size: calc(var(--k) * 31); line-height: 1.15; color: var(--bark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* below them on the counter's front (1226 to 1626 of the picture): the four cards at once, two by two, no scrolling (the
+   ads for a golden acorn, coins and a heart, and ad removal); each: its picture, its name (up to two lines) and today's
+   count, its button across the bottom */
+.sh-cards { position: absolute; left: calc(var(--k) * var(--cl)); right: calc(var(--k) * var(--cl)); top: calc(var(--k) * 1226); height: calc(var(--k) * 400); box-sizing: border-box;
+  padding: calc(var(--k) * 8) 0 calc(var(--k) * 16); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: calc(var(--k) * 14) calc(var(--k) * 16); }
+.sh-card { min-width: 0; min-height: 0; box-sizing: border-box; display: grid; grid-template-columns: calc(var(--k) * 84) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto;
+  column-gap: calc(var(--k) * 10); row-gap: calc(var(--k) * 6); padding: calc(var(--k) * 10) calc(var(--k) * 14) calc(var(--k) * 12);
+  background: #fff8e4; border: calc(var(--k) * 6) solid var(--ol); border-radius: calc(var(--k) * 30); box-shadow: 0 calc(var(--k) * 7) 0 var(--ol); }
+.sh-card > img { grid-row: 1; grid-column: 1; align-self: center; width: calc(var(--k) * 84); height: calc(var(--k) * 84); object-fit: contain; }
+.sh-nm { grid-row: 1; grid-column: 2; align-self: center; min-width: 0; display: flex; flex-direction: column; gap: calc(var(--k) * 3); }
+.sh-nm b { font-family: 'Black Han Sans', sans-serif; font-weight: 400; font-size: calc(var(--k) * 27); line-height: 1.08; color: var(--ol); word-break: keep-all; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.sh-nm span { font-family: 'Black Han Sans', sans-serif; font-size: calc(var(--k) * 22); line-height: 1.15; color: var(--bark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sh-card .sh-buy { grid-row: 2; grid-column: 1 / -1; width: 100%; min-width: 0; height: calc(var(--k) * 50); padding: 0 calc(var(--k) * 8); border-width: calc(var(--k) * 5);
+  border-radius: calc(var(--k) * 20); box-shadow: 0 calc(var(--k) * 5) 0 var(--ol); font-size: calc(var(--k) * 28); -webkit-text-stroke-width: calc(var(--k) * 8); }
+.sh-card .sh-buy:active { transform: translateY(calc(var(--k) * 4)); box-shadow: 0 calc(var(--k) * 1) 0 var(--ol); }
 .sh-buy { appearance: none; margin: 0; cursor: pointer; }
 /* the top: back, and how many golden acorns I have */
 .sh-top { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px));
@@ -5307,6 +5312,10 @@ function adHeartGo() {
     sfx('mission'); toast(tr('gotHeart'));
   }, () => { adBusy = false; shopUI(); heartNoneUI(); });
 }
+// the cards' pictures drawn at one size to the eye: on their own canvases they fill more or less of it (a wide television,
+// a tall bag, a heart), so each is scaled by how much of it is drawn (measured: the area its shape covers)
+const SH_PIC_FIT = { 'tv-gift.webp': 0.94, 'tv-noads.webp': 0.9, 'coin-bag.webp': 0.83, 'gold-icon.webp': 0.83, heart: 0.88 };
+const shPicFit = im => { const k = im.getAttribute('src').startsWith('data:') ? 'heart' : im.getAttribute('src'); im.style.transform = `scale(${SH_PIC_FIT[k] || 1})`; };
 function shopBuild() {
   if (shopBuilt) return;
   shopBuilt = true;
@@ -5326,11 +5335,12 @@ function shopBuild() {
     $('#sh-packs').append(b);
   });
   for (const t of $('#sh-tabs').children) t.addEventListener('click', () => { if (t.dataset.tab !== shopTab) { sfx('pick'); shopTabSet(t.dataset.tab); } });
-  const card = (id, pic, name, go) => {
+  const card = (id, pic, name, go) => {   // (its picture at the one size: shPicFit)
     const c = document.createElement('div');
     c.className = 'sh-card';
     c.innerHTML = `<img src="${pic}" alt=""><span class="sh-nm"><b data-name="${name}"></b><span class="sh-sub"></span></span><button class="sh-buy" type="button" data-id="${id}"></button>`;
     c.querySelector('button').addEventListener('click', () => { sfx('pick'); go(); });
+    shPicFit(c.querySelector('img'));
     $('#sh-cards').append(c);
   };
   card('adgift', 'tv-gift.webp', 'adGift', adGiftGo);
@@ -5351,7 +5361,8 @@ function shopUI() {
   have.dataset.ta = coinTab ? 'shopHaveCoin' : 'shopHave'; have.setAttribute('aria-label', tr(have.dataset.ta));
   const nat = NATIVE(), left = adGiftLeft();
   for (const e of $('#shop').querySelectorAll('[data-name]')) { const k = e.dataset.name; e.textContent = k.startsWith('pack:') ? tr('packN', +k.slice(5)) : k.startsWith('coins:') ? (+k.slice(6)).toLocaleString() : tr(noAds && AD_FREE[k] || k); }
-  $('#sh-cards [data-id="adgift"]').closest('.sh-card').querySelector('img').src = noAds ? 'gold-icon.webp' : 'tv-gift.webp';   // no television when no ad
+  const gp = $('#sh-cards [data-id="adgift"]').closest('.sh-card').querySelector('img');
+  gp.src = noAds ? 'gold-icon.webp' : 'tv-gift.webp'; shPicFit(gp);   // no television when no ad
   for (const b of $('#sh-packs').querySelectorAll('.sh-pack')) {
     b.querySelector('.sh-price').textContent = !nat ? '' : shopPrices[b.dataset.id] || '…';
     b.classList.toggle('off', !nat || shopBusy);
