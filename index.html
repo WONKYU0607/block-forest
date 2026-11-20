@@ -786,6 +786,15 @@ html[lang="en"] .mg-row b { --nm: clamp(10px, min(9.5cqh, 13cqw), 15px); }
 .sh-title { position: absolute; left: 50.2%; top: 26.3%; transform: translate(-50%, -50%); margin: 0; white-space: nowrap; font-family: var(--num); font-weight: 400;
   font-size: calc(var(--k) * 104); line-height: 1; color: #fff; -webkit-text-stroke: calc(var(--k) * 20) var(--ol); paint-order: stroke fill; letter-spacing: 0.04em;
   text-shadow: 0 calc(var(--k) * 8) 0 var(--ol); }
+/* the stall's two tabs, in its window above the packs: golden acorns or coins (the packs on the counter are that tab's) */
+.sh-tabs { position: absolute; left: 50%; top: calc(var(--k) * 716); transform: translateX(-50%); display: flex; gap: calc(var(--k) * 6); padding: calc(var(--k) * 6);
+  background: #fff8e4; border: calc(var(--k) * 6) solid var(--ol); border-radius: calc(var(--k) * 42); box-shadow: 0 calc(var(--k) * 7) 0 var(--ol); }
+.sh-tabs button { appearance: none; margin: 0; border: 0; cursor: pointer; box-sizing: border-box; height: calc(var(--k) * 60); padding: 0 calc(var(--k) * 26) 0 calc(var(--k) * 12);
+  display: flex; align-items: center; gap: calc(var(--k) * 8); border-radius: calc(var(--k) * 32); background: none; white-space: nowrap; -webkit-tap-highlight-color: transparent;
+  font-family: var(--num); font-weight: 400; font-size: calc(var(--k) * 34); line-height: 1; color: var(--bark); }
+.sh-tabs button img { flex: none; width: calc(var(--k) * 46); height: calc(var(--k) * 46); display: block; }
+.sh-tabs button.on { background: linear-gradient(#7ee05a, #4fb83f); color: #fff; -webkit-text-stroke: calc(var(--k) * 9) var(--ol); paint-order: stroke fill; box-shadow: inset 0 0 0 calc(var(--k) * 5) var(--ol); }
+#sh-packs[data-tab="gold"] .sh-pack.coin, #sh-packs[data-tab="coin"] .sh-pack.gold { display: none; }
 /* the three packs stand on the counter: the picture (bigger for more), how many on the counter's edge, the price below */
 .sh-pack { position: absolute; left: calc(var(--k) * (var(--x) - 116)); top: calc(var(--k) * 812); width: calc(var(--k) * 232); height: calc(var(--k) * 392);
   appearance: none; border: 0; padding: 0; margin: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; -webkit-tap-highlight-color: transparent; }
@@ -1356,7 +1365,8 @@ html.tall-art .scr-box .ext { display: none; }
 <section id="shop" class="shopscr" hidden aria-label="상점" data-ta="shop">
   <div class="sh-stage" id="sh-stage">
     <h2 class="sh-title" data-t="shop">상점</h2>
-    <div id="sh-packs"></div>
+    <div class="sh-tabs" id="sh-tabs"><button type="button" data-tab="gold" class="on"><img src="gold-icon.webp" alt=""><span data-t="profGold">황금 도토리</span></button><button type="button" data-tab="coin"><img src="coin-1.webp" alt=""><span data-t="coins">코인</span></button></div>
+    <div id="sh-packs" data-tab="gold"></div>
     <div class="sh-cards" id="sh-cards"></div>
   </div>
   <div class="sh-top">
@@ -1508,7 +1518,7 @@ const STR = {
       hedgehog: ['화면을 누르면 가시를 던져요', '꽂힌 가시에 맞으면 끝나요'],
       caterpillar: ['아무 데나 대고 끌면 그쪽으로 가요', '잎을 먹고, 나보다 짧은 애벌레의 머리를 먹어요'],
       cups: ['도토리가 든 컵을 잘 보세요', '다 섞이면 그 컵을 눌러요'] },
-    shop: '상점', shopHave: '내 황금 도토리', packN: n => `${n}개`, adGift: '광고 보고 받기', adGiftSub: n => `오늘 ${n}번 남음`, adGiftGo: '받기', adGiftDone: '황금 도토리 1개를 받았어요', noads: '광고 제거', noadsSub: '모든 광고가 사라져요', owned: '보유 중', shopDone: '구매했어요', shopPending: '결제가 확인되면 들어와요', shopFail: '구매하지 못했어요', adNone: '지금은 광고를 볼 수 없어요', adSkipped: '광고를 끝까지 보면 이어할 수 있어요', contAd: '광고 보고 이어하기', contItem: '황금 도토리 쓰기', contNo: '그만하기', ad: '광고', result: '결과', newBest: '새 최고 기록!', again: '다시 하기',
+    shop: '상점', shopHave: '내 황금 도토리', shopHaveCoin: '내 코인', packN: n => `${n}개`, adGift: '광고 보고 받기', adGiftSub: n => `오늘 ${n}번 남음`, adGiftGo: '받기', adGiftDone: '황금 도토리 1개를 받았어요', noads: '광고 제거', noadsSub: '모든 광고가 사라져요', owned: '보유 중', shopDone: '구매했어요', shopPending: '결제가 확인되면 들어와요', shopFail: '구매하지 못했어요', adNone: '지금은 광고를 볼 수 없어요', adSkipped: '광고를 끝까지 보면 이어할 수 있어요', contAd: '광고 보고 이어하기', contItem: '황금 도토리 쓰기', contNo: '그만하기', ad: '광고', result: '결과', newBest: '새 최고 기록!', again: '다시 하기',
     lobby: '로비', start: '게임 시작',
     splash: '시작 화면', touch: '화면을 터치하세요',
     login: '로그인', google: 'Google 계정으로 시작', retry: '다시 시도', loginWait: '연결 중…',
@@ -1561,7 +1571,7 @@ const STR = {
       hedgehog: ['Tap to throw a quill', 'Hit a quill already in and it is over'],
       caterpillar: ['Drag anywhere to steer', 'Eat leaves, and the heads of shorter caterpillars'],
       cups: ['Watch the cup with the acorn', 'Tap it when the shuffling stops'] },
-    shop: 'Shop', shopHave: 'My golden acorns', packN: n => `×${n}`, adGift: 'Watch an ad', adGiftSub: n => `${n} left today`, adGiftGo: 'Get', adGiftDone: 'You got a golden acorn', noads: 'Remove ads', noadsSub: 'No more ads', owned: 'Owned', shopDone: 'Purchased', shopPending: 'It arrives once the payment clears', shopFail: 'Purchase failed', adNone: 'No ad right now', adSkipped: 'Watch the whole ad to continue', contAd: 'Watch an ad', contItem: 'Golden acorn', contNo: 'No thanks', ad: 'Ad', result: 'Result', newBest: 'New Best!', again: 'Play Again',
+    shop: 'Shop', shopHave: 'My golden acorns', shopHaveCoin: 'My coins', packN: n => `×${n}`, adGift: 'Watch an ad', adGiftSub: n => `${n} left today`, adGiftGo: 'Get', adGiftDone: 'You got a golden acorn', noads: 'Remove ads', noadsSub: 'No more ads', owned: 'Owned', shopDone: 'Purchased', shopPending: 'It arrives once the payment clears', shopFail: 'Purchase failed', adNone: 'No ad right now', adSkipped: 'Watch the whole ad to continue', contAd: 'Watch an ad', contItem: 'Golden acorn', contNo: 'No thanks', ad: 'Ad', result: 'Result', newBest: 'New Best!', again: 'Play Again',
     lobby: 'Lobby', start: 'Play',
     splash: 'Title screen', touch: 'Touch to Start',
     login: 'Sign in', google: 'Continue with Google', retry: 'Try again', loginWait: 'Connecting…',
@@ -5226,7 +5236,10 @@ $('#btn-heroes-close').addEventListener('click', () => { sfx('back'); $('#heroes
    bought again), ad removal for as long as Google Play lists it (read again whenever the app opens or comes back).
    Nothing can be bought on the web. ---------- */
 const SHOP = [{ id: 'cont_5', n: 5 }, { id: 'cont_15', n: 15 }, { id: 'cont_40', n: 40 }], NOADS_ID = 'noads';
-const SHOP_IDS = SHOP.map(p => p.id).concat(NOADS_ID);
+// coins to buy (the stall's other tab): 10,000, 30,000, 100,000 — Google Play's in-app products coin_10000 and so on
+const SHOP_COIN = [{ id: 'coin_10000', c: 10000, pic: 'coin-pile.webp' }, { id: 'coin_30000', c: 30000, pic: 'coin-bag.webp' }, { id: 'coin_100000', c: 100000, pic: 'coin-chest.webp' }];
+const SHOP_IDS = SHOP.map(p => p.id).concat(SHOP_COIN.map(p => p.id), NOADS_ID);
+let shopTab = 'gold';
 const GRANTED_KEY = 'forest-granted';
 let shopPrices = {}, shopBusy = false, shopBuilt = false;
 const shopGranted = () => { try { return JSON.parse(localStorage.getItem(GRANTED_KEY) || '[]'); } catch (e) { return []; } };
@@ -5300,11 +5313,19 @@ function shopBuild() {
   // the packs, bigger for more: 5, 15, 40
   SHOP.forEach((p, k) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'sh-pack'; b.dataset.id = p.id; b.style.setProperty('--x', [238, 471, 704][k]);
+    b.type = 'button'; b.className = 'sh-pack gold'; b.dataset.id = p.id; b.style.setProperty('--x', [238, 471, 704][k]);
     b.innerHTML = `<span class="sh-pic"><img src="gold-${p.n}.webp" alt="" style="height:${[76, 88, 100][k]}%"></span><b class="sh-n" data-name="pack:${p.n}"></b><span class="sh-price"></span>`;
     b.addEventListener('click', () => { sfx('pick'); shopBuy(p.id); });
     $('#sh-packs').append(b);
   });
+  SHOP_COIN.forEach((p, k) => {   // the coins' tab: the same places, a pile, a bag, a chest
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sh-pack coin'; b.dataset.id = p.id; b.style.setProperty('--x', [238, 471, 704][k]);
+    b.innerHTML = `<span class="sh-pic"><img src="${p.pic}" alt="" style="height:${[76, 88, 100][k]}%"></span><b class="sh-n" data-name="coins:${p.c}"></b><span class="sh-price"></span>`;
+    b.addEventListener('click', () => { sfx('pick'); shopBuy(p.id); });
+    $('#sh-packs').append(b);
+  });
+  for (const t of $('#sh-tabs').children) t.addEventListener('click', () => { if (t.dataset.tab !== shopTab) { sfx('pick'); shopTabSet(t.dataset.tab); } });
   const card = (id, pic, name, go) => {
     const c = document.createElement('div');
     c.className = 'sh-card';
@@ -5317,11 +5338,19 @@ function shopBuild() {
   card('adheart', HEART_URL, 'adHeart', adHeartGo);
   card(NOADS_ID, 'tv-noads.webp', 'noads', () => shopBuy(NOADS_ID));
 }
+function shopTabSet(t) {
+  shopTab = t; $('#sh-packs').dataset.tab = t;
+  for (const b of $('#sh-tabs').children) b.classList.toggle('on', b.dataset.tab === t);
+  shopUI();
+}
 function shopUI() {
   if (!shopBuilt) return;
-  $('#shop-n').textContent = contN;
+  const coinTab = shopTab === 'coin', have = $('.sh-have');   // the top right: what this tab sells, how many I have
+  $('#shop-n').textContent = coinTab ? (FREE_COINS ? '∞' : WAL.coins.toLocaleString()) : contN;
+  have.querySelector('img').src = coinTab ? 'coin-1.webp' : 'gold-icon.webp';
+  have.dataset.ta = coinTab ? 'shopHaveCoin' : 'shopHave'; have.setAttribute('aria-label', tr(have.dataset.ta));
   const nat = NATIVE(), left = adGiftLeft();
-  for (const e of $('#shop').querySelectorAll('[data-name]')) { const k = e.dataset.name; e.textContent = k.startsWith('pack:') ? tr('packN', +k.slice(5)) : tr(noAds && AD_FREE[k] || k); }
+  for (const e of $('#shop').querySelectorAll('[data-name]')) { const k = e.dataset.name; e.textContent = k.startsWith('pack:') ? tr('packN', +k.slice(5)) : k.startsWith('coins:') ? (+k.slice(6)).toLocaleString() : tr(noAds && AD_FREE[k] || k); }
   $('#sh-cards [data-id="adgift"]').closest('.sh-card').querySelector('img').src = noAds ? 'gold-icon.webp' : 'tv-gift.webp';   // no television when no ad
   for (const b of $('#sh-packs').querySelectorAll('.sh-pack')) {
     b.querySelector('.sh-price').textContent = !nat ? '' : shopPrices[b.dataset.id] || '…';
@@ -5355,12 +5384,14 @@ async function shopLoad() {
   shopUI();
   shopRestore();
 }
+// a pack paid for: its golden acorns, or its coins (once a payment: the payments given are kept on the phone)
 function shopGive(id, tok) {
-  const p = SHOP.find(x => x.id === id);
-  if (!p || shopGranted().includes(tok)) return 0;
+  const p = SHOP.find(x => x.id === id), q = SHOP_COIN.find(x => x.id === id);
+  if ((!p && !q) || shopGranted().includes(tok)) return 0;
   shopMark(tok);
-  contPut(contN + p.n); contUI(); shopUI();
-  return p.n;
+  if (p) { contPut(contN + p.n); contUI(); } else walletPut(w => { w.coins += q.c; });
+  shopUI();
+  return 1;
 }
 async function shopBuy(id) {
   const nat = NATIVE();
@@ -5392,7 +5423,7 @@ function shopRestore() {
     for (const t of list || []) {
       if (t.state !== 'purchased' || !t.token) continue;
       if (t.id === NOADS_ID) { ads = true; if (!t.acked) nat.billing.acknowledge(t.token).catch(() => {}); continue; }
-      if (!SHOP.some(p => p.id === t.id)) continue;
+      if (!SHOP.some(p => p.id === t.id) && !SHOP_COIN.some(p => p.id === t.id)) continue;
       got += shopGive(t.id, t.token);
       nat.billing.consume(t.token).catch(() => {});
     }
