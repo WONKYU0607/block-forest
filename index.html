@@ -3799,7 +3799,7 @@ const ITEM_HI = ['bomb', 'magnet', 'boost', 'hammer', 'rows', 'basket'];
 const itemCost = id => (ITEM_HI.includes(id) ? ITEM_COST_HI : ITEM_COST);
 const pickCost = ids => [...ids].reduce((s, id) => s + itemCost(id), 0);
 // debugging: coins and hearts without end (nothing is spent, nothing is short; the chips show ∞). false before release
-const FREE_COINS = true;
+const FREE_COINS = false;
 // hearts: a game takes one at its start; 5 at most, one more every 10 minutes (the phone's clock); an ad gives one
 const HEART_MAX = 5, HEART_MS = 10 * 60 * 1000;
 const coinsOK = n => FREE_COINS || WAL.coins >= n;
@@ -10762,8 +10762,8 @@ addEventListener('popstate', () => {
 for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener(ev, e => { if (!e.isTrusted) return; BK.act = true; setTimeout(bkSync, 0); }, true);
 setInterval(bkSync, 300);   // cards that open by themselves (a game ending) get their entry too
 
-// read-only hooks for automated checks
-window.__rise = { shieldArm: () => { if (IT && IT.st.shield) { IT.st.shield = 'on'; itemDockUI(); } }, SND, sfxSynth, evTm: () => EV.tm, G, shapeOf, sprite, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY }),
+// read-only hooks for automated checks (only on the test machine's address, never on the site or in the app)
+if (location.hostname === '127.0.0.1') window.__rise = { shieldArm: () => { if (IT && IT.st.shield) { IT.st.shield = 'on'; itemDockUI(); } }, SND, sfxSynth, evTm: () => EV.tm, G, shapeOf, sprite, geom: () => ({ bx, by, cu, BW, BH, trayY, trayH, slotW, sideX, sideW, itemY }),
   bitems: { IT: () => IT, targets: (k, c, r) => itemTargets(k, c, r).marks.size, aim: () => bAim, checkNoFit, touch: touchGrid }, acorn: { MG, geo: miniGeo }, nextBox, moveIv, dims: () => ({ COLS, ROWS, BURST }),
                   busy: () => G.phase !== 'idle' || !!anim || !!pending, turned, rotBtn, checkNoFit, fx, THEMES, applyTheme, burstNeed,
                   deal: () => dealPiece(), touch: () => touchGrid(), die: r => die(r), drop: (i, c) => dropPiece(i, c), landing: (s, c) => landing(G.grid, SHAPE_BY_NAME[s], c), findBursts: g => { const b = findBursts(g); return { n: b.marks.size, rows: b.rows }; }, levelAt, levelRule, addScore: n => addScore(n), nextMission: () => nextMission(true), mini: { MG, geo: miniGeo, step: dt => miniStep(dt), draw: t => miniDraw(t), spawn: miniSpawn, open: openMini, pics: () => miniPics() }, feverGoal: () => feverGoal(), banner: (a, b) => banner(a, b, GOLD_LOOK, 4000), tr, screens: { covered: () => covered, lang: () => LANG },
