@@ -43,7 +43,7 @@
 <script>
   // STORE_LIVE: the app is on Google Play (then an Android phone goes straight there, with who invited in the link's
   // referrer for the app to read; until then the web game, with who invited in ?inv=)
-  const STORE_LIVE = false;
+  const STORE_LIVE = true;
   const u = new URLSearchParams(location.search).get('u') || '', ok = /^[A-Za-z0-9]{1,128}$/.test(u);
   const store = 'https://play.google.com/store/apps/details?id=com.wonkyu.minigameforest' + (ok ? '&referrer=' + encodeURIComponent('inv=' + u) : '');
   const st = document.getElementById('store'), web = document.getElementById('web');
